@@ -1,8 +1,9 @@
 {
   "name": "zemljopis_android",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,6 +20,8 @@
   "description": "",
   "dependencies": {
     "@capacitor/cli": "^8.1.0",
-    "@capacitor/core": "^8.1.0"
+    "@capacitor/core": "^8.1.0",
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
   }
 }

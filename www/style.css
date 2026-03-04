@@ -1,0 +1,837 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Centriranje celog prikaza na monitorima */
+html {
+    background: #020803; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
+}
+
+/* Body sada glumi ekran telefona sa dominantnom zelenom */
+body {
+    background: linear-gradient(135deg, #051405, #0d290d, #143d14);
+    color: #ffffff;
+    width: 100%;
+    max-width: 480px; 
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-top: env(safe-area-inset-top, 35px);
+    padding-bottom: env(safe-area-inset-bottom, 10px);
+    box-shadow: 0 0 50px rgba(0,0,0,0.9);
+}
+
+@media (min-width: 500px) {
+    body {
+        height: 90vh;
+        max-height: 900px;
+        border-radius: 35px;
+        border: 8px solid #0a110a;
+    }
+    .action-footer { border-radius: 0 0 25px 25px; }
+    .modal-overlay { border-radius: 27px; }
+}
+
+.screen {
+    display: none;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.screen.active { display: flex; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- GLAVNI MENI --- */
+#main-menu { 
+    padding: 2rem 1.5rem; 
+    justify-content: center; 
+    align-items: center; 
+    position: relative; 
+}
+
+#main-menu > *:not(.menu-pattern) {
+    z-index: 5;
+    position: relative;
+}
+
+.logo { 
+    font-size: 3.2rem; 
+    font-weight: 800; 
+    text-align: center; 
+    background: -webkit-linear-gradient(45deg, #38ef7d, #11998e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem; 
+    letter-spacing: 2px; 
+    text-shadow: 0 0 15px rgba(56, 239, 125, 0.3);
+}
+
+.subtitle { 
+    font-size: 0.95rem; 
+    color: #a0aec0; 
+    margin-bottom: 4rem; 
+    text-align: center; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+}
+
+.menu-btn { 
+    width: 100%; 
+    max-width: 320px; 
+    padding: 1.1rem; 
+    margin-bottom: 1.2rem; 
+    border: none; 
+    border-radius: 16px; 
+    background: rgba(255, 255, 255, 0.08); 
+    color: #fff; 
+    font-size: 1.1rem; 
+    font-weight: 600; 
+    backdrop-filter: blur(10px); 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    cursor: pointer; 
+    transition: all 0.2s; 
+}
+.menu-btn:active { transform: scale(0.96); }
+
+.btn-primary { 
+    background: linear-gradient(45deg, #11998e, #38ef7d); 
+    color: #000; 
+    box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+}
+.btn-secondary { background: linear-gradient(45deg, #f12711, #f5af19); color: #fff; }
+
+/* --- ŠARA SA IZNENADJUJUĆIM OBRISIMA U MENIJU --- */
+.menu-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; 
+    overflow: hidden;
+    opacity: 0.15; 
+}
+
+.pattern-icon {
+    position: absolute;
+    color: #38ef7d; 
+    user-select: none;
+    pointer-events: none;
+    animation: breathe 4s ease-in-out infinite alternate;
+}
+
+.pattern-icon:nth-child(even) { animation-delay: 2s; }
+
+@keyframes breathe {
+    0% { opacity: 0.5; filter: drop-shadow(0 0 5px rgba(56, 239, 125, 0)); }
+    100% { opacity: 1; filter: drop-shadow(0 0 15px rgba(56, 239, 125, 0.4)); }
+}
+
+/* --- TABLA ZA IGRU --- */
+.game-header { background: rgba(0, 0, 0, 0.4); padding: 0.4rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0 0 15px 15px; }
+.game-info-left { display: flex; flex-direction: column; gap: 2px; }
+.mode-badge { font-size: 0.6rem; padding: 0.2rem 0.4rem; border-radius: 6px; text-transform: uppercase; font-weight: 800; display: inline-block; width: max-content; }
+.badge-multi { background: #11998e; color: white; } 
+.badge-solo { background: #f5af19; color: black; }
+.stat-value { font-size: 1rem; font-weight: 600; color: #fff; }
+.timer { font-size: 1.4rem; font-weight: 800; color: #ff416c; font-variant-numeric: tabular-nums; }
+
+/* --- DUGME ZA IZLAZ (X) --- */
+.btn-close {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    font-size: 1.2rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-close:active {
+    transform: scale(0.85);
+    background: #ff416c;
+    color: #fff !important;
+}
+
+/* Prilagođeno zadato slovo */
+.current-letter { text-align: center; padding: 0.1rem; display: flex; flex-direction: column; align-items: center; }
+.current-letter span { font-size: 1.5rem; font-weight: 800; color: #38ef7d; text-shadow: 0 0 10px rgba(56, 239, 125, 0.3); line-height: 1; } 
+
+.solo-mode-active .current-letter span { color: #f5af19; text-shadow: 0 0 10px rgba(245, 175, 25, 0.3); }
+.solo-mode-active .input-group input:focus { border-color: #f5af19; }
+
+/* DINAMIČKI KONTEJNER ZA POLJA */
+.inputs-container { 
+    flex: 1; 
+    overflow-y: hidden; 
+    padding: 0 1rem; 
+    padding-bottom: 75px; 
+    display: flex;
+    flex-direction: column;
+}
+
+/* DINAMIČKA POLJA ZA UNOS (Guma efekat) */
+.input-group { 
+    margin-bottom: clamp(0.2rem, 1vh, 0.4rem); 
+} 
+
+.input-group label { 
+    display: block; 
+    margin-bottom: 1px; 
+    font-size: clamp(0.65rem, 1.2vh, 0.75rem); 
+    color: #cbd5e0; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+}
+
+.input-group input { 
+    width: 100%; 
+    padding: clamp(0.35rem, 1.2vh, 0.6rem) 0.8rem; 
+    font-size: clamp(0.85rem, 1.8vh, 0.95rem); 
+    border-radius: 8px; 
+    border: 2px solid rgba(255, 255, 255, 0.05); 
+    background: rgba(0, 0, 0, 0.25); 
+    color: #fff; 
+    outline: none; 
+    transition: all 0.3s ease; 
+}
+.input-group input:focus { border-color: #38ef7d; background: rgba(0, 0, 0, 0.4); transform: translateY(-1px); } 
+
+/* FOOTER */
+.action-footer { 
+    position: absolute; 
+    bottom: 0; left: 0; width: 100%; 
+    padding: 0.6rem 1.2rem calc(0.5rem + env(safe-area-inset-bottom, 10px)); 
+    background: linear-gradient(to top, #091317 85%, transparent); 
+    z-index: 10; 
+}
+.btn-finish { 
+    width: 100%; 
+    padding: 0.9rem; 
+    border-radius: 14px; 
+    border: none; 
+    background: linear-gradient(45deg, #11998e, #38ef7d); 
+    color: #000; 
+    font-size: 1.1rem; 
+    font-weight: 800; 
+    text-transform: uppercase; 
+    box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3); 
+    cursor: pointer; 
+    transition: transform 0.2s; 
+}
+.btn-finish:active { transform: scale(0.97); }
+
+/* VALIDACIJA BOJE */
+.input-correct { border-color: #38ef7d !important; background: rgba(56, 239, 125, 0.1) !important; }
+.input-wrong { border-color: #ff416c !important; background: rgba(255, 65, 108, 0.1) !important; }
+
+/* CUSTOM MODAL / OBAVEŠTENJA */
+.modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 2rem; opacity: 0; transition: opacity 0.3s ease; }
+.modal-overlay.active { display: flex; opacity: 1; }
+.modal-content { background: linear-gradient(135deg, #0d290d, #143d14); padding: 2rem 1.5rem; border-radius: 20px; text-align: center; width: 100%; max-width: 340px; box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(56, 239, 125, 0.15); border: 1px solid rgba(255, 255, 255, 0.1); transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.modal-overlay.active .modal-content { transform: scale(1); }
+.modal-content h2 { color: #38ef7d; margin-bottom: 1rem; font-size: 1.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+.modal-content p { color: #cbd5e0; margin-bottom: 2rem; font-size: 1.05rem; line-height: 1.5; }
+.modal-content .menu-btn { margin-bottom: 0; }
+
+/* --- SPLASH / LOADING EKRAN --- */
+#splash-screen {
+    background: linear-gradient(135deg, #030a03, #0a1c0a, #0d290d); 
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; 
+}
+
+.splash-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.splash-logo {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: -webkit-linear-gradient(45deg, #38ef7d, #11998e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 4px;
+    margin-bottom: 3rem;
+    animation: pulseGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+    from { text-shadow: 0 0 10px rgba(56, 239, 125, 0.1); transform: scale(0.98); }
+    to { text-shadow: 0 0 30px rgba(56, 239, 125, 0.7); transform: scale(1.03); }
+}
+
+.loading-container {
+    width: 220px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.loading-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #11998e, #38ef7d);
+    box-shadow: 0 0 15px rgba(56, 239, 125, 0.8);
+    border-radius: 4px;
+    animation: fillBar 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fillBar {
+    0% { width: 0%; }
+    40% { width: 50%; } 
+    80% { width: 80%; }
+    100% { width: 100%; }
+}
+
+.loading-text {
+    color: #38ef7d;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    animation: blinkText 1s infinite alternate;
+}
+
+@keyframes blinkText {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+/* --- SMANJEN PANEL ZA STATISTIKU U IGRI --- */
+.stats-panel {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(56, 239, 125, 0.15);
+    border-radius: 12px;
+    padding: clamp(0.3rem, 1vh, 0.5rem);
+    margin-top: auto; /* ZAKUCAVA PANEL NA DNO */
+    margin-bottom: 0.2rem;
+}
+.stats-header {
+    font-size: 0.7rem;
+    color: #38ef7d;
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+/* Tvoj skor se izdvaja na vrhu */
+.current-player {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.3rem 0.6rem;
+    background: rgba(56, 239, 125, 0.1);
+    border: 1px solid rgba(56, 239, 125, 0.3);
+    border-radius: 8px;
+    margin-bottom: 0.3rem;
+    font-size: 0.8rem;
+    color: #fff;
+    font-weight: 600;
+}
+.current-player .player-score {
+    background: #38ef7d;
+    color: #000;
+    padding: 0.1rem 0.5rem;
+    border-radius: 6px;
+    font-weight: 800;
+}
+
+/* Ostali igrači se prikazuju kao Grid (Mreža) u dve kolone */
+#opponents-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.3rem;
+}
+.opponent-player {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    color: #a0aec0;
+}
+.opponent-player .player-score {
+    background: rgba(255, 255, 255, 0.1);
+    color: #38ef7d;
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    font-weight: 800;
+}
+
+/* ========================================================
+   TEME - GLOBALNA PROMENA BOJA I STILOVA
+   Sve boje se oslanjaju na data-tema atribut body elementa
+   ======================================================== */
+
+/* --- TEMA: SVETLA --- */
+body[data-tema="svetla"] {
+    background: linear-gradient(135deg, #f0f4f8, #e2e8f0, #cbd5e0);
+    color: #2d3748;
+}
+
+body[data-tema="svetla"] .menu-btn {
+    background: #ffffff;
+    color: #2d3748;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+}
+
+body[data-tema="svetla"] h2,
+body[data-tema="svetla"] .loading-text,
+body[data-tema="svetla"] .current-letter span,
+body[data-tema="svetla"] .stats-header,
+body[data-tema="svetla"] .modal-content h2,
+body[data-tema="svetla"] .pattern-icon {
+    color: #11998e;
+    text-shadow: none;
+}
+
+body[data-tema="svetla"] .input-group label {
+    color: #4a5568;
+}
+
+body[data-tema="svetla"] .input-group input {
+    background: #ffffff;
+    border: 2px solid #cbd5e0;
+    color: #2d3748;
+}
+
+body[data-tema="svetla"] .input-group input:focus {
+    border-color: #11998e;
+    background: #f7fafc;
+}
+
+body[data-tema="svetla"] .game-header,
+body[data-tema="svetla"] .modal-content,
+body[data-tema="svetla"] .stats-panel,
+body[data-tema="svetla"] #riznica-sadrzaj > div,
+body[data-tema="svetla"] #podesavanja-screen > div > div,
+body[data-tema="svetla"] #private-room-setup > div > div {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+body[data-tema="svetla"] .modal-content p,
+body[data-tema="svetla"] .stat-value,
+body[data-tema="svetla"] .opponent-player {
+    color: #4a5568;
+}
+
+body[data-tema="svetla"] .opponent-player {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+}
+
+body[data-tema="svetla"] #splash-screen {
+    background: linear-gradient(135deg, #ffffff, #f0f4f8, #e2e8f0);
+}
+
+body[data-tema="svetla"] .action-footer {
+    background: linear-gradient(to top, #ffffff 85%, transparent);
+}
+
+body[data-tema="svetla"] .btn-close { 
+    background: rgba(0,0,0,0.05); 
+    color: #2d3748; 
+}
+
+/* --- TEMA: NEON CYBER --- */
+body[data-tema="neon"] {
+    background: #000000;
+}
+
+body[data-tema="neon"] h2,
+body[data-tema="neon"] .loading-text,
+body[data-tema="neon"] .current-letter span,
+body[data-tema="neon"] .stats-header,
+body[data-tema="neon"] .modal-content h2,
+body[data-tema="neon"] .pattern-icon {
+    color: #ff00ff;
+    text-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff;
+}
+
+body[data-tema="neon"] .logo, 
+body[data-tema="neon"] .splash-logo {
+    background: -webkit-linear-gradient(45deg, #00ffff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+}
+
+body[data-tema="neon"] .btn-primary,
+body[data-tema="neon"] .loading-bar,
+body[data-tema="neon"] .badge-multi,
+body[data-tema="neon"] .current-player .player-score {
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+    color: #ffffff;
+    border: 1px solid #ffffff;
+}
+
+body[data-tema="neon"] .menu-btn {
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    box-shadow: inset 0 0 10px rgba(255, 0, 255, 0.1);
+}
+
+body[data-tema="neon"] .input-group input {
+    background: rgba(255, 0, 255, 0.05);
+    border: 2px solid rgba(0, 255, 255, 0.3);
+}
+
+body[data-tema="neon"] .input-group input:focus {
+    border-color: #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+body[data-tema="neon"] .input-correct {
+    border-color: #00ffff !important;
+    background: rgba(0, 255, 255, 0.2) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+body[data-tema="neon"] .modal-content {
+    background: #0a0a0a;
+    border: 2px solid #ff00ff;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.4);
+}
+
+body[data-tema="neon"] .current-player {
+    background: rgba(255, 0, 255, 0.15);
+    border-color: #ff00ff;
+}
+
+body[data-tema="neon"] .action-footer {
+    background: linear-gradient(to top, #000000 85%, transparent);
+}
+
+body[data-tema="neon"] .btn-close { 
+    background: rgba(255,0,255,0.15); 
+    color: #ff00ff; 
+}
+
+/* --- TEMA: PLAVI OKEAN --- */
+body[data-tema="okean"] {
+    background: linear-gradient(135deg, #020b14, #0a1b2e, #112d4d);
+}
+
+body[data-tema="okean"] h2,
+body[data-tema="okean"] .loading-text,
+body[data-tema="okean"] .current-letter span,
+body[data-tema="okean"] .stats-header,
+body[data-tema="okean"] .modal-content h2,
+body[data-tema="okean"] .pattern-icon {
+    color: #38bdf8;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+body[data-tema="okean"] .logo, 
+body[data-tema="okean"] .splash-logo {
+    background: -webkit-linear-gradient(45deg, #38bdf8, #0284c7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+body[data-tema="okean"] .btn-primary,
+body[data-tema="okean"] .loading-bar,
+body[data-tema="okean"] .badge-multi,
+body[data-tema="okean"] .current-player .player-score {
+    background: linear-gradient(45deg, #0284c7, #38bdf8);
+    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+    color: #000;
+}
+
+body[data-tema="okean"] .input-group input:focus { 
+    border-color: #38bdf8; 
+}
+body[data-tema="okean"] .input-correct { 
+    border-color: #38bdf8 !important; 
+    background: rgba(56, 189, 248, 0.1) !important; 
+}
+body[data-tema="okean"] .current-player {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: rgba(56, 189, 248, 0.3);
+}
+body[data-tema="okean"] .modal-content {
+    background: linear-gradient(135deg, #0a1b2e, #112d4d);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(56, 189, 248, 0.15);
+}
+body[data-tema="okean"] #splash-screen {
+    background: linear-gradient(135deg, #020b14, #0a1b2e, #112d4d);
+}
+
+body[data-tema="okean"] .btn-close { 
+    background: rgba(56,189,248,0.15); 
+    color: #38bdf8; 
+}
+
+/* --- TEMA: KRALJEVSKO ZLATO --- */
+body[data-tema="zlatna"] {
+    background: linear-gradient(135deg, #1a1500, #2b2200, #403300);
+}
+
+body[data-tema="zlatna"] h2,
+body[data-tema="zlatna"] .loading-text,
+body[data-tema="zlatna"] .current-letter span,
+body[data-tema="zlatna"] .stats-header,
+body[data-tema="zlatna"] .modal-content h2,
+body[data-tema="zlatna"] .pattern-icon {
+    color: #ffd700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+
+body[data-tema="zlatna"] .logo, 
+body[data-tema="zlatna"] .splash-logo {
+    background: -webkit-linear-gradient(45deg, #ffd700, #ffaa00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+body[data-tema="zlatna"] .btn-primary,
+body[data-tema="zlatna"] .loading-bar,
+body[data-tema="zlatna"] .badge-multi,
+body[data-tema="zlatna"] .current-player .player-score {
+    background: linear-gradient(45deg, #ffaa00, #ffd700);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    color: #000;
+}
+
+body[data-tema="zlatna"] .input-group input {
+    border: 2px solid rgba(255, 215, 0, 0.2);
+}
+
+body[data-tema="zlatna"] .input-group input:focus { 
+    border-color: #ffd700; 
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+body[data-tema="zlatna"] .input-correct { 
+    border-color: #ffd700 !important; 
+    background: rgba(255, 215, 0, 0.15) !important; 
+}
+body[data-tema="zlatna"] .current-player {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: rgba(255, 215, 0, 0.4);
+}
+body[data-tema="zlatna"] .modal-content {
+    background: linear-gradient(135deg, #2b2200, #403300);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255, 215, 0, 0.2);
+}
+body[data-tema="zlatna"] #splash-screen {
+    background: linear-gradient(135deg, #1a1500, #2b2200, #403300);
+}
+
+body[data-tema="zlatna"] .btn-close { 
+    background: rgba(255,215,0,0.15); 
+    color: #ffd700; 
+}
+
+/* ========================================================
+   ANIMACIJA VRATA (MODERNI UI/UX EKRAN ZA UČITAVANJE)
+   ======================================================== */
+.door-overlay {
+    position: absolute; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%;
+    z-index: 10000;
+    display: flex;
+    pointer-events: none; 
+}
+
+/* UI Tekst koji se pojavljuje dok su vrata zatvorena */
+.door-text {
+    position: absolute;
+    top: calc(50% - 25px); /* Pozicionirano tačno iznad loading trake */
+    left: 50%;
+    transform: translateX(-50%);
+    color: #38ef7d;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 5px;
+    z-index: 10001;
+    opacity: 0;
+    transition: opacity 0.2s;
+    text-shadow: 0 0 15px rgba(56, 239, 125, 0.8);
+}
+.door-overlay.active .door-text {
+    opacity: 1;
+    animation: pulseText 0.8s infinite alternate;
+}
+
+@keyframes pulseText {
+    0% { opacity: 0.4; }
+    100% { opacity: 1; text-shadow: 0 0 20px rgba(56, 239, 125, 1); }
+}
+
+/* Osnova vrata sa efektom zamućenog stakla (Glassmorphism) */
+.door {
+    width: 50%;
+    height: 100%;
+    background: rgba(5, 12, 5, 0.90); 
+    backdrop-filter: blur(12px); 
+    -webkit-backdrop-filter: blur(12px);
+    transition: transform 0.8s cubic-bezier(0.8, 0, 0.2, 1); 
+    position: relative;
+    display: flex;
+    overflow: hidden; 
+}
+
+/* Oštar unutrašnji sjaj po ivici spajanja vrata */
+.door-left {
+    transform: translateX(-100%);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    box-shadow: inset -10px 0 20px rgba(56, 239, 125, 0.05), 10px 0 30px rgba(0,0,0,0.6);
+}
+.door-right {
+    transform: translateX(100%);
+    border-left: 1px solid rgba(255,255,255,0.05);
+    box-shadow: inset 10px 0 20px rgba(56, 239, 125, 0.05), -10px 0 30px rgba(0,0,0,0.6);
+}
+
+.door-overlay.active .door-left,
+.door-overlay.active .door-right {
+    transform: translateX(0);
+}
+
+/* --- MODERN UI ELEMENT: Pozadina Učitavajuće Trake (Track) --- */
+.door-left::after, .door-right::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    margin-top: 5px; /* Spušteno ispod teksta */
+    width: 100px; /* Ukupna širina loading trake je 200px */
+    height: 4px;
+    background: rgba(0, 0, 0, 0.8);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05);
+}
+.door-left::after { right: 0; border-radius: 4px 0 0 4px; }
+.door-right::after { left: 0; border-radius: 0 4px 4px 0; }
+
+/* --- MODERN UI ELEMENT: Svetleći Progres (Fill) koji se puni --- */
+.door-left::before, .door-right::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    margin-top: 5px; 
+    height: 4px;
+    background: #38ef7d;
+    box-shadow: 0 0 15px #38ef7d, 0 0 30px #38ef7d;
+    width: 0; /* Počinje od nule */
+    z-index: 2;
+}
+.door-left::before { right: 0; border-radius: 4px 0 0 4px; }
+.door-right::before { left: 0; border-radius: 0 4px 4px 0; }
+
+/* Animacija punjenja iz centra prema ivicama dok su vrata aktivna */
+.door-overlay.active .door-left::before {
+    animation: fillBarLeft 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.door-overlay.active .door-right::before {
+    animation: fillBarRight 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes fillBarLeft {
+    0% { width: 0; }
+    100% { width: 100px; }
+}
+@keyframes fillBarRight {
+    0% { width: 0; }
+    100% { width: 100px; }
+}
+
+/* ========================================================
+   PRILAGOĐAVANJE UI TRAKE TEMAMA IGRICE
+   ======================================================== */
+
+/* Svetla Tema */
+body[data-tema="svetla"] .door { background: rgba(226, 232, 240, 0.85); }
+body[data-tema="svetla"] .door-left, body[data-tema="svetla"] .door-right { border-color: rgba(0,0,0,0.1); }
+body[data-tema="svetla"] .door-text { color: #11998e; text-shadow: 0 0 10px rgba(17,153,142,0.4); }
+body[data-tema="svetla"] .door-left::before, body[data-tema="svetla"] .door-right::before { background: #11998e; box-shadow: 0 0 15px #11998e; }
+body[data-tema="svetla"] .door-left::after, body[data-tema="svetla"] .door-right::after { background: rgba(0,0,0,0.1); box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+
+/* Neon Cyber Tema */
+body[data-tema="neon"] .door { background: rgba(10, 10, 10, 0.90); }
+body[data-tema="neon"] .door-text { color: #ff00ff; text-shadow: 0 0 15px #ff00ff; }
+body[data-tema="neon"] .door-left::before, body[data-tema="neon"] .door-right::before { background: #ff00ff; box-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff; }
+
+/* Plavi Okean Tema */
+body[data-tema="okean"] .door { background: rgba(10, 27, 46, 0.90); }
+body[data-tema="okean"] .door-text { color: #38bdf8; text-shadow: 0 0 15px #38bdf8; }
+body[data-tema="okean"] .door-left::before, body[data-tema="okean"] .door-right::before { background: #38bdf8; box-shadow: 0 0 15px #38bdf8, 0 0 30px #38bdf8; }
+
+/* Kraljevsko Zlato Tema */
+body[data-tema="zlatna"] .door { background: rgba(43, 34, 0, 0.90); }
+body[data-tema="zlatna"] .door-text { color: #ffd700; text-shadow: 0 0 15px #ffd700; }
+body[data-tema="zlatna"] .door-left::before, body[data-tema="zlatna"] .door-right::before { background: #ffd700; box-shadow: 0 0 15px #ffd700, 0 0 30px #ffd700; }
+
+/* --- EKRAN ZA PREGLED RUNDE (KRAJ RUNDE) --- */
+.summary-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding: 0 1.2rem;
+    flex: 1;
+    scrollbar-width: none;
+    margin-bottom: 1rem;
+}
+.summary-carousel::-webkit-scrollbar { display: none; }
+
+.summary-card {
+    min-width: 100%;
+    scroll-snap-align: center;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.summary-card h3 {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 0.2rem;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}

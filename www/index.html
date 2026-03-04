@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ZEMLJOPIS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="splash-screen" class="screen active">
+        <div class="splash-content">
+            <div class="splash-logo">ZEMLJOPIS</div>
+            <div class="loading-container">
+                <div class="loading-bar"></div>
+            </div>
+            <div class="loading-text">Učitavanje...</div>
+        </div>
+    </div>
+
+    <div id="main-menu" class="screen">
+        <div class="menu-pattern">
+            <i class="fa-solid fa-earth-europe pattern-icon" style="top: 5%; left: 10%; font-size: 5rem; transform: rotate(-15deg);"></i>
+            <i class="fa-solid fa-city pattern-icon" style="top: 20%; left: 65%; font-size: 4rem; transform: rotate(10deg);"></i>
+            <i class="fa-solid fa-water pattern-icon" style="top: 40%; left: 5%; font-size: 4.5rem; transform: rotate(-5deg);"></i>
+            <i class="fa-solid fa-mountain-sun pattern-icon" style="top: 55%; left: 70%; font-size: 5.5rem; transform: rotate(15deg);"></i>
+            <i class="fa-solid fa-leaf pattern-icon" style="top: 75%; left: 15%; font-size: 4rem; transform: rotate(-20deg);"></i>
+            <i class="fa-solid fa-paw pattern-icon" style="top: 85%; left: 60%; font-size: 3.5rem; transform: rotate(25deg);"></i>
+            <i class="fa-solid fa-box-open pattern-icon" style="top: 15%; left: 40%; font-size: 2.5rem; opacity: 0.4; transform: rotate(5deg);"></i>
+            <i class="fa-solid fa-tree pattern-icon" style="top: 35%; left: 85%; font-size: 3rem; opacity: 0.5; transform: rotate(-15deg);"></i>
+            <i class="fa-solid fa-frog pattern-icon" style="top: 65%; left: 45%; font-size: 2rem; opacity: 0.4; transform: rotate(10deg);"></i>
+            <i class="fa-solid fa-building pattern-icon" style="top: 80%; left: 85%; font-size: 2.5rem; opacity: 0.3; transform: rotate(-10deg);"></i>
+            <i class="fa-solid fa-mountain pattern-icon" style="top: 90%; left: 30%; font-size: 3rem; opacity: 0.4; transform: rotate(-5deg);"></i>
+        </div>
+
+        <div class="logo">ZEMLJOPIS</div>
+        <div class="subtitle">Moderna bitka rečima</div>
+
+        <button class="menu-btn btn-primary" onclick="UIManager.prikaziEkran('multiplayer-setup')">
+            🎮 MULTIPLAYER (2-5)
+        </button>
+        
+        <button class="menu-btn" onclick="UIManager.prikaziEkran('private-room-setup')">
+            👥 Pozovi prijatelje
+        </button>
+        
+        <button class="menu-btn btn-secondary" onclick="Game.pokreniIgru('solo')">
+            👤 SOLO IGRA (Trening)
+        </button>
+        
+        <button class="menu-btn" onclick="DnevniIzazovManager.otvoriEkran()">⚡ Dnevni izazov</button>
+        
+        <button class="menu-btn" onclick="RiznicaManager.otvoriEkran()">💎 Riznica</button>
+        
+        <button class="menu-btn" onclick="TopListaManager.otvoriEkran()">🏆 Top lista</button>
+        
+        <button class="menu-btn" onclick="PodesavanjaManager.otvoriEkran()">⚙️ Podešavanja</button>
+    </div>
+
+    <div id="multiplayer-setup" class="screen">
+        <div class="menu-pattern">
+            <i class="fa-solid fa-users pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.2; transform: translateX(-50%);"></i>
+        </div>
+        
+        <h2 style="color: #38ef7d; margin-bottom: 2rem; z-index: 5; font-size: 1.8rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Brzi meč</h2>
+        
+        <div style="z-index: 5; width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 0.8rem; margin: 0 auto;">
+            <button class="menu-btn" style="margin-bottom: 0;" onclick="Game.traziSobu(2)">2 Igrača</button>
+            <button class="menu-btn" style="margin-bottom: 0;" onclick="Game.traziSobu(3)">3 Igrača</button>
+            <button class="menu-btn" style="margin-bottom: 0;" onclick="Game.traziSobu(4)">4 Igrača</button>
+            <button class="menu-btn" style="margin-bottom: 0;" onclick="Game.traziSobu(5)">5 Igrača</button>
+            <button class="menu-btn btn-secondary" style="margin-top: 1.5rem;" onclick="UIManager.prikaziEkran('main-menu')">↩ Nazad</button>
+        </div>
+    </div>
+
+    <div id="private-room-setup" class="screen">
+        <div class="menu-pattern">
+            <i class="fa-solid fa-user-shield pattern-icon" style="top: 30%; left: 50%; font-size: 7rem; opacity: 0.15; transform: translateX(-50%);"></i>
+        </div>
+        
+        <h2 style="color: #38ef7d; margin-bottom: 1.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Igraj sa prijateljima</h2>
+        
+        <div style="z-index: 5; width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 1rem; margin: 0 auto; padding: 0 1rem;">
+            
+            <div style="background: rgba(0,0,0,0.5); padding: 1.2rem; border-radius: 15px; border: 1px solid rgba(56,239,125,0.2);">
+                <h3 style="color: white; font-size: 1rem; margin-bottom: 1rem; text-align: center; text-transform: uppercase;">Kreiraj sobu</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                    <button class="menu-btn" style="margin-bottom: 0; padding: 0.7rem; font-size: 0.9rem;" onclick="Game.kreirajPrivatnuSobu(2)">2 Igrača</button>
+                    <button class="menu-btn" style="margin-bottom: 0; padding: 0.7rem; font-size: 0.9rem;" onclick="Game.kreirajPrivatnuSobu(3)">3 Igrača</button>
+                    <button class="menu-btn" style="margin-bottom: 0; padding: 0.7rem; font-size: 0.9rem;" onclick="Game.kreirajPrivatnuSobu(4)">4 Igrača</button>
+                    <button class="menu-btn" style="margin-bottom: 0; padding: 0.7rem; font-size: 0.9rem;" onclick="Game.kreirajPrivatnuSobu(5)">5 Igrača</button>
+                </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.5); padding: 1.2rem; border-radius: 15px; border: 1px solid rgba(245,175,25,0.2);">
+                <h3 style="color: white; font-size: 1rem; margin-bottom: 0.8rem; text-align: center; text-transform: uppercase;">Pridruži se</h3>
+                <input type="text" id="room-code-input" placeholder="Unesi kod sobe" style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.3); color: #fff; font-size: 1.2rem; text-align: center; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 2px;" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4">
+                <button class="menu-btn btn-secondary" style="margin-bottom: 0; width: 100%; padding: 0.8rem;" onclick="Game.pridruziSeSobi()">Uđi u sobu</button>
+            </div>
+
+            <button class="menu-btn" style="background: rgba(255,255,255,0.1); padding: 0.8rem;" onclick="UIManager.prikaziEkran('main-menu')">↩ Nazad</button>
+        </div>
+    </div>
+
+    <div id="riznica-screen" class="screen">
+        <div class="menu-pattern">
+            <i class="fa-solid fa-gem pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+        </div>
+        
+        <div style="z-index: 5; text-align: center; margin-bottom: 1rem;">
+            <h2 style="color: #f5af19; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(245, 175, 25, 0.3);">Riznica</h2>
+            <div style="background: rgba(0,0,0,0.5); display: inline-block; padding: 0.4rem 1rem; border-radius: 20px; border: 1px solid rgba(245,175,25,0.3); margin-top: 0.5rem;">
+                <span style="color: #a0aec0; font-size: 0.8rem; text-transform: uppercase;">Stanje: </span>
+                <span style="color: #f5af19; font-weight: 800; font-size: 1.1rem;"><i class="fa-solid fa-coins"></i> <span id="riznica-dukati-stanje">0</span></span>
+            </div>
+        </div>
+        
+        <div style="z-index: 5; width: 100%; max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; overflow: hidden;">
+            
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3rem; margin-bottom: 1rem; flex-shrink: 0;">
+                <button class="menu-btn" id="tab-trofeji" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="RiznicaManager.promeniKategoriju('trofeji')"><i class="fa-solid fa-trophy"></i><br>Trofeji</button>
+                <button class="menu-btn" id="tab-teme" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="RiznicaManager.promeniKategoriju('teme')"><i class="fa-solid fa-palette"></i><br>Teme</button>
+                <button class="menu-btn" id="tab-efekti" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="RiznicaManager.promeniKategoriju('efekti')"><i class="fa-solid fa-wand-magic"></i><br>Efekti</button>
+                <button class="menu-btn" id="tab-vauceri" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="RiznicaManager.promeniKategoriju('vauceri')"><i class="fa-solid fa-ticket"></i><br>Vaučeri</button>
+            </div>
+
+            <div id="riznica-sadrzaj" style="flex: 1; overflow-y: auto; margin-bottom: 1rem; scrollbar-width: none; padding-bottom: 1rem;">
+            </div>
+
+            <button class="menu-btn btn-secondary" style="margin-top: auto; margin-bottom: 1rem; flex-shrink: 0;" onclick="UIManager.prikaziEkran('main-menu')">↩ Nazad</button>
+        </div>
+    </div>
+    
+    <div id="toplista-screen" class="screen">
+        <div class="menu-pattern">
+            <i class="fa-solid fa-trophy pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+        </div>
+        
+        <h2 style="color: #38ef7d; margin-bottom: 1rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Top Lista</h2>
+        
+        <div style="z-index: 5; width: 100%; max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; height: 100%;">
+            
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
+                <button class="menu-btn" id="tab-prijatelji" style="margin: 0; padding: 0.7rem; font-size: 0.9rem; flex: 1; transition: all 0.2s;" onclick="TopListaManager.promeniGrupu('prijatelji')">👥 Prijatelji</button>
+                <button class="menu-btn" id="tab-multiplayer" style="margin: 0; padding: 0.7rem; font-size: 0.9rem; flex: 1; transition: all 0.2s;" onclick="TopListaManager.promeniGrupu('multiplayer')">🌍 Globalno</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; margin-bottom: 1rem;">
+                <button class="menu-btn" id="subtab-najboljiMec" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="TopListaManager.promeniKategoriju('najboljiMec')">Najbolji meč</button>
+                <button class="menu-btn" id="subtab-nedeljni" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="TopListaManager.promeniKategoriju('nedeljni')">Nedeljno</button>
+                <button class="menu-btn" id="subtab-mesecni" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="TopListaManager.promeniKategoriju('mesecni')">Mesečno</button>
+                <button class="menu-btn" id="subtab-svaVremena" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="TopListaManager.promeniKategoriju('svaVremena')">Sva vremena</button>
+            </div>
+
+            <div id="toplista-sadrzaj" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 0.5rem; flex: 1; overflow-y: auto; margin-bottom: 1rem; scrollbar-width: none;">
+            </div>
+
+            <button class="menu-btn btn-secondary" style="margin-top: auto; margin-bottom: 1rem;" onclick="UIManager.prikaziEkran('main-menu')">↩ Nazad</button>
+        </div>
+    </div>
+
+    <div id="podesavanja-screen" class="screen">
+        <div class="menu-pattern">
+            <i class="fa-solid fa-gear pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+        </div>
+        
+        <h2 style="color: #38ef7d; margin-bottom: 1.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Podešavanja</h2>
+        
+        <div style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; padding: 0 1rem; overflow-y: auto; scrollbar-width: none;">
+            
+            <div style="background: rgba(0,0,0,0.5); padding: 1.2rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
+                <label style="display: block; font-size: 0.8rem; color: #a0aec0; margin-bottom: 0.8rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;"><i class="fa-solid fa-user"></i> Tvoj profil</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="postavke-nadimak" placeholder="Unesi nadimak..." maxlength="20" style="flex: 1; min-width: 0; padding: 0.8rem; border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.3); color: #fff; font-size: 1rem; outline: none; transition: border-color 0.3s;" autocomplete="off" autocorrect="off" spellcheck="false">
+                    <button class="btn-primary" style="border: none; border-radius: 10px; padding: 0 1rem; font-weight: 800; cursor: pointer; transition: transform 0.2s;" onclick="PodesavanjaManager.sacuvajNadimak()">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.5); padding: 1.2rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
+                <label style="display: block; font-size: 0.8rem; color: #a0aec0; margin-bottom: 0.8rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;"><i class="fa-solid fa-sliders"></i> Sistem</label>
+                
+                <button class="menu-btn" id="btn-zvuk" style="margin-bottom: 1rem; border: 1px solid transparent; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0.8rem;" onclick="PodesavanjaManager.toggleZvuk()">
+                    <span><i class="fa-solid fa-volume-high" id="ikona-zvuk"></i> Zvuk</span> 
+                    <span id="zvuk-status" style="font-weight: 800;">UKLJ</span>
+                </button>
+
+                <button class="menu-btn" id="btn-pismo" style="margin-bottom: 1rem; border: 1px solid transparent; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0.8rem;" onclick="PodesavanjaManager.togglePismo()">
+                    <span><i class="fa-solid fa-language" id="ikona-pismo"></i> Pismo</span> 
+                    <span id="pismo-status" style="font-weight: 800;">LATINICA</span>
+                </button>
+
+                <label style="display: block; font-size: 0.75rem; color: #a0aec0; margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600;">Izgled aplikacije</label>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+                    <button class="menu-btn" id="btn-tema-tamna" style="margin-bottom: 0; padding: 0.6rem; font-size: 0.8rem; border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('tamna')">Tamna</button>
+                    <button class="menu-btn" id="btn-tema-svetla" style="margin-bottom: 0; padding: 0.6rem; font-size: 0.8rem; border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('svetla')">Svetla</button>
+                    <button class="menu-btn" id="btn-tema-neon" style="margin-bottom: 0; padding: 0.6rem; font-size: 0.8rem; border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('neon')">Neon</button>
+                    <button class="menu-btn" id="btn-tema-okean" style="margin-bottom: 0; padding: 0.6rem; font-size: 0.8rem; border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('okean')">Okean</button>
+                    <button class="menu-btn" id="btn-tema-zlatna" style="margin-bottom: 0; padding: 0.6rem; font-size: 0.8rem; border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('zlatna')">Zlatna</button>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="menu-btn btn-secondary" style="flex: 1; margin-bottom: 0; font-size: 0.9rem; padding: 0.8rem;" onclick="PodesavanjaManager.prikaziPravila()">
+                    <i class="fa-solid fa-book"></i> Pravila
+                </button>
+                <button class="menu-btn" style="flex: 1; background: #11998e; margin-bottom: 0; font-size: 0.9rem; padding: 0.8rem;" onclick="PodesavanjaManager.prikaziObavestenja()">
+                    <i class="fa-solid fa-bell"></i> Novosti
+                </button>
+            </div>
+
+            <button class="menu-btn" style="background: rgba(255,255,255,0.1); margin-top: 0.5rem; margin-bottom: 1rem; padding: 0.8rem;" onclick="UIManager.prikaziEkran('main-menu')">
+                <i class="fa-solid fa-arrow-left"></i> Nazad u Meni
+            </button>
+        </div>
+    </div>
+
+    <div id="dnevni-izazov-screen" class="screen">
+        <div class="menu-pattern">
+            <i class="fa-solid fa-bolt pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+        </div>
+        
+        <h2 style="color: #f5af19; margin-bottom: 0.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(245, 175, 25, 0.3); text-align: center;">Dnevni Izazov</h2>
+        <p style="text-align: center; color: #a0aec0; font-size: 0.85rem; margin-bottom: 1.5rem; z-index: 5; padding: 0 1rem;">Unesi pojmove na zadato slovo. Svaki tačan odgovor donosi <b>100 dukata</b> u tvoju Riznicu!</p>
+        
+        <div style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; overflow: y: auto; scrollbar-width: none;">
+            
+            <div id="dnevni-izazov-polja" style="margin-bottom: 1rem;">
+                </div>
+
+            <button class="btn-primary" style="padding: 1rem; border-radius: 12px; font-weight: 800; text-transform: uppercase; font-size: 1.1rem; border: none; cursor: pointer; margin-bottom: 0.5rem;" onclick="DnevniIzazovManager.zavrsiIzazov()">Proveri odgovore</button>
+            <button class="menu-btn btn-secondary" style="margin-bottom: 1rem;" onclick="UIManager.prikaziEkran('main-menu')">↩ Odustani</button>
+        </div>
+    </div>
+
+    <div id="game-board" class="screen">
+        <div class="game-header">
+            <div class="game-info-left">
+                <div id="mode-indicator" class="mode-badge badge-multi">MULTIPLAYER</div>
+                <span class="stat-value">Runda <span id="round-number">1</span>/6</span>
+            </div>
+            <div class="timer" id="timer-display">02:00</div>
+            <button class="btn-close" onclick="Game.povratakUMeni()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        
+        <div class="current-letter">
+            <span style="font-size: 0.85rem; font-weight: 600; color: #a0aec0; margin-bottom: 5px; text-shadow: none;">ZADATO SLOVO</span>
+            <span id="target-letter">A</span>
+        </div>
+
+        <div class="inputs-container">
+            <div class="input-group"><label>🌍 Država</label><input type="text" class="game-input" data-kategorija="drzava" placeholder="Unesi državu..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+            <div class="input-group"><label>🏙️ Grad</label><input type="text" class="game-input" data-kategorija="grad" placeholder="Unesi grad..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+            <div class="input-group"><label>🏞️ Reka</label><input type="text" class="game-input" data-kategorija="reka" placeholder="Unesi reku..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+            <div class="input-group"><label>⛰️ Planina</label><input type="text" class="game-input" data-kategorija="planina" placeholder="Unesi planinu..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+            <div class="input-group"><label>🌿 Biljka</label><input type="text" class="game-input" data-kategorija="biljka" placeholder="Unesi biljku..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+            <div class="input-group"><label>🦁 Životinja</label><input type="text" class="game-input" data-kategorija="zivotinja" placeholder="Unesi životinju..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+            <div class="input-group"><label>📦 Predmet</label><input type="text" class="game-input" data-kategorija="predmet" placeholder="Unesi predmet..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+            
+            <div id="anti-cheat-status" style="text-align: center; margin-top: 0.8rem; padding: 0.5rem; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; color: #a0aec0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: none;">
+                <i class="fa-solid fa-shield-halved"></i> АНТИ ЧИТ: <span style="color:#38ef7d;">У игри</span>
+            </div>
+
+            <div class="stats-panel" id="live-stats-panel">
+                <div class="stats-header"><i class="fa-solid fa-chart-simple"></i> Uživo rezultati</div>
+                <div class="player-stat current-player">
+                    <span class="player-name" id="my-player-name">👤 Ti (Gost)</span>
+                    <span class="player-score" id="my-player-score">0</span>
+                </div>
+                <div id="opponents-stats">
+                </div>
+            </div>
+        </div>
+
+        <div class="action-footer">
+            <button class="btn-finish" onclick="Game.zavrsiRundu()">ZAVRŠI RUNDU</button>
+        </div>
+    </div>
+
+    <div id="round-summary-screen" class="screen">
+        <div class="game-header" style="justify-content: center;">
+            <span style="font-size: 1.2rem; font-weight: 800; color: #fff;">PREGLED RUNDE</span>
+        </div>
+        
+        <div id="round-leaderboard-container"></div>
+
+        <p style="text-align: center; font-size: 0.8rem; color: #a0aec0; margin: 0.8rem 0;">
+            <i class="fa-solid fa-arrows-left-right"></i> Prevuci levo-desno za detalje
+        </p>
+
+        <div class="summary-carousel" id="summary-carousel">
+        </div>
+
+        <div style="padding: 1.2rem; padding-bottom: calc(1.2rem + env(safe-area-inset-bottom, 10px)); background: linear-gradient(to top, #091317 85%, transparent);">
+            <button id="btn-next-round" class="btn-finish" disabled>Sačekaj (10s)</button>
+        </div>
+    </div>
+
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title">Naslov</h2>
+            <p id="modal-message">Poruka obaveštenja ide ovde.</p>
+            <button id="modal-btn" class="menu-btn btn-primary">U redu</button>
+        </div>
+    </div>
+
+    <div id="door-transition" class="door-overlay">
+        <span class="door-text">PRIPREMA...</span>
+        <div class="door door-left"></div>
+        <div class="door door-right"></div>
+    </div>
+
+    <audio id="bg-music" preload="auto">
+        <source src="bg-music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="bazapodataka.js"></script>
+    <script src="toplista.js"></script>
+    <script src="podesavanja.js"></script>
+    <script src="riznica.js"></script> 
+    <script src="dnevniizazov.js"></script>
+    <script src="managers.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

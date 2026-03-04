@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ZEMLJOPIS</string>
+    <string name="title_activity_main">ZEMLJOPIS</string>
+    <string name="package_name">com.zemljopis.app</string>
+    <string name="custom_url_scheme">com.zemljopis.app</string>
+</resources>

@@ -1,0 +1,24 @@
+{
+  "name": "zemljopis_android",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrijamilinkovic12-source/zemljopis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andrijamilinkovic12-source/zemljopis/issues"
+  },
+  "homepage": "https://github.com/andrijamilinkovic12-source/zemljopis#readme",
+  "description": "",
+  "dependencies": {
+    "@capacitor/cli": "^8.1.0",
+    "@capacitor/core": "^8.1.0"
+  }
+}

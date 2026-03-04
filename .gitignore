@@ -1,0 +1,11 @@
+# Ignoriši teške foldere sa bibliotekama
+node_modules/
+
+# Ignoriši privremene Android fajlove (ostaju samo tvoji kodovi)
+android/build/
+android/.gradle/
+android/.idea/
+android/app/build/
+
+# Ignoriši konfiguracije koje se automatski prave
+package-lock.json

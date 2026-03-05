@@ -821,28 +821,28 @@ body[data-tema="zlatna"] .btn-close {
 }
 
 /* ========================================================
-   CUSTOM TASTATURA
+   CUSTOM TASTATURA - OPTIMIZOVANA ZA SRPSKI RASPODRED
    ======================================================== */
 #custom-keyboard {
-    position: absolute; /* Promenjeno sa fixed na absolute */
+    position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    background: rgba(5, 20, 5, 0.95);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    background: rgba(5, 20, 5, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid rgba(56, 239, 125, 0.3);
     
-    /* Povećan padding levo i desno na 8px za bolji razmak od ivica */
-    padding: 10px 8px calc(15px + env(safe-area-inset-bottom, 10px)) 8px; 
+    /* Padding prilagođen da tasteri ne idu do samih ivica */
+    padding: 12px 6px calc(15px + env(safe-area-inset-bottom, 10px)) 6px; 
     
     z-index: 9999;
     transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+    gap: 8px; /* Razmak između redova */
+    box-shadow: 0 -5px 30px rgba(0,0,0,0.6);
 }
 
 #custom-keyboard.active {
@@ -852,27 +852,34 @@ body[data-tema="zlatna"] .btn-close {
 .kb-row {
     display: flex;
     justify-content: center;
-    gap: 4px;
+    gap: 4px; /* Razmak između tastera */
     width: 100%;
 }
 
 .kb-key {
     flex: 1;
-    max-width: 42px;
-    height: 48px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
+    /* max-width smanjen na 34px da bi 13 tastera stalo u red */
+    max-width: 34px; 
+    height: 52px; /* Malo viši tasteri za lakši dodir */
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.05);
     color: #fff;
-    font-size: 1.1rem;
-    font-weight: 800;
+    font-size: 1rem;
+    font-weight: 700;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
     user-select: none;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: all 0.1s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: background 0.1s, transform 0.1s;
+}
+
+/* Posebno pravilo za tastere sa dva slova da ne budu preveliki */
+.kb-key:contains('LJ'), .kb-key:contains('NJ'), .kb-key:contains('DŽ'),
+.kb-key:contains('Љ'), .kb-key:contains('Њ'), .kb-key:contains('Џ') {
+    font-size: 0.85rem;
 }
 
 .kb-key:active {
@@ -881,47 +888,54 @@ body[data-tema="zlatna"] .btn-close {
     color: #000;
 }
 
+/* Specijalni tasteri (ABC, Backspace, Enter) */
 .kb-special {
     flex: 1.5;
-    max-width: 60px;
+    max-width: 55px;
     background: rgba(255, 255, 255, 0.15);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
 }
 
 .kb-space {
-    flex: 3;
-    max-width: 120px;
+    flex: 4;
+    max-width: 160px;
 }
 
 .kb-enter {
+    flex: 2;
+    max-width: 80px;
     background: linear-gradient(45deg, #11998e, #38ef7d);
     color: #000;
+    font-weight: 900;
 }
 
-/* Fiktivni kursor kada je custom tastatura aktivna */
+/* Fiktivni kursor kada je polje aktivno */
 .active-keyboard-input {
     border-color: #38ef7d !important;
     background: rgba(56, 239, 125, 0.15) !important;
-    box-shadow: inset 0 0 10px rgba(56, 239, 125, 0.2);
+    box-shadow: 0 0 10px rgba(56, 239, 125, 0.2);
 }
 
 /* --- PRILAGOĐAVANJE TASTATURE TEMAMA --- */
-body[data-tema="svetla"] #custom-keyboard { background: rgba(240, 244, 248, 0.95); border-top-color: #cbd5e0; }
-body[data-tema="svetla"] .kb-key { background: #ffffff; color: #2d3748; border-color: #e2e8f0; }
+body[data-tema="svetla"] #custom-keyboard { background: rgba(240, 244, 248, 0.98); border-top-color: #cbd5e0; }
+body[data-tema="svetla"] .kb-key { background: #ffffff; color: #2d3748; border-color: #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 body[data-tema="svetla"] .kb-key:active { background: #11998e; color: #fff; }
+body[data-tema="svetla"] .kb-special { background: #e2e8f0; }
 body[data-tema="svetla"] .kb-enter { background: #11998e; color: #fff; }
 
 body[data-tema="neon"] #custom-keyboard { background: rgba(0, 0, 0, 0.98); border-top-color: #ff00ff; }
-body[data-tema="neon"] .kb-key { background: rgba(255,0,255,0.1); color: #00ffff; border-color: rgba(0,255,255,0.3); }
-body[data-tema="neon"] .kb-key:active { background: #ff00ff; color: #fff; }
+body[data-tema="neon"] .kb-key { background: rgba(255,0,255,0.05); color: #00ffff; border-color: rgba(0,255,255,0.2); }
+body[data-tema="neon"] .kb-key:active { background: #ff00ff; color: #fff; box-shadow: 0 0 15px #ff00ff; }
 body[data-tema="neon"] .kb-enter { background: linear-gradient(45deg, #00ffff, #ff00ff); color: #fff; border: none; }
 
 body[data-tema="okean"] #custom-keyboard { background: rgba(2, 11, 20, 0.98); border-top-color: #38bdf8; }
-body[data-tema="okean"] .kb-key { background: rgba(56,189,248,0.1); color: #38bdf8; border-color: rgba(56,189,248,0.3); }
+body[data-tema="okean"] .kb-key { background: rgba(56,189,248,0.08); color: #38bdf8; border-color: rgba(56,189,248,0.2); }
 body[data-tema="okean"] .kb-key:active { background: #38bdf8; color: #000; }
 body[data-tema="okean"] .kb-enter { background: linear-gradient(45deg, #0284c7, #38bdf8); color: #000; border: none;}
 
 body[data-tema="zlatna"] #custom-keyboard { background: rgba(26, 21, 0, 0.98); border-top-color: #ffd700; }
-body[data-tema="zlatna"] .kb-key { background: rgba(255,215,0,0.1); color: #ffd700; border-color: rgba(255,215,0,0.3); }
+body[data-tema="zlatna"] .kb-key { background: rgba(255,215,0,0.08); color: #ffd700; border-color: rgba(255,215,0,0.2); }
 body[data-tema="zlatna"] .kb-key:active { background: #ffd700; color: #000; }
 body[data-tema="zlatna"] .kb-enter { background: linear-gradient(45deg, #ffaa00, #ffd700); color: #000; border:none; }

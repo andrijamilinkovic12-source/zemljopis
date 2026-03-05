@@ -6,16 +6,16 @@ const KeyboardManager = {
     
     // Optimizovan srpski QWERTZ raspored sa svih 30 slova
     latinLayout: [
-        ['E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P', 'Š', 'Đ'],
+        ['LJ', 'NJ', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P', 'Š', 'Đ', 'Ž'],
         ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Č', 'Ć'],
-        ['C', 'V', 'B', 'N', 'M', 'Ž', 'LJ', 'NJ', 'DŽ'],
-        ['{lang}', '{space}', '{backspace}', '{enter}']
+        ['{lang}', 'DŽ', 'C', 'V', 'B', 'N', 'M', '{backspace}'],
+        ['{space}', '{enter}']
     ],
     cyrillicLayout: [
-        ['Е', 'Р', 'Т', 'З', 'У', 'И', 'О', 'П', 'Ш', 'Ђ'],
+        ['Љ', 'Њ', 'Е', 'Р', 'Т', 'З', 'У', 'И', 'О', 'П', 'Ш', 'Ђ', 'Ж'],
         ['А', 'С', 'Д', 'Ф', 'Г', 'Х', 'Ј', 'К', 'Л', 'Ч', 'Ћ'],
-        ['Ц', 'В', 'Б', 'Н', 'М', 'Ж', 'Љ', 'Њ', 'Џ'],
-        ['{lang}', '{space}', '{backspace}', '{enter}']
+        ['{lang}', 'Џ', 'Ц', 'В', 'Б', 'Н', 'М', '{backspace}'],
+        ['{space}', '{enter}']
     ],
 
     init: function() {

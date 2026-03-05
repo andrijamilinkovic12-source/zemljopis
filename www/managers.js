@@ -86,7 +86,6 @@ const UIManager = {
     prikaziObavestenje: function(naslov, poruka, akcijaNakonKlika, tekstDugmeta = "U redu") {
         const modal = document.getElementById('custom-modal');
         
-        // OVO JE ISPRAVLJENO: innerHTML umesto innerText kako bi prihvatio stilove
         document.getElementById('modal-title').innerHTML = naslov; 
         document.getElementById('modal-message').innerHTML = poruka;
 
@@ -111,6 +110,7 @@ const UIManager = {
     },
 
     azurirajLiveStatistiku: function(trenutniSkor, mod, podaciProtivnika = []) {
+        // Prikaz tvog skora (sa kvačicom za Solo, samo poeni za Multi)
         if (mod === 'solo') {
             document.getElementById('my-player-score').innerText = trenutniSkor + ' ✓';
         } else {
@@ -120,27 +120,31 @@ const UIManager = {
         const opponentsContainer = document.getElementById('opponents-stats');
         opponentsContainer.innerHTML = ''; 
 
+        // MULTIPLAYER PRIKAZ
         if (mod === 'multi') {
-            if (Array.isArray(podaciProtivnika)) {
-                for (let i = 0; i < podaciProtivnika.length; i++) {
+            // Nova logika: podaciProtivnika je niz objekata { ime: "Pera", poeni: 20 }
+            if (Array.isArray(podaciProtivnika) && podaciProtivnika.length > 0 && typeof podaciProtivnika[0] === 'object') {
+                podaciProtivnika.forEach(protivnik => {
                     opponentsContainer.innerHTML += `
                         <div class="player-stat opponent-player">
-                            <span class="player-name">🤖 Igrač ${i+2}</span>
-                            <span class="player-score">${podaciProtivnika[i]}</span>
+                            <span class="player-name">🌍 ${protivnik.ime}</span>
+                            <span class="player-score">${protivnik.poeni}</span>
                         </div>
                     `;
-                }
+                });
             } else {
-                let brojIgraca = typeof podaciProtivnika === 'number' ? podaciProtivnika : 0;
+                // Odbrojavanje praznih mesta (dok se igra ne učita / ako je poslat samo broj igrača)
+                let brojIgraca = typeof podaciProtivnika === 'number' ? podaciProtivnika : (typeof Game !== 'undefined' ? Game.brojIgracaUSobi : 0);
                 for (let i = 1; i < brojIgraca; i++) {
                     opponentsContainer.innerHTML += `
                         <div class="player-stat opponent-player">
-                            <span class="player-name">🤖 Igrač ${i+1}</span>
+                            <span class="player-name">Čeka se igrač...</span>
                             <span class="player-score">0</span>
                         </div>
                     `;
                 }
             }
+        // SOLO TRENING PRIKAZ
         } else {
             opponentsContainer.innerHTML = `
                 <div class="player-stat opponent-player" style="justify-content: center; font-size: 0.75rem; font-style: italic;">

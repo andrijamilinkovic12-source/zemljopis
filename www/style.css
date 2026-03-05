@@ -60,9 +60,19 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* --- POMERANJE SVIH POD-MENIJA NADOLE --- */
+#multiplayer-setup,
+#private-room-setup,
+#riznica-screen,
+#toplista-screen,
+#podesavanja-screen,
+#dnevni-izazov-screen {
+    padding-top: 8vh; 
+}
+
 /* --- GLAVNI MENI --- */
 #main-menu { 
-    padding: 2rem 1.5rem; 
+    padding: 2rem 1.5rem 8vh 1.5rem; 
     justify-content: center; 
     align-items: center; 
     position: relative; 

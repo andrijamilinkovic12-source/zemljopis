@@ -1,7 +1,6 @@
-// dnevniizazov.js - Logika za dnevni izazov (jednom dnevno, nasumične kategorije i slova)
+// dnevniizazov.js - Logika za dnevni izazov (jednom dnevno, 1 minut, bez odustajanja)
 
 const DnevniIzazovManager = {
-    // Definišemo pravu srpsku abecedu kako bismo izbegli greške sa Dž, Nj, Lj
     svaSlova: ["A","B","V","G","D","Đ","E","Ž","Z","I","J","K","L","LJ","M","N","NJ","O","P","R","S","T","Ć","U","F","H","C","Č","DŽ","Š"],
     
     sveKategorije: [
@@ -15,13 +14,15 @@ const DnevniIzazovManager = {
     ],
     
     dnevniPodaci: null,
+    tajmerInterval: null,
+    preostaloVreme: 60,
+    izazovUToku: false,
 
     init: function() {
         this.proveriIDodeliDnevniZadatak();
     },
 
     proveriIDodeliDnevniZadatak: function() {
-        // Uzimamo današnji datum u formatu stringa (npr. "3/3/2026")
         const danas = new Date().toLocaleDateString('sr-RS'); 
         const sacuvano = localStorage.getItem('zemljopis_dnevni_izazov');
 
@@ -29,13 +30,8 @@ const DnevniIzazovManager = {
             this.dnevniPodaci = JSON.parse(sacuvano);
         }
 
-        // Ako nemamo podatke za DANAS, generišemo novi izazov
         if (!this.dnevniPodaci || this.dnevniPodaci.datum !== danas) {
-            
-            // Mešamo kategorije i uzimamo prve 4 (osigurava 4 različite)
             let dostupneKategorije = [...this.sveKategorije].sort(() => 0.5 - Math.random()).slice(0, 4);
-            
-            // Mešamo slova i uzimamo prva 4 (osigurava 4 različita slova)
             let dostupnaSlova = [...this.svaSlova].sort(() => 0.5 - Math.random()).slice(0, 4);
 
             let zadaci = [];
@@ -62,7 +58,7 @@ const DnevniIzazovManager = {
     },
 
     otvoriEkran: function() {
-        this.proveriIDodeliDnevniZadatak(); // Osiguranje u slučaju prelaska u novi dan dok je app upaljena
+        this.proveriIDodeliDnevniZadatak(); 
 
         if (this.dnevniPodaci.odigrano) {
             UIManager.prikaziObavestenje(
@@ -74,8 +70,19 @@ const DnevniIzazovManager = {
             return;
         }
 
+        // ODMAH BELEŽIMO DA JE ZAPOČETO (sprečava varanje ako igrač zatvori aplikaciju)
+        this.dnevniPodaci.odigrano = true;
+        this.snimiStanje();
+        this.izazovUToku = true;
+
+        const btn = document.getElementById('btn-zavrsi-dnevni');
+        if(btn) btn.disabled = false;
+
         this.prikaziZadatke();
         UIManager.prikaziEkran('dnevni-izazov-screen');
+
+        // Pokretanje tajmera na tačno 60 sekundi
+        this.pokreniTajmer(60);
     },
 
     prikaziZadatke: function() {
@@ -95,19 +102,76 @@ const DnevniIzazovManager = {
             `;
         });
         kontejner.innerHTML = html;
+        
+        // Fokusiraj odmah prvo polje
+        setTimeout(() => {
+            const prvoPolje = document.getElementById('dnevni-input-0');
+            if (prvoPolje) prvoPolje.focus();
+        }, 100);
+    },
+
+    pokreniTajmer: function(sekunde) {
+        this.preostaloVreme = sekunde;
+        clearInterval(this.tajmerInterval);
+        this.azurirajTajmerUI();
+
+        this.tajmerInterval = setInterval(() => {
+            this.preostaloVreme--;
+            this.azurirajTajmerUI();
+
+            if (this.preostaloVreme <= 0) {
+                clearInterval(this.tajmerInterval);
+                if (this.izazovUToku) {
+                    // Vreme isteklo - Automatski predajemo rad!
+                    UIManager.prikaziObavestenje("Vreme je isteklo!", "Proveravamo tvoje odgovore...", null, "...");
+                    this.zavrsiIzazov();
+                }
+            }
+        }, 1000);
+    },
+
+    azurirajTajmerUI: function() {
+        const el = document.getElementById('dnevni-tajmer');
+        if (!el) return;
+
+        let m = parseInt(this.preostaloVreme / 60, 10);
+        let s = parseInt(this.preostaloVreme % 60, 10);
+        m = m < 10 ? "0" + m : m;
+        s = s < 10 ? "0" + s : s;
+
+        el.innerText = m + ":" + s;
+        
+        // Napravi stresnije obaveštenje kad ostane manje od 10 sekundi
+        if (this.preostaloVreme <= 10 && this.preostaloVreme > 0) {
+            el.style.color = "#ff0000";
+            el.style.borderColor = "rgba(255, 0, 0, 0.4)";
+            if (this.preostaloVreme % 2 === 0) {
+                el.style.transform = "scale(1.08)";
+            } else {
+                el.style.transform = "scale(1)";
+            }
+        } else {
+            el.style.color = "#ff416c";
+            el.style.borderColor = "rgba(255, 65, 108, 0.3)";
+            el.style.transform = "scale(1)";
+        }
     },
 
     zavrsiIzazov: function() {
+        if (!this.izazovUToku) return;
+        this.izazovUToku = false;
+        clearInterval(this.tajmerInterval);
+
+        const btn = document.getElementById('btn-zavrsi-dnevni');
+        if(btn) btn.disabled = true;
+
         let ukupnoTacnih = 0;
 
-        // Prolazimo kroz sve zadatke i proveravamo unose
         this.dnevniPodaci.zadaci.forEach((zadatak, index) => {
             const inputEl = document.getElementById(`dnevni-input-${index}`);
             const odgovor = inputEl.value.trim();
             
-            // Oslanjamo se na bazu podataka iz glavne igre
             const isCorrect = BazaPodataka.proveriPojam(zadatak.kategorija, odgovor, zadatak.slovo);
-
             UIManager.zakljucajIObojiPolje(inputEl, isCorrect);
 
             if (isCorrect) {
@@ -115,20 +179,17 @@ const DnevniIzazovManager = {
             }
         });
 
-        // Svaki tačan odgovor donosi 100 dukata
         let osvojenoDukata = ukupnoTacnih * 100;
         
-        // Beležimo da je izazov za danas završen
+        // Još jedan sigurnosni snimak (iako je već zabeleženo na početku)
         this.dnevniPodaci.odigrano = true;
         this.snimiStanje();
 
-        // Dodela dukata u Riznicu
-        if (osvojenoDukata > 0) {
+        if (osvojenoDukata > 0 && typeof RiznicaManager !== 'undefined') {
             RiznicaManager.dukati += osvojenoDukata;
             RiznicaManager.snimiStanje();
         }
 
-        // Prikaz rezultata nakon kraće pauze (da bi korisnik video crveno/zeleno na poljima)
         setTimeout(() => {
             let poruka = `Pronašao/la si <b>${ukupnoTacnih}/4</b> tačnih pojmova.<br><br>`;
             
@@ -141,14 +202,16 @@ const DnevniIzazovManager = {
             UIManager.prikaziObavestenje(
                 "Dnevni Izazov Završen!",
                 poruka,
-                () => { UIManager.prikaziEkran('main-menu'); },
+                () => { 
+                    UIManager.prikaziEkran('main-menu'); 
+                    UIManager.zatvoriObavestenje(); 
+                },
                 "Nazad u Meni"
             );
         }, 1500);
     }
 };
 
-// Pokretanje inicijalizacije kada se učita prozor
 document.addEventListener('DOMContentLoaded', () => {
     DnevniIzazovManager.init();
 });

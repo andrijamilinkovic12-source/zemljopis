@@ -223,15 +223,19 @@
         </div>
         
         <h2 style="color: #f5af19; margin-bottom: 0.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(245, 175, 25, 0.3); text-align: center;">Dnevni Izazov</h2>
+        
+        <div style="text-align: center; z-index: 5; margin-bottom: 1rem;">
+            <span id="dnevni-tajmer" style="font-size: 1.6rem; font-weight: 800; color: #ff416c; background: rgba(0,0,0,0.5); padding: 0.3rem 1rem; border-radius: 10px; border: 1px solid rgba(255,65,108,0.3); display: inline-block; font-variant-numeric: tabular-nums; transition: transform 0.2s;">01:00</span>
+        </div>
+
         <p style="text-align: center; color: #a0aec0; font-size: 0.85rem; margin-bottom: 1.5rem; z-index: 5; padding: 0 1rem;">Unesi pojmove na zadato slovo. Svaki tačan odgovor donosi <b>100 dukata</b> u tvoju Riznicu!</p>
         
-        <div style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; overflow: y: auto; scrollbar-width: none;">
+        <div style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; overflow-y: auto; scrollbar-width: none;">
             
             <div id="dnevni-izazov-polja" style="margin-bottom: 1rem;">
-                </div>
+            </div>
 
-            <button class="btn-primary" style="padding: 1rem; border-radius: 12px; font-weight: 800; text-transform: uppercase; font-size: 1.1rem; border: none; cursor: pointer; margin-bottom: 0.5rem;" onclick="DnevniIzazovManager.zavrsiIzazov()">Proveri odgovore</button>
-            <button class="menu-btn btn-secondary" style="margin-bottom: 1rem;" onclick="UIManager.prikaziEkran('main-menu')">↩ Odustani</button>
+            <button id="btn-zavrsi-dnevni" class="btn-primary" style="padding: 1rem; border-radius: 12px; font-weight: 800; text-transform: uppercase; font-size: 1.1rem; border: none; cursor: pointer; margin-bottom: 1.5rem;" onclick="DnevniIzazovManager.zavrsiIzazov()">Proveri odgovore</button>
         </div>
     </div>
 

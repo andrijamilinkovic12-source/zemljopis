@@ -38,7 +38,7 @@ const BazaPodataka = {
             "TAJLAND", "TANZANIJA", "TOGO", "TONGA", "TRINIDAD I TOBAGO", "TUNIS", 
             "TURKMENISTAN", "TURKMENIJA", "TURSKA", "TUVALU", "UAE", "UGANDA", 
             "UJEDINJENI ARAPSKI EMIRATI", "UJEDINJENO KRALJEVSTVO", "UKRAJINA", 
-            "URUGVAJ", "UZBEKISTAN", "VANUATU", "VELIKA BRITANIJA", "VELS", "VENECUELA", 
+            "URUGVAJ", "UZBEKISTAN", "VANUATU", "VATIKAN", "VELIKA BRITANIJA", "VELS", "VENECUELA", 
             "VIJETNAM", "ZAMBIJA", "ZELENORTSKA OSTRVA", "ZIMBABVE"
         ],
         grad: [
@@ -52,10 +52,10 @@ const BazaPodataka = {
             "BRATISLAVA", "BRAŠOV", "BRAZAVIL", "BRAZILIJA", "BREMEN", "BRIDŽTAUN", "BRISEL", "BRIZBEJN", 
             "BRNO", "BUDIMPEŠTA", "BUDŽUMBURA", "BUENOS AJRES", "BUKUREŠT", "BULAVAJO", "BURGAS", "CIRIH", 
             "ČAČAK", "ČENAJ", "ČIKAGO", "ĆUPRIJA", "DABLIN", "DAKA", "DAKAR", "DALAS", "DAMASK", "DAR ES SALAM", 
-            "DENVER", "DETROIT", "DILI", "DIR DAUA", "DISELDORF", "DODOMA", "DOHA", "DORTMUND", "DREZDEN", 
+            "DENVER", "DETROIT", "DILI", "DIRE DAUA", "DISELDORF", "DODOMA", "DOHA", "DORTMUND", "DREZDEN", 
             "DUALA", "DUBAI", "DUBROVNIK", "DURBAN", "DUŠANBE", "ĐAKOVICA", "ĐENOVA", "DŽAKARTA", "DŽEDA", 
-            "DŽIBA", "DŽIBUTI", "DŽORDŽTAUN", "DŽUBA", "EDINBURG", "EDMONTON", "ENUGU", "FILADELFIJA", 
-            "FINIKS", "FIRENCA", "FRANKFURT", "FREETOWN", "FRITAUN", "FUNAFUTI", "GABORONE", "GETEBORG", 
+            "DŽIBUTI", "DŽORDŽTAUN", "DŽUBA", "EDINBURG", "EDMONTON", "ENUGU", "FILADELFIJA", 
+            "FINIKS", "FIRENCA", "FRANKFURT", "FRITAUN", "FUNAFUTI", "GABORONE", "GETEBORG", 
             "GITEGA", "GIZA", "GLAZGOV", "GRAC", "GUANGDŽOU", "GVADALAHARA", "GVATEMALA", "HAG", "HAIFA", 
             "HAMBURG", "HANOJ", "HANOVER", "HARARE", "HARKOV", "HAVANA", "HELSINKI", "HJUSTON", "HONGKONG", 
             "HONIJARA", "HURGADA", "IBADAN", "INĐIJA", "INZBRUK", "ISLAMABAD", "JAMUSUKRO", "JAREN", "JAUNDE", 
@@ -75,7 +75,7 @@ const BazaPodataka = {
             "NIJAMEJ", "NIKOZIJA", "NIRNBERG", "NIŠ", "NIŽNJI NOVGOROD", "NOVI PAZAR", "NOVI SAD", "NJU DELHI", 
             "NJU ORLEANS", "NJUJORK", "NUAKŠOT", "NUKUALOFA", "ODESA", "OKLAND", "ORAN", "ORLANDO", "OSAKA", 
             "OSLO", "OTAVA", "PALERMO", "PALIKIR", "PANAMA", "PARAMARIBO", "PARIZ", "PEKING", "PERT", "PJONGJANG", 
-            "PLOVDIV", "PNOM PEN", "PODGORICA", "PORT ELIZABET", "PORT HARUKURT", "PORT LUJ", "PORT MORZBI", 
+            "PLOVDIV", "PNOM PEN", "PODGORICA", "PORT ELIZABET", "PORT HARKORT", "PORT LUJ", "PORT MORZBI", 
             "PORT O PRENS", "PORT OV SPEJN", "PORT VILA", "PORTLAND", "PORTO", "PORTO NOVO", "PRAG", "PRAJA", 
             "PRETORIJA", "PRIŠTINA", "PRIZREN", "RABAT", "REJKJAVIK", "RIGA", "RIJAD", "RIM", "RIO DE ŽANEIRO", 
             "ROSARIO", "ROTERDAM", "ROZO", "SALCBURG", "SALI", "SAN HOSE", "SAN MARINO", "SAN SALVADOR", "SANA", 
@@ -84,7 +84,7 @@ const BazaPodataka = {
             "SMEDEREVO", "SOFIJA", "SOLUN", "SOMBOR", "SPLIT", "STOKHOLM", "STRAZBUR", "SUBOTICA", "SUEC", 
             "SUVA", "ŠABAC", "ŠANGAJ", "ŠEFILD", "ŠENŽEN", "ŠRI DŽAJAVARDENEPURA KOTE", "ŠTUTGART", "TALIN", 
             "TAMAŠET", "TAMPERE", "TANGER", "TAŠKENT", "TBILISI", "TEGUSIGALPA", "TEHERAN", "TEL AVIV", 
-            "TEMIŠVAR", "TETUAN", "TIMBU", "TIRANA", "TOKIO", "TORINO", "TORONTO", "TRIPOLI", "TRONDHAJM", 
+            "TEMIŠVAR", "TETUAN", "TIMPU", "TIRANA", "TOKIO", "TORINO", "TORONTO", "TRIPOLI", "TRONDHAJM", 
             "TULUZ", "TUNIS", "UAGADUGU", "ULAN BATOR", "UŽICE", "VADUC", "VALENSIJA", "VALETA", "VANKUVER", 
             "VARNA", "VARŠAVA", "VATIKAN", "VAŠINGTON", "VELINGTON", "VENECIJA", "VERONA", "VIJENTIJAN", 
             "VIKTORIJA", "VILNJUS", "VINDHUK", "VROCLAV", "ZADAR", "ZAGREB", "ZAJEČAR", "ZANZIBAR", "ZRENJANIN", 
@@ -97,7 +97,7 @@ const BazaPodataka = {
             "GARONA", "GVADALKIVIR", "GVADIJANA", "HADSON", "HOANGHO", "HUANGHE", "IBAR", "IND", "IRAVADI", 
             "ISKAR", "JADAR", "JANGCE", "JANGCEKJANG", "JASENICA", "JENISEJ", "JORDAN", "JUBA", "JUKON", 
             "JUŽNA MORAVA", "KAMA", "KASAI", "KAVANGO", "KOLORADO", "KOLUBARA", "KOLUMBIJA", "KONGO", "KRKA", 
-            "KUPA", "KWANZA", "KWILU", "LABA", "LENA", "LIM", "LIMPOPO", "LOGON", "LOMAMI", "LOARA", "LUALABA", 
+            "KUPA", "KVANZA", "KVILU", "LABA", "LENA", "LIM", "LIMPOPO", "LOGON", "LOMAMI", "LOARA", "LUALABA", 
             "LUANGVA", "LUGOMIR", "LJUBLJANICA", "LJIG", "MADEIRA", "MAFOU", "MAGDALENA", "MAJNA", "MAKENZI", 
             "MANO", "MARI", "MARICA", "MARNA", "MEKONG", "MISISIPI", "MISURI", "MLAVA", "MORAČA", "MURA", 
             "NELSON", "NERETVA", "NEVA", "NIGER", "NIL", "NIŠAVA", "NOSOB", "NYONG", "NJEMEN", "OB", "ODRA", 
@@ -115,8 +115,8 @@ const BazaPodataka = {
             "BANJSKO BRDO", "BELAVA", "BELJANICA", "BESNA KOBILA", "BEŠNJAJA", "BITOVIK", "BIĆ", "BLAGAJA", 
             "BOBIJA", "BOHOVSKA PLANINA", "BORANJA", "BUKOVIK", "BUKULJA", "CER", "CRNI VRH", "CRNOKOSA", 
             "CRVENA GORA", "ČEMERNICA", "ČEMERNIK", "ČEMERNO", "ČUDINSKA PLANINA", "DEBELA GORA", "DEBELO BRDO", 
-            "DELI JOVAN", "DENALI", "DEVICA", "DINARIDI", "DRACENSKE PLANINE", "DREŽNIK GRADINA", "DRMANOVINA", 
-            "DUKAT", "DŽUMAJKA", "ELBRUS", "ELGON", "EMSI KUSI", "ERTA ALE", "ETNA", "EVEREST", "FRUŠKA GORA", 
+            "DELI JOVAN", "DENALI", "DEVICA", "DINARIDI", "DRAKENSBERG", "DREŽNIK GRADINA", "DRMANOVINA", 
+            "DUKAT", "DŽUMAJKA", "ELBRUS", "ELGON", "EMI KUSI", "ERTA ALE", "ETNA", "EVEREST", "FRUŠKA GORA", 
             "FUDŽI", "GAJEVA PLANINA", "GILJEVA", "GLEDIĆKE PLANINE", "GLOŠKA PLANINA", "GOLAŠ", "GOLEMI STOL", 
             "GOLI KRŠ", "GOLIJA", "GOLUBAC", "GOLJAK", "GOČ", "GRADINA", "GRAMADA", "GREBEN", "GROT", "GUČEVO", 
             "HIMALAJI", "HINDUKUŠ", "HOMOLJSKE PLANINE", "HUM", "IGMAN", "JABLANIK", "JABUKA", 
@@ -134,7 +134,7 @@ const BazaPodataka = {
             "SOKOLOVICA", "SOKOLSKE PLANINE", "STARA PLANINA", "STENOVITE PLANINE", "STOJKOVAČKA PLANINA", 
             "STOL", "STOLOVI", "STRELA", "STUDENA PLANINA", "SUBJEL", "SUVA PLANINA", "SUVOBOR", "SVETI ILIJA", 
             "SVRLJIŠKE PLANINE", "ŠAR PLANINA", "ŠIROKA PLANINA", "ŠLJIVOVIK", "ŠOMRDA", "TARA", "TATRE", 
-            "TIBESTI", "TILVA NJAGRA", "TJAN ŠAN", "TRESIBABA", "TROGLAV", "TUBCAL", "TUPIŽNICA", "URAL", 
+            "TIBESTI", "TILVA NJAGRA", "TJAN ŠAN", "TRESIBABA", "TROGLAV", "TUBKAL", "TUPIŽNICA", "URAL", 
             "VARDENIK", "VELIKI GREBEN", "VELIKI JASTREBAC", "VELIKI KRŠ", "VENČAC", "VEZUV", "VIDLIČ", "VIDOJEVICA", 
             "VIRUNGA", "VLAŠIĆ", "VLAŠKA PLANINA", "VRŠAČKE PLANINE", "VUJAN", "ZLATAR", "ZLATIBOR", 
             "ZVIJEZDA", "ŽELJIN", "ŽILINDAR"
@@ -280,7 +280,7 @@ const BazaPodataka = {
             "SINTETIKA", "SINTISAJZER", "SIRENA", "SIRUP", "SITO", "SKAKALICA", "SKALPEL", "SKELA", "SKEJT", "SKEJTBORD", 
             "SKIJE", "SKLADIŠTE", "SKOBA", "SKULPTURA", "SKUTER", "SLAMKA", "SLANIK", "SLAVINA", "SLEME", "SLIKA", 
             "SLIKOVNICA", "SLUŠALICE", "SODA", "SOFA", "SOKOVNIK", "SOMUN", "SONDA", "SPAJALICA", "SPREJ", "SPRAVA", 
-            "SREBRO", "SREDSTVO", "SRMA", "STAKLO", "STALAK", "STANIOL", "STAP", "STAZA", "STATIV", "STATUA", "STEPENICE", 
+            "SREBRO", "SREDSTVO", "SRMA", "STAKLO", "STALAK", "STANIOL", "STAZA", "STATIV", "STATUA", "STEPENICE", 
             "STEPENIK", "STEZNIK", "STO", "STOLICA", "STOLNJAK", "STOŽER", "STRELA", "STRELICA", "STRUG", "STUB", "STVAR", 
             "SUDOPERA", "SUKNJA", "SUNCOBRAN", "SUNĐER", "SUĐE", "SUVENIR", "SVEĆA", "SVESKA", "SVETILJKA", "SVRDLO", 
             "ŠAH", "ŠAL", "ŠANAC", "ŠARKA", "ŠATOR", "ŠERBET", "ŠERPA", "ŠESTAR", "ŠIBICA", "ŠIBLJE", "ŠIFRA", "ŠINJEL", 
@@ -291,9 +291,9 @@ const BazaPodataka = {
             "TENK", "TEPIH", "TERA", "TERET", "TERMOMETAR", "TERMOS", "TESTAMENT", "TESTERA", "TESTO", "TETIVA", "TIGANJ", 
             "TIKET", "TINTA", "TIPL", "TIRAŽ", "TIRKIZ", "TOCILO", "TOČAK", "TOMPUS", "TON", "TOP", "TOPLOMER", "TOPUZ", 
             "TORBA", "TORBICA", "TORANJ", "TORTA", "TRAMBOLINA", "TRAMVAJ", "TRANZISTOR", "TRAKA", "TRAKTOR", "TREGER", 
-            "TRENERKA", "TREZOR", "TRIBINA", "TRICIKL", "TRIMER", "TROK", "TROLEJBUS", "TROMBON", "TRONOŽAC", "TROTINET", 
+            "TRENERKA", "TREZOR", "TRIBINA", "TRICIKL", "TRIMER", "TROLEJBUS", "TROMBON", "TRONOŽAC", "TROTINET", 
             "TRUBA", "TRUP", "TUBA", "TURBAN", "TURPIJA", "TUŠ", "TUŠ KABINA", "UDICA", "UDŽBENIK", "UGLJOMER", "UKRAS", 
-            "ULOŽAK", "UMIVAONIK", "UNIFORMA", "UPALJAČ", "UPRTAČ", "UPUT", "URAM", "UREĐAJ", "USISIVAČ", "USTAV", 
+            "ULOŽAK", "UMIVAONIK", "UNIFORMA", "UPALJAČ", "UPRTAČ", "UPUT", "UREĐAJ", "USISIVAČ", "USTAV", 
             "UTIČNICA", "UTIKAČ", "UTOVARIVAČ", "UZDA", "UZICA", "UZORAK", "UŽE", "VADIČEP", "VAGA", "VAGON", "VAKUUM", 
             "VALJAK", "VANGLA", "VARJAČA", "VATA", "VATROMET", "VAZA", "VAZDUHOPLOV", "VEKNA", "VENAC", "VENTIL", 
             "VENTILATOR", "VERIGE", "VESLO", "VEŠALICA", "VEŠ MAŠINA", "VEZA", "VIDEO", "VIJAK", "VILICE", "VILJUŠKA", 
@@ -379,7 +379,7 @@ const BazaPodataka = {
             "MEDVJED": "MEDVED",
             "ŽOHAR": "BUBAŠVABA",
             "MEČKA": "MEDVED",
-            "PESA": "PAS"
+            "PES": "PAS"
         },
         predmet: {
             "MOBILNI": "TELEFON",
@@ -473,6 +473,12 @@ const BazaPodataka = {
                 for (let i = 0; i < this.reci[kategorija].length; i++) {
                     let bazaRec = this.reci[kategorija][i];
                     if (bazaRec.startsWith(slovo)) {
+                        
+                        // OPTIMIZACIJA: Preskoči reči sa prevelikom razlikom u dužini
+                        if (Math.abs(rec.length - bazaRec.length) > dozvoljenaUdaljenost) {
+                            continue;
+                        }
+
                         let udaljenost = this.izracunajUdaljenost(rec, bazaRec);
                         if (udaljenost <= dozvoljenaUdaljenost && udaljenost < najmanjaUdaljenost) {
                             najmanjaUdaljenost = udaljenost;
@@ -486,6 +492,12 @@ const BazaPodataka = {
             if (this.alijasi[kategorija]) {
                 for (let alijas in this.alijasi[kategorija]) {
                     if (alijas.startsWith(slovo)) {
+                        
+                        // OPTIMIZACIJA ZA ALIJASE: Preskoči reči sa prevelikom razlikom u dužini
+                        if (Math.abs(rec.length - alijas.length) > dozvoljenaUdaljenost) {
+                            continue;
+                        }
+
                         let udaljenost = this.izracunajUdaljenost(rec, alijas);
                         if (udaljenost <= dozvoljenaUdaljenost && udaljenost < najmanjaUdaljenost) {
                             najmanjaUdaljenost = udaljenost;
@@ -527,3 +539,8 @@ const BazaPodataka = {
         return this.presloviULatinicu(unetaRec.trim().toUpperCase());
     }
 };
+
+// Export (ako se koristi u Node.js)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = BazaPodataka;
+}

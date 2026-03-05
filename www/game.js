@@ -16,7 +16,7 @@ const Game = {
     ukupanScore: 0,   
     ukupnoTacnihOdgovora: 0, 
     brojIgracaUSobi: 0, 
-    rezultatiProtivnika: {}, // OVO JE SADA OBJEKAT (za prave igrače sa servera)
+    rezultatiProtivnika: {}, 
     iskoriscenaSlova: [], 
     rundaUToku: false, 
     kazneniPoeni: 0, 
@@ -57,12 +57,33 @@ const Game = {
             // Kada server javi da se neko novi povezao u sobu
             this.socket.on('noviIgracUSobi', (podaci) => {
                 if (this.jeHost) {
-                    UIManager.prikaziObavestenje(
-                        "Soba: " + this.trenutnaSoba,
-                        `Trenutno igrača: <b>${podaci.brojIgraca}/${podaci.max}</b><br><br>Da li želiš da započneš meč?`,
-                        () => { this.socket.emit('pokreniIgru', this.trenutnaSoba); },
-                        "Započni igru"
-                    );
+                    if (podaci.brojIgraca < podaci.max) {
+                        // Nisu se još svi skupili - prikazujemo samo status bez opcije za početak
+                        UIManager.prikaziObavestenje(
+                            "Soba: " + this.trenutnaSoba,
+                            `Novi igrač se povezao!<br><br>Trenutno igrača: <b style="color:#f5af19; font-size: 1.2rem;">${podaci.brojIgraca}/${podaci.max}</b><br><br>Čekamo ostale...`,
+                            null, // Nema funkcije za pokretanje
+                            "Čekam..."
+                        );
+                    } else {
+                        // Svi su tu - Host dobija dugme da započne
+                        UIManager.prikaziObavestenje(
+                            "Soba je puna!",
+                            `Svi igrači su uspešno ušli! (<b style="color:#38ef7d;">${podaci.max}/${podaci.max}</b>)<br><br>Meč može da počne.`,
+                            () => { this.socket.emit('pokreniIgru', this.trenutnaSoba); },
+                            "Započni igru"
+                        );
+                    }
+                } else {
+                    // Ovo vidi gost (onaj ko nije host) kada neko novi uđe
+                    if (podaci.brojIgraca === podaci.max) {
+                        UIManager.prikaziObavestenje(
+                            "Soba je puna!", 
+                            "Svi igrači su tu! Čekamo hosta da pokrene meč...", 
+                            null, 
+                            "Spreman sam"
+                        );
+                    }
                 }
             });
 
@@ -78,7 +99,14 @@ const Game = {
                 this.obradiMultiplayerOdgovore(odgovoriSobe);
             });
 
-            // --- NOVO: Kada se broj igrača u JAVNOJ sobi promeni ---
+            // NOVO: Kada server javi da su svi spremni i nova runda kreće
+            this.socket.on('sledecaRundaPocinje', (podaci) => {
+                UIManager.zatvoriObavestenje();
+                this.trenutnaRunda = podaci.runda;
+                this.zapocniRundu(podaci.slovo);
+            });
+
+            // Kada se broj igrača u JAVNOJ sobi promeni
             this.socket.on('azuriranjeJavneSobe', (podaci) => {
                 UIManager.prikaziObavestenje(
                     "Traženje protivnika...",
@@ -103,7 +131,6 @@ const Game = {
         this.brojIgracaUSobi = brojIgraca;
         let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
 
-        // Prikazujemo početni ekran za čekanje
         UIManager.prikaziObavestenje(
             "Traženje protivnika...", 
             `Tražim slobodnu sobu za ${brojIgraca} igrača...<br><br>Igrača: <b style="color:#f5af19; font-size: 1.2rem;">1 / ${brojIgraca}</b>`, 
@@ -114,7 +141,6 @@ const Game = {
             "Odustani"
         );
 
-        // Šaljemo zahtev serveru za matchmaking
         this.socket.emit('traziJavnuSobu', { brojIgraca: brojIgraca, ime: mojNadimak }, (odgovor) => {
             if (odgovor.uspeh) {
                 this.trenutnaSoba = odgovor.kodSobe;
@@ -131,15 +157,14 @@ const Game = {
 
         UIManager.prikaziObavestenje("Kreiranje...", "Pravim sobu na serveru...", null, "...");
 
-        // Šaljemo zahtev serveru da kreira sobu
         this.socket.emit('kreirajSobu', brojIgraca, (odgovor) => {
             if (odgovor.uspeh) {
                 this.trenutnaSoba = odgovor.kodSobe;
                 UIManager.prikaziObavestenje(
                     "Soba je kreirana!",
-                    `Tvoj kod sobe je:<br><br><b style="font-size: 2.5rem; color: #f5af19; letter-spacing: 5px; text-shadow: 0 0 10px rgba(245,175,25,0.4);">${odgovor.kodSobe}</b><br><br>Pošalji ovaj kod prijateljima.<br>Kada uđu, iskočiće ti dugme za početak!`,
-                    () => { this.socket.emit('pokreniIgru', this.trenutnaSoba); },
-                    "Započni igru (Samo ako žuriš)" // Host može da pokrene i ranije
+                    `Tvoj kod sobe je:<br><br><b style="font-size: 2.5rem; color: #f5af19; letter-spacing: 5px; text-shadow: 0 0 10px rgba(245,175,25,0.4);">${odgovor.kodSobe}</b><br><br>Pošalji ovaj kod prijateljima.<br><br>Igrača: <b style="color:#f5af19;">1/${brojIgraca}</b>`,
+                    null, // Uklonili smo funkciju za prerano pokretanje
+                    "Čekam ostale..." 
                 );
             }
         });
@@ -161,7 +186,6 @@ const Game = {
 
         UIManager.prikaziObavestenje("Povezivanje...", "Proveravam kod na serveru...", null, "...");
 
-        // Šaljemo zahtev za ulazak
         this.socket.emit('pridruziSeSobi', { kodSobe: kod, ime: mojNadimak }, (odgovor) => {
             if (odgovor.uspeh) {
                 this.trenutnaSoba = kod;
@@ -192,14 +216,12 @@ const Game = {
         }
         this.azurirajAntiCheatUI(); 
         
-        // Resetujemo prave protivnike (Objekat, a ne niz nula više)
         this.rezultatiProtivnika = {}; 
         
         this.zapocniRundu(zadatoSlovoSaServera);    
     },
 
     zapocniRundu: function(zadatoSlovoSaServera = null) {
-        // Ako igramo solo, sami biramo slovo. Ako je multi, uzimamo ono koje je server prosledio.
         if (this.trenutniMod === 'solo' || !zadatoSlovoSaServera) {
             const svaSlova = "ABVGDĐEŽZIJKLLJMNNJOPRSTĆUFHCČDŽŠ".split("");
             let dostupnaSlova = svaSlova.filter(slovo => !this.iskoriscenaSlova.includes(slovo));
@@ -219,9 +241,7 @@ const Game = {
         UIManager.podesiTabluZaIgru(this.trenutniMod, this.zadatoSlovo);
         UIManager.azurirajRundu(this.trenutnaRunda); 
         
-        // Ako je solo, u Live stat ide broj tačnih, ako je multi onda idu poeni i podaci protivnika (kao objekat)
         let prikazRezultata = this.trenutniMod === 'solo' ? this.ukupnoTacnihOdgovora : this.ukupanScore;
-        // Konvertujemo objekat rezultatiProtivnika u niz za UIManager, ukoliko ga ima
         let arrayZaLiveStatistiku = Object.values(this.rezultatiProtivnika).map(p => ({ ime: p.ime, poeni: p.poeni }));
         UIManager.azurirajLiveStatistiku(prikazRezultata, this.trenutniMod, arrayZaLiveStatistiku.length > 0 ? arrayZaLiveStatistiku : this.brojIgracaUSobi);
         
@@ -241,9 +261,6 @@ const Game = {
         }
     },
 
-    // --------------------------------------------------------------------------
-    // ZAVRŠETAK RUNDE - Logika odvojena za Solo (lokalno) i Multi (slanje na server)
-    // --------------------------------------------------------------------------
     zavrsiRundu: function() {
         if (!this.rundaUToku) return; 
         this.rundaUToku = false; 
@@ -291,10 +308,9 @@ const Game = {
             inputs.forEach(input => {
                 const kategorija = input.getAttribute('data-kategorija');
                 mojiOdgovori[kategorija] = input.value.trim();
-                input.disabled = true; // Zaključavamo polja
+                input.disabled = true;
             });
 
-            // Prikazujemo obaveštenje i čekamo server da javi da su svi gotovi
             UIManager.prikaziObavestenje(
                 "Vreme je isteklo!",
                 "Slanje tvojih odgovora na server...<br><br>Čekamo ostale igrače da završe.",
@@ -302,7 +318,6 @@ const Game = {
                 "..." 
             );
 
-            // Šaljemo svoje odgovore na server
             this.socket.emit('posaljiOdgovore', {
                 kodSobe: this.trenutnaSoba,
                 odgovori: mojiOdgovori
@@ -314,7 +329,6 @@ const Game = {
         let pregledIgraca = {};
         let scoreOveRunde = {}; 
 
-        // 1. Priprema strukture za svakog pravog igrača
         odgovoriSobeSaServera.forEach(p => {
             let isMe = p.idIgraca === this.socket.id;
             pregledIgraca[p.idIgraca] = {
@@ -325,7 +339,6 @@ const Game = {
             };
             scoreOveRunde[p.idIgraca] = 0;
 
-            // Beležimo protivnike u globalni skor (ako već nisu tu)
             if (!isMe && !this.rezultatiProtivnika[p.idIgraca]) {
                 this.rezultatiProtivnika[p.idIgraca] = { ime: p.ime, poeni: 0 };
             }
@@ -333,19 +346,16 @@ const Game = {
 
         const inputs = document.querySelectorAll('#game-board .game-input');
         
-        // 2. Obrada i bodovanje za svaku kategoriju pojedinačno
         inputs.forEach(input => {
             const kategorija = input.getAttribute('data-kategorija');
             const nazivKategorije = input.previousElementSibling.innerText; 
             
             let odgovoriZaKategoriju = [];
 
-            // Prikupljamo šta je ko napisao za ovu kategoriju
             odgovoriSobeSaServera.forEach(p => {
                 let odgovorIgraca = p.odgovori[kategorija] || "";
                 let isCorrect = BazaPodataka.proveriPojam(kategorija, odgovorIgraca, this.zadatoSlovo);
 
-                // Oboji samo tvoje polje lokalno
                 if (p.idIgraca === this.socket.id) {
                     UIManager.zakljucajIObojiPolje(input, isCorrect);
                 }
@@ -357,7 +367,6 @@ const Game = {
                 });
             });
 
-            // Kroz tvoju staru funkciju obračunavamo duplikate
             let obradjeniOdgovori = this.obracunajKategoriju(kategorija, odgovoriZaKategoriju);
             
             obradjeniOdgovori.forEach(unos => {
@@ -378,7 +387,6 @@ const Game = {
             });
         });
 
-        // 3. Sabiranje poena
         let arrayZaLiveStatistiku = [];
         for (let socketId in pregledIgraca) {
             pregledIgraca[socketId].ukupnoPoena = scoreOveRunde[socketId];
@@ -435,7 +443,6 @@ const Game = {
         const leaderboardContainer = document.getElementById('round-leaderboard-container');
         carousel.innerHTML = '';
 
-        // Pretvaramo objekat u niz i stavljamo TEBE na prvo mesto u slider-u
         let sviIgraci = Object.values(pregledIgraca);
         sviIgraci.sort((a, b) => (a.isMe === b.isMe) ? 0 : a.isMe ? -1 : 1);
 
@@ -517,6 +524,7 @@ const Game = {
         btnNext.style.boxShadow = 'none';
 
         let preostalo = 10;
+        let tekstDugmeta = (this.trenutnaRunda < 6) ? "Sledeća Runda" : "Završi Igru";
         btnNext.innerText = `Sačekaj (${preostalo}s)`;
 
         let timer = setInterval(() => {
@@ -526,7 +534,7 @@ const Game = {
             } else {
                 clearInterval(timer);
                 btnNext.disabled = false;
-                btnNext.innerText = "Sledeća Runda";
+                btnNext.innerText = tekstDugmeta;
                 btnNext.style.background = 'linear-gradient(45deg, #11998e, #38ef7d)';
                 btnNext.style.color = '#000';
                 btnNext.style.boxShadow = '0 4px 15px rgba(56, 239, 125, 0.3)';
@@ -535,9 +543,22 @@ const Game = {
 
         btnNext.addEventListener('click', () => {
             if (this.trenutnaRunda < 6) {
-                this.trenutnaRunda++; 
-                this.zapocniRundu();  
+                if (this.trenutniMod === 'multi') {
+                    // MULTIPLAYER: Šaljemo serveru da smo spremni i zaključavamo dugme
+                    btnNext.disabled = true;
+                    btnNext.innerText = "Čekamo ostale igrače...";
+                    btnNext.style.background = 'rgba(255,255,255,0.1)';
+                    btnNext.style.color = '#a0aec0';
+                    btnNext.style.boxShadow = 'none';
+                    
+                    this.socket.emit('spremanZaSledecuRundu', this.trenutnaSoba);
+                } else {
+                    // SOLO: Krećemo odmah
+                    this.trenutnaRunda++; 
+                    this.zapocniRundu();  
+                }
             } else {
+                // Runda 6 je gotova
                 this.zavrsiIgruKonacno();
             }
         });

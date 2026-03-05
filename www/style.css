@@ -786,32 +786,6 @@ body[data-tema="zlatna"] .btn-close {
     100% { width: 100px; }
 }
 
-/* ========================================================
-   PRILAGOĐAVANJE UI TRAKE TEMAMA IGRICE
-   ======================================================== */
-
-/* Svetla Tema */
-body[data-tema="svetla"] .door { background: rgba(226, 232, 240, 0.85); }
-body[data-tema="svetla"] .door-left, body[data-tema="svetla"] .door-right { border-color: rgba(0,0,0,0.1); }
-body[data-tema="svetla"] .door-text { color: #11998e; text-shadow: 0 0 10px rgba(17,153,142,0.4); }
-body[data-tema="svetla"] .door-left::before, body[data-tema="svetla"] .door-right::before { background: #11998e; box-shadow: 0 0 15px #11998e; }
-body[data-tema="svetla"] .door-left::after, body[data-tema="svetla"] .door-right::after { background: rgba(0,0,0,0.1); box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
-
-/* Neon Cyber Tema */
-body[data-tema="neon"] .door { background: rgba(10, 10, 10, 0.90); }
-body[data-tema="neon"] .door-text { color: #ff00ff; text-shadow: 0 0 15px #ff00ff; }
-body[data-tema="neon"] .door-left::before, body[data-tema="neon"] .door-right::before { background: #ff00ff; box-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff; }
-
-/* Plavi Okean Tema */
-body[data-tema="okean"] .door { background: rgba(10, 27, 46, 0.90); }
-body[data-tema="okean"] .door-text { color: #38bdf8; text-shadow: 0 0 15px #38bdf8; }
-body[data-tema="okean"] .door-left::before, body[data-tema="okean"] .door-right::before { background: #38bdf8; box-shadow: 0 0 15px #38bdf8, 0 0 30px #38bdf8; }
-
-/* Kraljevsko Zlato Tema */
-body[data-tema="zlatna"] .door { background: rgba(43, 34, 0, 0.90); }
-body[data-tema="zlatna"] .door-text { color: #ffd700; text-shadow: 0 0 15px #ffd700; }
-body[data-tema="zlatna"] .door-left::before, body[data-tema="zlatna"] .door-right::before { background: #ffd700; box-shadow: 0 0 15px #ffd700, 0 0 30px #ffd700; }
-
 /* --- EKRAN ZA PREGLED RUNDE (KRAJ RUNDE) --- */
 .summary-carousel {
     display: flex;
@@ -845,3 +819,109 @@ body[data-tema="zlatna"] .door-left::before, body[data-tema="zlatna"] .door-righ
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+
+/* ========================================================
+   CUSTOM TASTATURA
+   ======================================================== */
+#custom-keyboard {
+    position: absolute; /* Promenjeno sa fixed na absolute */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(5, 20, 5, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-top: 1px solid rgba(56, 239, 125, 0.3);
+    
+    /* Povećan padding levo i desno na 8px za bolji razmak od ivica */
+    padding: 10px 8px calc(15px + env(safe-area-inset-bottom, 10px)) 8px; 
+    
+    z-index: 9999;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+}
+
+#custom-keyboard.active {
+    transform: translateY(0);
+}
+
+.kb-row {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+}
+
+.kb-key {
+    flex: 1;
+    max-width: 42px;
+    height: 48px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 800;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.1s;
+}
+
+.kb-key:active {
+    transform: scale(0.92);
+    background: #38ef7d;
+    color: #000;
+}
+
+.kb-special {
+    flex: 1.5;
+    max-width: 60px;
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 0.9rem;
+}
+
+.kb-space {
+    flex: 3;
+    max-width: 120px;
+}
+
+.kb-enter {
+    background: linear-gradient(45deg, #11998e, #38ef7d);
+    color: #000;
+}
+
+/* Fiktivni kursor kada je custom tastatura aktivna */
+.active-keyboard-input {
+    border-color: #38ef7d !important;
+    background: rgba(56, 239, 125, 0.15) !important;
+    box-shadow: inset 0 0 10px rgba(56, 239, 125, 0.2);
+}
+
+/* --- PRILAGOĐAVANJE TASTATURE TEMAMA --- */
+body[data-tema="svetla"] #custom-keyboard { background: rgba(240, 244, 248, 0.95); border-top-color: #cbd5e0; }
+body[data-tema="svetla"] .kb-key { background: #ffffff; color: #2d3748; border-color: #e2e8f0; }
+body[data-tema="svetla"] .kb-key:active { background: #11998e; color: #fff; }
+body[data-tema="svetla"] .kb-enter { background: #11998e; color: #fff; }
+
+body[data-tema="neon"] #custom-keyboard { background: rgba(0, 0, 0, 0.98); border-top-color: #ff00ff; }
+body[data-tema="neon"] .kb-key { background: rgba(255,0,255,0.1); color: #00ffff; border-color: rgba(0,255,255,0.3); }
+body[data-tema="neon"] .kb-key:active { background: #ff00ff; color: #fff; }
+body[data-tema="neon"] .kb-enter { background: linear-gradient(45deg, #00ffff, #ff00ff); color: #fff; border: none; }
+
+body[data-tema="okean"] #custom-keyboard { background: rgba(2, 11, 20, 0.98); border-top-color: #38bdf8; }
+body[data-tema="okean"] .kb-key { background: rgba(56,189,248,0.1); color: #38bdf8; border-color: rgba(56,189,248,0.3); }
+body[data-tema="okean"] .kb-key:active { background: #38bdf8; color: #000; }
+body[data-tema="okean"] .kb-enter { background: linear-gradient(45deg, #0284c7, #38bdf8); color: #000; border: none;}
+
+body[data-tema="zlatna"] #custom-keyboard { background: rgba(26, 21, 0, 0.98); border-top-color: #ffd700; }
+body[data-tema="zlatna"] .kb-key { background: rgba(255,215,0,0.1); color: #ffd700; border-color: rgba(255,215,0,0.3); }
+body[data-tema="zlatna"] .kb-key:active { background: #ffd700; color: #000; }
+body[data-tema="zlatna"] .kb-enter { background: linear-gradient(45deg, #ffaa00, #ffd700); color: #000; border:none; }

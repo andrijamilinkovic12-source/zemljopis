@@ -24,6 +24,7 @@ const UIManager = {
         const modeIndicator = document.getElementById('mode-indicator');
         const liveStatsPanel = document.getElementById('live-stats-panel'); 
         const antiCheatStatus = document.getElementById('anti-cheat-status'); 
+        const statsHeader = document.querySelector('.stats-header'); // Selektovanje naslova panela
         
         if (mod === 'solo') {
             gameBoard.classList.add('solo-mode-active');
@@ -31,12 +32,16 @@ const UIManager = {
             modeIndicator.className = 'mode-badge badge-solo';
             if (liveStatsPanel) liveStatsPanel.style.display = 'block'; 
             if (antiCheatStatus) antiCheatStatus.style.display = 'none'; 
+            // Dinamički menjamo naslov za Solo
+            if (statsHeader) statsHeader.innerHTML = '<i class="fa-solid fa-check-double"></i> TAČNI ODGOVORI'; 
         } else {
             gameBoard.classList.remove('solo-mode-active');
             modeIndicator.textContent = 'MULTIPLAYER';
             modeIndicator.className = 'mode-badge badge-multi';
             if (liveStatsPanel) liveStatsPanel.style.display = 'none'; 
             if (antiCheatStatus) antiCheatStatus.style.display = 'block'; 
+            // Vraćamo naslov za Multiplayer
+            if (statsHeader) statsHeader.innerHTML = '<i class="fa-solid fa-chart-simple"></i> Uživo rezultati'; 
         }
 
         document.getElementById('target-letter').innerText = slovo;
@@ -118,7 +123,7 @@ const UIManager = {
         }
         
         const opponentsContainer = document.getElementById('opponents-stats');
-        opponentsContainer.innerHTML = ''; 
+        opponentsContainer.innerHTML = ''; // Resetujemo sadržaj
 
         // MULTIPLAYER PRIKAZ
         if (mod === 'multi') {
@@ -146,11 +151,8 @@ const UIManager = {
             }
         // SOLO TRENING PRIKAZ
         } else {
-            opponentsContainer.innerHTML = `
-                <div class="player-stat opponent-player" style="justify-content: center; font-size: 0.75rem; font-style: italic;">
-                    Trening - Prikazuje se broj tačnih odgovora
-                </div>
-            `;
+            // Potpuno uklonjen ispis "Trening - Prikazuje se broj tačnih odgovora"
+            opponentsContainer.innerHTML = '';
         }
     }
 };

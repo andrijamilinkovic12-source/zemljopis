@@ -50,6 +50,11 @@ const Game = {
         if (typeof io !== 'undefined') {
             this.socket = io(this.socketURL);
             
+            // OVO JE PROMENJENO: Odmah povezujemo chat, ne čekamo 'connect' event
+            if (typeof GlobalChatManager !== 'undefined') {
+                GlobalChatManager.poveziSokete(this.socket);
+            }
+
             this.socket.on('connect', () => {
                 console.log("Povezan na server sa ID:", this.socket.id);
             });

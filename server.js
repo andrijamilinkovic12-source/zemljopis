@@ -16,6 +16,24 @@ const io = new Server(server, {
 const sobe = {}; 
 const svaSlova = ["A","B","V","G","D","Đ","E","Ž","Z","I","J","K","L","LJ","M","N","NJ","O","P","R","S","T","Ć","U","F","H","C","Č","DŽ","Š"];
 
+// --- GLOBAL CHAT VARIJABLE ---
+const MAX_PORUKA_ISTORIJA = 50;
+let istorijaChata = [];
+
+// Pomoćna funkcija za zaštitu od XSS napada (hakovanja preko chata)
+function escapeHTML(str) {
+    if (!str) return "";
+    return str.toString().replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
+}
+
 /**
  * Pomoćna funkcija koja hendluje početak runde, izvlačenje slova i SIGURNOSNI TAJMER
  */
@@ -47,7 +65,6 @@ function zapocniRunduUSobi(soba, io) {
     console.log(`Runda ${soba.trenutnaRunda} u sobi ${soba.id} počela. Slovo: ${zadatoSlovo}`);
 
     // SIGURNOSNI TAJMER: 125 sekundi (120s igra + 5s tolerancija za kašnjenje mreže)
-    // Ako klijentu pukne net i ne pošalje odgovore, server će forsirati kraj nakon ovog vremena
     if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
     soba.timeoutRunde = setTimeout(() => {
         console.log(`⏳ Istekao sigurnosni tajmer za sobu ${soba.id}. Forsiram prosleđivanje odgovora.`);
@@ -143,13 +160,11 @@ io.on('connection', (socket) => {
                 if (sviPoslali) {
                     console.log(`✅ Svi igrači u sobi ${kodSobe} su poslali odgovore. Šaljem nazad klijentima na bodovanje.`);
                     
-                    // Zaustavljamo sigurnosni tajmer jer su svi stigli na vreme
                     if (soba.timeoutRunde) {
                         clearTimeout(soba.timeoutRunde);
                         soba.timeoutRunde = null;
                     }
 
-                    // Šaljemo SAMO NIZ odgovora (klijent računa bodove)
                     io.to(kodSobe).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde);
                 }
             }
@@ -197,7 +212,6 @@ io.on('connection', (socket) => {
                     delete sobe[kodSobe]; 
                 } else {
                     const sviPoslali = soba.igraci.every(i => i.spremniOdgovori);
-                    // Ako izlaskom ovog igrača postanemo "svi poslali", prosledi rezultate
                     if (sviPoslali && soba.status === 'u_igri' && soba.igraci.length > 0) {
                         if (soba.timeoutRunde) {
                             clearTimeout(soba.timeoutRunde);
@@ -235,7 +249,6 @@ io.on('connection', (socket) => {
                 max: nadjenaSoba.maxIgraca
             });
 
-            // Ako se soba napunila, sačekaj malo i pokreni
             if (nadjenaSoba.igraci.length === nadjenaSoba.maxIgraca) {
                 setTimeout(() => {
                     zapocniRunduUSobi(nadjenaSoba, io);
@@ -266,6 +279,32 @@ io.on('connection', (socket) => {
             
             callback({ uspeh: true, kodSobe: kodSobe, isHost: true });
         }
+    });
+
+    // --- 7. GLOBAL CHAT LOGIKA ---
+    
+    // Kada neko otvori chat, pošalji mu istoriju
+    socket.on('traziIstorijuChata', () => {
+        socket.emit('istorijaChata', istorijaChata);
+    });
+
+    // Kada neko pošalje poruku u globalni chat
+    socket.on('posaljiGlobalnuPoruku', (podaci) => {
+        // Dodato escapeHTML za zaštitu od skripti
+        const poruka = {
+            id: socket.id,
+            ime: escapeHTML(podaci.ime).substring(0, 20), 
+            tekst: escapeHTML(podaci.tekst).substring(0, 200) 
+        };
+
+        // Čuvamo u istoriji
+        istorijaChata.push(poruka);
+        if (istorijaChata.length > MAX_PORUKA_ISTORIJA) {
+            istorijaChata.shift(); // Brišemo najstariju poruku ako pređemo limit
+        }
+
+        // Šaljemo SVIM povezanim korisnicima (uključujući i pošiljaoca)
+        io.emit('novaGlobalnaPoruka', poruka);
     });
 });
 

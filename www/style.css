@@ -72,7 +72,7 @@ body {
 
 /* --- GLAVNI MENI --- */
 #main-menu { 
-    padding: 2rem 1.5rem 8vh 1.5rem; 
+    padding: 2rem 1.5rem 2rem 1.5rem; /* Ravnomeran padding da se sve lepo centrira */
     justify-content: center; 
     align-items: center; 
     position: relative; 
@@ -83,26 +83,113 @@ body {
     position: relative;
 }
 
-.logo { 
-    font-size: 3.2rem; 
-    font-weight: 800; 
-    text-align: center; 
-    background: -webkit-linear-gradient(45deg, #38ef7d, #11998e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.5rem; 
-    letter-spacing: 2px; 
-    text-shadow: 0 0 15px rgba(56, 239, 125, 0.3);
+/* =========================================
+   STATUS BAR (CENTAR, IZNAD NIVOA)
+   ========================================= */
+.status-bar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    z-index: 99;
+    margin-bottom: 1.5rem; /* Odvaja status bar od ikonica Nivo, Chat, Trofeji */
 }
 
-.subtitle { 
-    font-size: 0.95rem; 
-    color: #a0aec0; 
-    margin-bottom: 4rem; 
-    text-align: center; 
-    font-weight: 600; 
-    text-transform: uppercase; 
+.status-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.4rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.status-pill:active { transform: scale(0.95); }
+
+.ducats-pill { color: #f5af19; border-color: rgba(245, 175, 25, 0.3); }
+.tokens-pill { color: #38ef7d; border-color: rgba(56, 239, 125, 0.3); }
+.online-pill { color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); }
+
+
+/* =========================================
+   TOP HEDER MENI (Chat, Nivo, Trofeji)
+   ========================================= */
+.top-header-menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 2rem; 
+    z-index: 5;
+}
+
+.top-circle-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.top-circle-btn:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.rank-btn {
+    width: 75px;
+    height: 75px;
+    border: 3px solid #f5af19;
+    color: #f5af19;
+    font-size: 2rem;
+    font-weight: 800;
+    background: rgba(245, 175, 25, 0.15);
+    box-shadow: 0 0 20px rgba(245, 175, 25, 0.4);
+    position: relative;
+}
+
+.rank-btn:active {
+    transform: scale(0.95);
+    background: rgba(245, 175, 25, 0.3);
+}
+
+.rank-label {
+    position: absolute;
+    bottom: -12px;
+    background: #f5af19;
+    color: #000;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 12px;
+    text-transform: uppercase;
     letter-spacing: 1px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+/* Kontejner za glavne dugmiće */
+.main-actions {
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 1.5rem;
+    z-index: 5;
 }
 
 .menu-btn { 
@@ -129,6 +216,234 @@ body {
     box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
 }
 .btn-secondary { background: linear-gradient(45deg, #f12711, #f5af19); color: #fff; }
+
+/* Red sa kružnim ikonicama (Sekundarne akcije na dnu) */
+.icon-menu-row {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    width: 100%;
+    z-index: 5;
+    margin-top: 1rem;
+}
+
+.circle-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 1.4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.circle-btn:active {
+    transform: scale(0.9);
+    background: rgba(56, 239, 125, 0.2);
+    border-color: #38ef7d;
+    color: #38ef7d;
+}
+
+/* =========================================
+   VELIKI PODELJENI KRUG ZA IGRU
+   ========================================= */
+.big-circle {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.05);
+    margin-bottom: 0.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.circle-half {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #fff;
+}
+
+.top-half { background: linear-gradient(to bottom, rgba(56, 239, 125, 0.25), transparent); }
+.top-half:active { background: rgba(56, 239, 125, 0.5); }
+.top-half i { color: #38ef7d; text-shadow: 0 0 10px rgba(56,239,125,0.5); }
+
+.bottom-half { background: linear-gradient(to top, rgba(245, 175, 25, 0.25), transparent); }
+.bottom-half:active { background: rgba(245, 175, 25, 0.5); }
+.bottom-half i { color: #f5af19; text-shadow: 0 0 10px rgba(245,175,25,0.5); }
+
+.circle-divider {
+    height: 2px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    z-index: 2;
+}
+
+/* OVERLAY UNUTAR KRUGA (otvara se klikom) */
+.circle-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(5, 15, 5, 0.95);
+    backdrop-filter: blur(12px);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transform: scale(0);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10;
+}
+.circle-overlay.active {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.close-overlay-btn {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: none;
+    border: none;
+    color: #a0aec0;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.player-bubbles { display: flex; gap: 12px; }
+.bubble-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid #fff;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.overlay-multi .bubble-btn { border-color: #38ef7d; color: #38ef7d; background: rgba(56, 239, 125, 0.1); }
+.overlay-multi .bubble-btn:active { background: #38ef7d; color: #000; transform: scale(0.9); }
+
+.overlay-private .bubble-btn { border-color: #f5af19; color: #f5af19; background: rgba(245, 175, 25, 0.1); }
+.overlay-private .bubble-btn:active { background: #f5af19; color: #000; transform: scale(0.9); }
+
+#room-code-input {
+    width: 90px;
+    text-align: center;
+    padding: 6px;
+    border-radius: 8px;
+    border: 2px solid rgba(245, 175, 25, 0.5);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    outline: none;
+    letter-spacing: 2px;
+}
+#room-code-input:focus { border-color: #f5af19; }
+
+.join-go-btn {
+    background: #f5af19;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    width: 40px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.join-go-btn:active { transform: scale(0.9); }
+
+
+/* =========================================
+   DODATNI MODOVI IGRANJA (SOLO / TURNIR)
+   ========================================= */
+.sub-modes-row {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.sub-mode-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.sub-mode-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    border: 2px solid transparent;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sub-mode-wrapper:active .sub-mode-btn {
+    transform: scale(0.9);
+}
+
+.sub-mode-label {
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.solo-btn {
+    background: rgba(245, 175, 25, 0.15);
+    border-color: #f5af19;
+    color: #f5af19;
+    box-shadow: 0 5px 15px rgba(245, 175, 25, 0.2);
+}
+
+.tournament-btn {
+    background: rgba(177, 34, 229, 0.15);
+    border-color: #b122e5;
+    color: #b122e5;
+    box-shadow: 0 5px 15px rgba(177, 34, 229, 0.2);
+}
+
 
 /* --- ŠARA SA IZNENADJUJUĆIM OBRISIMA U MENIJU --- */
 .menu-pattern {
@@ -187,14 +502,12 @@ body {
     color: #fff !important;
 }
 
-/* Prilagođeno zadato slovo */
 .current-letter { text-align: center; padding: 0.1rem; display: flex; flex-direction: column; align-items: center; }
 .current-letter span { font-size: 1.5rem; font-weight: 800; color: #38ef7d; text-shadow: 0 0 10px rgba(56, 239, 125, 0.3); line-height: 1; } 
 
 .solo-mode-active .current-letter span { color: #f5af19; text-shadow: 0 0 10px rgba(245, 175, 25, 0.3); }
 .solo-mode-active .input-group input:focus { border-color: #f5af19; }
 
-/* DINAMIČKI KONTEJNER ZA POLJA */
 .inputs-container { 
     flex: 1; 
     overflow-y: hidden; 
@@ -204,58 +517,20 @@ body {
     flex-direction: column;
 }
 
-/* DINAMIČKA POLJA ZA UNOS (Guma efekat) */
-.input-group { 
-    margin-bottom: clamp(0.2rem, 1vh, 0.4rem); 
-} 
-
-.input-group label { 
-    display: block; 
-    margin-bottom: 1px; 
-    font-size: clamp(0.65rem, 1.2vh, 0.75rem); 
-    color: #cbd5e0; 
-    font-weight: 600; 
-    text-transform: uppercase; 
-}
-
-.input-group input { 
-    width: 100%; 
-    padding: clamp(0.35rem, 1.2vh, 0.6rem) 0.8rem; 
-    font-size: clamp(0.85rem, 1.8vh, 0.95rem); 
-    border-radius: 8px; 
-    border: 2px solid rgba(255, 255, 255, 0.05); 
-    background: rgba(0, 0, 0, 0.25); 
-    color: #fff; 
-    outline: none; 
-    transition: all 0.3s ease; 
-}
+.input-group { margin-bottom: clamp(0.2rem, 1vh, 0.4rem); } 
+.input-group label { display: block; margin-bottom: 1px; font-size: clamp(0.65rem, 1.2vh, 0.75rem); color: #cbd5e0; font-weight: 600; text-transform: uppercase; }
+.input-group input { width: 100%; padding: clamp(0.35rem, 1.2vh, 0.6rem) 0.8rem; font-size: clamp(0.85rem, 1.8vh, 0.95rem); border-radius: 8px; border: 2px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.25); color: #fff; outline: none; transition: all 0.3s ease; }
 .input-group input:focus { border-color: #38ef7d; background: rgba(0, 0, 0, 0.4); transform: translateY(-1px); } 
 
-/* FOOTER */
 .action-footer { 
-    position: absolute; 
-    bottom: 0; left: 0; width: 100%; 
+    position: absolute; bottom: 0; left: 0; width: 100%; 
     padding: 0.6rem 1.2rem calc(0.5rem + env(safe-area-inset-bottom, 10px)); 
     background: linear-gradient(to top, #091317 85%, transparent); 
     z-index: 10; 
 }
-.btn-finish { 
-    width: 100%; 
-    padding: 0.9rem; 
-    border-radius: 14px; 
-    border: none; 
-    background: linear-gradient(45deg, #11998e, #38ef7d); 
-    color: #000; 
-    font-size: 1.1rem; 
-    font-weight: 800; 
-    text-transform: uppercase; 
-    box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3); 
-    cursor: pointer; 
-    transition: transform 0.2s; 
-}
+.btn-finish { width: 100%; padding: 0.9rem; border-radius: 14px; border: none; background: linear-gradient(45deg, #11998e, #38ef7d); color: #000; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3); cursor: pointer; transition: transform 0.2s; }
 .btn-finish:active { transform: scale(0.97); }
 
-/* VALIDACIJA BOJE */
 .input-correct { border-color: #38ef7d !important; background: rgba(56, 239, 125, 0.1) !important; }
 .input-wrong { border-color: #ff416c !important; background: rgba(255, 65, 108, 0.1) !important; }
 
@@ -269,409 +544,158 @@ body {
 .modal-content .menu-btn { margin-bottom: 0; }
 
 /* --- SPLASH / LOADING EKRAN --- */
-#splash-screen {
-    background: linear-gradient(135deg, #030a03, #0a1c0a, #0d290d); 
-    justify-content: center;
-    align-items: center;
-    z-index: 9999; 
-}
-
-.splash-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.splash-logo {
-    font-size: 3.5rem;
-    font-weight: 800;
-    background: -webkit-linear-gradient(45deg, #38ef7d, #11998e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 4px;
-    margin-bottom: 3rem;
-    animation: pulseGlow 1.5s ease-in-out infinite alternate;
-}
+#splash-screen { background: linear-gradient(135deg, #030a03, #0a1c0a, #0d290d); justify-content: center; align-items: center; z-index: 9999; }
+.splash-content { display: flex; flex-direction: column; align-items: center; }
+.splash-logo { font-size: 3.5rem; font-weight: 800; background: -webkit-linear-gradient(45deg, #38ef7d, #11998e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 4px; margin-bottom: 3rem; animation: pulseGlow 1.5s ease-in-out infinite alternate; }
 
 @keyframes pulseGlow {
     from { text-shadow: 0 0 10px rgba(56, 239, 125, 0.1); transform: scale(0.98); }
     to { text-shadow: 0 0 30px rgba(56, 239, 125, 0.7); transform: scale(1.03); }
 }
 
-.loading-container {
-    width: 220px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 1rem;
-    position: relative;
-}
+.loading-container { width: 220px; height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 4px; overflow: hidden; margin-bottom: 1rem; position: relative; }
+.loading-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #11998e, #38ef7d); box-shadow: 0 0 15px rgba(56, 239, 125, 0.8); border-radius: 4px; animation: fillBar 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+@keyframes fillBar { 0% { width: 0%; } 40% { width: 50%; } 80% { width: 80%; } 100% { width: 100%; } }
 
-.loading-bar {
-    width: 0%;
-    height: 100%;
-    background: linear-gradient(90deg, #11998e, #38ef7d);
-    box-shadow: 0 0 15px rgba(56, 239, 125, 0.8);
-    border-radius: 4px;
-    animation: fillBar 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes fillBar {
-    0% { width: 0%; }
-    40% { width: 50%; } 
-    80% { width: 80%; }
-    100% { width: 100%; }
-}
-
-.loading-text {
-    color: #38ef7d;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    animation: blinkText 1s infinite alternate;
-}
-
-@keyframes blinkText {
-    0% { opacity: 0.3; }
-    100% { opacity: 1; }
-}
+.loading-text { color: #38ef7d; font-size: 0.8rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; animation: blinkText 1s infinite alternate; }
+@keyframes blinkText { 0% { opacity: 0.3; } 100% { opacity: 1; } }
 
 /* --- SMANJEN PANEL ZA STATISTIKU U IGRI --- */
-.stats-panel {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(56, 239, 125, 0.15);
-    border-radius: 12px;
-    padding: clamp(0.3rem, 1vh, 0.5rem);
-    margin-top: auto; /* ZAKUCAVA PANEL NA DNO */
-    margin-bottom: 0.2rem;
-}
-.stats-header {
-    font-size: 0.7rem;
-    color: #38ef7d;
-    text-transform: uppercase;
-    font-weight: 800;
-    margin-bottom: 0.3rem;
-    text-align: center;
-    letter-spacing: 1px;
-}
+.stats-panel { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(56, 239, 125, 0.15); border-radius: 12px; padding: clamp(0.3rem, 1vh, 0.5rem); margin-top: auto; margin-bottom: 0.2rem; }
+.stats-header { font-size: 0.7rem; color: #38ef7d; text-transform: uppercase; font-weight: 800; margin-bottom: 0.3rem; text-align: center; letter-spacing: 1px; }
 
-/* Tvoj skor se izdvaja na vrhu */
-.current-player {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.3rem 0.6rem;
-    background: rgba(56, 239, 125, 0.1);
-    border: 1px solid rgba(56, 239, 125, 0.3);
-    border-radius: 8px;
-    margin-bottom: 0.3rem;
-    font-size: 0.8rem;
-    color: #fff;
-    font-weight: 600;
-}
-.current-player .player-score {
-    background: #38ef7d;
-    color: #000;
-    padding: 0.1rem 0.5rem;
-    border-radius: 6px;
-    font-weight: 800;
-}
+.current-player { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0.6rem; background: rgba(56, 239, 125, 0.1); border: 1px solid rgba(56, 239, 125, 0.3); border-radius: 8px; margin-bottom: 0.3rem; font-size: 0.8rem; color: #fff; font-weight: 600; }
+.current-player .player-score { background: #38ef7d; color: #000; padding: 0.1rem 0.5rem; border-radius: 6px; font-weight: 800; }
 
-/* Ostali igrači se prikazuju kao Grid (Mreža) u dve kolone */
-#opponents-stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.3rem;
-}
-.opponent-player {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
-    font-size: 0.7rem;
-    color: #a0aec0;
-}
-.opponent-player .player-score {
-    background: rgba(255, 255, 255, 0.1);
-    color: #38ef7d;
-    padding: 0.1rem 0.3rem;
-    border-radius: 4px;
-    font-weight: 800;
-}
+#opponents-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.3rem; }
+.opponent-player { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.05); padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; color: #a0aec0; }
+.opponent-player .player-score { background: rgba(255, 255, 255, 0.1); color: #38ef7d; padding: 0.1rem 0.3rem; border-radius: 4px; font-weight: 800; }
 
 /* ========================================================
    TEME - GLOBALNA PROMENA BOJA I STILOVA
-   Sve boje se oslanjaju na data-tema atribut body elementa
    ======================================================== */
 
 /* --- TEMA: SVETLA --- */
-body[data-tema="svetla"] {
-    background: linear-gradient(135deg, #f0f4f8, #e2e8f0, #cbd5e0);
-    color: #2d3748;
-}
+body[data-tema="svetla"] { background: linear-gradient(135deg, #f0f4f8, #e2e8f0, #cbd5e0); color: #2d3748; }
+body[data-tema="svetla"] .menu-btn { background: #ffffff; color: #2d3748; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+body[data-tema="svetla"] .circle-btn { background: #ffffff; border-color: #cbd5e0; color: #11998e; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+body[data-tema="svetla"] .circle-btn:active { background: #f0f4f8; border-color: #11998e; }
 
-body[data-tema="svetla"] .menu-btn {
-    background: #ffffff;
-    color: #2d3748;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    border: 1px solid #e2e8f0;
-}
+/* Prilagođavanje za Svetlu temu */
+body[data-tema="svetla"] .status-pill { background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-color: #e2e8f0; }
+body[data-tema="svetla"] .ducats-pill { color: #d69e2e; }
+body[data-tema="svetla"] .tokens-pill { color: #11998e; }
+body[data-tema="svetla"] .online-pill { color: #0284c7; }
 
-body[data-tema="svetla"] h2,
-body[data-tema="svetla"] .loading-text,
-body[data-tema="svetla"] .current-letter span,
-body[data-tema="svetla"] .stats-header,
-body[data-tema="svetla"] .modal-content h2,
-body[data-tema="svetla"] .pattern-icon {
-    color: #11998e;
-    text-shadow: none;
-}
+body[data-tema="svetla"] .big-circle { background: #ffffff; border-color: #cbd5e0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+body[data-tema="svetla"] .circle-half span { color: #2d3748; }
+body[data-tema="svetla"] .top-half i { color: #11998e; text-shadow: none; }
+body[data-tema="svetla"] .bottom-half i { color: #d69e2e; text-shadow: none; }
+body[data-tema="svetla"] .circle-divider { background: #e2e8f0; }
+body[data-tema="svetla"] .circle-overlay { background: rgba(255,255,255,0.95); }
 
-body[data-tema="svetla"] .input-group label {
-    color: #4a5568;
-}
+body[data-tema="svetla"] .top-circle-btn { background: #ffffff; border-color: #cbd5e0; color: #4a5568; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+body[data-tema="svetla"] .rank-btn { border-color: #d69e2e; color: #d69e2e; background: #faf089; box-shadow: 0 0 15px rgba(214, 158, 46, 0.3); }
+body[data-tema="svetla"] .rank-label { background: #d69e2e; color: #fff; }
 
-body[data-tema="svetla"] .input-group input {
-    background: #ffffff;
-    border: 2px solid #cbd5e0;
-    color: #2d3748;
-}
+body[data-tema="svetla"] .sub-mode-label { color: #2d3748; }
+body[data-tema="svetla"] .solo-btn { background: rgba(214, 158, 46, 0.1); border-color: #d69e2e; color: #d69e2e; }
+body[data-tema="svetla"] .tournament-btn { background: rgba(128, 90, 213, 0.1); border-color: #805ad5; color: #805ad5; }
 
-body[data-tema="svetla"] .input-group input:focus {
-    border-color: #11998e;
-    background: #f7fafc;
-}
+body[data-tema="svetla"] h2, body[data-tema="svetla"] .loading-text, body[data-tema="svetla"] .current-letter span, body[data-tema="svetla"] .stats-header, body[data-tema="svetla"] .modal-content h2, body[data-tema="svetla"] .pattern-icon { color: #11998e; text-shadow: none; }
+body[data-tema="svetla"] .input-group label { color: #4a5568; }
+body[data-tema="svetla"] .input-group input { background: #ffffff; border: 2px solid #cbd5e0; color: #2d3748; }
+body[data-tema="svetla"] .input-group input:focus { border-color: #11998e; background: #f7fafc; }
+body[data-tema="svetla"] .game-header, body[data-tema="svetla"] .modal-content, body[data-tema="svetla"] .stats-panel, body[data-tema="svetla"] #riznica-sadrzaj > div, body[data-tema="svetla"] #podesavanja-screen > div > div, body[data-tema="svetla"] #private-room-setup > div > div { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+body[data-tema="svetla"] .modal-content p, body[data-tema="svetla"] .stat-value, body[data-tema="svetla"] .opponent-player { color: #4a5568; }
+body[data-tema="svetla"] .opponent-player { background: #f7fafc; border: 1px solid #e2e8f0; }
+body[data-tema="svetla"] #splash-screen { background: linear-gradient(135deg, #ffffff, #f0f4f8, #e2e8f0); }
+body[data-tema="svetla"] .action-footer { background: linear-gradient(to top, #ffffff 85%, transparent); }
+body[data-tema="svetla"] .btn-close { background: rgba(0,0,0,0.05); color: #2d3748; }
 
-body[data-tema="svetla"] .game-header,
-body[data-tema="svetla"] .modal-content,
-body[data-tema="svetla"] .stats-panel,
-body[data-tema="svetla"] #riznica-sadrzaj > div,
-body[data-tema="svetla"] #podesavanja-screen > div > div,
-body[data-tema="svetla"] #private-room-setup > div > div {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
-
-body[data-tema="svetla"] .modal-content p,
-body[data-tema="svetla"] .stat-value,
-body[data-tema="svetla"] .opponent-player {
-    color: #4a5568;
-}
-
-body[data-tema="svetla"] .opponent-player {
-    background: #f7fafc;
-    border: 1px solid #e2e8f0;
-}
-
-body[data-tema="svetla"] #splash-screen {
-    background: linear-gradient(135deg, #ffffff, #f0f4f8, #e2e8f0);
-}
-
-body[data-tema="svetla"] .action-footer {
-    background: linear-gradient(to top, #ffffff 85%, transparent);
-}
-
-body[data-tema="svetla"] .btn-close { 
-    background: rgba(0,0,0,0.05); 
-    color: #2d3748; 
-}
 
 /* --- TEMA: NEON CYBER --- */
-body[data-tema="neon"] {
-    background: #000000;
-}
+body[data-tema="neon"] { background: #000000; }
+body[data-tema="neon"] h2, body[data-tema="neon"] .loading-text, body[data-tema="neon"] .current-letter span, body[data-tema="neon"] .stats-header, body[data-tema="neon"] .modal-content h2, body[data-tema="neon"] .pattern-icon { color: #ff00ff; text-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff; }
+body[data-tema="neon"] .btn-primary, body[data-tema="neon"] .loading-bar, body[data-tema="neon"] .badge-multi, body[data-tema="neon"] .current-player .player-score { background: linear-gradient(45deg, #00ffff, #ff00ff); box-shadow: 0 0 20px rgba(0, 255, 255, 0.6); color: #ffffff; border: 1px solid #ffffff; }
+body[data-tema="neon"] .menu-btn { border: 1px solid rgba(0, 255, 255, 0.3); box-shadow: inset 0 0 10px rgba(255, 0, 255, 0.1); }
+body[data-tema="neon"] .circle-btn { border-color: rgba(0, 255, 255, 0.3); box-shadow: 0 0 10px rgba(255, 0, 255, 0.2); color: #00ffff; background: rgba(255, 0, 255, 0.05); }
+body[data-tema="neon"] .circle-btn:active { border-color: #ff00ff; color: #fff; box-shadow: 0 0 15px #ff00ff; }
 
-body[data-tema="neon"] h2,
-body[data-tema="neon"] .loading-text,
-body[data-tema="neon"] .current-letter span,
-body[data-tema="neon"] .stats-header,
-body[data-tema="neon"] .modal-content h2,
-body[data-tema="neon"] .pattern-icon {
-    color: #ff00ff;
-    text-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff;
-}
+/* Prilagođavanje za Neon */
+body[data-tema="neon"] .status-pill { background: rgba(0,0,0,0.8); border-color: rgba(255,0,255,0.3); }
+body[data-tema="neon"] .ducats-pill { color: #ffff00; }
+body[data-tema="neon"] .tokens-pill { color: #00ffff; }
+body[data-tema="neon"] .online-pill { color: #ff00ff; }
 
-body[data-tema="neon"] .logo, 
-body[data-tema="neon"] .splash-logo {
-    background: -webkit-linear-gradient(45deg, #00ffff, #ff00ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
-}
+body[data-tema="neon"] .top-circle-btn { border-color: rgba(0, 255, 255, 0.3); color: #00ffff; background: rgba(255, 0, 255, 0.05); }
+body[data-tema="neon"] .rank-btn { border-color: #ff00ff; color: #ff00ff; box-shadow: 0 0 20px rgba(255, 0, 255, 0.4); }
+body[data-tema="neon"] .rank-label { background: #ff00ff; color: #fff; }
+body[data-tema="neon"] .solo-btn { background: rgba(255, 255, 0, 0.1); border-color: #ffff00; color: #ffff00; box-shadow: 0 0 15px rgba(255, 255, 0, 0.4); }
+body[data-tema="neon"] .tournament-btn { background: rgba(177, 34, 229, 0.1); border-color: #b122e5; color: #b122e5; box-shadow: 0 0 15px rgba(177, 34, 229, 0.4); }
 
-body[data-tema="neon"] .btn-primary,
-body[data-tema="neon"] .loading-bar,
-body[data-tema="neon"] .badge-multi,
-body[data-tema="neon"] .current-player .player-score {
-    background: linear-gradient(45deg, #00ffff, #ff00ff);
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
-    color: #ffffff;
-    border: 1px solid #ffffff;
-}
+body[data-tema="neon"] .input-group input { background: rgba(255, 0, 255, 0.05); border: 2px solid rgba(0, 255, 255, 0.3); }
+body[data-tema="neon"] .input-group input:focus { border-color: #00ffff; box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); }
+body[data-tema="neon"] .input-correct { border-color: #00ffff !important; background: rgba(0, 255, 255, 0.2) !important; box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
+body[data-tema="neon"] .modal-content { background: #0a0a0a; border: 2px solid #ff00ff; box-shadow: 0 0 30px rgba(255, 0, 255, 0.4); }
+body[data-tema="neon"] .current-player { background: rgba(255, 0, 255, 0.15); border-color: #ff00ff; }
+body[data-tema="neon"] .action-footer { background: linear-gradient(to top, #000000 85%, transparent); }
+body[data-tema="neon"] .btn-close { background: rgba(255,0,255,0.15); color: #ff00ff; }
 
-body[data-tema="neon"] .menu-btn {
-    border: 1px solid rgba(0, 255, 255, 0.3);
-    box-shadow: inset 0 0 10px rgba(255, 0, 255, 0.1);
-}
-
-body[data-tema="neon"] .input-group input {
-    background: rgba(255, 0, 255, 0.05);
-    border: 2px solid rgba(0, 255, 255, 0.3);
-}
-
-body[data-tema="neon"] .input-group input:focus {
-    border-color: #00ffff;
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-}
-
-body[data-tema="neon"] .input-correct {
-    border-color: #00ffff !important;
-    background: rgba(0, 255, 255, 0.2) !important;
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-}
-
-body[data-tema="neon"] .modal-content {
-    background: #0a0a0a;
-    border: 2px solid #ff00ff;
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.4);
-}
-
-body[data-tema="neon"] .current-player {
-    background: rgba(255, 0, 255, 0.15);
-    border-color: #ff00ff;
-}
-
-body[data-tema="neon"] .action-footer {
-    background: linear-gradient(to top, #000000 85%, transparent);
-}
-
-body[data-tema="neon"] .btn-close { 
-    background: rgba(255,0,255,0.15); 
-    color: #ff00ff; 
-}
 
 /* --- TEMA: PLAVI OKEAN --- */
-body[data-tema="okean"] {
-    background: linear-gradient(135deg, #020b14, #0a1b2e, #112d4d);
-}
+body[data-tema="okean"] { background: linear-gradient(135deg, #020b14, #0a1b2e, #112d4d); }
+body[data-tema="okean"] h2, body[data-tema="okean"] .loading-text, body[data-tema="okean"] .current-letter span, body[data-tema="okean"] .stats-header, body[data-tema="okean"] .modal-content h2, body[data-tema="okean"] .pattern-icon { color: #38bdf8; text-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+body[data-tema="okean"] .btn-primary, body[data-tema="okean"] .loading-bar, body[data-tema="okean"] .badge-multi, body[data-tema="okean"] .current-player .player-score { background: linear-gradient(45deg, #0284c7, #38bdf8); box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4); color: #000; }
+body[data-tema="okean"] .circle-btn { border-color: rgba(56, 189, 248, 0.3); color: #38bdf8; background: rgba(56, 189, 248, 0.05); }
+body[data-tema="okean"] .circle-btn:active { border-color: #38bdf8; color: #fff; }
 
-body[data-tema="okean"] h2,
-body[data-tema="okean"] .loading-text,
-body[data-tema="okean"] .current-letter span,
-body[data-tema="okean"] .stats-header,
-body[data-tema="okean"] .modal-content h2,
-body[data-tema="okean"] .pattern-icon {
-    color: #38bdf8;
-    text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
-}
+/* Prilagođavanje za Okean */
+body[data-tema="okean"] .status-pill { background: rgba(2, 11, 20, 0.6); border-color: rgba(56, 189, 248, 0.3); }
+body[data-tema="okean"] .ducats-pill { color: #f5af19; }
+body[data-tema="okean"] .tokens-pill { color: #38bdf8; }
+body[data-tema="okean"] .online-pill { color: #0ea5e9; }
 
-body[data-tema="okean"] .logo, 
-body[data-tema="okean"] .splash-logo {
-    background: -webkit-linear-gradient(45deg, #38bdf8, #0284c7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
-}
+body[data-tema="okean"] .top-circle-btn { border-color: rgba(56, 189, 248, 0.3); color: #38bdf8; background: rgba(56, 189, 248, 0.05); }
+body[data-tema="okean"] .rank-btn { border-color: #0284c7; color: #0284c7; box-shadow: 0 0 20px rgba(2, 132, 199, 0.4); background: rgba(2, 132, 199, 0.1); }
+body[data-tema="okean"] .rank-label { background: #0284c7; color: #fff; }
+body[data-tema="okean"] .solo-btn { background: rgba(245, 175, 25, 0.1); border-color: #f5af19; color: #f5af19; }
+body[data-tema="okean"] .tournament-btn { background: rgba(14, 165, 233, 0.1); border-color: #0ea5e9; color: #0ea5e9; }
 
-body[data-tema="okean"] .btn-primary,
-body[data-tema="okean"] .loading-bar,
-body[data-tema="okean"] .badge-multi,
-body[data-tema="okean"] .current-player .player-score {
-    background: linear-gradient(45deg, #0284c7, #38bdf8);
-    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
-    color: #000;
-}
+body[data-tema="okean"] .input-group input:focus { border-color: #38bdf8; }
+body[data-tema="okean"] .input-correct { border-color: #38bdf8 !important; background: rgba(56, 189, 248, 0.1) !important; }
+body[data-tema="okean"] .current-player { background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.3); }
+body[data-tema="okean"] .modal-content { background: linear-gradient(135deg, #0a1b2e, #112d4d); box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(56, 189, 248, 0.15); }
+body[data-tema="okean"] #splash-screen { background: linear-gradient(135deg, #020b14, #0a1b2e, #112d4d); }
+body[data-tema="okean"] .btn-close { background: rgba(56,189,248,0.15); color: #38bdf8; }
 
-body[data-tema="okean"] .input-group input:focus { 
-    border-color: #38bdf8; 
-}
-body[data-tema="okean"] .input-correct { 
-    border-color: #38bdf8 !important; 
-    background: rgba(56, 189, 248, 0.1) !important; 
-}
-body[data-tema="okean"] .current-player {
-    background: rgba(56, 189, 248, 0.1);
-    border-color: rgba(56, 189, 248, 0.3);
-}
-body[data-tema="okean"] .modal-content {
-    background: linear-gradient(135deg, #0a1b2e, #112d4d);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(56, 189, 248, 0.15);
-}
-body[data-tema="okean"] #splash-screen {
-    background: linear-gradient(135deg, #020b14, #0a1b2e, #112d4d);
-}
-
-body[data-tema="okean"] .btn-close { 
-    background: rgba(56,189,248,0.15); 
-    color: #38bdf8; 
-}
 
 /* --- TEMA: KRALJEVSKO ZLATO --- */
-body[data-tema="zlatna"] {
-    background: linear-gradient(135deg, #1a1500, #2b2200, #403300);
-}
+body[data-tema="zlatna"] { background: linear-gradient(135deg, #1a1500, #2b2200, #403300); }
+body[data-tema="zlatna"] h2, body[data-tema="zlatna"] .loading-text, body[data-tema="zlatna"] .current-letter span, body[data-tema="zlatna"] .stats-header, body[data-tema="zlatna"] .modal-content h2, body[data-tema="zlatna"] .pattern-icon { color: #ffd700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+body[data-tema="zlatna"] .btn-primary, body[data-tema="zlatna"] .loading-bar, body[data-tema="zlatna"] .badge-multi, body[data-tema="zlatna"] .current-player .player-score { background: linear-gradient(45deg, #ffaa00, #ffd700); box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); color: #000; }
+body[data-tema="zlatna"] .circle-btn { border-color: rgba(255, 215, 0, 0.3); color: #ffd700; background: rgba(255, 215, 0, 0.05); }
+body[data-tema="zlatna"] .circle-btn:active { border-color: #ffd700; color: #000; }
 
-body[data-tema="zlatna"] h2,
-body[data-tema="zlatna"] .loading-text,
-body[data-tema="zlatna"] .current-letter span,
-body[data-tema="zlatna"] .stats-header,
-body[data-tema="zlatna"] .modal-content h2,
-body[data-tema="zlatna"] .pattern-icon {
-    color: #ffd700;
-    text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-}
+/* Prilagođavanje za Zlatnu */
+body[data-tema="zlatna"] .status-pill { background: rgba(26, 21, 0, 0.6); border-color: rgba(255, 215, 0, 0.3); }
+body[data-tema="zlatna"] .ducats-pill { color: #ffd700; }
+body[data-tema="zlatna"] .tokens-pill { color: #ffaa00; }
+body[data-tema="zlatna"] .online-pill { color: #daa520; }
 
-body[data-tema="zlatna"] .logo, 
-body[data-tema="zlatna"] .splash-logo {
-    background: -webkit-linear-gradient(45deg, #ffd700, #ffaa00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-}
+body[data-tema="zlatna"] .top-circle-btn { border-color: rgba(255, 215, 0, 0.3); color: #ffd700; background: rgba(255, 215, 0, 0.05); }
+body[data-tema="zlatna"] .rank-btn { border-color: #ffaa00; color: #ffaa00; box-shadow: 0 0 20px rgba(255, 170, 0, 0.4); }
+body[data-tema="zlatna"] .rank-label { background: #ffaa00; color: #000; }
+body[data-tema="zlatna"] .solo-btn { background: rgba(255, 215, 0, 0.1); border-color: #ffd700; color: #ffd700; }
+body[data-tema="zlatna"] .tournament-btn { background: rgba(218, 165, 32, 0.1); border-color: #daa520; color: #daa520; }
 
-body[data-tema="zlatna"] .btn-primary,
-body[data-tema="zlatna"] .loading-bar,
-body[data-tema="zlatna"] .badge-multi,
-body[data-tema="zlatna"] .current-player .player-score {
-    background: linear-gradient(45deg, #ffaa00, #ffd700);
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-    color: #000;
-}
-
-body[data-tema="zlatna"] .input-group input {
-    border: 2px solid rgba(255, 215, 0, 0.2);
-}
-
-body[data-tema="zlatna"] .input-group input:focus { 
-    border-color: #ffd700; 
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
-}
-body[data-tema="zlatna"] .input-correct { 
-    border-color: #ffd700 !important; 
-    background: rgba(255, 215, 0, 0.15) !important; 
-}
-body[data-tema="zlatna"] .current-player {
-    background: rgba(255, 215, 0, 0.1);
-    border-color: rgba(255, 215, 0, 0.4);
-}
-body[data-tema="zlatna"] .modal-content {
-    background: linear-gradient(135deg, #2b2200, #403300);
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255, 215, 0, 0.2);
-}
-body[data-tema="zlatna"] #splash-screen {
-    background: linear-gradient(135deg, #1a1500, #2b2200, #403300);
-}
-
-body[data-tema="zlatna"] .btn-close { 
-    background: rgba(255,215,0,0.15); 
-    color: #ffd700; 
-}
+body[data-tema="zlatna"] .input-group input { border: 2px solid rgba(255, 215, 0, 0.2); }
+body[data-tema="zlatna"] .input-group input:focus { border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+body[data-tema="zlatna"] .input-correct { border-color: #ffd700 !important; background: rgba(255, 215, 0, 0.15) !important; }
+body[data-tema="zlatna"] .current-player { background: rgba(255, 215, 0, 0.1); border-color: rgba(255, 215, 0, 0.4); }
+body[data-tema="zlatna"] .modal-content { background: linear-gradient(135deg, #2b2200, #403300); border: 1px solid rgba(255, 215, 0, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255, 215, 0, 0.2); }
+body[data-tema="zlatna"] #splash-screen { background: linear-gradient(135deg, #1a1500, #2b2200, #403300); }
+body[data-tema="zlatna"] .btn-close { background: rgba(255,215,0,0.15); color: #ffd700; }
 
 /* ========================================================
    ANIMACIJA VRATA (MODERNI UI/UX EKRAN ZA UČITAVANJE)
@@ -685,10 +709,9 @@ body[data-tema="zlatna"] .btn-close {
     pointer-events: none; 
 }
 
-/* UI Tekst koji se pojavljuje dok su vrata zatvorena */
 .door-text {
     position: absolute;
-    top: calc(50% - 25px); /* Pozicionirano tačno iznad loading trake */
+    top: calc(50% - 25px); 
     left: 50%;
     transform: translateX(-50%);
     color: #38ef7d;
@@ -710,7 +733,6 @@ body[data-tema="zlatna"] .btn-close {
     100% { opacity: 1; text-shadow: 0 0 20px rgba(56, 239, 125, 1); }
 }
 
-/* Osnova vrata sa efektom zamućenog stakla (Glassmorphism) */
 .door {
     width: 50%;
     height: 100%;
@@ -723,7 +745,6 @@ body[data-tema="zlatna"] .btn-close {
     overflow: hidden; 
 }
 
-/* Oštar unutrašnji sjaj po ivici spajanja vrata */
 .door-left {
     transform: translateX(-100%);
     border-right: 1px solid rgba(255,255,255,0.05);
@@ -740,13 +761,12 @@ body[data-tema="zlatna"] .btn-close {
     transform: translateX(0);
 }
 
-/* --- MODERN UI ELEMENT: Pozadina Učitavajuće Trake (Track) --- */
 .door-left::after, .door-right::after {
     content: '';
     position: absolute;
     top: 50%;
-    margin-top: 5px; /* Spušteno ispod teksta */
-    width: 100px; /* Ukupna širina loading trake je 200px */
+    margin-top: 5px; 
+    width: 100px; 
     height: 4px;
     background: rgba(0, 0, 0, 0.8);
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05);
@@ -754,7 +774,6 @@ body[data-tema="zlatna"] .btn-close {
 .door-left::after { right: 0; border-radius: 4px 0 0 4px; }
 .door-right::after { left: 0; border-radius: 0 4px 4px 0; }
 
-/* --- MODERN UI ELEMENT: Svetleći Progres (Fill) koji se puni --- */
 .door-left::before, .door-right::before {
     content: '';
     position: absolute;
@@ -763,28 +782,17 @@ body[data-tema="zlatna"] .btn-close {
     height: 4px;
     background: #38ef7d;
     box-shadow: 0 0 15px #38ef7d, 0 0 30px #38ef7d;
-    width: 0; /* Počinje od nule */
+    width: 0; 
     z-index: 2;
 }
 .door-left::before { right: 0; border-radius: 4px 0 0 4px; }
 .door-right::before { left: 0; border-radius: 0 4px 4px 0; }
 
-/* Animacija punjenja iz centra prema ivicama dok su vrata aktivna */
-.door-overlay.active .door-left::before {
-    animation: fillBarLeft 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-.door-overlay.active .door-right::before {
-    animation: fillBarRight 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
+.door-overlay.active .door-left::before { animation: fillBarLeft 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.door-overlay.active .door-right::before { animation: fillBarRight 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
-@keyframes fillBarLeft {
-    0% { width: 0; }
-    100% { width: 100px; }
-}
-@keyframes fillBarRight {
-    0% { width: 0; }
-    100% { width: 100px; }
-}
+@keyframes fillBarLeft { 0% { width: 0; } 100% { width: 100px; } }
+@keyframes fillBarRight { 0% { width: 0; } 100% { width: 100px; } }
 
 /* --- EKRAN ZA PREGLED RUNDE (KRAJ RUNDE) --- */
 .summary-carousel {
@@ -833,7 +841,6 @@ body[data-tema="zlatna"] .btn-close {
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid rgba(56, 239, 125, 0.3);
     
-    /* Padding prilagođen da tasteri ne idu do samih ivica */
     padding: 12px 6px calc(15px + env(safe-area-inset-bottom, 10px)) 6px; 
     
     z-index: 9999;
@@ -841,7 +848,7 @@ body[data-tema="zlatna"] .btn-close {
     transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Razmak između redova */
+    gap: 8px; 
     box-shadow: 0 -5px 30px rgba(0,0,0,0.6);
 }
 
@@ -852,15 +859,14 @@ body[data-tema="zlatna"] .btn-close {
 .kb-row {
     display: flex;
     justify-content: center;
-    gap: 4px; /* Razmak između tastera */
+    gap: 4px; 
     width: 100%;
 }
 
 .kb-key {
     flex: 1;
-    /* max-width smanjen na 34px da bi 13 tastera stalo u red */
     max-width: 34px; 
-    height: 52px; /* Malo viši tasteri za lakši dodir */
+    height: 52px; 
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -876,7 +882,6 @@ body[data-tema="zlatna"] .btn-close {
     transition: background 0.1s, transform 0.1s;
 }
 
-/* Posebno pravilo za tastere sa dva slova da ne budu preveliki */
 .kb-key:contains('LJ'), .kb-key:contains('NJ'), .kb-key:contains('DŽ'),
 .kb-key:contains('Љ'), .kb-key:contains('Њ'), .kb-key:contains('Џ') {
     font-size: 0.85rem;
@@ -888,7 +893,6 @@ body[data-tema="zlatna"] .btn-close {
     color: #000;
 }
 
-/* Specijalni tasteri (ABC, Backspace, Enter) */
 .kb-special {
     flex: 1.5;
     max-width: 55px;
@@ -911,7 +915,6 @@ body[data-tema="zlatna"] .btn-close {
     font-weight: 900;
 }
 
-/* Fiktivni kursor kada je polje aktivno */
 .active-keyboard-input {
     border-color: #38ef7d !important;
     background: rgba(56, 239, 125, 0.15) !important;
@@ -939,3 +942,53 @@ body[data-tema="zlatna"] #custom-keyboard { background: rgba(26, 21, 0, 0.98); b
 body[data-tema="zlatna"] .kb-key { background: rgba(255,215,0,0.08); color: #ffd700; border-color: rgba(255,215,0,0.2); }
 body[data-tema="zlatna"] .kb-key:active { background: #ffd700; color: #000; }
 body[data-tema="zlatna"] .kb-enter { background: linear-gradient(45deg, #ffaa00, #ffd700); color: #000; border:none; }
+
+/* ========================================================
+   GLOBAL CHAT STILIZACIJA
+   ======================================================== */
+.chat-msg {
+    padding: 0.6rem 0.8rem;
+    border-radius: 14px;
+    max-width: 85%;
+    word-wrap: break-word;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Stil za tudje poruke (levo) */
+.chat-msg.tudja {
+    background: rgba(255, 255, 255, 0.1);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Stil za tvoje poruke (desno) */
+.chat-msg.mojna {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-ime {
+    font-size: 0.65rem;
+    font-weight: 800;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.chat-msg.tudja .chat-ime { color: #a0aec0; }
+.chat-msg.mojna .chat-ime { color: #38bdf8; align-self: flex-end; }
+
+.chat-tekst {
+    font-size: 0.95rem;
+    color: #ffffff;
+    line-height: 1.3;
+}
+
+#chat-input:focus {
+    border-color: #38bdf8 !important;
+}

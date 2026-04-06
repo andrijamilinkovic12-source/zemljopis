@@ -68,7 +68,8 @@ body {
 #podesavanja-screen,
 #dnevni-izazov-screen,
 #trofeji-main-screen,
-#tokeni-screen {
+#tokeni-screen,
+#online-igraci-screen {
     padding-top: 8vh; 
 }
 
@@ -1020,3 +1021,72 @@ body[data-tema="svetla"] .tokeni-card {
 body[data-tema="svetla"] .tokeni-card div, body[data-tema="svetla"] .tokeni-card p {
     color: #4a5568 !important;
 }
+
+/* ========================================================
+   ONLINE IGRAČI I PRIJATELJI
+   ======================================================== */
+.online-igrac-red {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.6rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.online-igrac-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.online-igrac-info i {
+    color: #38bdf8;
+    font-size: 1.4rem;
+}
+
+.btn-prijatelj {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-prijatelj:active {
+    transform: scale(0.9);
+    background: #38bdf8;
+    color: #000;
+}
+
+.btn-prijatelj.disabled {
+    background: rgba(56, 239, 125, 0.15);
+    color: #38ef7d;
+    border-color: rgba(56, 239, 125, 0.4);
+    cursor: default;
+}
+
+.btn-prijatelj.pending {
+    background: rgba(245, 175, 25, 0.15);
+    color: #f5af19;
+    border-color: rgba(245, 175, 25, 0.4);
+}
+
+/* Prilagođavanje za Svetlu temu */
+body[data-tema="svetla"] .online-igrac-red {
+    background: #ffffff;
+    border-color: #cbd5e0;
+}
+body[data-tema="svetla"] .online-igrac-info { color: #2d3748; }

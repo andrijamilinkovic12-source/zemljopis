@@ -57,6 +57,38 @@ const Game = {
 
             this.socket.on('connect', () => {
                 console.log("Povezan na server sa ID:", this.socket.id);
+                // Čim se povežemo, šaljemo svoj nadimak serveru za online listu
+                let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
+                this.socket.emit('prijavaNadimka', mojNadimak);
+            });
+
+            // NOVO: Ažuriranje broja online igrača u status baru
+            this.socket.on('azurirajBrojOnline', (broj) => {
+                const el = document.getElementById('meni-online');
+                if (el) el.innerText = broj;
+            });
+
+            // NOVO: Prijem liste igrača za ekran
+            this.socket.on('listaOnlineIgraca', (lista) => {
+                if (typeof OnlineIgraciManager !== 'undefined') {
+                    OnlineIgraciManager.renderLista(lista);
+                }
+            });
+
+            // NOVO: Neko nam je poslao zahtev
+            this.socket.on('zahtevZaPrijateljstvo', (podaci) => {
+                if (typeof OnlineIgraciManager !== 'undefined') {
+                    OnlineIgraciManager.prikaziZahtev(podaci);
+                }
+            });
+
+            // NOVO: Neko je odgovorio na naš zahtev
+            this.socket.on('odgovorPrijateljstvo', (podaci) => {
+                if (podaci.prihvaceno && typeof OnlineIgraciManager !== 'undefined') {
+                    OnlineIgraciManager.uspesnoDodatPrijatelj(podaci);
+                } else if (!podaci.prihvaceno) {
+                    UIManager.prikaziObavestenje("Odbijeno", `<b style="color:#ff416c;">${podaci.imePrijatelja}</b> je odbio/la tvoj zahtev za prijateljstvo.`, null, "U redu");
+                }
             });
 
             // Kada server javi da se neko novi povezao u sobu

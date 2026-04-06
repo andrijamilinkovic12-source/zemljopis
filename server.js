@@ -16,9 +16,10 @@ const io = new Server(server, {
 const sobe = {}; 
 const svaSlova = ["A","B","V","G","D","Đ","E","Ž","Z","I","J","K","L","LJ","M","N","NJ","O","P","R","S","T","Ć","U","F","H","C","Č","DŽ","Š"];
 
-// --- GLOBAL CHAT VARIJABLE ---
+// --- GLOBAL CHAT I ONLINE IGRAČI ---
 const MAX_PORUKA_ISTORIJA = 50;
 let istorijaChata = [];
+const onlineIgraci = {}; // Beležimo sve koji su online: { socket.id: { id, ime } }
 
 // Pomoćna funkcija za zaštitu od XSS napada (hakovanja preko chata)
 function escapeHTML(str) {
@@ -84,6 +85,12 @@ function proveriIPokreniSledecuRundu(soba) {
 
 io.on('connection', (socket) => {
     console.log(`🟢 Novi igrač se povezao: ${socket.id}`);
+
+    // IGRAČ JAVLJA SVOJ NADIMAK KADA UĐE
+    socket.on('prijavaNadimka', (ime) => {
+        onlineIgraci[socket.id] = { id: socket.id, ime: escapeHTML(ime).substring(0, 20) };
+        io.emit('azurirajBrojOnline', Object.keys(onlineIgraci).length);
+    });
 
     // 1. KREIRANJE PRIVATNE SOBE
     socket.on('kreirajSobu', (brojIgraca, callback) => {
@@ -192,6 +199,10 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log(`🔴 Igrač otišao: ${socket.id}`);
         ukloniIgracaIzSoba(socket);
+        
+        // Brišemo igrača iz globalne liste online igrača
+        delete onlineIgraci[socket.id]; 
+        io.emit('azurirajBrojOnline', Object.keys(onlineIgraci).length);
     });
 
     function ukloniIgracaIzSoba(socket) {
@@ -305,6 +316,38 @@ io.on('connection', (socket) => {
 
         // Šaljemo SVIM povezanim korisnicima (uključujući i pošiljaoca)
         io.emit('novaGlobalnaPoruka', poruka);
+    });
+
+    // --- 8. ONLINE IGRAČI I PRIJATELJSTVA ---
+    
+    // Klijent traži listu svih online igrača
+    socket.on('traziOnlineIgrace', () => {
+        // Vraćamo sve igrače OSIM onog koji traži
+        const lista = Object.values(onlineIgraci).filter(igrac => igrac.id !== socket.id);
+        socket.emit('listaOnlineIgraca', lista);
+    });
+
+    // Slanje zahteva
+    socket.on('posaljiZahtevZaPrijateljstvo', (podaci) => {
+        const posiljalac = onlineIgraci[socket.id];
+        if (posiljalac && onlineIgraci[podaci.ciljId]) {
+            io.to(podaci.ciljId).emit('zahtevZaPrijateljstvo', {
+                idPosiljaoca: socket.id,
+                imePosiljaoca: posiljalac.ime
+            });
+        }
+    });
+
+    // Odgovor na zahtev
+    socket.on('odgovorNaZahtev', (podaci) => {
+        const primalac = onlineIgraci[socket.id];
+        if (primalac && onlineIgraci[podaci.ciljId]) {
+            io.to(podaci.ciljId).emit('odgovorPrijateljstvo', {
+                prihvaceno: podaci.prihvaceno,
+                idPrijatelja: socket.id,
+                imePrijatelja: primalac.ime
+            });
+        }
     });
 });
 

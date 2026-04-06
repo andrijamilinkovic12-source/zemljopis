@@ -66,7 +66,9 @@ body {
 #riznica-screen,
 #toplista-screen,
 #podesavanja-screen,
-#dnevni-izazov-screen {
+#dnevni-izazov-screen,
+#trofeji-main-screen,
+#tokeni-screen {
     padding-top: 8vh; 
 }
 
@@ -606,12 +608,15 @@ body[data-tema="svetla"] h2, body[data-tema="svetla"] .loading-text, body[data-t
 body[data-tema="svetla"] .input-group label { color: #4a5568; }
 body[data-tema="svetla"] .input-group input { background: #ffffff; border: 2px solid #cbd5e0; color: #2d3748; }
 body[data-tema="svetla"] .input-group input:focus { border-color: #11998e; background: #f7fafc; }
-body[data-tema="svetla"] .game-header, body[data-tema="svetla"] .modal-content, body[data-tema="svetla"] .stats-panel, body[data-tema="svetla"] #riznica-sadrzaj > div, body[data-tema="svetla"] #podesavanja-screen > div > div, body[data-tema="svetla"] #private-room-setup > div > div { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+body[data-tema="svetla"] .game-header, body[data-tema="svetla"] .modal-content, body[data-tema="svetla"] .stats-panel, body[data-tema="svetla"] #riznica-sadrzaj > div, body[data-tema="svetla"] #trofeji-sadrzaj > div, body[data-tema="svetla"] #podesavanja-screen > div > div, body[data-tema="svetla"] #private-room-setup > div > div { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 body[data-tema="svetla"] .modal-content p, body[data-tema="svetla"] .stat-value, body[data-tema="svetla"] .opponent-player { color: #4a5568; }
 body[data-tema="svetla"] .opponent-player { background: #f7fafc; border: 1px solid #e2e8f0; }
 body[data-tema="svetla"] #splash-screen { background: linear-gradient(135deg, #ffffff, #f0f4f8, #e2e8f0); }
 body[data-tema="svetla"] .action-footer { background: linear-gradient(to top, #ffffff 85%, transparent); }
 body[data-tema="svetla"] .btn-close { background: rgba(0,0,0,0.05); color: #2d3748; }
+
+body[data-tema="svetla"] .tokeni-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+body[data-tema="svetla"] .tokeni-card div, body[data-tema="svetla"] .tokeni-card p { color: #4a5568 !important; }
 
 
 /* --- TEMA: NEON CYBER --- */
@@ -991,4 +996,27 @@ body[data-tema="zlatna"] .kb-enter { background: linear-gradient(45deg, #ffaa00,
 
 #chat-input:focus {
     border-color: #38bdf8 !important;
+}
+
+/* ========================================================
+   TOKENI KARTICA
+   ======================================================== */
+.tokeni-card {
+    background: rgba(0,0,0,0.5); 
+    padding: 2rem; 
+    border-radius: 20px; 
+    border: 1px solid rgba(56, 239, 125, 0.3); 
+    width: 100%; 
+    text-align: center; 
+    margin-bottom: 2rem; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+body[data-tema="svetla"] .tokeni-card { 
+    background: #ffffff; 
+    border: 1px solid #e2e8f0; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+}
+body[data-tema="svetla"] .tokeni-card div, body[data-tema="svetla"] .tokeni-card p {
+    color: #4a5568 !important;
 }

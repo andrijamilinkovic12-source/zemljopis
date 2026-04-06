@@ -38,7 +38,7 @@
             <div class="status-pill ducats-pill" onclick="RiznicaManager.otvoriEkran()" title="Tvoja riznica">
                 <i class="fa-solid fa-coins"></i> <span id="meni-dukati">500</span>
             </div>
-            <div class="status-pill tokens-pill" title="Preostali tokeni za danas">
+            <div class="status-pill tokens-pill" onclick="TokeniManager.otvoriEkran()" title="Preostali tokeni za danas">
                 <i class="fa-solid fa-ticket"></i> <span id="meni-tokeni">3/3</span>
             </div>
             <div class="status-pill online-pill" title="Igrači trenutno na mreži">
@@ -56,7 +56,7 @@
                 <div class="rank-label">NIVO</div>
             </button>
 
-            <button class="top-circle-btn" onclick="RiznicaManager.otvoriEkran(); setTimeout(() => RiznicaManager.promeniKategoriju('trofeji'), 100);" title="Trofeji">
+            <button class="top-circle-btn" onclick="TrofejiManager.otvoriEkran()" title="Trofeji">
                 <i class="fa-solid fa-medal"></i>
             </button>
         </div>
@@ -135,6 +135,47 @@
         </div>
     </div>
 
+    <div id="tokeni-screen" class="screen">
+        <div class="menu-pattern">
+            <i class="fa-solid fa-ticket pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+        </div>
+        
+        <h2 style="color: #38ef7d; margin-bottom: 0.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Tokeni za Igru</h2>
+        
+        <div style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; align-items: center; justify-content: center;">
+            
+            <div class="tokeni-card">
+                <i class="fa-solid fa-ticket" style="font-size: 4rem; color: #38ef7d; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(56, 239, 125, 0.5);"></i>
+                <div style="font-size: 3rem; font-weight: 800; color: #fff; line-height: 1;"><span id="tokeni-stanje-veliko">3</span><span style="font-size: 1.5rem; color: #a0aec0;">/3</span></div>
+                <p style="font-size: 0.85rem; margin-top: 1rem; color: #a0aec0;">Svaka partija košta 1 token.<br>Svakog dana dobijaš 3 besplatna tokena.</p>
+            </div>
+
+            <button id="btn-gledaj-reklamu" class="btn-primary" style="width: 100%; padding: 1.2rem; border-radius: 15px; font-weight: 800; font-size: 1.1rem; border: none; cursor: pointer; transition: transform 0.2s;" onclick="TokeniManager.pogledajReklamu()">
+                <i class="fa-solid fa-play"></i> Gledaj reklamu (+1)
+            </button>
+
+            <p style="color: #cbd5e0; font-size: 0.75rem; margin-top: 1rem; text-align: center; max-width: 250px;">
+                Prazan si? Nema problema! Pogledaj kratku reklamu i odmah preuzmi novi token za igru. Možeš dopuniti uvek do maksimum 3.
+            </p>
+
+            <button class="menu-btn btn-secondary" style="margin-top: auto; margin-bottom: 1rem; width: 100%;" onclick="UIManager.prikaziEkran('main-menu')">↩ Nazad u Meni</button>
+        </div>
+    </div>
+
+    <div id="trofeji-main-screen" class="screen">
+        <div class="menu-pattern">
+            <i class="fa-solid fa-medal pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+        </div>
+        
+        <h2 style="color: #f5af19; margin-bottom: 1.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(245, 175, 25, 0.3); text-align: center;">Soba Trofeja</h2>
+        
+        <div style="z-index: 5; width: 100%; max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; overflow: hidden;">
+            <div id="trofeji-sadrzaj" style="flex: 1; overflow-y: auto; margin-bottom: 1rem; scrollbar-width: none; padding-bottom: 1rem;">
+                </div>
+            <button class="menu-btn btn-secondary" style="margin-top: auto; margin-bottom: 1rem; flex-shrink: 0;" onclick="UIManager.prikaziEkran('main-menu')">↩ Nazad</button>
+        </div>
+    </div>
+
     <div id="riznica-screen" class="screen">
         <div class="menu-pattern">
             <i class="fa-solid fa-gem pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
@@ -150,8 +191,7 @@
         
         <div style="z-index: 5; width: 100%; max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; overflow: hidden;">
             
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3rem; margin-bottom: 1rem; flex-shrink: 0;">
-                <button class="menu-btn" id="tab-trofeji" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="RiznicaManager.promeniKategoriju('trofeji')"><i class="fa-solid fa-trophy"></i><br>Trofeji</button>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.3rem; margin-bottom: 1rem; flex-shrink: 0;">
                 <button class="menu-btn" id="tab-teme" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="RiznicaManager.promeniKategoriju('teme')"><i class="fa-solid fa-palette"></i><br>Teme</button>
                 <button class="menu-btn" id="tab-efekti" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="RiznicaManager.promeniKategoriju('efekti')"><i class="fa-solid fa-wand-magic"></i><br>Efekti</button>
                 <button class="menu-btn" id="tab-vauceri" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="RiznicaManager.promeniKategoriju('vauceri')"><i class="fa-solid fa-ticket"></i><br>Vaučeri</button>
@@ -397,6 +437,8 @@
     <script src="toplista.js"></script>
     <script src="podesavanja.js"></script>
     <script src="riznica.js"></script> 
+    <script src="trofeji.js"></script>
+    <script src="tokeni.js"></script>
     <script src="dnevniizazov.js"></script>
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
     <script src="keyboard.js"></script>

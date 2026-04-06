@@ -133,6 +133,12 @@ const Game = {
     traziSobu: function(brojIgraca) {
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
+        // PROVERA TOKENA
+        if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
+            UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
+            return;
+        }
+
         this.brojIgracaUSobi = brojIgraca;
         let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
 
@@ -157,6 +163,12 @@ const Game = {
     kreirajPrivatnuSobu: function(brojIgraca) {
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
+        // PROVERA TOKENA
+        if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
+            UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
+            return;
+        }
+
         this.brojIgracaUSobi = brojIgraca;
         this.jeHost = true;
 
@@ -168,7 +180,7 @@ const Game = {
                 UIManager.prikaziObavestenje(
                     "Soba je kreirana!",
                     `Tvoj kod sobe je:<br><br><b style="font-size: 2.5rem; color: #f5af19; letter-spacing: 5px; text-shadow: 0 0 10px rgba(245,175,25,0.4);">${odgovor.kodSobe}</b><br><br>Pošalji ovaj kod prijateljima.<br><br>Igrača: <b style="color:#f5af19;">1/${brojIgraca}</b>`,
-                    null, // Uklonili smo funkciju za prerano pokretanje
+                    null, 
                     "Čekam ostale..." 
                 );
             }
@@ -177,6 +189,12 @@ const Game = {
 
     pridruziSeSobi: function() {
         if (!this.socket) return alert("Nema konekcije sa serverom!");
+
+        // PROVERA TOKENA
+        if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
+            UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
+            return;
+        }
 
         const input = document.getElementById('room-code-input');
         const kod = input.value.trim().toUpperCase();
@@ -208,6 +226,18 @@ const Game = {
     },
 
     pokreniIgru: function(mod, zadatoSlovoSaServera = null) {
+        // TROŠENJE TOKENA (Samo kada se zapravo započne igra i pređe u prvu rundu)
+        if (typeof TokeniManager !== 'undefined') {
+            if (mod === 'solo') {
+                if (!TokeniManager.imaTokena()) {
+                    UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
+                    return; // Spreči pokretanje solo moda
+                }
+            }
+            // Skidamo 1 token!
+            TokeniManager.potrosiToken();
+        }
+
         this.trenutniMod = mod;
         this.trenutnaRunda = 1; 
         this.ukupanScore = 0;   
@@ -303,6 +333,12 @@ const Game = {
             this.ukupnoTacnihOdgovora += tacnihOveRunde;
             UIManager.azurirajLiveStatistiku(this.ukupnoTacnihOdgovora, this.trenutniMod, []);
             
+            // TROFEJI PRAĆENJE (SOLO)
+            if (typeof TrofejiManager !== 'undefined') {
+                TrofejiManager.azurirajNapredak('pojmovi', tacnihOveRunde);
+                if (tacnihOveRunde === 7) TrofejiManager.azurirajNapredak('perfektno', 1);
+            }
+
             setTimeout(() => {
                 this.prikaziRezimeRunde(pregledIgraca, tacnihOveRunde);
             }, 1200);
@@ -402,6 +438,17 @@ const Game = {
                 this.rezultatiProtivnika[socketId].poeni += scoreOveRunde[socketId];
                 arrayZaLiveStatistiku.push({ ime: this.rezultatiProtivnika[socketId].ime, poeni: this.rezultatiProtivnika[socketId].poeni });
             }
+        }
+
+        // TROFEJI (Praćenje tačnih pojmova za Multiplayer rundu)
+        if (typeof TrofejiManager !== 'undefined') {
+            let mojiTacni = 0;
+            const inputPoljaZaPojmove = document.querySelectorAll('#game-board .game-input');
+            inputPoljaZaPojmove.forEach(input => {
+                if (input.classList.contains('input-correct')) mojiTacni++;
+            });
+            TrofejiManager.azurirajNapredak('pojmovi', mojiTacni);
+            if (mojiTacni === 7) TrofejiManager.azurirajNapredak('perfektno', 1);
         }
 
         UIManager.azurirajLiveStatistiku(this.ukupanScore, 'multi', arrayZaLiveStatistiku);
@@ -572,6 +619,11 @@ const Game = {
     zavrsiIgruKonacno: function() {
         let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
 
+        // TROFEJI PRAĆENJE (PARTIJE)
+        if (typeof TrofejiManager !== 'undefined') {
+            TrofejiManager.azurirajNapredak('partije', 1);
+        }
+
         if (this.trenutniMod === 'multi') {
             let sviIgraci = [];
             sviIgraci.push({ ime: `👤 ${mojNadimak}`, poeni: this.ukupanScore, isMe: true });
@@ -581,6 +633,11 @@ const Game = {
             }
             
             sviIgraci.sort((a, b) => b.poeni - a.poeni);
+
+            // TROFEJI PRAĆENJE (POBEDA)
+            if (typeof TrofejiManager !== 'undefined' && sviIgraci[0].isMe) {
+                TrofejiManager.azurirajNapredak('pobede', 1);
+            }
             
             let tabelaHtml = `<div style="text-align: left; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; margin-top: 1rem;">`;
             

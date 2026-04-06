@@ -77,22 +77,39 @@
                 </div>
                 
                 <div id="player-select-overlay" class="circle-overlay">
-                    <button class="close-overlay-btn" onclick="hidePlayerSelect()"><i class="fa-solid fa-arrow-left"></i> Nazad</button>
+                    <button class="close-overlay-btn" style="top:5px;" onclick="hidePlayerSelect()"><i class="fa-solid fa-arrow-left"></i> Nazad</button>
                     
-                    <span id="player-select-title" style="font-size:0.8rem; font-weight:800; margin-bottom:12px; text-transform:uppercase;">BROJ IGRAČA</span>
+                    <span id="player-select-title" style="font-size:0.75rem; font-weight:800; margin-bottom:8px; text-transform:uppercase;">BROJ IGRAČA</span>
                     
-                    <div class="player-bubbles">
+                    <div id="multi-bubbles" class="player-bubbles">
                         <button class="bubble-btn" onclick="startGameWithPlayers(2)">2</button>
                         <button class="bubble-btn" onclick="startGameWithPlayers(3)">3</button>
                         <button class="bubble-btn" onclick="startGameWithPlayers(4)">4</button>
                         <button class="bubble-btn" onclick="startGameWithPlayers(5)">5</button>
                     </div>
+
+                    <div id="private-bubbles" class="player-bubbles" style="display:none; gap: 5px; margin-bottom: 5px;">
+                        <button class="invite-btn" style="background:rgba(245, 175, 25, 0.4); border-color:#f5af19; color:#fff;" title="Ti (Host)"><i class="fa-solid fa-user-ninja"></i></button>
+                        <button class="invite-btn" id="invite-slot-1" onclick="pokaziPrijateljeZaPoziv(1)"><i class="fa-solid fa-plus"></i></button>
+                        <button class="invite-btn" id="invite-slot-2" onclick="pokaziPrijateljeZaPoziv(2)"><i class="fa-solid fa-plus"></i></button>
+                        <button class="invite-btn" id="invite-slot-3" onclick="pokaziPrijateljeZaPoziv(3)"><i class="fa-solid fa-plus"></i></button>
+                        <button class="invite-btn" id="invite-slot-4" onclick="pokaziPrijateljeZaPoziv(4)"><i class="fa-solid fa-plus"></i></button>
+                    </div>
                     
-                    <div id="join-room-section" style="display:none; margin-top:15px; text-align:center;">
-                        <span style="font-size:0.65rem; color:#a0aec0; display:block; margin-bottom:5px;">ILI UNESI KOD:</span>
+                    <div id="friends-dropdown-container" style="width:100%; display:flex; justify-content:center; overflow:hidden; transition: max-height 0.3s ease; max-height: 0;">
+                        <div id="friends-dropdown" style="width:85%; max-height:75px; overflow-y:auto; background:rgba(0,0,0,0.8); border:1px solid rgba(245, 175, 25, 0.5); border-radius:8px; padding:3px; scrollbar-width:none; font-size:0.75rem;">
+                        </div>
+                    </div>
+
+                    <button id="btn-kreiraj-privatnu" class="join-go-btn" style="display:none; margin-top:5px; width:auto; padding: 4px 12px; font-size:0.8rem; border-radius:15px;" onclick="Game.kreirajPrivatnuSobuIPozovi()">
+                        <i class="fa-solid fa-check"></i> START
+                    </button>
+                    
+                    <div id="join-room-section" style="display:none; margin-top:10px; text-align:center;">
+                        <span style="font-size:0.6rem; color:#a0aec0; display:block; margin-bottom:3px;">ILI UNESI KOD:</span>
                         <div style="display:flex; justify-content:center; gap:5px;">
-                            <input type="text" id="room-code-input" maxlength="4" placeholder="KOD" autocomplete="off" autocorrect="off" spellcheck="false">
-                            <button class="join-go-btn" onclick="Game.pridruziSeSobi()"><i class="fa-solid fa-check"></i></button>
+                            <input type="text" id="room-code-input" maxlength="4" placeholder="KOD" autocomplete="off" autocorrect="off" spellcheck="false" style="padding:4px; font-size:0.9rem; width:70px;">
+                            <button class="join-go-btn" style="width:30px; font-size:0.9rem; padding:0;" onclick="Game.pridruziSeSobi()"><i class="fa-solid fa-check"></i></button>
                         </div>
                     </div>
                 </div>
@@ -478,6 +495,19 @@
         </div>
     </div>
 
+    <div id="game-invite-modal" class="modal-overlay">
+        <div class="modal-content" style="border-color: #f5af19; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(245, 175, 25, 0.2);">
+            <h2 style="color: #f5af19;"><i class="fa-solid fa-gamepad"></i> POZIV ZA IGRU</h2>
+            <p style="text-align: center; font-size: 1rem; margin-bottom: 1.5rem; color: #cbd5e0;">
+                <b id="game-invite-name" style="color: #fff;">Neko</b> te poziva u svoju sobu!
+            </p>
+            <div style="display: flex; gap: 0.5rem;">
+                <button id="btn-odbij-igru" class="menu-btn btn-secondary" style="flex: 1; margin: 0; padding: 0.8rem;" onclick="document.getElementById('game-invite-modal').classList.remove('active')">Odbij</button>
+                <button id="btn-prihvati-igru" class="menu-btn btn-primary" style="flex: 1; margin: 0; padding: 0.8rem;">Prihvati</button>
+            </div>
+        </div>
+    </div>
+
     <div id="custom-modal" class="modal-overlay">
         <div class="modal-content">
             <h2 id="modal-title">Naslov</h2>
@@ -515,6 +545,8 @@
     <script src="game.js"></script>
 
     <script>
+        let izabraniPrijateljiZaSobu = [];
+        let currentSlotIndex = -1;
         let selectedMode = '';
         
         function showPlayerSelect(mode) {
@@ -522,19 +554,40 @@
             const overlay = document.getElementById('player-select-overlay');
             const title = document.getElementById('player-select-title');
             const joinSection = document.getElementById('join-room-section');
+            const multiBubbles = document.getElementById('multi-bubbles');
+            const privateBubbles = document.getElementById('private-bubbles');
+            const btnStart = document.getElementById('btn-kreiraj-privatnu');
+            const friendsDropdownContainer = document.getElementById('friends-dropdown-container');
             
             overlay.className = 'circle-overlay'; 
+            if (friendsDropdownContainer) friendsDropdownContainer.style.maxHeight = '0';
             
             if (mode === 'multi') {
                 title.innerText = 'BROJ IGRAČA';
                 title.style.color = '#38ef7d';
                 overlay.classList.add('overlay-multi');
+                
+                multiBubbles.style.display = 'flex';
+                privateBubbles.style.display = 'none';
                 joinSection.style.display = 'none';
+                btnStart.style.display = 'none';
             } else {
-                title.innerText = 'KREIRAJ SOBU';
+                title.innerText = 'POZOVI PRIJATELJE';
                 title.style.color = '#f5af19';
                 overlay.classList.add('overlay-private');
+                
+                multiBubbles.style.display = 'none';
+                privateBubbles.style.display = 'flex';
                 joinSection.style.display = 'block';
+                btnStart.style.display = 'block';
+                
+                // Očisti slotove pri svakom ulasku
+                izabraniPrijateljiZaSobu = [];
+                for(let i=1; i<=4; i++){
+                    const slot = document.getElementById('invite-slot-' + i);
+                    slot.innerHTML = '<i class="fa-solid fa-plus"></i>';
+                    slot.classList.remove('filled');
+                }
             }
             
             overlay.classList.add('active');
@@ -542,6 +595,8 @@
         
         function hidePlayerSelect() {
             document.getElementById('player-select-overlay').classList.remove('active');
+            const friendsDropdownContainer = document.getElementById('friends-dropdown-container');
+            if(friendsDropdownContainer) friendsDropdownContainer.style.maxHeight = '0';
         }
         
         function startGameWithPlayers(num) {
@@ -550,6 +605,43 @@
             } else {
                 Game.kreirajPrivatnuSobu(num);
             }
+        }
+
+        function pokaziPrijateljeZaPoziv(slotId) {
+            currentSlotIndex = slotId;
+            const container = document.getElementById('friends-dropdown-container');
+            const dropdown = document.getElementById('friends-dropdown');
+            
+            // Izvuci prijatelje koji su TRENUTNO ONLINE i KOJI NISU VEĆ DODATI
+            let onlineFriends = [];
+            if (typeof SobaPrijateljaManager !== 'undefined') {
+                onlineFriends = SobaPrijateljaManager.prijatelji.filter(p => p.online && !izabraniPrijateljiZaSobu.includes(p.ime));
+            }
+            
+            if (onlineFriends.length === 0) {
+                dropdown.innerHTML = '<div style="color:#a0aec0; text-align:center; padding:5px;">Nema dostupnih online prijatelja.</div>';
+            } else {
+                let html = '';
+                onlineFriends.forEach(p => {
+                    html += `<div style="padding:5px; border-bottom:1px solid rgba(255,255,255,0.1); color:#fff; cursor:pointer; display:flex; align-items:center; gap:5px;" onclick="izaberiPrijateljaZaSobu('${p.ime}')"><i class="fa-solid fa-user-ninja" style="color:#38ef7d;"></i> ${p.ime}</div>`;
+                });
+                dropdown.innerHTML = html;
+            }
+            
+            container.style.maxHeight = '80px'; // Okida animaciju KA DOLE!
+        }
+
+        function izaberiPrijateljaZaSobu(ime) {
+            izabraniPrijateljiZaSobu.push(ime);
+            const slot = document.getElementById('invite-slot-' + currentSlotIndex);
+            
+            // Umesto slika (pošto ih jos nemamo), ispisujemo lepo Inicijal prijatelja!
+            let inicijal = ime.charAt(0).toUpperCase();
+            slot.innerHTML = `<b style="font-size:1.1rem; text-shadow:0 0 5px rgba(0,0,0,0.5);">${inicijal}</b>`; 
+            slot.classList.add('filled');
+            
+            // Zatvara animaciju ka gore
+            document.getElementById('friends-dropdown-container').style.maxHeight = '0';
         }
     </script>
 </body>

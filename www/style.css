@@ -1169,3 +1169,28 @@ body[data-tema="svetla"] .prijatelj-kartica {
 body[data-tema="svetla"] .prijatelj-ime { color: #2d3748; }
 body[data-tema="svetla"] .stat-box { background: #f7fafc; border: 1px solid #e2e8f0; }
 body[data-tema="svetla"] .stat-box span { color: #4a5568; }
+
+/* --- POZIV PRIJATELJA SLOTOVI --- */
+.invite-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(245, 175, 25, 0.5);
+    color: #f5af19;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.invite-btn:active {
+    transform: scale(0.9);
+}
+.invite-btn.filled {
+    background: rgba(56, 239, 125, 0.2);
+    border-color: #38ef7d;
+    color: #38ef7d;
+}

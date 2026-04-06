@@ -129,6 +129,48 @@ io.on('connection', (socket) => {
         callback({ uspeh: true, kodSobe: kodSobe });
     });
 
+    // 1b. KREIRANJE PRIVATNE SOBE I DIREKTNO SLANJE POZIVNICA PRIJATELJIMA
+    socket.on('kreirajSobuIPozovi', (podaci, callback) => {
+        let brojIgraca = podaci.pozvani.length + 1;
+        if (brojIgraca === 1) brojIgraca = 5; // Pravi max 5 ako je kliknuo samo START
+
+        const karakteri = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let kodSobe = "";
+        for (let i = 0; i < 4; i++) { 
+            kodSobe += karakteri.charAt(Math.floor(Math.random() * karakteri.length)); 
+        }
+
+        sobe[kodSobe] = {
+            id: kodSobe,
+            host: socket.id,
+            maxIgraca: brojIgraca,
+            igraci: [{ id: socket.id, ime: onlineIgraci[socket.id] ? onlineIgraci[socket.id].ime : "Host", spremniOdgovori: false, spremniZaSledecuRundu: false }],
+            status: 'cekanje',
+            iskoriscenaSlova: [],
+            trenutnaRunda: 0,
+            odgovoriOveRunde: [],
+            javna: false,
+            timeoutRunde: null
+        };
+
+        socket.join(kodSobe);
+        console.log(`🏠 Soba kreirana (poziv): ${kodSobe} (Host: ${socket.id})`);
+        
+        // Magija: Direktno gađamo Socket.IO onih prijatelja koji su označeni!
+        const hostIme = onlineIgraci[socket.id] ? onlineIgraci[socket.id].ime : "Tvoj prijatelj";
+        podaci.pozvani.forEach(imePrijatelja => {
+            const ciljSocket = Object.values(onlineIgraci).find(oi => oi.ime.toLowerCase() === imePrijatelja.toLowerCase());
+            if (ciljSocket) {
+                io.to(ciljSocket.id).emit('pozivUSobu', {
+                    kodSobe: kodSobe,
+                    hostIme: hostIme
+                });
+            }
+        });
+
+        callback({ uspeh: true, kodSobe: kodSobe, brojIgraca: brojIgraca });
+    });
+
     // 2. PRIDRUŽIVANJE SOBI (PRIVATNE SOBE)
     socket.on('pridruziSeSobi', (podaci, callback) => {
         const kodSobe = podaci.kodSobe.toUpperCase();

@@ -21,6 +21,16 @@ const MAX_PORUKA_ISTORIJA = 50;
 let istorijaChata = [];
 const onlineIgraci = {}; // Beležimo sve koji su online: { socket.id: { id, ime } }
 
+// --- PRIVREMENA BAZA ZA PRIJATELJE I ZAHTEVE ---
+// Format: { "Nadimak": { prijatelji: [{ime, poeni, pojmovi...}], zahtevi: ["Nadimak2"] } }
+const bazaPrijatelja = {};
+
+function osigurajBazu(ime) {
+    if (!bazaPrijatelja[ime]) {
+        bazaPrijatelja[ime] = { prijatelji: [], zahtevi: [] };
+    }
+}
+
 // Pomoćna funkcija za zaštitu od XSS napada (hakovanja preko chata)
 function escapeHTML(str) {
     if (!str) return "";
@@ -347,6 +357,80 @@ io.on('connection', (socket) => {
                 idPrijatelja: socket.id,
                 imePrijatelja: primalac.ime
             });
+        }
+    });
+
+    // --- 9. SOBA PRIJATELJA (OFLAJN SISTEM) ---
+    
+    // Klijent traži svoje trenutne prijatelje i zahteve
+    socket.on('traziOsvezenjePrijatelja', () => {
+        const ja = onlineIgraci[socket.id];
+        if (ja) {
+            osigurajBazu(ja.ime);
+            
+            let mojiPodaci = bazaPrijatelja[ja.ime];
+            // Proveravamo ko je od prijatelja trenutno online pre slanja
+            mojiPodaci.prijatelji.forEach(p => {
+                p.online = Object.values(onlineIgraci).some(oi => oi.ime.toLowerCase() === p.ime.toLowerCase());
+            });
+
+            socket.emit('sinhronizacijaPrijatelja', mojiPodaci);
+        }
+    });
+
+    // Slanje zahteva po nadimku (igrač može biti i oflajn)
+    socket.on('posaljiOfflineZahtev', (ciljIme) => {
+        const ja = onlineIgraci[socket.id];
+        if (!ja) return;
+
+        const cistoCiljIme = escapeHTML(ciljIme).substring(0, 20);
+        osigurajBazu(cistoCiljIme);
+
+        // Dodajemo zahtev ako već nismo prijatelji i ako zahtev već ne postoji
+        if (!bazaPrijatelja[cistoCiljIme].zahtevi.includes(ja.ime) &&
+            !bazaPrijatelja[cistoCiljIme].prijatelji.some(p => p.ime === ja.ime)) {
+            
+            bazaPrijatelja[cistoCiljIme].zahtevi.push(ja.ime);
+
+            // Ako je taj igrač slučajno trenutno online, odmah mu iskače notifikacija!
+            const ciljSocket = Object.values(onlineIgraci).find(oi => oi.ime.toLowerCase() === cistoCiljIme.toLowerCase());
+            if (ciljSocket) {
+                io.to(ciljSocket.id).emit('noviOfflineZahtev', ja.ime);
+            }
+        }
+    });
+
+    // Odgovor na oflajn zahtev (Prihvati / Odbij)
+    socket.on('odgovorNaOfflineZahtev', (podaci) => {
+        const ja = onlineIgraci[socket.id];
+        if (!ja) return;
+
+        osigurajBazu(ja.ime);
+        const { imePosiljaoca, prihvaceno } = podaci;
+
+        // Brišemo zahtev sa liste
+        bazaPrijatelja[ja.ime].zahtevi = bazaPrijatelja[ja.ime].zahtevi.filter(z => z !== imePosiljaoca);
+
+        if (prihvaceno) {
+            osigurajBazu(imePosiljaoca);
+            
+            // Spajamo ih kao prijatelje
+            if (!bazaPrijatelja[ja.ime].prijatelji.some(p => p.ime === imePosiljaoca)) {
+                bazaPrijatelja[ja.ime].prijatelji.push({ ime: imePosiljaoca, poeni: 0, pojmovi: 0, indeks: '0%' });
+            }
+            if (!bazaPrijatelja[imePosiljaoca].prijatelji.some(p => p.ime === ja.ime)) {
+                bazaPrijatelja[imePosiljaoca].prijatelji.push({ ime: ja.ime, poeni: 0, pojmovi: 0, indeks: '0%' });
+            }
+
+            // Ako je pošiljalac online u ovom trenutku, osvežavamo i njegov ekran
+            const posiljalacSocket = Object.values(onlineIgraci).find(oi => oi.ime === imePosiljaoca);
+            if (posiljalacSocket) {
+                let podaciPosiljaoca = bazaPrijatelja[imePosiljaoca];
+                podaciPosiljaoca.prijatelji.forEach(p => {
+                    p.online = Object.values(onlineIgraci).some(oi => oi.ime.toLowerCase() === p.ime.toLowerCase());
+                });
+                io.to(posiljalacSocket.id).emit('sinhronizacijaPrijatelja', podaciPosiljaoca);
+            }
         }
     });
 });

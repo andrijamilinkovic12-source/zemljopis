@@ -91,6 +91,27 @@ const Game = {
                 }
             });
 
+            // NOVO: Server šalje kompletnu listu naših prijatelja i zahteva
+            this.socket.on('sinhronizacijaPrijatelja', (podaci) => {
+                if (typeof SobaPrijateljaManager !== 'undefined') {
+                    SobaPrijateljaManager.primiSinhronizaciju(podaci);
+                }
+            });
+
+            // NOVO: Neko nam je poslao oflajn zahtev po imenu, a mi smo trenutno u igri!
+            this.socket.on('noviOfflineZahtev', (imePosiljaoca) => {
+                UIManager.prikaziObavestenje(
+                    "Novi zahtev!", 
+                    `Igrač <b style="color:#f5af19;">${imePosiljaoca}</b> ti je poslao zahtev za prijateljstvo!`, 
+                    () => {
+                        if (typeof SobaPrijateljaManager !== 'undefined') SobaPrijateljaManager.otvoriEkran();
+                    }, 
+                    "Pogledaj"
+                );
+                // U pozadini tražimo osveženje kako bi crveni bedž na ikonici zasijao
+                this.socket.emit('traziOsvezenjePrijatelja');
+            });
+
             // Kada server javi da se neko novi povezao u sobu
             this.socket.on('noviIgracUSobi', (podaci) => {
                 if (this.jeHost) {
@@ -136,7 +157,7 @@ const Game = {
                 this.obradiMultiplayerOdgovore(odgovoriSobe);
             });
 
-            // NOVO: Kada server javi da su svi spremni i nova runda kreće
+            // Kada server javi da su svi spremni i nova runda kreće
             this.socket.on('sledecaRundaPocinje', (podaci) => {
                 UIManager.zatvoriObavestenje();
                 this.trenutnaRunda = podaci.runda;

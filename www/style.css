@@ -69,7 +69,8 @@ body {
 #dnevni-izazov-screen,
 #trofeji-main-screen,
 #tokeni-screen,
-#online-igraci-screen {
+#online-igraci-screen,
+#soba-prijatelja-screen {
     padding-top: 8vh; 
 }
 
@@ -1090,3 +1091,81 @@ body[data-tema="svetla"] .online-igrac-red {
     border-color: #cbd5e0;
 }
 body[data-tema="svetla"] .online-igrac-info { color: #2d3748; }
+
+/* ========================================================
+   SOBA PRIJATELJA - KARTICE I STATISTIKA
+   ======================================================== */
+.prijatelj-kartica {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(56, 239, 125, 0.2);
+    border-radius: 12px;
+    padding: 0.8rem;
+    margin-bottom: 0.6rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.prijatelj-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 0.8rem;
+}
+.prijatelj-avatar {
+    width: 45px;
+    height: 45px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: #38ef7d;
+    border: 2px solid rgba(56, 239, 125, 0.4);
+}
+.prijatelj-ime {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #fff;
+}
+.prijatelj-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ff416c;
+}
+.prijatelj-status.online {
+    color: #38ef7d;
+}
+.prijatelj-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+.stat-box {
+    background: rgba(255,255,255,0.05);
+    padding: 0.5rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.stat-box span {
+    font-size: 0.65rem;
+    color: #a0aec0;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+.stat-box strong {
+    font-size: 0.95rem;
+    color: #f5af19;
+}
+
+/* Prilagođavanje za Svetlu temu (Soba Prijatelja) */
+body[data-tema="svetla"] .prijatelj-kartica {
+    background: #ffffff;
+    border-color: #cbd5e0;
+}
+body[data-tema="svetla"] .prijatelj-ime { color: #2d3748; }
+body[data-tema="svetla"] .stat-box { background: #f7fafc; border: 1px solid #e2e8f0; }
+body[data-tema="svetla"] .stat-box span { color: #4a5568; }

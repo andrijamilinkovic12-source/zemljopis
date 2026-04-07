@@ -51,7 +51,7 @@
                 <i class="fa-solid fa-comments"></i>
             </button>
 
-            <button class="top-circle-btn rank-btn" onclick="UIManager.prikaziObavestenje('Kvartalni Nivo', 'Ovo je tvoj nivo baziran na tačno pogođenim pojmovima u ovom kvartalu. Nova sezona kreće uskoro!', null, 'Zatvori')" title="Kvartalni Nivo">
+            <button class="top-circle-btn rank-btn" onclick="KvartalniNivoManager.otvoriEkran()" title="Kvartalni Nivo">
                 <span>1</span>
                 <div class="rank-label">NIVO</div>
             </button>
@@ -104,14 +104,6 @@
                     <button id="btn-kreiraj-privatnu" class="join-go-btn" style="display:none; margin-top:5px; width:auto; padding: 4px 12px; font-size:0.8rem; border-radius:15px;" onclick="Game.kreirajPrivatnuSobuIPozovi()">
                         <i class="fa-solid fa-check"></i> START
                     </button>
-                    
-                    <div id="join-room-section" style="display:none; margin-top:10px; text-align:center;">
-                        <span style="font-size:0.6rem; color:#a0aec0; display:block; margin-bottom:3px;">ILI UNESI KOD:</span>
-                        <div style="display:flex; justify-content:center; gap:5px;">
-                            <input type="text" id="room-code-input" maxlength="4" placeholder="KOD" autocomplete="off" autocorrect="off" spellcheck="false" style="padding:4px; font-size:0.9rem; width:70px;">
-                            <button class="join-go-btn" style="width:30px; font-size:0.9rem; padding:0;" onclick="Game.pridruziSeSobi()"><i class="fa-solid fa-check"></i></button>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -154,6 +146,22 @@
             <button class="circle-btn" onclick="PodesavanjaManager.otvoriEkran()" title="Podešavanja">
                 <i class="fa-solid fa-gear"></i>
             </button>
+        </div>
+    </div>
+
+    <div id="kvartalni-nivo-screen" class="screen">
+        <div class="menu-pattern">
+            <i class="fa-solid fa-crown pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+        </div>
+        
+        <h2 style="color: #f5af19; margin-bottom: 1.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(245, 175, 25, 0.3); text-align: center;">Kvartalni Nivo</h2>
+        
+        <div style="z-index: 5; width: 100%; max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; overflow: hidden;">
+            
+            <div id="kvartalni-nivo-sadrzaj" style="flex: 1; overflow-y: auto; margin-bottom: 1rem; scrollbar-width: none; padding-bottom: 1rem;">
+                </div>
+
+            <button class="menu-btn btn-secondary" style="margin-top: auto; margin-bottom: 1rem; flex-shrink: 0;" onclick="UIManager.prikaziEkran('main-menu')">↩ Nazad</button>
         </div>
     </div>
 
@@ -538,6 +546,7 @@
     <script src="onlineigraci.js"></script>
     <script src="sobaprijatelja.js"></script>
     <script src="dnevniizazov.js"></script>
+    <script src="kvartalninivo.js"></script>
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
     <script src="keyboard.js"></script>
     <script src="managers.js"></script>
@@ -553,7 +562,6 @@
             selectedMode = mode;
             const overlay = document.getElementById('player-select-overlay');
             const title = document.getElementById('player-select-title');
-            const joinSection = document.getElementById('join-room-section');
             const multiBubbles = document.getElementById('multi-bubbles');
             const privateBubbles = document.getElementById('private-bubbles');
             const btnStart = document.getElementById('btn-kreiraj-privatnu');
@@ -569,7 +577,6 @@
                 
                 multiBubbles.style.display = 'flex';
                 privateBubbles.style.display = 'none';
-                joinSection.style.display = 'none';
                 btnStart.style.display = 'none';
             } else {
                 title.innerText = 'POZOVI PRIJATELJE';
@@ -578,7 +585,6 @@
                 
                 multiBubbles.style.display = 'none';
                 privateBubbles.style.display = 'flex';
-                joinSection.style.display = 'block';
                 btnStart.style.display = 'block';
                 
                 // Očisti slotove pri svakom ulasku

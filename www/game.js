@@ -442,6 +442,10 @@ const Game = {
                 if (tacnihOveRunde === 7) TrofejiManager.azurirajNapredak('perfektno', 1);
             }
 
+            if (typeof KvartalniNivoManager !== 'undefined') {
+                KvartalniNivoManager.dodajPojmove(tacnihOveRunde);
+            }
+
             setTimeout(() => {
                 this.prikaziRezimeRunde(pregledIgraca, tacnihOveRunde);
             }, 1200);
@@ -550,6 +554,10 @@ const Game = {
             });
             TrofejiManager.azurirajNapredak('pojmovi', mojiTacni);
             if (mojiTacni === 7) TrofejiManager.azurirajNapredak('perfektno', 1);
+            
+            if (typeof KvartalniNivoManager !== 'undefined') {
+                KvartalniNivoManager.dodajPojmove(mojiTacni);
+            }
         }
 
         UIManager.azurirajLiveStatistiku(this.ukupanScore, 'multi', arrayZaLiveStatistiku);

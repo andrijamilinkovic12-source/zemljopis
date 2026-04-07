@@ -18,7 +18,12 @@ const io = new Server(server, {
 // ==========================================
 // 1. MONGODB BAZA PODATAKA (Povezivanje)
 // ==========================================
-const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://zemljopis_admin:vSgGwnzonb7VGI6B@cluster0.rteym3z.mongodb.net/zemljopis_db?retryWrites=true&w=majority&appName=Cluster0";
+const MONGO_URI = process.env.MONGO_URI;
+
+if (!MONGO_URI) {
+    console.error('❌ Kriticna greska: MONGO_URI nije definisan u .env fajlu!');
+    process.exit(1); 
+}
 
 mongoose.connect(MONGO_URI)
     .then(() => console.log('✅ Uspesno povezan na MongoDB bazu: zemljopis_db!'))
@@ -220,7 +225,7 @@ io.on('connection', (socket) => {
 
         const karakteri = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let kodSobe = "";
-        for (let i = 0; i < 4; i++) kodSobe += karakteri.charAt(Math.floor(Math.random() * karakteri.length)); 
+        for (let i = 0; i < 4; i++) kodSobe += karakteri.charAt(Math.floor(Math.random() * calculations.length)); 
 
         sobe[kodSobe] = {
             id: kodSobe,

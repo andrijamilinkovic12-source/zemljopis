@@ -9,3 +9,6 @@ android/app/build/
 
 # Ignoriši konfiguracije koje se automatski prave
 package-lock.json
+
+# Ignoriši fajl sa tajnim lozinkama (OBAVEZNO!)
+.env

@@ -62,6 +62,24 @@ const Game = {
                 this.socket.emit('prijavaNadimka', mojNadimak);
             });
 
+            // --- NOVO: ČITANJE PODATAKA IZ MONGODB BAZE ---
+            this.socket.on('podaciProfila', (podaci) => {
+                console.log("📥 Podaci učitani iz baze:", podaci);
+                
+                // Ažuriraj prikaz na glavnom ekranu
+                const dukatiEl = document.getElementById('meni-dukati');
+                const tokeniEl = document.getElementById('meni-tokeni');
+                const tokeniVelikoEl = document.getElementById('tokeni-stanje-veliko');
+                
+                if (dukatiEl) dukatiEl.innerText = podaci.dukati;
+                if (tokeniEl) tokeniEl.innerText = podaci.tokeni + "/3";
+                if (tokeniVelikoEl) tokeniVelikoEl.innerText = podaci.tokeni;
+
+                // Sinhronizuj lokalne menadžere (ako postoje) da ne bi prepisali bazu
+                if (typeof TokeniManager !== 'undefined') TokeniManager.trenutnoTokena = podaci.tokeni;
+                if (typeof RiznicaManager !== 'undefined') RiznicaManager.stanjeDukata = podaci.dukati;
+            });
+
             // Ažuriranje broja online igrača u status baru
             this.socket.on('azurirajBrojOnline', (broj) => {
                 const el = document.getElementById('meni-online');
@@ -446,6 +464,11 @@ const Game = {
                 KvartalniNivoManager.dodajPojmove(tacnihOveRunde);
             }
 
+            // --- NOVO: SLANJE POJMOVA U MONGODB (SOLO MODOVI) ---
+            if (tacnihOveRunde > 0 && this.socket) {
+                this.socket.emit('dodajPojmove', tacnihOveRunde);
+            }
+
             setTimeout(() => {
                 this.prikaziRezimeRunde(pregledIgraca, tacnihOveRunde);
             }, 1200);
@@ -557,6 +580,11 @@ const Game = {
             
             if (typeof KvartalniNivoManager !== 'undefined') {
                 KvartalniNivoManager.dodajPojmove(mojiTacni);
+            }
+
+            // --- NOVO: SLANJE POJMOVA U MONGODB (MULTIPLAYER MODOVI) ---
+            if (mojiTacni > 0 && this.socket) {
+                this.socket.emit('dodajPojmove', mojiTacni);
             }
         }
 
@@ -741,6 +769,11 @@ const Game = {
 
             if (typeof TrofejiManager !== 'undefined' && sviIgraci[0].isMe) {
                 TrofejiManager.azurirajNapredak('pobede', 1);
+
+                // --- NOVO: JAVI SERVERU ZA POBEDU ---
+                if (this.socket) {
+                    this.socket.emit('upisiPobedu');
+                }
             }
             
             let tabelaHtml = `<div style="text-align: left; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; margin-top: 1rem;">`;

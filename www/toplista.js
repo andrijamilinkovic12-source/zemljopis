@@ -1,99 +1,97 @@
-// toplista.js - Upravljanje podacima i prikazom Top liste (Leaderboard)
+// toplista.js - Upravljanje podacima i prikazom Top liste sa MongoDB integracijom
 
 const TopListaManager = {
-    // Simulirana baza podataka 
+    // Podaci su sada prazni jer ih čekamo sa servera
     podaci: {
-        prijatelji: {
-            najboljiMec: [
-                { mesto: 1, ime: "Jovan", poeni: 340 },
-                { mesto: 2, ime: "Ti", poeni: 310 },
-                { mesto: 3, ime: "Ana", poeni: 280 },
-                { mesto: 4, ime: "Marko", poeni: 150 }
-            ],
-            nedeljni: [
-                { mesto: 1, ime: "Ana", poeni: 1540 },
-                { mesto: 2, ime: "Jovan", poeni: 1420 },
-                { mesto: 3, ime: "Ti", poeni: 850 }
-            ],
-            mesecni: [
-                { mesto: 1, ime: "Jovan", poeni: 6200 },
-                { mesto: 2, ime: "Ti", poeni: 5100 },
-                { mesto: 3, ime: "Ana", poeni: 4800 }
-            ],
-            svaVremena: [
-                { mesto: 1, ime: "Ti", poeni: 24500 },
-                { mesto: 2, ime: "Jovan", poeni: 21200 },
-                { mesto: 3, ime: "Ana", poeni: 18900 }
-            ]
-        },
-        multiplayer: {
-            najboljiMec: [
-                { mesto: 1, ime: "Geograf99", poeni: 400 },
-                { mesto: 2, ime: "Znalac", poeni: 385 },
-                { mesto: 3, ime: "Ti", poeni: 360 },
-                { mesto: 4, ime: "BrziPrsti", poeni: 340 },
-                { mesto: 5, ime: "Srbija_Brate", poeni: 335 }
-            ],
-            nedeljni: [
-                { mesto: 1, ime: "Znalac", poeni: 4500 },
-                { mesto: 2, ime: "Kvizoman", poeni: 4100 },
-                { mesto: 3, ime: "Geograf99", poeni: 3900 }
-            ],
-            mesecni: [
-                { mesto: 1, ime: "Geograf99", poeni: 18500 },
-                { mesto: 2, ime: "Znalac", poeni: 17200 },
-                { mesto: 3, ime: "Sveznalica", poeni: 15000 }
-            ],
-            svaVremena: [
-                { mesto: 1, ime: "Zemljopis_Master", poeni: 150400 },
-                { mesto: 2, ime: "Geograf99", poeni: 142000 },
-                { mesto: 3, ime: "Znalac", poeni: 138500 }
-            ]
-        }
+        prijatelji: { najboljiMec: [], nedeljni: [], mesecni: [], svaVremena: [] },
+        multiplayer: { najboljiMec: [], nedeljni: [], mesecni: [], svaVremena: [] }
     },
 
-    aktivnaGrupa: 'prijatelji', 
-    aktivnaKategorija: 'najboljiMec', 
+    aktivnaGrupa: 'multiplayer', // Početni tab (Globalno)
+    aktivnaKategorija: 'svaVremena', // Početna kategorija
+    listenerPostavljen: false,
 
     init: function() {
         console.log("TopListaManager je učitan.");
     },
 
-    // Prikazuje glavni ekran za top listu
+    // Prikazuje glavni ekran za top listu i povlači podatke iz baze
     otvoriEkran: function() {
         UIManager.prikaziEkran('toplista-screen');
-        // Resetujemo na "Prijatelji" i "Najbolji meč" pri svakom ulasku
-        this.promeniGrupu('prijatelji'); 
+
+        // --- TRAŽENJE NOVIH PODATAKA SA SERVERA ---
+        if (typeof Game !== 'undefined' && Game.socket) {
+            Game.socket.emit('traziTopListu');
+
+            // Postavljamo osluškivač samo jednom
+            if (!this.listenerPostavljen) {
+                Game.socket.on('topListaOdgovor', (data) => {
+                    
+                    // Formatiranje podataka za "Sva Vremena"
+                    let globalSvaVremena = data.svaVremena.map((igrac, index) => ({
+                        mesto: index + 1,
+                        ime: igrac.nadimak,
+                        poeni: igrac.svaVremenaPojmovi
+                    }));
+
+                    // Formatiranje podataka za "Mesečno/Sezonski"
+                    let globalSezona = data.sezona.map((igrac, index) => ({
+                        mesto: index + 1,
+                        ime: igrac.nadimak,
+                        poeni: igrac.sezonskiPojmovi
+                    }));
+
+                    // Upisujemo sveže podatke iz baze u menadžer
+                    this.podaci.multiplayer.svaVremena = globalSvaVremena;
+                    this.podaci.multiplayer.mesecni = globalSezona;
+                    this.podaci.multiplayer.nedeljni = globalSezona; // Za sada dele istu statistiku
+
+                    // Osvežavamo prikaz ako je korisnik na ovom ekranu
+                    if(document.getElementById('toplista-screen').classList.contains('active')) {
+                        this.osveziPrikaz();
+                    }
+                });
+                this.listenerPostavljen = true;
+            }
+        }
+
+        this.promeniGrupu('multiplayer');
+        this.promeniKategoriju('svaVremena');
     },
 
     promeniGrupu: function(novaGrupa) {
         this.aktivnaGrupa = novaGrupa;
         
-        // Menjamo boju dugmića da se vidi šta je selektovano
-        document.getElementById('tab-prijatelji').style.background = (novaGrupa === 'prijatelji') ? 'rgba(56,239,125,0.3)' : 'rgba(255,255,255,0.08)';
-        document.getElementById('tab-prijatelji').style.color = (novaGrupa === 'prijatelji') ? '#38ef7d' : '#fff';
-        
-        document.getElementById('tab-multiplayer').style.background = (novaGrupa === 'multiplayer') ? 'rgba(56,239,125,0.3)' : 'rgba(255,255,255,0.08)';
-        document.getElementById('tab-multiplayer').style.color = (novaGrupa === 'multiplayer') ? '#38ef7d' : '#fff';
+        const tabPrijatelji = document.getElementById('tab-prijatelji');
+        const tabMulti = document.getElementById('tab-multiplayer');
 
-        this.promeniKategoriju('najboljiMec'); // Resetujemo na prvu potkategoriju
+        if(tabPrijatelji && tabMulti) {
+            tabPrijatelji.style.background = (novaGrupa === 'prijatelji') ? 'rgba(56,239,125,0.3)' : 'rgba(255,255,255,0.08)';
+            tabPrijatelji.style.color = (novaGrupa === 'prijatelji') ? '#38ef7d' : '#fff';
+            
+            tabMulti.style.background = (novaGrupa === 'multiplayer') ? 'rgba(56,239,125,0.3)' : 'rgba(255,255,255,0.08)';
+            tabMulti.style.color = (novaGrupa === 'multiplayer') ? '#38ef7d' : '#fff';
+        }
+
+        this.osveziPrikaz();
     },
 
     promeniKategoriju: function(novaKat) {
         this.aktivnaKategorija = novaKat;
         
-        // Menjamo boje manjih tabova
         const kategorije = ['najboljiMec', 'nedeljni', 'mesecni', 'svaVremena'];
         kategorije.forEach(kat => {
             const btn = document.getElementById('subtab-' + kat);
-            if (kat === novaKat) {
-                btn.style.background = 'rgba(56,239,125,0.2)';
-                btn.style.borderColor = '#38ef7d';
-                btn.style.color = '#38ef7d';
-            } else {
-                btn.style.background = 'rgba(255,255,255,0.05)';
-                btn.style.borderColor = 'transparent';
-                btn.style.color = '#a0aec0';
+            if (btn) {
+                if (kat === novaKat) {
+                    btn.style.background = 'rgba(56,239,125,0.2)';
+                    btn.style.borderColor = '#38ef7d';
+                    btn.style.color = '#38ef7d';
+                } else {
+                    btn.style.background = 'rgba(255,255,255,0.05)';
+                    btn.style.borderColor = 'transparent';
+                    btn.style.color = '#a0aec0';
+                }
             }
         });
 
@@ -104,8 +102,11 @@ const TopListaManager = {
         const kontejner = document.getElementById('toplista-sadrzaj');
         const lista = this.podaci[this.aktivnaGrupa][this.aktivnaKategorija];
 
+        // Čitamo koji je igračev pravi nadimak
+        let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
+
         if (!lista || lista.length === 0) {
-            kontejner.innerHTML = '<div style="text-align:center; color:#a0aec0; margin-top:2rem;">Nema podataka za ovu kategoriju.</div>';
+            kontejner.innerHTML = '<div style="text-align:center; color:#a0aec0; margin-top:2rem;">Još uvek nema podataka. Odigraj partiju i upiši se prvi na listu!</div>';
             return;
         }
 
@@ -117,10 +118,11 @@ const TopListaManager = {
             else if (index === 2) medalja = "🥉";
             else medalja = `<span style="display:inline-block; width:24px; text-align:center; color:#a0aec0; font-size: 0.9rem;">${index + 1}.</span>`;
 
-            // Ako si to ti, ističemo zeleno
-            let bojaIme = igrac.ime === "Ti" ? "#38ef7d" : "#fff";
-            let fontIme = igrac.ime === "Ti" ? "800" : "600";
-            let bgRed = igrac.ime === "Ti" ? "rgba(56,239,125,0.05)" : "transparent";
+            // Ako si to ti, sistem prepoznaje tvoj nadimak i boji te u zeleno!
+            let isMe = (igrac.ime === mojNadimak);
+            let bojaIme = isMe ? "#38ef7d" : "#fff";
+            let fontIme = isMe ? "800" : "600";
+            let bgRed = isMe ? "rgba(56,239,125,0.05)" : "transparent";
 
             html += `
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); background: ${bgRed}; border-radius: 8px;">

@@ -1,7 +1,7 @@
-// kvartalninivo.js - Liga takmičenje i Dvorana Slavnih
+// kvartalninivo.js - Liga takmičenje i Dvorana Slavnih povezana sa Serverom
 
 const KvartalniNivoManager = {
-    // Tvoja lična statistika (čuva se lokalno dok ne povežeš bazu)
+    // Tvoja lična statistika
     statistika: {
         sezonskiPojmovi: 0,
         svaVremenaPojmovi: 0
@@ -15,45 +15,16 @@ const KvartalniNivoManager = {
         { id: 4, ime: "Legenda", min: 9000, max: Infinity, ikona: "fa-gem", boja: "#38bdf8" }
     ],
 
-    // UI Stanje
-    aktivniTab: 'sezona', // 'sezona', 'svaVremena', 'slavni'
-    aktivniNivoTab: 0,    // 0-4 indeks nivoa
-    aktivniSlavniTab: 'medalje', // 'medalje', 'sampioni'
+    aktivniTab: 'sezona',
+    aktivniNivoTab: 0,
+    aktivniSlavniTab: 'medalje',
 
-    // --- LAŽNI PODACI (MOCK) ZA PRIKAZ DIZAJNA ---
-    // Kada povežeš bazu, ovo ćeš vući preko socket-a ili fetch API-ja
-    mockPodaci: {
-        sezona: [
-            // Nivo 0
-            [ { ime: "Marko", avatar: "fa-user-ninja", pojmovi: 850 }, { ime: "Ana", avatar: "fa-user-astronaut", pojmovi: 720 }, { ime: "Jovan", avatar: "fa-user-tie", pojmovi: 150 } ],
-            // Nivo 1
-            [ { ime: "Zika", avatar: "fa-user-secret", pojmovi: 2400 }, { ime: "Pera", avatar: "fa-user-graduate", pojmovi: 1800 } ],
-            // Nivo 2
-            [ { ime: "Mika", avatar: "fa-user-shield", pojmovi: 4800 }, { ime: "Laza", avatar: "fa-user-astronaut", pojmovi: 3100 } ],
-            // Nivo 3
-            [ { ime: "Nemanja", avatar: "fa-user-ninja", pojmovi: 8500 }, { ime: "Sara", avatar: "fa-user-tie", pojmovi: 6200 } ],
-            // Nivo 4
-            [ { ime: "Kralj_Igre", avatar: "fa-crown", pojmovi: 12450 }, { ime: "Geograf", avatar: "fa-earth-europe", pojmovi: 10100 } ]
-        ],
-        svaVremena: [
-            { ime: "Kralj_Igre", avatar: "fa-crown", pojmovi: 45200 },
-            { ime: "Nemanja", avatar: "fa-user-ninja", pojmovi: 38150 },
-            { ime: "Geograf", avatar: "fa-earth-europe", pojmovi: 35000 },
-            { ime: "Mika", avatar: "fa-user-shield", pojmovi: 29000 },
-            { ime: "Zika", avatar: "fa-user-secret", pojmovi: 15000 }
-        ],
-        medalje: [
-            { ime: "Kralj_Igre", avatar: "fa-crown", zlato: 4, srebro: 1, bronza: 0 },
-            { ime: "Nemanja", avatar: "fa-user-ninja", zlato: 2, srebro: 3, bronza: 1 },
-            { ime: "Geograf", avatar: "fa-earth-europe", zlato: 1, srebro: 2, bronza: 4 },
-            { ime: "Ana", avatar: "fa-user-astronaut", zlato: 0, srebro: 1, bronza: 2 }
-        ],
-        sampioni: [
-            { ciklus: "I Ciklus (2024)", ime: "Nemanja", avatar: "fa-user-ninja", poeni: 12500 },
-            { ciklus: "II Ciklus (2024)", ime: "Kralj_Igre", avatar: "fa-crown", poeni: 14200 },
-            { ciklus: "III Ciklus (2024)", ime: "Geograf", avatar: "fa-earth-europe", poeni: 13800 },
-            { ciklus: "I Ciklus (2025)", ime: "Kralj_Igre", avatar: "fa-crown", poeni: 15100 }
-        ]
+    // Ovde se smeštaju podaci koji stignu iz MongoDB/Servera
+    serverPodaci: {
+        sezona: [[], [], [], [], []], 
+        svaVremena: [],
+        medalje: [],
+        sampioni: []
     },
 
     init: function() {
@@ -64,11 +35,36 @@ const KvartalniNivoManager = {
         this.azurirajBedzUMeniju();
     },
 
+    // --- SLANJE POENA NA SERVER ---
+    // Ova funkcija se poziva iz game.js za SOLO, MULTI, PRIVATNE SOBE i TURNIRE
     dodajPojmove: function(broj) {
+        if (broj <= 0) return;
+
+        // 1. Brzo lokalno ažuriranje radi UI-ja
         this.statistika.sezonskiPojmovi += broj;
         this.statistika.svaVremenaPojmovi += broj;
         localStorage.setItem('zemljopis_kvartal', JSON.stringify(this.statistika));
         this.azurirajBedzUMeniju();
+
+        // 2. Slanje u bazu preko postojećeg Socket-a
+        if (typeof Game !== 'undefined' && Game.socket) {
+            Game.socket.emit('dodajPojmoveKvartal', broj);
+        }
+    },
+
+    // --- PRIJEM PODATAKA SA SERVERA ---
+    primiMojePodatke: function(podaci) {
+        this.statistika.sezonskiPojmovi = podaci.sezonskiPojmovi || 0;
+        this.statistika.svaVremenaPojmovi = podaci.svaVremenaPojmovi || 0;
+        localStorage.setItem('zemljopis_kvartal', JSON.stringify(this.statistika));
+        this.azurirajBedzUMeniju();
+    },
+
+    primiTopListe: function(podaci) {
+        this.serverPodaci = podaci;
+        if (document.getElementById('kvartalni-nivo-screen').classList.contains('active')) {
+            this.renderEkran();
+        }
     },
 
     odrediTrenutniNivo: function() {
@@ -106,16 +102,19 @@ const KvartalniNivoManager = {
     },
 
     otvoriEkran: function() {
-        // Resetuj na početne tabove pri ulasku
         this.aktivniTab = 'sezona';
         const info = this.odrediTrenutniNivo();
-        this.aktivniNivoTab = info.trenutni.id; // Automatski fokusira nivo na kom si trenutno
+        this.aktivniNivoTab = info.trenutni.id; 
         
+        // Zatraži osvežene liste iz baze prilikom ulaska
+        if (typeof Game !== 'undefined' && Game.socket) {
+            Game.socket.emit('traziKvartalneListe');
+        }
+
         this.renderEkran();
         UIManager.prikaziEkran('kvartalni-nivo-screen');
     },
 
-    // --- LOGIKA ZA MENJANJE TABOVA ---
     promeniTab: function(tab) {
         this.aktivniTab = tab;
         this.renderEkran();
@@ -129,11 +128,9 @@ const KvartalniNivoManager = {
         this.renderEkran();
     },
 
-    // --- GLAVNI RENDER EKRANA ---
     renderEkran: function() {
         const sadrzaj = document.getElementById('kvartalni-nivo-sadrzaj');
         
-        // Render Glavnih Tabova
         let html = `
             <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
                 <button class="menu-btn" style="margin: 0; padding: 0.6rem; font-size: 0.8rem; flex: 1; transition: all 0.2s; ${this.aktivniTab === 'sezona' ? 'background: rgba(245, 175, 25, 0.2); border: 1px solid #f5af19; color: #f5af19;' : 'background: rgba(0,0,0,0.5);'}" onclick="KvartalniNivoManager.promeniTab('sezona')">Liga</button>
@@ -142,24 +139,16 @@ const KvartalniNivoManager = {
             </div>
         `;
 
-        if (this.aktivniTab === 'sezona') {
-            html += this.renderSezonaHTML();
-        } else if (this.aktivniTab === 'svaVremena') {
-            html += this.renderSvaVremenaHTML();
-        } else if (this.aktivniTab === 'slavni') {
-            html += this.renderSlavniHTML();
-        }
+        if (this.aktivniTab === 'sezona') html += this.renderSezonaHTML();
+        else if (this.aktivniTab === 'svaVremena') html += this.renderSvaVremenaHTML();
+        else if (this.aktivniTab === 'slavni') html += this.renderSlavniHTML();
 
         sadrzaj.innerHTML = html;
     },
 
-    // --- POD-RENDERERI ---
-
     renderSezonaHTML: function() {
         const info = this.odrediTrenutniNivo();
-        let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Ti";
         
-        // Prikaz tvog ličnog statusa na vrhu
         let html = `
             <div style="background: rgba(0,0,0,0.4); border: 1px solid ${info.trenutni.boja}40; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;">
                 <div>
@@ -172,7 +161,6 @@ const KvartalniNivoManager = {
             </div>
         `;
 
-        // Tabovi za biranje Nivoa Top Liste
         html += `<div style="display: flex; justify-content: space-between; gap: 0.3rem; margin-bottom: 1rem;">`;
         this.nivoi.forEach(nivo => {
             let aktivan = this.aktivniNivoTab === nivo.id;
@@ -184,27 +172,31 @@ const KvartalniNivoManager = {
         });
         html += `</div>`;
 
-        // Sama Top Lista za izabrani Nivo
         let izabraniNivo = this.nivoi[this.aktivniNivoTab];
-        let listaIgraca = this.mockPodaci.sezona[this.aktivniNivoTab];
+        let listaIgraca = this.serverPodaci.sezona[this.aktivniNivoTab] || [];
 
         html += `<div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 0.5rem;">`;
         html += `<h4 style="text-align: center; color: ${izabraniNivo.boja}; margin: 0.5rem 0; font-size: 0.9rem; text-transform: uppercase;">Top lista: ${izabraniNivo.ime}</h4>`;
         
-        listaIgraca.forEach((igrac, index) => {
-            html += `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); margin-bottom: 0.3rem; border-radius: 8px;">
-                    <div style="display: flex; align-items: center; gap: 0.8rem;">
-                        <b style="color: #a0aec0; width: 20px;">${index + 1}.</b>
-                        <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid ${izabraniNivo.boja}; display: flex; justify-content: center; align-items: center; color: ${izabraniNivo.boja}; font-size: 1.1rem;">
-                            <i class="fa-solid ${igrac.avatar}"></i>
+        if (listaIgraca.length === 0) {
+            html += `<div style="text-align: center; padding: 1rem; color: #a0aec0; font-size: 0.8rem;">Učitavanje igrača ili niko još nije na ovom nivou...</div>`;
+        } else {
+            listaIgraca.forEach((igrac, index) => {
+                let defaultAvatar = "fa-user-astronaut"; // Fallback avatar ako baza ne prosledi avatar
+                html += `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); margin-bottom: 0.3rem; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 0.8rem;">
+                            <b style="color: #a0aec0; width: 20px;">${index + 1}.</b>
+                            <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid ${izabraniNivo.boja}; display: flex; justify-content: center; align-items: center; color: ${izabraniNivo.boja}; font-size: 1.1rem;">
+                                <i class="fa-solid ${igrac.avatar || defaultAvatar}"></i>
+                            </div>
+                            <span style="color: #fff; font-weight: 600; font-size: 0.95rem;">${igrac.ime}</span>
                         </div>
-                        <span style="color: #fff; font-weight: 600; font-size: 0.95rem;">${igrac.ime}</span>
+                        <span style="color: #38ef7d; font-weight: 800;">${igrac.pojmovi}</span>
                     </div>
-                    <span style="color: #38ef7d; font-weight: 800;">${igrac.pojmovi}</span>
-                </div>
-            `;
-        });
+                `;
+            });
+        }
         html += `</div>`;
 
         return html;
@@ -220,24 +212,29 @@ const KvartalniNivoManager = {
             <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 0.5rem;">
         `;
 
-        this.mockPodaci.svaVremena.forEach((igrac, index) => {
-            let kruna = "";
-            if (index === 0) kruna = `<i class="fa-solid fa-crown" style="color: #ffd700; position: absolute; top: -8px; right: -5px; font-size: 0.8rem; transform: rotate(15deg);"></i>`;
-            
-            html += `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); background: ${index===0 ? 'rgba(56, 189, 248, 0.1)' : 'rgba(255,255,255,0.02)'}; margin-bottom: 0.3rem; border-radius: 8px;">
-                    <div style="display: flex; align-items: center; gap: 0.8rem;">
-                        <b style="color: ${index < 3 ? '#38bdf8' : '#a0aec0'}; width: 20px;">${index + 1}.</b>
-                        <div style="position: relative; width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 2px solid ${index < 3 ? '#38bdf8' : '#cbd5e0'}; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 1.2rem;">
-                            <i class="fa-solid ${igrac.avatar}"></i>
-                            ${kruna}
+        if (!this.serverPodaci.svaVremena || this.serverPodaci.svaVremena.length === 0) {
+            html += `<div style="text-align: center; padding: 1rem; color: #a0aec0; font-size: 0.8rem;">Učitavanje podataka sa servera...</div>`;
+        } else {
+            this.serverPodaci.svaVremena.forEach((igrac, index) => {
+                let kruna = "";
+                let defaultAvatar = "fa-user-ninja";
+                if (index === 0) kruna = `<i class="fa-solid fa-crown" style="color: #ffd700; position: absolute; top: -8px; right: -5px; font-size: 0.8rem; transform: rotate(15deg);"></i>`;
+                
+                html += `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); background: ${index===0 ? 'rgba(56, 189, 248, 0.1)' : 'rgba(255,255,255,0.02)'}; margin-bottom: 0.3rem; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 0.8rem;">
+                            <b style="color: ${index < 3 ? '#38bdf8' : '#a0aec0'}; width: 20px;">${index + 1}.</b>
+                            <div style="position: relative; width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 2px solid ${index < 3 ? '#38bdf8' : '#cbd5e0'}; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 1.2rem;">
+                                <i class="fa-solid ${igrac.avatar || defaultAvatar}"></i>
+                                ${kruna}
+                            </div>
+                            <span style="color: #fff; font-weight: 600; font-size: 1rem;">${igrac.ime}</span>
                         </div>
-                        <span style="color: #fff; font-weight: 600; font-size: 1rem;">${igrac.ime}</span>
+                        <span style="color: #38bdf8; font-weight: 800;">${igrac.pojmovi}</span>
                     </div>
-                    <span style="color: #38bdf8; font-weight: 800;">${igrac.pojmovi}</span>
-                </div>
-            `;
-        });
+                `;
+            });
+        }
         html += `</div>`;
         return html;
     },
@@ -252,50 +249,61 @@ const KvartalniNivoManager = {
 
         if (this.aktivniSlavniTab === 'medalje') {
             html += `<p style="text-align: center; font-size: 0.75rem; color: #a0aec0; margin-bottom: 1rem;">Igrači koji su završili u TOP 3 u bilo kom kvartalnom ciklusu.</p>`;
-            this.mockPodaci.medalje.forEach((igrac, index) => {
-                html += `
-                    <div style="display: flex; flex-direction: column; background: rgba(0,0,0,0.4); border: 1px solid rgba(177, 34, 229, 0.2); border-radius: 12px; padding: 0.8rem; margin-bottom: 0.8rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">
-                            <b style="color: #b122e5;">${index + 1}.</b>
-                            <div style="width: 45px; height: 45px; border-radius: 50%; background: rgba(177, 34, 229, 0.1); border: 2px solid #b122e5; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 1.4rem;">
-                                <i class="fa-solid ${igrac.avatar}"></i>
+            
+            if (!this.serverPodaci.medalje || this.serverPodaci.medalje.length === 0) {
+                 html += `<div style="text-align: center; color: #a0aec0; font-size: 0.8rem;">Čekamo prve osvajače medalja...</div>`;
+            } else {
+                this.serverPodaci.medalje.forEach((igrac, index) => {
+                    let defaultAvatar = "fa-user-ninja";
+                    html += `
+                        <div style="display: flex; flex-direction: column; background: rgba(0,0,0,0.4); border: 1px solid rgba(177, 34, 229, 0.2); border-radius: 12px; padding: 0.8rem; margin-bottom: 0.8rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">
+                                <b style="color: #b122e5;">${index + 1}.</b>
+                                <div style="width: 45px; height: 45px; border-radius: 50%; background: rgba(177, 34, 229, 0.1); border: 2px solid #b122e5; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 1.4rem;">
+                                    <i class="fa-solid ${igrac.avatar || defaultAvatar}"></i>
+                                </div>
+                                <span style="color: #fff; font-weight: 800; font-size: 1.1rem; flex: 1;">${igrac.ime}</span>
                             </div>
-                            <span style="color: #fff; font-weight: 800; font-size: 1.1rem; flex: 1;">${igrac.ime}</span>
+                            <div style="display: flex; justify-content: space-around; background: rgba(255,255,255,0.02); padding: 0.5rem; border-radius: 8px;">
+                                <div style="text-align: center;"><i class="fa-solid fa-medal" style="color: #ffd700; font-size: 1.5rem; filter: drop-shadow(0 0 5px rgba(255,215,0,0.5));"></i><br><b style="font-size: 1.1rem;">${igrac.zlato || 0}</b></div>
+                                <div style="text-align: center;"><i class="fa-solid fa-medal" style="color: #c0c0c0; font-size: 1.5rem; filter: drop-shadow(0 0 5px rgba(192,192,192,0.5));"></i><br><b style="font-size: 1.1rem;">${igrac.srebro || 0}</b></div>
+                                <div style="text-align: center;"><i class="fa-solid fa-medal" style="color: #cd7f32; font-size: 1.5rem; filter: drop-shadow(0 0 5px rgba(205,127,50,0.5));"></i><br><b style="font-size: 1.1rem;">${igrac.bronza || 0}</b></div>
+                            </div>
                         </div>
-                        <div style="display: flex; justify-content: space-around; background: rgba(255,255,255,0.02); padding: 0.5rem; border-radius: 8px;">
-                            <div style="text-align: center;"><i class="fa-solid fa-medal" style="color: #ffd700; font-size: 1.5rem; filter: drop-shadow(0 0 5px rgba(255,215,0,0.5));"></i><br><b style="font-size: 1.1rem;">${igrac.zlato}</b></div>
-                            <div style="text-align: center;"><i class="fa-solid fa-medal" style="color: #c0c0c0; font-size: 1.5rem; filter: drop-shadow(0 0 5px rgba(192,192,192,0.5));"></i><br><b style="font-size: 1.1rem;">${igrac.srebro}</b></div>
-                            <div style="text-align: center;"><i class="fa-solid fa-medal" style="color: #cd7f32; font-size: 1.5rem; filter: drop-shadow(0 0 5px rgba(205,127,50,0.5));"></i><br><b style="font-size: 1.1rem;">${igrac.bronza}</b></div>
-                        </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
         } else {
             html += `<p style="text-align: center; font-size: 0.75rem; color: #a0aec0; margin-bottom: 1rem;">Osvajači prvog mesta na kraju svakog ciklusa lige.</p>`;
-            this.mockPodaci.sampioni.forEach(igrac => {
-                html += `
-                    <div style="display: flex; align-items: center; background: linear-gradient(135deg, rgba(177, 34, 229, 0.15), rgba(0,0,0,0.5)); border: 1px solid rgba(177, 34, 229, 0.4); border-radius: 12px; padding: 1rem; margin-bottom: 0.8rem; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
-                        <div style="margin-right: 1rem; text-align: center;">
-                            <i class="fa-solid fa-trophy" style="color: #ffd700; font-size: 2rem; filter: drop-shadow(0 0 10px rgba(255,215,0,0.5)); margin-bottom: 5px;"></i>
-                        </div>
-                        <div style="flex: 1;">
-                            <div style="font-size: 0.7rem; color: #b122e5; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px;">${igrac.ciklus}</div>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <i class="fa-solid ${igrac.avatar}" style="color: #fff;"></i>
-                                <span style="color: #fff; font-weight: 800; font-size: 1.2rem;">${igrac.ime}</span>
+            
+            if (!this.serverPodaci.sampioni || this.serverPodaci.sampioni.length === 0) {
+                 html += `<div style="text-align: center; color: #a0aec0; font-size: 0.8rem;">Čekamo prve šampione...</div>`;
+            } else {
+                this.serverPodaci.sampioni.forEach(igrac => {
+                    let defaultAvatar = "fa-crown";
+                    html += `
+                        <div style="display: flex; align-items: center; background: linear-gradient(135deg, rgba(177, 34, 229, 0.15), rgba(0,0,0,0.5)); border: 1px solid rgba(177, 34, 229, 0.4); border-radius: 12px; padding: 1rem; margin-bottom: 0.8rem; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                            <div style="margin-right: 1rem; text-align: center;">
+                                <i class="fa-solid fa-trophy" style="color: #ffd700; font-size: 2rem; filter: drop-shadow(0 0 10px rgba(255,215,0,0.5)); margin-bottom: 5px;"></i>
                             </div>
-                            <div style="font-size: 0.8rem; color: #38ef7d; margin-top: 3px;"><b>${igrac.poeni}</b> pojmova ukupno</div>
+                            <div style="flex: 1;">
+                                <div style="font-size: 0.7rem; color: #b122e5; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px;">${igrac.ciklus}</div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fa-solid ${igrac.avatar || defaultAvatar}" style="color: #fff;"></i>
+                                    <span style="color: #fff; font-weight: 800; font-size: 1.2rem;">${igrac.ime}</span>
+                                </div>
+                                <div style="font-size: 0.8rem; color: #38ef7d; margin-top: 3px;"><b>${igrac.poeni}</b> pojmova ukupno</div>
+                            </div>
                         </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
         }
 
         return html;
     }
 };
 
-// Inicijalizuj po učitavanju
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { KvartalniNivoManager.init(); }, 500);
 });

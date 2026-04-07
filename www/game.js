@@ -62,7 +62,7 @@ const Game = {
                 this.socket.emit('prijavaNadimka', mojNadimak);
             });
 
-            // --- NOVO: ČITANJE PODATAKA IZ MONGODB BAZE ---
+            // --- ČITANJE PODATAKA IZ MONGODB BAZE ---
             this.socket.on('podaciProfila', (podaci) => {
                 console.log("📥 Podaci učitani iz baze:", podaci);
                 
@@ -78,6 +78,19 @@ const Game = {
                 // Sinhronizuj lokalne menadžere (ako postoje) da ne bi prepisali bazu
                 if (typeof TokeniManager !== 'undefined') TokeniManager.trenutnoTokena = podaci.tokeni;
                 if (typeof RiznicaManager !== 'undefined') RiznicaManager.stanjeDukata = podaci.dukati;
+            });
+
+            // --- NOVO: PRIJEM PODATAKA ZA KVARTALNI NIVO ---
+            this.socket.on('osveziMojeKvartalnePodatke', (podaci) => {
+                if (typeof KvartalniNivoManager !== 'undefined') {
+                    KvartalniNivoManager.primiMojePodatke(podaci);
+                }
+            });
+
+            this.socket.on('kvartalnaTopListaServer', (podaci) => {
+                if (typeof KvartalniNivoManager !== 'undefined') {
+                    KvartalniNivoManager.primiTopListe(podaci);
+                }
             });
 
             // Ažuriranje broja online igrača u status baru
@@ -464,11 +477,6 @@ const Game = {
                 KvartalniNivoManager.dodajPojmove(tacnihOveRunde);
             }
 
-            // --- NOVO: SLANJE POJMOVA U MONGODB (SOLO MODOVI) ---
-            if (tacnihOveRunde > 0 && this.socket) {
-                this.socket.emit('dodajPojmove', tacnihOveRunde);
-            }
-
             setTimeout(() => {
                 this.prikaziRezimeRunde(pregledIgraca, tacnihOveRunde);
             }, 1200);
@@ -580,11 +588,6 @@ const Game = {
             
             if (typeof KvartalniNivoManager !== 'undefined') {
                 KvartalniNivoManager.dodajPojmove(mojiTacni);
-            }
-
-            // --- NOVO: SLANJE POJMOVA U MONGODB (MULTIPLAYER MODOVI) ---
-            if (mojiTacni > 0 && this.socket) {
-                this.socket.emit('dodajPojmove', mojiTacni);
             }
         }
 
@@ -770,7 +773,7 @@ const Game = {
             if (typeof TrofejiManager !== 'undefined' && sviIgraci[0].isMe) {
                 TrofejiManager.azurirajNapredak('pobede', 1);
 
-                // --- NOVO: JAVI SERVERU ZA POBEDU ---
+                // Javljanje serveru za pobedu samo u Multiplayer modu
                 if (this.socket) {
                     this.socket.emit('upisiPobedu');
                 }

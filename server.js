@@ -54,7 +54,7 @@ const svaSlova = ["A","B","V","G","D","Đ","E","Ž","Z","I","J","K","L","LJ","M"
 const MAX_PORUKA_ISTORIJA = 50;
 let istorijaChata = [];
 const onlineIgraci = {}; 
-const bazaPrijatelja = {}; // Oflajn prijatelji su i dalje u RAM-u radi brzine, kasnije ih možeš prebaciti u bazu
+const bazaPrijatelja = {};
 
 function osigurajBazu(ime) {
     if (!bazaPrijatelja[ime]) {
@@ -126,18 +126,15 @@ io.on('connection', (socket) => {
     socket.on('prijavaNadimka', async (ime) => {
         const cistoIme = escapeHTML(ime).substring(0, 20);
         try {
-            // Pronađi ili kreiraj igrača u MongoDB
             let igrac = await Igrac.findOneAndUpdate(
                 { nadimak: cistoIme },
                 { $setOnInsert: { dukati: 500, tokeni: 3, sezonskiPojmovi: 0, svaVremenaPojmovi: 0, pobede: 0 } },
-                { upsert: true, new: true }
+                { upsert: true, returnDocument: 'after' }
             );
 
-            // Dodaj ga u listu aktivnih
             onlineIgraci[socket.id] = { id: socket.id, ime: igrac.nadimak, bazaId: igrac._id };
             io.emit('azurirajBrojOnline', Object.keys(onlineIgraci).length);
             
-            // Pošalji mu podatke
             socket.emit('podaciProfila', {
                 dukati: igrac.dukati,
                 tokeni: igrac.tokeni,
@@ -148,7 +145,6 @@ io.on('connection', (socket) => {
             console.log(`👤 Igrač ${cistoIme} je povezan i učitan iz baze.`);
         } catch (error) {
             console.error("Greška pri prijavi igrača (Baza):", error);
-            // Fallback ako baza zakaže
             onlineIgraci[socket.id] = { id: socket.id, ime: cistoIme };
             io.emit('azurirajBrojOnline', Object.keys(onlineIgraci).length);
         }
@@ -160,7 +156,8 @@ io.on('connection', (socket) => {
             try {
                 await Igrac.findOneAndUpdate(
                     { nadimak: onlineIgraci[socket.id].ime },
-                    { $inc: { sezonskiPojmovi: brojPojmova, svaVremenaPojmovi: brojPojmova } }
+                    { $inc: { sezonskiPojmovi: brojPojmova, svaVremenaPojmovi: brojPojmova } },
+                    { returnDocument: 'after' }
                 );
             } catch (err) {
                 console.error("Greška pri čuvanju pojmova:", err);
@@ -173,7 +170,8 @@ io.on('connection', (socket) => {
             try {
                 await Igrac.findOneAndUpdate(
                     { nadimak: onlineIgraci[socket.id].ime },
-                    { $inc: { pobede: 1 } }
+                    { $inc: { pobede: 1 } },
+                    { returnDocument: 'after' }
                 );
             } catch (err) {
                 console.error("Greška pri čuvanju pobede:", err);
@@ -204,7 +202,7 @@ io.on('connection', (socket) => {
             id: kodSobe,
             host: socket.id,
             maxIgraca: brojIgraca,
-            igraci: [{ id: socket.id, ime: "Host", spremniOdgovori: false, spremniZaSledecuRundu: false }],
+            igraci: [{ id: socket.id, ime: onlineIgraci[socket.id] ? onlineIgraci[socket.id].ime : "Host", spremniOdgovori: false, spremniZaSledecuRundu: false }],
             status: 'cekanje',
             iskoriscenaSlova: [],
             trenutnaRunda: 0,
@@ -225,7 +223,8 @@ io.on('connection', (socket) => {
 
         const karakteri = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let kodSobe = "";
-        for (let i = 0; i < 4; i++) kodSobe += karakteri.charAt(Math.floor(Math.random() * calculations.length)); 
+        // ISPRAVLJENO: Koristimo karakteri.length umesto calculations.length
+        for (let i = 0; i < 4; i++) kodSobe += karakteri.charAt(Math.floor(Math.random() * karakteri.length)); 
 
         sobe[kodSobe] = {
             id: kodSobe,

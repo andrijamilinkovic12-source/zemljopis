@@ -72,7 +72,7 @@ const Game = {
                 const tokeniVelikoEl = document.getElementById('tokeni-stanje-veliko');
                 
                 if (dukatiEl) dukatiEl.innerText = podaci.dukati;
-                if (tokeniEl) tokeniEl.innerText = podaci.tokeni + "/3";
+                if (tokeniEl) tokeniEl.innerText = tokeniVelikoEl ? tokeniVelikoEl.innerText = podaci.tokeni : podaci.tokeni + "/3";
                 if (tokeniVelikoEl) tokeniVelikoEl.innerText = podaci.tokeni;
 
                 // Sinhronizuj lokalne menadžere (ako postoje) da ne bi prepisali bazu
@@ -216,6 +216,42 @@ const Game = {
                         this.socket.emit('napustiSobu'); 
                     },
                     "Odustani"
+                );
+            });
+
+            // NOVO: Neko je napustio sobu ili je izbačen usred igre
+            this.socket.on('igracNapustioSobu', (podaci) => {
+                // Notifikaciju prikazujemo samo ako je igra u toku
+                if (podaci.uIgri && podaci.ime) {
+                    let razlogTekst = "je napustio meč.";
+                    if (podaci.razlog === 'varanje') razlogTekst = "je izbačen zbog izlaska iz aplikacije (Anti-Cheat).";
+                    else if (podaci.razlog === 'diskonekt') razlogTekst = "je izgubio konekciju sa serverom.";
+                    
+                    UIManager.prikaziObavestenje(
+                        "Igrač izbačen/napustio",
+                        `<b style="color:#ff416c;">${podaci.ime}</b> ${razlogTekst}`,
+                        null,
+                        "Nastavi igru"
+                    );
+                }
+            });
+
+            // NOVO: Svi su pobegli/izbačeni, ostao si sam = AUTOMATSKA POBEDA
+            this.socket.on('pobedaZbogNapustanja', () => {
+                this.rundaUToku = false;
+                clearInterval(this.tajmerInterval);
+                
+                // Dodela pobede
+                if (typeof TrofejiManager !== 'undefined') TrofejiManager.azurirajNapredak('pobede', 1);
+                if (this.socket) this.socket.emit('upisiPobedu');
+                
+                UIManager.prikaziObavestenje(
+                    "🏆 AUTOMATSKA POBEDA 🏆", 
+                    "Svi protivnici su napustili meč ili su izbačeni.<br><br><b style='color:#38ef7d'>Osvojio si 1. mesto!</b>", 
+                    () => {
+                        this.povratakUMeni();
+                    },
+                    "Završi" 
                 );
             });
 
@@ -436,7 +472,7 @@ const Game = {
 
         UIManager.pripremiPolja();
         UIManager.podesiTabluZaIgru(this.trenutniMod, this.zadatoSlovo);
-        UIManager.azurirajRundu(this.trennaRunda); 
+        UIManager.azurirajRundu(this.trenutnaRunda); 
         
         let prikazRezultata = this.trenutniMod === 'solo' ? this.ukupnoTacnihOdgovora : this.ukupanScore;
         let arrayZaLiveStatistiku = Object.values(this.rezultatiProtivnika).map(p => ({ ime: p.ime, poeni: p.poeni }));
@@ -464,6 +500,12 @@ const Game = {
 
         if (this.antiCheatTimeout) { clearTimeout(this.antiCheatTimeout); this.antiCheatTimeout = null; }
         clearInterval(this.tajmerInterval);
+        
+        // NOVO: Forsiramo spuštanje tastature čim se runda završi da ne zaklanja ekran rezultata
+        if (typeof KeyboardManager !== 'undefined') {
+            KeyboardManager.hideKeyboard();
+        }
+
         const inputs = document.querySelectorAll('#game-board .game-input');
 
         let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
@@ -904,11 +946,16 @@ const Game = {
     izbaciZbogVremena: function() {
         this.rundaUToku = false;
         clearInterval(this.tajmerInterval);
+        
+        // NOVO: Šaljemo serveru tačan razlog izlaska odmah
+        if (this.socket) {
+            this.socket.emit('napustiSobu', 'varanje');
+        }
+
         UIManager.prikaziObavestenje(
             "Izbačen si!",
             "Izbačen si iz runde zbog napuštanja aplikacije tokom partije.",
             () => {
-                if (this.socket) this.socket.emit('napustiSobu');
                 this.povratakUMeni();
             },
             "Nazad u meni"

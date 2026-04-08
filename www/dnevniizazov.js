@@ -103,10 +103,20 @@ const DnevniIzazovManager = {
         });
         kontejner.innerHTML = html;
         
-        // Fokusiraj odmah prvo polje
+        // NOVO: Povezivanje dinamički generisanih polja sa custom tastaturom
+        if (typeof KeyboardManager !== 'undefined') {
+            KeyboardManager.bindInputs();
+        }
+        
+        // Fokusiraj odmah prvo polje i otvori custom tastaturu
         setTimeout(() => {
             const prvoPolje = document.getElementById('dnevni-input-0');
-            if (prvoPolje) prvoPolje.focus();
+            if (prvoPolje && typeof KeyboardManager !== 'undefined') {
+                KeyboardManager.setActiveInput(prvoPolje);
+                KeyboardManager.showKeyboard();
+            } else if (prvoPolje) {
+                prvoPolje.focus();
+            }
         }, 100);
     },
 

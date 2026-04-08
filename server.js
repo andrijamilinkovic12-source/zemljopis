@@ -346,24 +346,40 @@ io.on('connection', (socket) => {
     });
 
     // --- 6. NAPUŠTANJE I DISCONNECT ---
-    socket.on('napustiSobu', () => ukloniIgracaIzSoba(socket));
+    socket.on('napustiSobu', (razlog) => ukloniIgracaIzSoba(socket, razlog));
 
     socket.on('disconnect', () => {
-        ukloniIgracaIzSoba(socket);
+        ukloniIgracaIzSoba(socket, 'diskonekt');
         delete onlineIgraci[socket.id]; 
         io.emit('azurirajBrojOnline', Object.keys(onlineIgraci).length);
     });
 
-    function ukloniIgracaIzSoba(socket) {
+    function ukloniIgracaIzSoba(socket, razlog = "napustio") {
         for (let kodSobe in sobe) {
             let soba = sobe[kodSobe];
             const index = soba.igraci.findIndex(i => i.id === socket.id);
             
             if (index !== -1) {
+                const igracKojiIzlazi = soba.igraci[index];
                 soba.igraci.splice(index, 1);
-                io.to(kodSobe).emit('igracNapustioSobu', { ostaloIgraca: soba.igraci.length });
                 
-                if (soba.host === socket.id && !soba.javna) {
+                // Obaveštavamo ostale ko je izašao i zašto
+                io.to(kodSobe).emit('igracNapustioSobu', { 
+                    ostaloIgraca: soba.igraci.length,
+                    ime: igracKojiIzlazi.ime,
+                    uIgri: soba.status === 'u_igri',
+                    razlog: razlog
+                });
+
+                // AUTOMATSKA POBEDA: Ako je igra u toku i ostao je samo 1 igrač u sobi!
+                if (soba.status === 'u_igri' && soba.igraci.length === 1) {
+                    io.to(kodSobe).emit('pobedaZbogNapustanja');
+                    if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
+                    delete sobe[kodSobe];
+                    break;
+                }
+                
+                if (soba.host === socket.id && !soba.javna && soba.status !== 'u_igri') {
                     io.to(kodSobe).emit('hostJeNapustioSobu');
                     if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
                     delete sobe[kodSobe];

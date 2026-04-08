@@ -36,14 +36,20 @@ const KeyboardManager = {
     bindInputs: function() {
         const inputs = document.querySelectorAll('.game-input');
         inputs.forEach(input => {
-            // Readonly sprečava nativnu tastaturu na telefonu
-            input.setAttribute('readonly', 'readonly'); 
-            
-            input.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.setActiveInput(input);
-                this.showKeyboard();
-            });
+            // Sprečavamo duplo vezivanje na ista polja
+            if (!input.hasAttribute('data-kb-bound')) {
+                // Readonly sprečava nativnu tastaturu na telefonu
+                input.setAttribute('readonly', 'readonly'); 
+                
+                input.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.setActiveInput(input);
+                    this.showKeyboard();
+                });
+                
+                // Označavamo da je polje već povezano sa tastaturom
+                input.setAttribute('data-kb-bound', 'true');
+            }
         });
     },
 
@@ -142,7 +148,12 @@ const KeyboardManager = {
             this.activeInput.classList.remove('active-keyboard-input');
             this.activeInput = null;
         }
-        document.querySelector('.inputs-container').style.paddingBottom = '75px';
+        
+        // Vraćamo padding u zavisnosti od ekrana (ako postoji inputs-container)
+        const container = document.querySelector('.inputs-container');
+        if (container) {
+            container.style.paddingBottom = '75px';
+        }
     }
 };
 

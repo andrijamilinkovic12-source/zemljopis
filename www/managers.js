@@ -4,6 +4,11 @@ const UIManager = {
     prikaziEkran: function(ekranId) {
         document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
         document.getElementById(ekranId).classList.add('active');
+        
+        // NOVO: Uvek sakrij tastaturu kada se menja ekran da ne bi blokirala UI
+        if (typeof KeyboardManager !== 'undefined') {
+            KeyboardManager.hideKeyboard();
+        }
     },
 
     pokreniTranzicijuVrata: function(callback) {

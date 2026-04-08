@@ -869,12 +869,15 @@ body[data-tema="zlatna"] .btn-close { background: rgba(255,215,0,0.15); color: #
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid rgba(56, 239, 125, 0.3);
-    
     padding: 12px 6px calc(15px + env(safe-area-inset-bottom, 10px)) 6px; 
     
-    z-index: 9999;
-    transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    /* OVE 4 LINIJE SU KLJUČNE ZA REŠAVANJE BAGA: */
+    z-index: 10000; 
+    transform: translateY(120%); 
+    opacity: 0;
+    pointer-events: none;
+    
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s;
     display: flex;
     flex-direction: column;
     gap: 8px; 
@@ -883,6 +886,8 @@ body[data-tema="zlatna"] .btn-close { background: rgba(255,215,0,0.15); color: #
 
 #custom-keyboard.active {
     transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .kb-row {

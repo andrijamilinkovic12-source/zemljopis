@@ -952,7 +952,6 @@ const Game = {
         }, 1000);
     },
 
-    // --- FUNKCIJA KOJA ČUVA REZULTAT NA SERVER ---
     posaljiKrajnjiRezultat: function() {
         if (this.trenutniMod === 'multi' && this.ukupanScore > 0 && this.socket) {
             this.socket.emit('upisiKrajnjiRezultat', this.ukupanScore);
@@ -960,7 +959,6 @@ const Game = {
         }
     },
 
-    // --- AŽURIRANO: PRI SVAKOM IZLASKU ČUVA POENE ---
     povratakUMeni: function() {
         this.posaljiKrajnjiRezultat(); 
         

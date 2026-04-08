@@ -43,7 +43,7 @@ const KeyboardManager = {
                 
                 input.addEventListener('click', (e) => {
                     e.preventDefault();
-                    // NOVO: Blokira otvaranje tastature ako je runda gotova i polje zaključano!
+                    // Blokira otvaranje tastature ako je runda gotova i polje zaključano!
                     if (input.disabled) return; 
 
                     this.setActiveInput(input);
@@ -129,7 +129,7 @@ const KeyboardManager = {
         
         if (currentIndex > -1 && currentIndex < inputs.length - 1) {
             let nextInput = inputs[currentIndex + 1];
-            // NOVO: Preskače polje i gasi tastaturu ako je sledeće polje zaključano
+            // Preskače polje i gasi tastaturu ako je sledeće polje zaključano
             if (!nextInput.disabled) {
                 this.setActiveInput(nextInput);
             } else {
@@ -146,19 +146,25 @@ const KeyboardManager = {
     },
 
     showKeyboard: function() {
-        document.getElementById('custom-keyboard').classList.add('active');
+        const kb = document.getElementById('custom-keyboard');
+        if(kb) kb.classList.add('active');
+        
         // Povećaj padding na dnu containera da tastatura ne prekrije polja
-        document.querySelector('.inputs-container').style.paddingBottom = '260px';
+        const container = document.querySelector('.inputs-container');
+        if (container) container.style.paddingBottom = '260px';
     },
 
     hideKeyboard: function() {
-        document.getElementById('custom-keyboard').classList.remove('active');
+        const kb = document.getElementById('custom-keyboard');
+        if (kb) kb.classList.remove('active');
+        
         if (this.activeInput) {
             this.activeInput.classList.remove('active-keyboard-input');
+            this.activeInput.blur(); // AGRESIVNO UBIJANJE FOKUSA
             this.activeInput = null;
         }
         
-        // Vraćamo padding u zavisnosti od ekrana (ako postoji inputs-container)
+        // Vraćamo padding u zavisnosti od ekrana
         const container = document.querySelector('.inputs-container');
         if (container) {
             container.style.paddingBottom = '75px';

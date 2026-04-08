@@ -27,24 +27,18 @@ const TopListaManager = {
             if (!this.listenerPostavljen) {
                 Game.socket.on('topListaOdgovor', (data) => {
                     
-                    // Formatiranje podataka za "Sva Vremena"
-                    let globalSvaVremena = data.svaVremena.map((igrac, index) => ({
+                    // Jednostavna funkcija za formatiranje svih nizova
+                    const formatiraj = (niz, polje) => niz.map((igrac, index) => ({
                         mesto: index + 1,
                         ime: igrac.nadimak,
-                        poeni: igrac.svaVremenaPojmovi
+                        poeni: igrac[polje]
                     }));
 
-                    // Formatiranje podataka za "Mesečno/Sezonski"
-                    let globalSezona = data.sezona.map((igrac, index) => ({
-                        mesto: index + 1,
-                        ime: igrac.nadimak,
-                        poeni: igrac.sezonskiPojmovi
-                    }));
-
-                    // Upisujemo sveže podatke iz baze u menadžer
-                    this.podaci.multiplayer.svaVremena = globalSvaVremena;
-                    this.podaci.multiplayer.mesecni = globalSezona;
-                    this.podaci.multiplayer.nedeljni = globalSezona; // Za sada dele istu statistiku
+                    // Upisujemo sveže podatke iz baze sa novim atributima
+                    this.podaci.multiplayer.najboljiMec = formatiraj(data.najboljiMec, 'najboljiMecPoeni');
+                    this.podaci.multiplayer.nedeljni = formatiraj(data.nedeljni, 'nedeljniPoeni');
+                    this.podaci.multiplayer.mesecni = formatiraj(data.mesecni, 'mesecniPoeni');
+                    this.podaci.multiplayer.svaVremena = formatiraj(data.svaVremena, 'svaVremenaPoeni');
 
                     // Osvežavamo prikaz ako je korisnik na ovom ekranu
                     if(document.getElementById('toplista-screen').classList.contains('active')) {

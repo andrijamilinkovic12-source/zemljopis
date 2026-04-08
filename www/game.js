@@ -22,6 +22,10 @@ const Game = {
     kazneniPoeni: 0, 
     antiCheatTimeout: null, 
 
+    // === PAMĆENJE SOBE ZA AUTO-JOIN NAKON REKLAME ===
+    sobaNaCekanjuZbotTokena: null,
+    proveraTokenaInterval: null,
+
     init: function() {
         this.podesiTastaturu();
         this.poveziSeNaServer();
@@ -45,24 +49,20 @@ const Game = {
         setTimeout(() => { UIManager.prikaziEkran('main-menu'); }, 2600); 
     },
 
-    // INICIJALIZACIJA SOCKET.IO KONEKCIJE
     poveziSeNaServer: function() {
         if (typeof io !== 'undefined') {
             this.socket = io(this.socketURL);
             
-            // Odmah povezujemo chat
             if (typeof GlobalChatManager !== 'undefined') {
                 GlobalChatManager.poveziSokete(this.socket);
             }
 
             this.socket.on('connect', () => {
                 console.log("Povezan na server sa ID:", this.socket.id);
-                // Čim se povežemo, šaljemo svoj nadimak serveru za online listu
                 let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
                 this.socket.emit('prijavaNadimka', mojNadimak);
             });
 
-            // --- ČITANJE PODATAKA IZ MONGODB BAZE ---
             this.socket.on('podaciProfila', (podaci) => {
                 console.log("📥 Podaci učitani iz baze:", podaci);
                 
@@ -179,7 +179,6 @@ const Game = {
                 this.pokreniIgru('multi', podaci.slovo);
             });
 
-            // NOVO: Agresivno zaustavljanje svih klijentskih aktivnosti kada server forsira kraj runde
             this.socket.on('sviOdgovoriPrikupjeni', (odgovoriSobe) => {
                 UIManager.zatvoriObavestenje();
                 
@@ -190,7 +189,6 @@ const Game = {
                     KeyboardManager.hideKeyboard();
                 }
 
-                // Zaključavamo polja odmah kako igrač ne bi slučajno otvorio tastaturu dok čeka ekran rezultata
                 const inputs = document.querySelectorAll('#game-board .game-input');
                 inputs.forEach(input => input.disabled = true);
 
@@ -230,8 +228,9 @@ const Game = {
                 }
             });
 
-            // NOVO: Agresivno zaustavljanje i zaključavanje za automatsku pobedu
             this.socket.on('pobedaZbogNapustanja', () => {
+                if (this.trenutnaRunda >= 6 && !this.rundaUToku) return;
+
                 this.rundaUToku = false;
                 clearInterval(this.tajmerInterval);
                 
@@ -258,11 +257,35 @@ const Game = {
         }
     },
 
+    zapocniProveruTokenaZaSobu: function() {
+        if (this.proveraTokenaInterval) clearInterval(this.proveraTokenaInterval);
+        
+        this.proveraTokenaInterval = setInterval(() => {
+            if (typeof TokeniManager !== 'undefined' && TokeniManager.imaTokena() && this.sobaNaCekanjuZbotTokena) {
+                clearInterval(this.proveraTokenaInterval);
+                let kod = this.sobaNaCekanjuZbotTokena;
+                this.sobaNaCekanjuZbotTokena = null; 
+                
+                UIManager.prikaziEkran('main-menu'); 
+                this.pridruziSeSobiDirektno(kod);    
+            } 
+            else if (document.getElementById('main-menu').classList.contains('active')) {
+                clearInterval(this.proveraTokenaInterval);
+                this.sobaNaCekanjuZbotTokena = null;
+            }
+        }, 1000);
+    },
+
     traziSobu: function(brojIgraca) {
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
         if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
-            UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
+            UIManager.prikaziObavestenje(
+                "Potrošio si sve tokene!", 
+                "Potrošio si dnevni limit od 3 tokena za Multiplayer igru.<br><br>Dopuni svoje tokene gledanjem reklame kako bi nastavio igru sa ostalim igračima na mreži.", 
+                () => { TokeniManager.otvoriEkran(); }, 
+                "Dopuni tokene"
+            );
             return;
         }
 
@@ -291,7 +314,12 @@ const Game = {
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
         if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
-            UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
+            UIManager.prikaziObavestenje(
+                "Nemaš više tokena!", 
+                "Da bi kreirao sobu potreban ti je 1 token.<br><br>Potrošio si dnevni limit. Idi na sekciju za tokene i pogledaj reklamu da dobiješ novi.", 
+                () => { TokeniManager.otvoriEkran(); }, 
+                "Nabavi tokene"
+            );
             return;
         }
 
@@ -316,16 +344,25 @@ const Game = {
     pridruziSeSobi: function() {
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
-        if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
-            UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
-            return;
-        }
-
         const input = document.getElementById('room-code-input');
         const kod = input ? input.value.trim().toUpperCase() : '';
 
         if (kod.length < 3) {
             UIManager.prikaziObavestenje("Greška", "Moraš uneti ispravan kod sobe!", null, "U redu");
+            return;
+        }
+
+        if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
+            this.sobaNaCekanjuZbotTokena = kod; 
+            UIManager.prikaziObavestenje(
+                "Nemaš tokena za ulazak!", 
+                "Nemaš više tokena za igru!<br><br>Pogledaj kratku reklamu da dobiješ token i <b>automatski ćeš biti ubačen u ovu sobu</b>.", 
+                () => { 
+                    TokeniManager.otvoriEkran(); 
+                    this.zapocniProveruTokenaZaSobu(); 
+                }, 
+                "Gledaj reklamu"
+            );
             return;
         }
 
@@ -354,7 +391,16 @@ const Game = {
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
         if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
-            UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
+            this.sobaNaCekanjuZbotTokena = kodSobe; 
+            UIManager.prikaziObavestenje(
+                "Nemaš tokena za ulazak!", 
+                "Prijatelj te čeka u sobi, ali ti nemaš više tokena!<br><br>Pogledaj kratku reklamu da dobiješ token i <b>sistem će te automatski prebaciti u njegovu sobu</b>.", 
+                () => { 
+                    TokeniManager.otvoriEkran(); 
+                    this.zapocniProveruTokenaZaSobu(); 
+                }, 
+                "Gledaj reklamu"
+            );
             return;
         }
 
@@ -382,7 +428,12 @@ const Game = {
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
         if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
-            UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
+            UIManager.prikaziObavestenje(
+                "Nemaš više tokena!", 
+                "Da bi kreirao sobu i pozvao prijatelje potreban ti je 1 token.<br><br>Potrošio si dnevni limit, dopuni tokene gledanjem reklame.", 
+                () => { TokeniManager.otvoriEkran(); }, 
+                "Dopuni tokene"
+            );
             return;
         }
 
@@ -486,14 +537,23 @@ const Game = {
         }
     },
 
-    zavrsiRundu: function() {
+    zavrsiRundu: function(preskociPotvrdu = false) {
         if (!this.rundaUToku) return; 
+
+        if (this.trenutniMod !== 'solo' && !preskociPotvrdu) {
+            UIManager.prikaziPotvrdu(
+                "ZAVRŠI RUNDU?",
+                "Da li želiš da predaš odgovore pre isteka vremena?<br><br><span style='color:#f5af19; font-size:0.85rem;'>Ostali igrači će i dalje igrati dok im ne istekne vreme.</span>",
+                () => { this.zavrsiRundu(true); }
+            );
+            return;
+        }
+
         this.rundaUToku = false; 
 
         if (this.antiCheatTimeout) { clearTimeout(this.antiCheatTimeout); this.antiCheatTimeout = null; }
         clearInterval(this.tajmerInterval);
         
-        // NOVO: Forsiramo spuštanje tastature čim se runda završi da ne zaklanja ekran rezultata
         if (typeof KeyboardManager !== 'undefined') {
             KeyboardManager.hideKeyboard();
         }
@@ -550,7 +610,7 @@ const Game = {
             });
 
             UIManager.prikaziObavestenje(
-                "Vreme je isteklo!",
+                "Odgovori poslati!",
                 "Slanje tvojih odgovora na server...<br><br>Čekamo ostale igrače da završe.",
                 null,
                 "..." 
@@ -708,10 +768,10 @@ const Game = {
             }
             trenutnaTabela.sort((a, b) => b.poeni - a.poeni);
             
-            let tabelaHtml = `<div style="padding: 0 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">
-                <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 0.8rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-                    <div style="color: #38ef7d; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; margin-bottom: 0.6rem; text-align: center; letter-spacing: 1px;"><i class="fa-solid fa-chart-simple"></i> Trenutni poredak</div>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">`;
+            let tabelaHtml = `<div style="padding: 0 1rem; margin-top: min(0.4rem, 0.8vh); margin-bottom: min(0.4rem, 0.8vh);">
+                <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: min(0.5rem, 1vh); box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                    <div style="color: #38ef7d; font-size: min(0.75rem, 1.5vh); font-weight: 800; text-transform: uppercase; margin-bottom: min(0.4rem, 0.8vh); text-align: center; letter-spacing: 1px;"><i class="fa-solid fa-chart-simple"></i> Trenutni poredak</div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: min(0.4rem, 0.8vh);">`;
             
             trenutnaTabela.forEach((igrac, idx) => {
                 let bgBoja = igrac.isMe ? 'rgba(56,239,125,0.15)' : 'rgba(255,255,255,0.05)';
@@ -720,7 +780,7 @@ const Game = {
                 let border = igrac.isMe ? '1px solid rgba(56,239,125,0.3)' : '1px solid transparent';
                 
                 tabelaHtml += `
-                    <div style="background: ${bgBoja}; color: ${bojaTeksta}; font-weight: ${fw}; border: ${border}; font-size: 0.85rem; padding: 0.4rem 0.6rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="background: ${bgBoja}; color: ${bojaTeksta}; font-weight: ${fw}; border: ${border}; font-size: min(0.75rem, 1.5vh); padding: min(0.3rem, 0.6vh) min(0.5rem, 1vw); border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${idx + 1}. ${igrac.ime}</span>
                         <span>${igrac.poeni}</span>
                     </div>`;
@@ -744,18 +804,18 @@ const Game = {
                 else if (odg.boja === 'yellow') colorHex = '#f5af19'; 
 
                 listHtml += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.45rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <span style="font-size: 0.75rem; color: #a0aec0; width: 30%; text-transform: uppercase;">${odg.kategorija}</span>
-                        <span style="font-size: 0.95rem; font-weight: 800; color: ${colorHex}; flex: 1; text-align: left; padding-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">${odg.odgovor}</span>
-                        <span style="font-size: 0.85rem; font-weight: 800; color: ${colorHex}; background: rgba(0,0,0,0.3); padding: 0.2rem 0.4rem; border-radius: 6px;">${odg.poeni}</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: min(0.35rem, 0.7vh) 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <span style="font-size: min(0.65rem, 1.3vh); color: #a0aec0; width: 30%; text-transform: uppercase;">${odg.kategorija}</span>
+                        <span style="font-size: min(0.85rem, 1.7vh); font-weight: 800; color: ${colorHex}; flex: 1; text-align: left; padding-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">${odg.odgovor}</span>
+                        <span style="font-size: min(0.75rem, 1.5vh); font-weight: 800; color: ${colorHex}; background: rgba(0,0,0,0.3); padding: min(0.15rem, 0.3vh) min(0.3rem, 0.6vw); border-radius: 6px;">${odg.poeni}</span>
                     </div>
                 `;
             });
 
             let cardHtml = `
-                <div class="summary-card" style="padding: 0.8rem 1rem;">
-                    <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">${igrac.ime}</h3>
-                    <p style="text-align: center; color: #38ef7d; font-weight: 800; font-size: 1rem; margin-bottom: 0.4rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(56,239,125,0.2);">
+                <div class="summary-card">
+                    <h3>${igrac.ime}</h3>
+                    <p style="text-align: center; color: #38ef7d; font-weight: 800; font-size: min(0.9rem, 1.8vh); margin-bottom: min(0.3rem, 0.6vh); padding-bottom: min(0.3rem, 0.6vh); border-bottom: 1px solid rgba(56,239,125,0.2);">
                         ${this.trenutniMod === 'solo' ? `Pronađeno: ${tacnihOveRunde}/7` : `Osvojeno: +${igrac.ukupnoPoena} pts`}
                     </p>
                     <div style="flex: 1; overflow-y: auto; scrollbar-width: none;">
@@ -887,12 +947,23 @@ const Game = {
             UIManager.azurirajTajmer(this.preostaloVreme);
 
             if (this.preostaloVreme <= 0) {
-                this.zavrsiRundu(); 
+                this.zavrsiRundu(true); 
             }
         }, 1000);
     },
 
+    // --- FUNKCIJA KOJA ČUVA REZULTAT NA SERVER ---
+    posaljiKrajnjiRezultat: function() {
+        if (this.trenutniMod === 'multi' && this.ukupanScore > 0 && this.socket) {
+            this.socket.emit('upisiKrajnjiRezultat', this.ukupanScore);
+            this.ukupanScore = 0; 
+        }
+    },
+
+    // --- AŽURIRANO: PRI SVAKOM IZLASKU ČUVA POENE ---
     povratakUMeni: function() {
+        this.posaljiKrajnjiRezultat(); 
+        
         clearInterval(this.tajmerInterval);
         if (this.antiCheatTimeout) {
             clearTimeout(this.antiCheatTimeout);

@@ -832,7 +832,7 @@ body[data-tema="zlatna"] .btn-close { background: rgba(255,215,0,0.15); color: #
     padding: 0 1.2rem;
     flex: 1;
     scrollbar-width: none;
-    margin-bottom: 1rem;
+    margin-bottom: min(0.5rem, 1vh); /* Dinamička margina */
 }
 .summary-carousel::-webkit-scrollbar { display: none; }
 
@@ -842,7 +842,7 @@ body[data-tema="zlatna"] .btn-close { background: rgba(255,215,0,0.15); color: #
     background: rgba(0,0,0,0.4);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 15px;
-    padding: 1.2rem;
+    padding: min(0.8rem, 1.5vh); /* Dinamički padding */
     display: flex;
     flex-direction: column;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -851,8 +851,8 @@ body[data-tema="zlatna"] .btn-close { background: rgba(255,215,0,0.15); color: #
 .summary-card h3 {
     text-align: center;
     color: #fff;
-    margin-bottom: 0.2rem;
-    font-size: 1.2rem;
+    margin-bottom: min(0.2rem, 0.4vh);
+    font-size: min(1.15rem, 2.3vh);
     text-transform: uppercase;
     letter-spacing: 1px;
 }

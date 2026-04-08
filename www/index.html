@@ -434,20 +434,20 @@
     </div>
 
     <div id="round-summary-screen" class="screen">
-        <div class="game-header" style="justify-content: center;">
-            <span style="font-size: 1.2rem; font-weight: 800; color: #fff;">PREGLED RUNDE</span>
+        <div class="game-header" style="justify-content: center; padding: min(0.4rem, 0.8vh) 1rem;">
+            <span style="font-size: min(1.1rem, 2.2vh); font-weight: 800; color: #fff;">PREGLED RUNDE</span>
         </div>
         
         <div id="round-leaderboard-container"></div>
 
-        <p style="text-align: center; font-size: 0.8rem; color: #a0aec0; margin: 0.8rem 0;">
+        <p style="text-align: center; font-size: min(0.75rem, 1.5vh); color: #a0aec0; margin: min(0.4rem, 0.8vh) 0;">
             <i class="fa-solid fa-arrows-left-right"></i> Prevuci levo-desno za detalje
         </p>
 
         <div class="summary-carousel" id="summary-carousel">
         </div>
 
-        <div style="padding: 1.2rem; padding-bottom: calc(1.2rem + env(safe-area-inset-bottom, 10px)); background: linear-gradient(to top, #091317 85%, transparent);">
+        <div style="padding: min(0.8rem, 1.6vh) 1.2rem; padding-bottom: calc(min(0.8rem, 1.6vh) + env(safe-area-inset-bottom, 10px)); background: linear-gradient(to top, #091317 85%, transparent);">
             <button id="btn-next-round" class="btn-finish" disabled>Sačekaj (10s)</button>
         </div>
     </div>
@@ -521,6 +521,17 @@
             <h2 id="modal-title">Naslov</h2>
             <p id="modal-message">Poruka obaveštenja ide ovde.</p>
             <button id="modal-btn" class="menu-btn btn-primary">U redu</button>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-content" style="border-color: #f5af19; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(245, 175, 25, 0.2);">
+            <h2 id="confirm-title" style="color: #f5af19;"><i class="fa-solid fa-circle-question"></i> POTVRDA</h2>
+            <p id="confirm-message" style="text-align: center; font-size: 0.95rem; margin-bottom: 1.5rem; color: #cbd5e0;">Da li ste sigurni?</p>
+            <div style="display: flex; gap: 0.5rem;">
+                <button id="btn-confirm-no" class="menu-btn btn-secondary" style="flex: 1; margin: 0; padding: 0.8rem;">Odustani</button>
+                <button id="btn-confirm-yes" class="menu-btn btn-primary" style="flex: 1; margin: 0; padding: 0.8rem;">Završi rundu</button>
+            </div>
         </div>
     </div>
 

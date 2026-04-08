@@ -39,11 +39,15 @@ const IgracSchema = new mongoose.Schema({
     sezonskiPojmovi: { type: Number, default: 0 },
     svaVremenaPojmovi: { type: Number, default: 0 },
     pobede: { type: Number, default: 0 },
+    // POLJA ZA TOP LISTU POENA
+    najboljiMecPoeni: { type: Number, default: 0 },
+    nedeljniPoeni: { type: Number, default: 0 },
+    mesecniPoeni: { type: Number, default: 0 },
+    svaVremenaPoeni: { type: Number, default: 0 },
     poslednjaPrijava: { type: Date, default: Date.now }
 });
 
 const Igrac = mongoose.model('Igrac', IgracSchema);
-
 
 // ==========================================
 // 3. GLOBALNE VARIJABLE (Sobe, Chat, Prijatelji)
@@ -103,6 +107,9 @@ function zapocniRunduUSobi(soba, io) {
     if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
     soba.timeoutRunde = setTimeout(() => {
         console.log(`⏳ Istekao sigurnosni tajmer za sobu ${soba.id}. Forsiram prosleđivanje odgovora.`);
+        if (soba.trenutnaRunda >= 6) {
+            soba.status = 'zavrsena';
+        }
         io.to(soba.id).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde);
     }, 125000);
 }
@@ -114,7 +121,6 @@ function proveriIPokreniSledecuRundu(soba) {
         zapocniRunduUSobi(soba, io);
     }
 }
-
 
 // ==========================================
 // 4. GLAVNA SOCKET.IO LOGIKA
@@ -128,7 +134,7 @@ io.on('connection', (socket) => {
         try {
             let igrac = await Igrac.findOneAndUpdate(
                 { nadimak: cistoIme },
-                { $setOnInsert: { dukati: 500, tokeni: 3, sezonskiPojmovi: 0, svaVremenaPojmovi: 0, pobede: 0 } },
+                { $setOnInsert: { dukati: 500, tokeni: 3, sezonskiPojmovi: 0, svaVremenaPojmovi: 0, pobede: 0, najboljiMecPoeni: 0, nedeljniPoeni: 0, mesecniPoeni: 0, svaVremenaPoeni: 0 } },
                 { upsert: true, returnDocument: 'after' }
             );
 
@@ -150,7 +156,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // --- ČUVANJE POENA U BAZI KADA SE ZAVRŠI RUNDA/IGRA ---
     socket.on('dodajPojmove', async (brojPojmova) => {
         if (onlineIgraci[socket.id]) {
             try {
@@ -159,9 +164,7 @@ io.on('connection', (socket) => {
                     { $inc: { sezonskiPojmovi: brojPojmova, svaVremenaPojmovi: brojPojmova } },
                     { returnDocument: 'after' }
                 );
-            } catch (err) {
-                console.error("Greška pri čuvanju pojmova:", err);
-            }
+            } catch (err) {}
         }
     });
 
@@ -173,24 +176,45 @@ io.on('connection', (socket) => {
                     { $inc: { pobede: 1 } },
                     { returnDocument: 'after' }
                 );
+            } catch (err) {}
+        }
+    });
+
+    // --- UPIS POENA U TOP LISTU NA KRAJU MEČA ---
+    socket.on('upisiKrajnjiRezultat', async (poeni) => {
+        if (onlineIgraci[socket.id] && poeni > 0) {
+            try {
+                await Igrac.findOneAndUpdate(
+                    { nadimak: onlineIgraci[socket.id].ime },
+                    { 
+                        $inc: { nedeljniPoeni: poeni, mesecniPoeni: poeni, svaVremenaPoeni: poeni },
+                        $max: { najboljiMecPoeni: poeni } // Postavlja vrednost samo ako je nova veća od stare
+                    }
+                );
             } catch (err) {
-                console.error("Greška pri čuvanju pobede:", err);
+                console.error("Greška pri upisu poena u Top Listu:", err);
             }
         }
     });
 
-    // --- TRAŽENJE TOP LISTE IZ BAZE ---
+    // --- TRAŽENJE TOP LISTE IZ BAZE (Poeni umesto broja pojmova) ---
     socket.on('traziTopListu', async () => {
         try {
-            const topSezona = await Igrac.find().sort({ sezonskiPojmovi: -1 }).limit(50).select('nadimak sezonskiPojmovi');
-            const topSvaVremena = await Igrac.find().sort({ svaVremenaPojmovi: -1 }).limit(50).select('nadimak svaVremenaPojmovi');
+            const topNajboljiMec = await Igrac.find().sort({ najboljiMecPoeni: -1 }).limit(50).select('nadimak najboljiMecPoeni');
+            const topNedeljni = await Igrac.find().sort({ nedeljniPoeni: -1 }).limit(50).select('nadimak nedeljniPoeni');
+            const topMesecni = await Igrac.find().sort({ mesecniPoeni: -1 }).limit(50).select('nadimak mesecniPoeni');
+            const topSvaVremena = await Igrac.find().sort({ svaVremenaPoeni: -1 }).limit(50).select('nadimak svaVremenaPoeni');
             
-            socket.emit('topListaOdgovor', { sezona: topSezona, svaVremena: topSvaVremena });
+            socket.emit('topListaOdgovor', { 
+                najboljiMec: topNajboljiMec, 
+                nedeljni: topNedeljni,
+                mesecni: topMesecni,
+                svaVremena: topSvaVremena
+            });
         } catch (err) {
             console.error("Greška pri povlačenju top liste:", err);
         }
     });
-
 
     // --- 1. KREIRANJE PRIVATNE SOBE ---
     socket.on('kreirajSobu', (brojIgraca, callback) => {
@@ -212,7 +236,6 @@ io.on('connection', (socket) => {
         };
 
         socket.join(kodSobe);
-        console.log(`🏠 Soba kreirana: ${kodSobe} (Host: ${socket.id})`);
         callback({ uspeh: true, kodSobe: kodSobe });
     });
 
@@ -289,6 +312,9 @@ io.on('connection', (socket) => {
                 const sviPoslali = soba.igraci.every(i => i.spremniOdgovori);
                 if (sviPoslali) {
                     if (soba.timeoutRunde) { clearTimeout(soba.timeoutRunde); soba.timeoutRunde = null; }
+                    if (soba.trenutnaRunda >= 6) {
+                        soba.status = 'zavrsena';
+                    }
                     io.to(kodSobe).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde);
                 }
             }
@@ -363,15 +389,13 @@ io.on('connection', (socket) => {
                 const igracKojiIzlazi = soba.igraci[index];
                 soba.igraci.splice(index, 1);
                 
-                // Obaveštavamo ostale ko je izašao i zašto
                 io.to(kodSobe).emit('igracNapustioSobu', { 
                     ostaloIgraca: soba.igraci.length,
                     ime: igracKojiIzlazi.ime,
-                    uIgri: soba.status === 'u_igri',
+                    uIgri: soba.status === 'u_igri', 
                     razlog: razlog
                 });
 
-                // AUTOMATSKA POBEDA: Ako je igra u toku i ostao je samo 1 igrač u sobi!
                 if (soba.status === 'u_igri' && soba.igraci.length === 1) {
                     io.to(kodSobe).emit('pobedaZbogNapustanja');
                     if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
@@ -390,6 +414,9 @@ io.on('connection', (socket) => {
                     const sviPoslali = soba.igraci.every(i => i.spremniOdgovori);
                     if (sviPoslali && soba.status === 'u_igri' && soba.igraci.length > 0) {
                         if (soba.timeoutRunde) { clearTimeout(soba.timeoutRunde); soba.timeoutRunde = null; }
+                        if (soba.trenutnaRunda >= 6) {
+                            soba.status = 'zavrsena';
+                        }
                         io.to(kodSobe).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde);
                     }
                     proveriIPokreniSledecuRundu(soba);
@@ -425,10 +452,8 @@ io.on('connection', (socket) => {
     socket.on('odgovorNaZahtev', (podaci) => {
         const primalac = onlineIgraci[socket.id];
         if (primalac && onlineIgraci[podaci.ciljId]) {
-            // Javi pošiljaocu da je prihvaćeno
             io.to(podaci.ciljId).emit('odgovorPrijateljstvo', { prihvaceno: podaci.prihvaceno, idPrijatelja: socket.id, imePrijatelja: primalac.ime });
             
-            // NOVO: UPIS U GLAVNU BAZU PRIJATELJA I SINHRONIZACIJA OBOJICI
             if (podaci.prihvaceno) {
                 let imePosiljaoca = onlineIgraci[podaci.ciljId].ime;
                 
@@ -442,12 +467,10 @@ io.on('connection', (socket) => {
                     bazaPrijatelja[imePosiljaoca].prijatelji.push({ ime: primalac.ime, poeni: 0, pojmovi: 0, indeks: '0%' });
                 }
 
-                // Osveži primaocu (onome ko je kliknuo "Prihvati")
                 let podaciPrimalac = bazaPrijatelja[primalac.ime];
                 podaciPrimalac.prijatelji.forEach(p => p.online = Object.values(onlineIgraci).some(oi => oi.ime.toLowerCase() === p.ime.toLowerCase()));
                 socket.emit('sinhronizacijaPrijatelja', podaciPrimalac);
 
-                // Osveži pošiljaocu (onome ko je poslao zahtev)
                 let podaciPosiljaoca = bazaPrijatelja[imePosiljaoca];
                 podaciPosiljaoca.prijatelji.forEach(p => p.online = Object.values(onlineIgraci).some(oi => oi.ime.toLowerCase() === p.ime.toLowerCase()));
                 io.to(podaci.ciljId).emit('sinhronizacijaPrijatelja', podaciPosiljaoca);

@@ -119,6 +119,38 @@ const UIManager = {
         document.getElementById('custom-modal').classList.remove('active');
     },
 
+    // --- NOVA FUNKCIJA ZA POTVRDU ---
+    prikaziPotvrdu: function(naslov, poruka, akcijaPotvrde) {
+        const modal = document.getElementById('confirm-modal');
+        if (!modal) return;
+
+        document.getElementById('confirm-title').innerHTML = naslov;
+        document.getElementById('confirm-message').innerHTML = poruka;
+
+        const btnPotvrdi = document.getElementById('btn-confirm-yes');
+        const btnOdustani = document.getElementById('btn-confirm-no');
+
+        // Kloniramo dugmiće da bismo očistili stare Event Listenere
+        const novoDugmePotvrdi = btnPotvrdi.cloneNode(true);
+        btnPotvrdi.parentNode.replaceChild(novoDugmePotvrdi, btnPotvrdi);
+
+        const novoDugmeOdustani = btnOdustani.cloneNode(true);
+        btnOdustani.parentNode.replaceChild(novoDugmeOdustani, btnOdustani);
+
+        // Akcija za DA
+        novoDugmePotvrdi.addEventListener('click', () => {
+            modal.classList.remove('active');
+            if (typeof akcijaPotvrde === 'function') akcijaPotvrde();
+        });
+
+        // Akcija za NE
+        novoDugmeOdustani.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        modal.classList.add('active');
+    },
+
     azurirajLiveStatistiku: function(trenutniSkor, mod, podaciProtivnika = []) {
         // Prikaz tvog skora (sa kvačicom za Solo, samo poeni za Multi)
         if (mod === 'solo') {

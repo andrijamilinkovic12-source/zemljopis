@@ -150,8 +150,8 @@ const Game = {
                     document.getElementById('game-invite-name').innerText = podaci.hostIme;
                     document.getElementById('btn-prihvati-igru').onclick = () => {
                         modal.classList.remove('active');
-                        document.getElementById('room-code-input').value = podaci.kodSobe;
-                        this.pridruziSeSobi(); // Automatski te ubacuje u sobu!
+                        // DIREKTNO prosleđujemo kod bez potrebe za HTML poljima
+                        this.pridruziSeSobiDirektno(podaci.kodSobe); 
                     };
                     modal.classList.add('active');
                 }
@@ -162,8 +162,8 @@ const Game = {
                 if (this.jeHost) {
                     if (podaci.brojIgraca < podaci.max) {
                         UIManager.prikaziObavestenje(
-                            "Soba: " + this.trenutnaSoba,
-                            `Novi igrač se povezao!<br><br>Trenutno igrača: <b style="color:#f5af19; font-size: 1.2rem;">${podaci.brojIgraca}/${podaci.max}</b><br><br>Čekamo ostale...`,
+                            "Nova prijava",
+                            `Tvoj prijatelj se povezao!<br><br>Trenutno igrača: <b style="color:#f5af19; font-size: 1.2rem;">${podaci.brojIgraca}/${podaci.max}</b><br><br>Čekamo ostale...`,
                             null, 
                             "Čekam..."
                         );
@@ -289,7 +289,8 @@ const Game = {
         }
 
         const input = document.getElementById('room-code-input');
-        const kod = input.value.trim().toUpperCase();
+        // Zadržavamo ovu logiku zbog eventualnih testiranja, iako ti je input sada skriven.
+        const kod = input ? input.value.trim().toUpperCase() : '';
 
         if (kod.length < 3) {
             UIManager.prikaziObavestenje("Greška", "Moraš uneti ispravan kod sobe!", null, "U redu");
@@ -310,9 +311,37 @@ const Game = {
                     null,
                     "Čekam..." 
                 );
-                input.value = ''; 
+                if (input) input.value = ''; 
             } else {
                 UIManager.prikaziObavestenje("Greška", odgovor.poruka, null, "Pokušaj ponovo");
+            }
+        });
+    },
+
+    pridruziSeSobiDirektno: function(kodSobe) {
+        if (!this.socket) return alert("Nema konekcije sa serverom!");
+
+        if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
+            UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
+            return;
+        }
+
+        this.jeHost = false;
+        let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
+
+        UIManager.prikaziObavestenje("Povezivanje...", "Ulazim u sobu tvog prijatelja...", null, "...");
+
+        this.socket.emit('pridruziSeSobi', { kodSobe: kodSobe, ime: mojNadimak }, (odgovor) => {
+            if (odgovor.uspeh) {
+                this.trenutnaSoba = kodSobe;
+                UIManager.prikaziObavestenje(
+                    "Uspešno!",
+                    `Uspešno si ušao u sobu!<br><br>Čekamo da Host započne meč...`,
+                    null,
+                    "Čekam..." 
+                );
+            } else {
+                UIManager.prikaziObavestenje("Greška", odgovor.poruka, null, "Zatvori");
             }
         });
     },
@@ -327,12 +356,14 @@ const Game = {
 
         // Čitamo koje smo prijatelje uneli u slotove (iz index.html)
         const pozvani = typeof izabraniPrijateljiZaSobu !== 'undefined' ? izabraniPrijateljiZaSobu : [];
-        let brojIgraca = pozvani.length + 1; // Ti + Prijatelji
         
-        if (brojIgraca === 1) {
-            // Ako ne izabere nikoga a stisne START, pravimo sobu od 5 da bi generisao KOD ako ipak hoće manuelno da im pošalje kod
-            brojIgraca = 5; 
+        // Dodata provera: Ne dozvoljavamo start ako niko nije izabran
+        if (pozvani.length === 0) {
+            UIManager.prikaziObavestenje("Nema prijatelja", "Moraš dodati barem jednog prijatelja u slot da bi započeo igru!", null, "U redu");
+            return;
         }
+
+        let brojIgraca = pozvani.length + 1; // Ti + Prijatelji
 
         this.brojIgracaUSobi = brojIgraca;
         this.jeHost = true;
@@ -343,16 +374,11 @@ const Game = {
             if (odgovor.uspeh) {
                 this.trenutnaSoba = odgovor.kodSobe;
                 
-                let poruka = `Tvoj kod sobe je:<br><br><b style="font-size: 2.5rem; color: #f5af19; letter-spacing: 5px; text-shadow: 0 0 10px rgba(245,175,25,0.4);">${odgovor.kodSobe}</b><br><br>`;
-                
-                if (pozvani.length > 0) {
-                    poruka += `Pozivnice su uspešno poslate!<br>Igrača u sobi: <b style="color:#f5af19;">1/${brojIgraca}</b>`;
-                } else {
-                    poruka += `Čeka se unos koda od drugih.<br>Igrača u sobi: <b style="color:#f5af19;">1/${brojIgraca}</b>`;
-                }
+                // SKLONJEN KOD SOBE: Sada samo prikazujemo status čekanja
+                let poruka = `Pozivnice su uspešno poslate!<br><br>Čekamo tvoje prijatelje da prihvate poziv.<br><br>Igrača u sobi: <b style="color:#f5af19;">1/${brojIgraca}</b>`;
 
                 UIManager.prikaziObavestenje(
-                    "Soba je kreirana!",
+                    "Soba je spremna!",
                     poruka,
                     null, 
                     "Čekam ostale..." 
@@ -410,7 +436,7 @@ const Game = {
 
         UIManager.pripremiPolja();
         UIManager.podesiTabluZaIgru(this.trenutniMod, this.zadatoSlovo);
-        UIManager.azurirajRundu(this.trenutnaRunda); 
+        UIManager.azurirajRundu(this.trennaRunda); 
         
         let prikazRezultata = this.trenutniMod === 'solo' ? this.ukupnoTacnihOdgovora : this.ukupanScore;
         let arrayZaLiveStatistiku = Object.values(this.rezultatiProtivnika).map(p => ({ ime: p.ime, poeni: p.poeni }));

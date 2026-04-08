@@ -315,53 +315,53 @@
             <i class="fa-solid fa-gear pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
         </div>
         
-        <h2 style="color: #38ef7d; margin-bottom: 1.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Podešavanja</h2>
+        <h2 style="color: #38ef7d; margin-bottom: min(1rem, 2vh); z-index: 5; font-size: min(1.6rem, 4vh); text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Podešavanja</h2>
         
-        <div style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; padding: 0 1rem; overflow-y: auto; scrollbar-width: none;">
+        <div style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; gap: min(0.8rem, 1.5vh); padding: 0 1rem; overflow: hidden; flex: 1; padding-bottom: min(1rem, 2vh);">
             
-            <div style="background: rgba(0,0,0,0.5); padding: 1.2rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
-                <label style="display: block; font-size: 0.8rem; color: #a0aec0; margin-bottom: 0.8rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;"><i class="fa-solid fa-user"></i> Tvoj profil</label>
+            <div style="background: rgba(0,0,0,0.5); padding: min(1rem, 2vh) 1.2rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
+                <label style="display: block; font-size: min(0.75rem, 1.5vh); color: #a0aec0; margin-bottom: min(0.6rem, 1.2vh); text-transform: uppercase; font-weight: 800; letter-spacing: 1px;"><i class="fa-solid fa-user"></i> Tvoj profil</label>
                 <div style="display: flex; gap: 0.5rem;">
-                    <input type="text" id="postavke-nadimak" placeholder="Unesi nadimak..." maxlength="20" style="flex: 1; min-width: 0; padding: 0.8rem; border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.3); color: #fff; font-size: 1rem; outline: none; transition: border-color 0.3s;" autocomplete="off" autocorrect="off" spellcheck="false">
-                    <button class="btn-primary" style="border: none; border-radius: 10px; padding: 0 1rem; font-weight: 800; cursor: pointer; transition: transform 0.2s;" onclick="PodesavanjaManager.sacuvajNadimak()">
+                    <input type="text" id="postavke-nadimak" placeholder="Unesi nadimak..." maxlength="20" style="flex: 1; min-width: 0; padding: min(0.6rem, 1.2vh); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.3); color: #fff; font-size: min(0.95rem, 2vh); outline: none; transition: border-color 0.3s;" autocomplete="off" autocorrect="off" spellcheck="false">
+                    <button class="btn-primary" style="border: none; border-radius: 10px; padding: 0 min(1.2rem, 4vw); font-weight: 800; cursor: pointer; transition: transform 0.2s;" onclick="PodesavanjaManager.sacuvajNadimak()">
                         <i class="fa-solid fa-check"></i>
                     </button>
                 </div>
             </div>
 
-            <div style="background: rgba(0,0,0,0.5); padding: 1.2rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
-                <label style="display: block; font-size: 0.8rem; color: #a0aec0; margin-bottom: 0.8rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;"><i class="fa-solid fa-sliders"></i> Sistem</label>
+            <div style="background: rgba(0,0,0,0.5); padding: min(1rem, 2vh) 1.2rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: min(0.5rem, 1vh);">
+                <label style="display: block; font-size: min(0.75rem, 1.5vh); color: #a0aec0; margin-bottom: 2px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;"><i class="fa-solid fa-sliders"></i> Sistem</label>
                 
-                <button class="menu-btn" id="btn-zvuk" style="margin-bottom: 1rem; border: 1px solid transparent; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0.8rem;" onclick="PodesavanjaManager.toggleZvuk()">
-                    <span><i class="fa-solid fa-volume-high" id="ikona-zvuk"></i> Zvuk</span> 
-                    <span id="zvuk-status" style="font-weight: 800;">UKLJ</span>
+                <button class="menu-btn" id="btn-zvuk" style="margin-bottom: 0; border: 1px solid transparent; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: min(0.6rem, 1.2vh);" onclick="PodesavanjaManager.toggleZvuk()">
+                    <span style="font-size: min(0.9rem, 2vh);"><i class="fa-solid fa-volume-high" id="ikona-zvuk"></i> Zvuk</span> 
+                    <span id="zvuk-status" style="font-weight: 800; font-size: min(0.9rem, 2vh);">UKLJ</span>
                 </button>
 
-                <button class="menu-btn" id="btn-pismo" style="margin-bottom: 1rem; border: 1px solid transparent; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0.8rem;" onclick="PodesavanjaManager.togglePismo()">
-                    <span><i class="fa-solid fa-language" id="ikona-pismo"></i> Pismo</span> 
-                    <span id="pismo-status" style="font-weight: 800;">LATINICA</span>
+                <button class="menu-btn" id="btn-pismo" style="margin-bottom: 0; border: 1px solid transparent; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: min(0.6rem, 1.2vh);" onclick="PodesavanjaManager.togglePismo()">
+                    <span style="font-size: min(0.9rem, 2vh);"><i class="fa-solid fa-language" id="ikona-pismo"></i> Pismo</span> 
+                    <span id="pismo-status" style="font-weight: 800; font-size: min(0.9rem, 2vh);">LATINICA</span>
                 </button>
 
-                <label style="display: block; font-size: 0.75rem; color: #a0aec0; margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600;">Izgled aplikacije</label>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
-                    <button class="menu-btn" id="btn-tema-tamna" style="margin-bottom: 0; padding: 0.6rem; font-size: 0.8rem; border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('tamna')">Tamna</button>
-                    <button class="menu-btn" id="btn-tema-svetla" style="margin-bottom: 0; padding: 0.6rem; font-size: 0.8rem; border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('svetla')">Svetla</button>
-                    <button class="menu-btn" id="btn-tema-neon" style="margin-bottom: 0; padding: 0.6rem; font-size: 0.8rem; border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('neon')">Neon</button>
-                    <button class="menu-btn" id="btn-tema-okean" style="margin-bottom: 0; padding: 0.6rem; font-size: 0.8rem; border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('okean')">Okean</button>
-                    <button class="menu-btn" id="btn-tema-zlatna" style="margin-bottom: 0; padding: 0.6rem; font-size: 0.8rem; border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('zlatna')">Zlatna</button>
+                <label style="display: block; font-size: min(0.7rem, 1.4vh); color: #a0aec0; margin-top: 4px; margin-bottom: 2px; text-transform: uppercase; font-weight: 600;">Izgled aplikacije</label>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
+                    <button class="menu-btn" id="btn-tema-tamna" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('tamna')">Tamna</button>
+                    <button class="menu-btn" id="btn-tema-svetla" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('svetla')">Svetla</button>
+                    <button class="menu-btn" id="btn-tema-neon" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('neon')">Neon</button>
+                    <button class="menu-btn" id="btn-tema-okean" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('okean')">Okean</button>
+                    <button class="menu-btn" id="btn-tema-zlatna" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('zlatna')">Zlatna</button>
                 </div>
             </div>
 
-            <div style="display: flex; gap: 0.5rem;">
-                <button class="menu-btn btn-secondary" style="flex: 1; margin-bottom: 0; font-size: 0.9rem; padding: 0.8rem;" onclick="PodesavanjaManager.prikaziPravila()">
+            <div style="display: flex; gap: 0.5rem; margin-top: auto;">
+                <button class="menu-btn btn-secondary" style="flex: 1; margin-bottom: 0; font-size: min(0.85rem, 1.8vh); padding: min(0.7rem, 1.4vh);" onclick="PodesavanjaManager.prikaziPravila()">
                     <i class="fa-solid fa-book"></i> Pravila
                 </button>
-                <button class="menu-btn" style="flex: 1; background: #11998e; margin-bottom: 0; font-size: 0.9rem; padding: 0.8rem;" onclick="PodesavanjaManager.prikaziObavestenja()">
+                <button class="menu-btn" style="flex: 1; background: #11998e; margin-bottom: 0; font-size: min(0.85rem, 1.8vh); padding: min(0.7rem, 1.4vh);" onclick="PodesavanjaManager.prikaziObavestenja()">
                     <i class="fa-solid fa-bell"></i> Novosti
                 </button>
             </div>
 
-            <button class="menu-btn" style="background: rgba(255,255,255,0.1); margin-top: 0.5rem; margin-bottom: 1rem; padding: 0.8rem;" onclick="UIManager.prikaziEkran('main-menu')">
+            <button class="menu-btn" style="background: rgba(255,255,255,0.1); margin-top: 0; margin-bottom: 0; padding: min(0.8rem, 1.6vh); font-size: min(0.9rem, 2vh);" onclick="UIManager.prikaziEkran('main-menu')">
                 <i class="fa-solid fa-arrow-left"></i> Nazad u Meni
             </button>
         </div>
@@ -593,6 +593,11 @@
                     const slot = document.getElementById('invite-slot-' + i);
                     slot.innerHTML = '<i class="fa-solid fa-plus"></i>';
                     slot.classList.remove('filled');
+                }
+
+                // NOVO: Automatski zatraži svežu listu od servera kako bismo znali ko je TAČNO ONLINE
+                if (typeof Game !== 'undefined' && Game.socket) {
+                    Game.socket.emit('traziOsvezenjePrijatelja');
                 }
             }
             

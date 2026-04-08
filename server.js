@@ -223,7 +223,6 @@ io.on('connection', (socket) => {
 
         const karakteri = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let kodSobe = "";
-        // ISPRAVLJENO: Koristimo karakteri.length umesto calculations.length
         for (let i = 0; i < 4; i++) kodSobe += karakteri.charAt(Math.floor(Math.random() * karakteri.length)); 
 
         sobe[kodSobe] = {
@@ -410,7 +409,33 @@ io.on('connection', (socket) => {
     socket.on('odgovorNaZahtev', (podaci) => {
         const primalac = onlineIgraci[socket.id];
         if (primalac && onlineIgraci[podaci.ciljId]) {
+            // Javi pošiljaocu da je prihvaćeno
             io.to(podaci.ciljId).emit('odgovorPrijateljstvo', { prihvaceno: podaci.prihvaceno, idPrijatelja: socket.id, imePrijatelja: primalac.ime });
+            
+            // NOVO: UPIS U GLAVNU BAZU PRIJATELJA I SINHRONIZACIJA OBOJICI
+            if (podaci.prihvaceno) {
+                let imePosiljaoca = onlineIgraci[podaci.ciljId].ime;
+                
+                osigurajBazu(primalac.ime);
+                osigurajBazu(imePosiljaoca);
+                
+                if (!bazaPrijatelja[primalac.ime].prijatelji.some(p => p.ime === imePosiljaoca)) {
+                    bazaPrijatelja[primalac.ime].prijatelji.push({ ime: imePosiljaoca, poeni: 0, pojmovi: 0, indeks: '0%' });
+                }
+                if (!bazaPrijatelja[imePosiljaoca].prijatelji.some(p => p.ime === primalac.ime)) {
+                    bazaPrijatelja[imePosiljaoca].prijatelji.push({ ime: primalac.ime, poeni: 0, pojmovi: 0, indeks: '0%' });
+                }
+
+                // Osveži primaocu (onome ko je kliknuo "Prihvati")
+                let podaciPrimalac = bazaPrijatelja[primalac.ime];
+                podaciPrimalac.prijatelji.forEach(p => p.online = Object.values(onlineIgraci).some(oi => oi.ime.toLowerCase() === p.ime.toLowerCase()));
+                socket.emit('sinhronizacijaPrijatelja', podaciPrimalac);
+
+                // Osveži pošiljaocu (onome ko je poslao zahtev)
+                let podaciPosiljaoca = bazaPrijatelja[imePosiljaoca];
+                podaciPosiljaoca.prijatelji.forEach(p => p.online = Object.values(onlineIgraci).some(oi => oi.ime.toLowerCase() === p.ime.toLowerCase()));
+                io.to(podaci.ciljId).emit('sinhronizacijaPrijatelja', podaciPosiljaoca);
+            }
         }
     });
 

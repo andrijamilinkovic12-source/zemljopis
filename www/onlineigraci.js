@@ -1,14 +1,9 @@
 // onlineigraci.js - Menadžer za prikaz igrača na mreži i dodavanje prijatelja
 
 const OnlineIgraciManager = {
-    prijatelji: [],
-
     init: function() {
-        // Učitavamo sačuvane prijatelje (kako bismo znali ko je već dodat)
-        const sacuvano = localStorage.getItem('zemljopis_prijatelji');
-        if (sacuvano) {
-            this.prijatelji = JSON.parse(sacuvano);
-        }
+        // Više nam ne treba odvojena lokalna lista ovde, 
+        // koristićemo SobaPrijateljaManager kao GLAVNU bazu!
     },
 
     otvoriEkran: function() {
@@ -32,9 +27,15 @@ const OnlineIgraciManager = {
             return;
         }
 
+        // Uzimamo glavnu listu prijatelja direktno iz Sobe Prijatelja
+        let mojiPrijatelji = [];
+        if (typeof SobaPrijateljaManager !== 'undefined') {
+            mojiPrijatelji = SobaPrijateljaManager.prijatelji;
+        }
+
         igraci.forEach(igrac => {
-            // Proveravamo da li nam je ovaj igrač već prijatelj
-            const vecPrijatelj = this.prijatelji.some(p => p.id === igrac.id || p.ime === igrac.ime);
+            // Proveravamo u GLAVNOJ listi da li smo već prijatelji
+            const vecPrijatelj = mojiPrijatelji.some(p => p.ime.toLowerCase() === igrac.ime.toLowerCase());
             
             let actionHtml = '';
             if (vecPrijatelj) {
@@ -96,8 +97,10 @@ const OnlineIgraciManager = {
         Game.socket.emit('odgovorNaZahtev', { ciljId: idPosiljaoca, prihvaceno: prihvaceno });
         
         if (prihvaceno) {
-            this.dodajPrijatelja(idPosiljaoca, imePosiljaoca);
             UIManager.prikaziObavestenje("Novi prijatelj!", `Ti i <b style="color:#38ef7d;">${imePosiljaoca}</b> ste sada prijatelji!`, null, "Super");
+            
+            // ODMAH TRAŽIMO OSVEŽENJE GLAVNE SOBE PRIJATELJA
+            Game.socket.emit('traziOsvezenjePrijatelja');
             
             // Osveži listu ako je ekran trenutno otvoren
             if (document.getElementById('online-igraci-screen').classList.contains('active')) {
@@ -108,19 +111,13 @@ const OnlineIgraciManager = {
 
     uspesnoDodatPrijatelj: function(podaci) {
         // Poziva se kada neko PRIHVATI naš zahtev
-        this.dodajPrijatelja(podaci.idPrijatelja, podaci.imePrijatelja);
         UIManager.prikaziObavestenje("Zahtev prihvaćen", `<b style="color:#38ef7d;">${podaci.imePrijatelja}</b> je prihvatio/la tvoj zahtev za prijateljstvo!`, null, "Odlično");
+        
+        // ODMAH TRAŽIMO OSVEŽENJE GLAVNE SOBE PRIJATELJA
+        Game.socket.emit('traziOsvezenjePrijatelja');
         
         if (document.getElementById('online-igraci-screen').classList.contains('active')) {
             Game.socket.emit('traziOnlineIgrace');
-        }
-    },
-
-    dodajPrijatelja: function(id, ime) {
-        // Sprečavamo duplikate
-        if (!this.prijatelji.some(p => p.ime === ime)) {
-            this.prijatelji.push({ id: id, ime: ime });
-            localStorage.setItem('zemljopis_prijatelji', JSON.stringify(this.prijatelji));
         }
     }
 };

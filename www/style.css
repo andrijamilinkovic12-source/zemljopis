@@ -71,13 +71,13 @@ body {
 #tokeni-screen,
 #online-igraci-screen,
 #soba-prijatelja-screen {
-    padding-top: clamp(50px, 10vh, 90px); 
+    padding-top: 8vh; 
 }
 
 /* --- GLAVNI MENI --- */
 #main-menu { 
-    padding: clamp(1rem, 3vh, 2rem) 1.5rem; 
-    justify-content: space-evenly; 
+    padding: 2rem 1.5rem 2rem 1.5rem; 
+    justify-content: center; 
     align-items: center; 
     position: relative; 
 }
@@ -96,7 +96,7 @@ body {
     justify-content: center;
     gap: 0.5rem;
     z-index: 99;
-    margin-bottom: clamp(0.5rem, 2vh, 1.5rem);
+    margin-bottom: 1.5rem; 
 }
 
 .status-pill {
@@ -131,19 +131,18 @@ body {
     align-items: center;
     width: 100%;
     max-width: 320px;
-    margin-bottom: clamp(1rem, 3vh, 2rem); 
+    margin-bottom: 2rem; 
     z-index: 5;
 }
 
 .top-circle-btn {
-    width: clamp(45px, 12vw, 50px);
-    aspect-ratio: 1;
-    height: auto;
+    width: min(50px, 12vw);
+    height: min(50px, 12vw);
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.4);
     border: 2px solid rgba(255, 255, 255, 0.1);
     color: #fff;
-    font-size: clamp(1rem, 3vw, 1.2rem);
+    font-size: min(1.2rem, 4vw);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -159,12 +158,11 @@ body {
 }
 
 .rank-btn {
-    width: clamp(65px, 18vw, 75px);
-    aspect-ratio: 1;
-    height: auto;
+    width: min(75px, 18vw);
+    height: min(75px, 18vw);
     border: 3px solid #f5af19;
     color: #f5af19;
-    font-size: clamp(1.5rem, 5vw, 2rem);
+    font-size: min(2rem, 5vw);
     font-weight: 800;
     background: rgba(245, 175, 25, 0.15);
     box-shadow: 0 0 20px rgba(245, 175, 25, 0.4);
@@ -194,11 +192,8 @@ body {
 .main-actions {
     width: 100%;
     max-width: 320px;
-    margin-bottom: clamp(1rem, 2vh, 1.5rem);
+    margin-bottom: 1.5rem;
     z-index: 5;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 .menu-btn { 
@@ -230,21 +225,20 @@ body {
 .icon-menu-row {
     display: flex;
     justify-content: center;
-    gap: clamp(0.5rem, 3vw, 1.2rem);
+    gap: 1.2rem;
     width: 100%;
     z-index: 5;
-    margin-top: auto; 
+    margin-top: 1rem;
 }
 
 .circle-btn {
-    width: clamp(50px, 14vw, 60px);
-    aspect-ratio: 1;
-    height: auto;
+    width: min(60px, 14vw);
+    height: min(60px, 14vw);
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.08);
     color: #fff;
-    font-size: clamp(1.2rem, 4vw, 1.4rem);
+    font-size: min(1.4rem, 5vw);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -265,9 +259,8 @@ body {
    VELIKI PODELJENI KRUG ZA IGRU
    ========================================= */
 .big-circle {
-    width: clamp(200px, 60vw, 250px);
-    aspect-ratio: 1;
-    height: auto;
+    width: min(250px, 60vw, 32vh);
+    height: min(250px, 60vw, 32vh);
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.4);
     border: 2px solid rgba(255, 255, 255, 0.1);
@@ -521,20 +514,38 @@ body {
 
 .inputs-container { 
     flex: 1; 
-    overflow-y: auto; 
-    scrollbar-width: none;
+    overflow: hidden; 
     padding: 0 1rem; 
-    padding-bottom: clamp(80px, 15vh, 120px); 
+    padding-bottom: min(75px, 10vh); 
     display: flex;
     flex-direction: column;
-}
-.inputs-container::-webkit-scrollbar {
-    display: none;
+    justify-content: space-evenly; 
 }
 
-.input-group { margin-bottom: clamp(0.2rem, 1vh, 0.4rem); } 
-.input-group label { display: block; margin-bottom: 1px; font-size: clamp(0.65rem, 1.2vh, 0.75rem); color: #cbd5e0; font-weight: 600; text-transform: uppercase; }
-.input-group input { width: 100%; padding: clamp(0.35rem, 1.2vh, 0.6rem) 0.8rem; font-size: clamp(0.85rem, 1.8vh, 0.95rem); border-radius: 8px; border: 2px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.25); color: #fff; outline: none; transition: all 0.3s ease; }
+.input-group { 
+    margin-bottom: 0; 
+} 
+
+.input-group label { 
+    display: block; 
+    margin-bottom: 1px; 
+    font-size: min(0.75rem, 1.8vh); 
+    color: #cbd5e0; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+}
+
+.input-group input { 
+    width: 100%; 
+    padding: min(0.6rem, 1.2vh) 0.8rem; 
+    font-size: min(0.95rem, 2vh); 
+    border-radius: 8px; 
+    border: 2px solid rgba(255, 255, 255, 0.05); 
+    background: rgba(0, 0, 0, 0.25); 
+    color: #fff; 
+    outline: none; 
+    transition: all 0.3s ease; 
+}
 .input-group input:focus { border-color: #38ef7d; background: rgba(0, 0, 0, 0.4); transform: translateY(-1px); } 
 
 .action-footer { 

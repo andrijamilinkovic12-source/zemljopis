@@ -63,10 +63,15 @@ const KeyboardManager = {
         this.activeInput = input;
         this.activeInput.classList.add('active-keyboard-input');
         
-        // Skroluj polje da bude vidljivo iznad tastature
+        // BEZBEDAN SKROL: Skroluje isključivo unutar kontejnera, ne podiže celu stranicu!
         setTimeout(() => {
-            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
+            const container = document.querySelector('.inputs-container');
+            if (container && input) {
+                // Računamo poziciju polja u odnosu na kontejner
+                const scrollPos = input.offsetTop - container.offsetTop - 20; 
+                container.scrollTo({ top: scrollPos, behavior: 'smooth' });
+            }
+        }, 50); // Znatno smanjeno kašnjenje da izbegnemo "trku" u procesima
     },
 
     renderKeyboard: function() {
@@ -147,7 +152,7 @@ const KeyboardManager = {
 
     showKeyboard: function() {
         const kb = document.getElementById('custom-keyboard');
-        if(kb) kb.classList.add('active');
+        if (kb) kb.classList.add('active');
         
         // Povećaj padding na dnu containera da tastatura ne prekrije polja
         const container = document.querySelector('.inputs-container');
@@ -160,7 +165,7 @@ const KeyboardManager = {
         
         if (this.activeInput) {
             this.activeInput.classList.remove('active-keyboard-input');
-            this.activeInput.blur(); // AGRESIVNO UBIJANJE FOKUSA
+            this.activeInput.blur(); // Agresivno ukidamo fokus sa polja
             this.activeInput = null;
         }
         

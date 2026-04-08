@@ -5,10 +5,15 @@ const UIManager = {
         document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
         document.getElementById(ekranId).classList.add('active');
         
-        // NOVO: Uvek sakrij tastaturu kada se menja ekran da ne bi blokirala UI
+        // Uvek sakrij tastaturu kada se menja ekran da ne bi blokirala UI
         if (typeof KeyboardManager !== 'undefined') {
             KeyboardManager.hideKeyboard();
         }
+
+        // --- OSIGURAČ: Resetuje zaglavljeni glavni skrol ekrana ---
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
     },
 
     pokreniTranzicijuVrata: function(callback) {
@@ -119,7 +124,6 @@ const UIManager = {
         document.getElementById('custom-modal').classList.remove('active');
     },
 
-    // --- NOVA FUNKCIJA ZA POTVRDU ---
     prikaziPotvrdu: function(naslov, poruka, akcijaPotvrde) {
         const modal = document.getElementById('confirm-modal');
         if (!modal) return;
@@ -188,7 +192,6 @@ const UIManager = {
             }
         // SOLO TRENING PRIKAZ
         } else {
-            // Potpuno uklonjen ispis "Trening - Prikazuje se broj tačnih odgovora"
             opponentsContainer.innerHTML = '';
         }
     }

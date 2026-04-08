@@ -43,6 +43,9 @@ const KeyboardManager = {
                 
                 input.addEventListener('click', (e) => {
                     e.preventDefault();
+                    // NOVO: Blokira otvaranje tastature ako je runda gotova i polje zaključano!
+                    if (input.disabled) return; 
+
                     this.setActiveInput(input);
                     this.showKeyboard();
                 });
@@ -125,7 +128,13 @@ const KeyboardManager = {
         const currentIndex = inputs.indexOf(this.activeInput);
         
         if (currentIndex > -1 && currentIndex < inputs.length - 1) {
-            this.setActiveInput(inputs[currentIndex + 1]);
+            let nextInput = inputs[currentIndex + 1];
+            // NOVO: Preskače polje i gasi tastaturu ako je sledeće polje zaključano
+            if (!nextInput.disabled) {
+                this.setActiveInput(nextInput);
+            } else {
+                this.hideKeyboard();
+            }
         } else {
             this.hideKeyboard();
         }

@@ -66,7 +66,6 @@ const Game = {
             this.socket.on('podaciProfila', (podaci) => {
                 console.log("📥 Podaci učitani iz baze:", podaci);
                 
-                // Ažuriraj prikaz na glavnom ekranu
                 const dukatiEl = document.getElementById('meni-dukati');
                 const tokeniEl = document.getElementById('meni-tokeni');
                 const tokeniVelikoEl = document.getElementById('tokeni-stanje-veliko');
@@ -75,12 +74,10 @@ const Game = {
                 if (tokeniEl) tokeniEl.innerText = tokeniVelikoEl ? tokeniVelikoEl.innerText = podaci.tokeni : podaci.tokeni + "/3";
                 if (tokeniVelikoEl) tokeniVelikoEl.innerText = podaci.tokeni;
 
-                // Sinhronizuj lokalne menadžere (ako postoje) da ne bi prepisali bazu
                 if (typeof TokeniManager !== 'undefined') TokeniManager.trenutnoTokena = podaci.tokeni;
                 if (typeof RiznicaManager !== 'undefined') RiznicaManager.stanjeDukata = podaci.dukati;
             });
 
-            // --- NOVO: PRIJEM PODATAKA ZA KVARTALNI NIVO ---
             this.socket.on('osveziMojeKvartalnePodatke', (podaci) => {
                 if (typeof KvartalniNivoManager !== 'undefined') {
                     KvartalniNivoManager.primiMojePodatke(podaci);
@@ -93,27 +90,23 @@ const Game = {
                 }
             });
 
-            // Ažuriranje broja online igrača u status baru
             this.socket.on('azurirajBrojOnline', (broj) => {
                 const el = document.getElementById('meni-online');
                 if (el) el.innerText = broj;
             });
 
-            // Prijem liste igrača za ekran
             this.socket.on('listaOnlineIgraca', (lista) => {
                 if (typeof OnlineIgraciManager !== 'undefined') {
                     OnlineIgraciManager.renderLista(lista);
                 }
             });
 
-            // Neko nam je poslao zahtev
             this.socket.on('zahtevZaPrijateljstvo', (podaci) => {
                 if (typeof OnlineIgraciManager !== 'undefined') {
                     OnlineIgraciManager.prikaziZahtev(podaci);
                 }
             });
 
-            // Neko je odgovorio na naš zahtev
             this.socket.on('odgovorPrijateljstvo', (podaci) => {
                 if (podaci.prihvaceno && typeof OnlineIgraciManager !== 'undefined') {
                     OnlineIgraciManager.uspesnoDodatPrijatelj(podaci);
@@ -122,14 +115,12 @@ const Game = {
                 }
             });
 
-            // Server šalje kompletnu listu naših prijatelja i zahteva
             this.socket.on('sinhronizacijaPrijatelja', (podaci) => {
                 if (typeof SobaPrijateljaManager !== 'undefined') {
                     SobaPrijateljaManager.primiSinhronizaciju(podaci);
                 }
             });
 
-            // Neko nam je poslao oflajn zahtev po imenu, a mi smo trenutno u igri!
             this.socket.on('noviOfflineZahtev', (imePosiljaoca) => {
                 UIManager.prikaziObavestenje(
                     "Novi zahtev!", 
@@ -139,25 +130,21 @@ const Game = {
                     }, 
                     "Pogledaj"
                 );
-                // U pozadini tražimo osveženje kako bi crveni bedž na ikonici zasijao
                 this.socket.emit('traziOsvezenjePrijatelja');
             });
 
-            // Prijem direktnog poziva za privatnu sobu od prijatelja
             this.socket.on('pozivUSobu', (podaci) => {
                 const modal = document.getElementById('game-invite-modal');
                 if (modal) {
                     document.getElementById('game-invite-name').innerText = podaci.hostIme;
                     document.getElementById('btn-prihvati-igru').onclick = () => {
                         modal.classList.remove('active');
-                        // DIREKTNO prosleđujemo kod bez potrebe za HTML poljima
                         this.pridruziSeSobiDirektno(podaci.kodSobe); 
                     };
                     modal.classList.add('active');
                 }
             });
 
-            // Kada server javi da se neko novi povezao u sobu
             this.socket.on('noviIgracUSobi', (podaci) => {
                 if (this.jeHost) {
                     if (podaci.brojIgraca < podaci.max) {
@@ -187,26 +174,35 @@ const Game = {
                 }
             });
 
-            // Kada server javi da host pokreće igru
             this.socket.on('igraPocela', (podaci) => {
                 UIManager.zatvoriObavestenje();
                 this.pokreniIgru('multi', podaci.slovo);
             });
 
-            // Prijem svih odgovora od servera kada svi završe
+            // NOVO: Agresivno zaustavljanje svih klijentskih aktivnosti kada server forsira kraj runde
             this.socket.on('sviOdgovoriPrikupjeni', (odgovoriSobe) => {
                 UIManager.zatvoriObavestenje();
+                
+                this.rundaUToku = false;
+                clearInterval(this.tajmerInterval);
+                
+                if (typeof KeyboardManager !== 'undefined') {
+                    KeyboardManager.hideKeyboard();
+                }
+
+                // Zaključavamo polja odmah kako igrač ne bi slučajno otvorio tastaturu dok čeka ekran rezultata
+                const inputs = document.querySelectorAll('#game-board .game-input');
+                inputs.forEach(input => input.disabled = true);
+
                 this.obradiMultiplayerOdgovore(odgovoriSobe);
             });
 
-            // Kada server javi da su svi spremni i nova runda kreće
             this.socket.on('sledecaRundaPocinje', (podaci) => {
                 UIManager.zatvoriObavestenje();
                 this.trenutnaRunda = podaci.runda;
                 this.zapocniRundu(podaci.slovo);
             });
 
-            // Kada se broj igrača u JAVNOJ sobi promeni
             this.socket.on('azuriranjeJavneSobe', (podaci) => {
                 UIManager.prikaziObavestenje(
                     "Traženje protivnika...",
@@ -219,9 +215,7 @@ const Game = {
                 );
             });
 
-            // NOVO: Neko je napustio sobu ili je izbačen usred igre
             this.socket.on('igracNapustioSobu', (podaci) => {
-                // Notifikaciju prikazujemo samo ako je igra u toku
                 if (podaci.uIgri && podaci.ime) {
                     let razlogTekst = "je napustio meč.";
                     if (podaci.razlog === 'varanje') razlogTekst = "je izbačen zbog izlaska iz aplikacije (Anti-Cheat).";
@@ -236,12 +230,16 @@ const Game = {
                 }
             });
 
-            // NOVO: Svi su pobegli/izbačeni, ostao si sam = AUTOMATSKA POBEDA
+            // NOVO: Agresivno zaustavljanje i zaključavanje za automatsku pobedu
             this.socket.on('pobedaZbogNapustanja', () => {
                 this.rundaUToku = false;
                 clearInterval(this.tajmerInterval);
                 
-                // Dodela pobede
+                if (typeof KeyboardManager !== 'undefined') {
+                    KeyboardManager.hideKeyboard();
+                }
+                document.querySelectorAll('#game-board .game-input').forEach(input => input.disabled = true);
+                
                 if (typeof TrofejiManager !== 'undefined') TrofejiManager.azurirajNapredak('pobede', 1);
                 if (this.socket) this.socket.emit('upisiPobedu');
                 
@@ -260,7 +258,6 @@ const Game = {
         }
     },
 
-    // Javno traženje nasumičnih igrača za meč (MATCHMAKING)
     traziSobu: function(brojIgraca) {
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
@@ -325,7 +322,6 @@ const Game = {
         }
 
         const input = document.getElementById('room-code-input');
-        // Zadržavamo ovu logiku zbog eventualnih testiranja, iako ti je input sada skriven.
         const kod = input ? input.value.trim().toUpperCase() : '';
 
         if (kod.length < 3) {
@@ -390,16 +386,14 @@ const Game = {
             return;
         }
 
-        // Čitamo koje smo prijatelje uneli u slotove (iz index.html)
         const pozvani = typeof izabraniPrijateljiZaSobu !== 'undefined' ? izabraniPrijateljiZaSobu : [];
         
-        // Dodata provera: Ne dozvoljavamo start ako niko nije izabran
         if (pozvani.length === 0) {
             UIManager.prikaziObavestenje("Nema prijatelja", "Moraš dodati barem jednog prijatelja u slot da bi započeo igru!", null, "U redu");
             return;
         }
 
-        let brojIgraca = pozvani.length + 1; // Ti + Prijatelji
+        let brojIgraca = pozvani.length + 1;
 
         this.brojIgracaUSobi = brojIgraca;
         this.jeHost = true;
@@ -409,8 +403,6 @@ const Game = {
         this.socket.emit('kreirajSobuIPozovi', { pozvani: pozvani }, (odgovor) => {
             if (odgovor.uspeh) {
                 this.trenutnaSoba = odgovor.kodSobe;
-                
-                // SKLONJEN KOD SOBE: Sada samo prikazujemo status čekanja
                 let poruka = `Pozivnice su uspešno poslate!<br><br>Čekamo tvoje prijatelje da prihvate poziv.<br><br>Igrača u sobi: <b style="color:#f5af19;">1/${brojIgraca}</b>`;
 
                 UIManager.prikaziObavestenje(
@@ -420,7 +412,7 @@ const Game = {
                     "Čekam ostale..." 
                 );
                 
-                if (typeof hidePlayerSelect === 'function') hidePlayerSelect(); // Zatvaramo overlay krug
+                if (typeof hidePlayerSelect === 'function') hidePlayerSelect(); 
             }
         });
     },
@@ -841,7 +833,6 @@ const Game = {
             if (typeof TrofejiManager !== 'undefined' && sviIgraci[0].isMe) {
                 TrofejiManager.azurirajNapredak('pobede', 1);
 
-                // Javljanje serveru za pobedu samo u Multiplayer modu
                 if (this.socket) {
                     this.socket.emit('upisiPobedu');
                 }
@@ -924,7 +915,6 @@ const Game = {
         });
     },
 
-    // --- ANTI-CHEAT FUNKCIJE ---
     detektujVaralicu: function() {
         if (this.rundaUToku && this.trenutniMod === 'multi') {
             this.kazneniPoeni++;
@@ -947,7 +937,6 @@ const Game = {
         this.rundaUToku = false;
         clearInterval(this.tajmerInterval);
         
-        // NOVO: Šaljemo serveru tačan razlog izlaska odmah
         if (this.socket) {
             this.socket.emit('napustiSobu', 'varanje');
         }

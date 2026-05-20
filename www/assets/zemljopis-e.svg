@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 82" role="img" aria-label="Slovo E">
+  <defs>
+    <linearGradient id="zemljopis-e-gradient" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#38ef7d"/>
+      <stop offset="1" stop-color="#11998e"/>
+    </linearGradient>
+    <filter id="soft-glow" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="2.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#zemljopis-e-gradient)" stroke-linecap="round" stroke-linejoin="round" stroke-width="14" filter="url(#soft-glow)">
+    <path d="M9 18c8-10 18-10 28 0s20 10 30 0 20-10 30 0 15 8 22 3"/>
+    <path d="M9 41c8-10 18-10 28 0s20 10 30 0 20-10 30 0 15 8 22 3"/>
+    <path d="M9 64c8-10 18-10 28 0s20 10 30 0 20-10 30 0 15 8 22 3"/>
+  </g>
+</svg>

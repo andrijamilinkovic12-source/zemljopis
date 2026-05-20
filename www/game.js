@@ -46,8 +46,23 @@ const Game = {
             }
         });
 
-        // Produženo vreme učitavanja da isprati animaciju sa ikonicama
-        setTimeout(() => { UIManager.prikaziEkran('main-menu'); }, 3800); 
+        // Sačekaj kratko nakon pune trake, pa pusti mekši izlaz iz splash ekrana.
+        setTimeout(() => {
+            const splashScreen = document.getElementById('splash-screen');
+            if (splashScreen) splashScreen.classList.add('leaving');
+
+            setTimeout(() => {
+                UIManager.prikaziEkran('main-menu');
+
+                const mainMenu = document.getElementById('main-menu');
+                if (mainMenu) {
+                    mainMenu.classList.add('soft-enter');
+                    setTimeout(() => mainMenu.classList.remove('soft-enter'), 800);
+                }
+
+                if (splashScreen) splashScreen.classList.remove('leaving');
+            }, 650);
+        }, 4300); 
     },
 
     poveziSeNaServer: function() {

@@ -89,16 +89,17 @@ const DnevniIzazovManager = {
         let html = '';
         this.dnevniPodaci.zadaci.forEach((zadatak, index) => {
             html += `
-            <div class="input-group" style="margin-bottom: 1.2rem; background: rgba(0,0,0,0.3); padding: 0.8rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+            <div class="input-group dnevni-input-group" style="margin-bottom: 1.2rem; background: rgba(0,0,0,0.3); padding: 0.8rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
                 <label style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                     <span style="font-size: 0.9rem; color: #fff;">${zadatak.ikona} ${zadatak.naziv}</span>
                     <span style="color: #f5af19; font-weight: 800; font-size: 1.1rem;">Slovo: ${zadatak.slovo}</span>
                 </label>
-                <input type="text" id="dnevni-input-${index}" class="game-input" placeholder="Unesi pojam..." autocomplete="off" autocorrect="off" spellcheck="false">
+                <input type="text" id="dnevni-input-${index}" class="game-input" data-kategorija="${zadatak.kategorija}" placeholder="${zadatak.naziv} na ${zadatak.slovo}..." autocomplete="off" autocorrect="off" spellcheck="false">
             </div>
             `;
         });
         kontejner.innerHTML = html;
+        this.azurirajAktivniZadatak(0);
         
         // Povezivanje dinamički generisanih polja sa custom tastaturom
         if (typeof KeyboardManager !== 'undefined') {
@@ -114,6 +115,7 @@ const DnevniIzazovManager = {
                     if (typeof KeyboardManager !== 'undefined') {
                         KeyboardManager.setActiveInput(input);
                     }
+                    DnevniIzazovManager.azurirajAktivniZadatak(index);
                     setTimeout(() => {
                         input.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }, 200);
@@ -146,6 +148,23 @@ const DnevniIzazovManager = {
                 }
             }
         }, 100);
+    },
+
+    azurirajAktivniZadatak: function(index) {
+        const el = document.getElementById('dnevni-aktivni-zadatak');
+        const zadaci = this.dnevniPodaci ? this.dnevniPodaci.zadaci : [];
+        const zadatak = zadaci[index];
+        if (!el || !zadatak) return;
+
+        el.innerHTML = `
+            <span class="dnevni-aktivni-redni">ZADATAK ${index + 1}/${zadaci.length}</span>
+            <span class="dnevni-aktivni-pojam">${zadatak.ikona} ${zadatak.naziv}</span>
+            <span class="dnevni-aktivni-slovo">Slovo: ${zadatak.slovo}</span>
+        `;
+
+        document.querySelectorAll('#dnevni-izazov-polja .dnevni-input-group').forEach((grupa, i) => {
+            grupa.classList.toggle('active-dnevni-zadatak', i === index);
+        });
     },
 
     pokreniTajmer: function(sekunde) {

@@ -13,13 +13,10 @@
         <div class="splash-content">
             <div class="splash-logo">
                 <span style="--i:1">Z</span>
-                <span style="--i:2" class="icon-letter"><i class="fa-solid fa-water"></i></span>
-                <span style="--i:3" class="icon-letter custom-m">
-                    <i class="fa-solid fa-mountain"></i>
-                    <i class="fa-solid fa-mountain small-peak"></i>
-                </span>
+                <span style="--i:2" class="icon-letter svg-letter"><img class="splash-letter-svg" src="assets/zemljopis-e.svg" alt=""></span>
+                <span style="--i:3" class="icon-letter svg-letter custom-m"><img class="splash-letter-svg splash-m-svg" src="assets/zemljopis-m.svg" alt=""></span>
                 <span style="--i:4">LJ</span>
-                <span style="--i:5" class="icon-letter"><i class="fa-solid fa-earth-europe"></i></span>
+                <span style="--i:5" class="icon-letter svg-letter custom-o"><img class="splash-letter-svg" src="assets/zemljopis-o.svg" alt=""></span>
                 <span style="--i:6">P</span>
                 <span style="--i:7">I</span>
                 <span style="--i:8">S</span>
@@ -386,13 +383,15 @@
         
         <h2 style="color: #f5af19; margin-bottom: 0.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(245, 175, 25, 0.3); text-align: center;">Dnevni Izazov</h2>
         
-        <div style="text-align: center; z-index: 5; margin-bottom: 1rem;">
+        <div class="dnevni-timer-wrap" style="text-align: center; z-index: 5; margin-bottom: 1rem;">
             <span id="dnevni-tajmer" style="font-size: 1.6rem; font-weight: 800; color: #ff416c; background: rgba(0,0,0,0.5); padding: 0.3rem 1rem; border-radius: 10px; border: 1px solid rgba(255,65,108,0.3); display: inline-block; font-variant-numeric: tabular-nums; transition: transform 0.2s;">01:00</span>
         </div>
 
-        <p style="text-align: center; color: #a0aec0; font-size: 0.85rem; margin-bottom: 1.5rem; z-index: 5; padding: 0 1rem;">Unesi pojmove na zadato slovo. Svaki tačan odgovor donosi <b>100 dukata</b> u tvoju Riznicu!</p>
+        <p style="text-align: center; color: #a0aec0; font-size: 0.85rem; margin-bottom: 1rem; z-index: 5; padding: 0 1rem;">Unesi pojmove na zadato slovo. Svaki tačan odgovor donosi <b>100 dukata</b> u tvoju Riznicu!</p>
         
-        <div style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem 250px 1rem; overflow: auto; scrollbar-width: none;">
+        <div id="dnevni-aktivni-zadatak" class="dnevni-aktivni-zadatak" aria-live="polite"></div>
+        
+        <div class="dnevni-izazov-inputs" style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem 250px 1rem; overflow: auto; scrollbar-width: none;">
             
             <div id="dnevni-izazov-polja" style="margin-bottom: 1rem;">
             </div>

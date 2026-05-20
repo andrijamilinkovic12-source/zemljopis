@@ -56,22 +56,66 @@ const KeyboardManager = {
         });
     },
 
+    getInputScope: function(input) {
+        const screen = input ? input.closest('.screen') : document.querySelector('.screen.active');
+        return screen || document;
+    },
+
+    getInputScrollContainer: function(input = this.activeInput) {
+        if (input) {
+            const dnevniContainer = input.closest('.dnevni-izazov-inputs');
+            if (dnevniContainer) return dnevniContainer;
+
+            const gameContainer = input.closest('.inputs-container');
+            if (gameContainer) return gameContainer;
+        }
+
+        const activeScreen = document.querySelector('.screen.active');
+        return activeScreen ? activeScreen.querySelector('.inputs-container, .dnevni-izazov-inputs') : null;
+    },
+
+    scrollInputIntoView: function(input) {
+        setTimeout(() => {
+            const container = this.getInputScrollContainer(input);
+            if (!container || !input) return;
+
+            const inputRect = input.getBoundingClientRect();
+            const group = input.closest('.input-group');
+            const groupRect = group ? group.getBoundingClientRect() : inputRect;
+            const containerRect = container.getBoundingClientRect();
+            const keyboard = document.getElementById('custom-keyboard');
+            const keyboardRect = keyboard && keyboard.classList.contains('active') ? keyboard.getBoundingClientRect() : null;
+            const visibleBottom = keyboardRect ? Math.min(containerRect.bottom, keyboardRect.top) : containerRect.bottom;
+            const visibleHeight = Math.max(visibleBottom - containerRect.top, 80);
+            const offsetInVisibleArea = Math.max((visibleHeight - groupRect.height) / 2, 8);
+            const targetScroll = container.scrollTop + (groupRect.top - containerRect.top) - offsetInVisibleArea;
+
+            container.scrollTo({
+                top: Math.max(targetScroll, 0),
+                behavior: 'smooth'
+            });
+        }, 50);
+    },
+
     setActiveInput: function(input) {
-        if (this.activeInput) {
+        if (!input || input.disabled) return;
+
+        if (this.activeInput && this.activeInput !== input) {
             this.activeInput.classList.remove('active-keyboard-input');
         }
+
         this.activeInput = input;
         this.activeInput.classList.add('active-keyboard-input');
-        
-        // BEZBEDAN SKROL: Skroluje isključivo unutar kontejnera, ne podiže celu stranicu!
-        setTimeout(() => {
-            const container = document.querySelector('.inputs-container');
-            if (container && input) {
-                // Računamo poziciju polja u odnosu na kontejner
-                const scrollPos = input.offsetTop - container.offsetTop - 20; 
-                container.scrollTo({ top: scrollPos, behavior: 'smooth' });
+
+        if (document.activeElement !== input) {
+            try {
+                input.focus({ preventScroll: true });
+            } catch (e) {
+                input.focus();
             }
-        }, 50); // Znatno smanjeno kašnjenje da izbegnemo "trku" u procesima
+        }
+        
+        this.scrollInputIntoView(input);
     },
 
     renderKeyboard: function() {
@@ -128,18 +172,16 @@ const KeyboardManager = {
     },
 
     handleEnter: function() {
-        // Pronađi sledeće slobodno polje
-        const inputs = Array.from(document.querySelectorAll('.game-input'));
+        if (!this.activeInput) return;
+
+        // Pronađi sledeće slobodno polje samo u aktivnom ekranu igre
+        const scope = this.getInputScope(this.activeInput);
+        const inputs = Array.from(scope.querySelectorAll('.game-input')).filter(input => !input.disabled);
         const currentIndex = inputs.indexOf(this.activeInput);
         
         if (currentIndex > -1 && currentIndex < inputs.length - 1) {
-            let nextInput = inputs[currentIndex + 1];
-            // Preskače polje i gasi tastaturu ako je sledeće polje zaključano
-            if (!nextInput.disabled) {
-                this.setActiveInput(nextInput);
-            } else {
-                this.hideKeyboard();
-            }
+            this.setActiveInput(inputs[currentIndex + 1]);
+            this.showKeyboard();
         } else {
             this.hideKeyboard();
         }
@@ -153,15 +195,19 @@ const KeyboardManager = {
     showKeyboard: function() {
         const kb = document.getElementById('custom-keyboard');
         if (kb) kb.classList.add('active');
+        document.body.classList.add('keyboard-open');
         
         // Povećaj padding na dnu containera da tastatura ne prekrije polja
-        const container = document.querySelector('.inputs-container');
+        const container = this.getInputScrollContainer();
         if (container) container.style.paddingBottom = '260px';
     },
 
     hideKeyboard: function() {
         const kb = document.getElementById('custom-keyboard');
         if (kb) kb.classList.remove('active');
+        document.body.classList.remove('keyboard-open');
+
+        const container = this.getInputScrollContainer();
         
         if (this.activeInput) {
             this.activeInput.classList.remove('active-keyboard-input');
@@ -170,9 +216,8 @@ const KeyboardManager = {
         }
         
         // Vraćamo padding u zavisnosti od ekrana
-        const container = document.querySelector('.inputs-container');
         if (container) {
-            container.style.paddingBottom = '75px';
+            container.style.paddingBottom = container.classList.contains('dnevni-izazov-inputs') ? '250px' : '75px';
         }
     }
 };

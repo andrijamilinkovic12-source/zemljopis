@@ -463,17 +463,27 @@ body {
 
 .pattern-icon {
     position: absolute;
-    color: #38ef7d; 
+    color: #38ef7d;
+    --pattern-opacity: 1;
     user-select: none;
     pointer-events: none;
     animation: breathe 4s ease-in-out infinite alternate;
 }
 
+.pattern-svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+    background: currentColor;
+    -webkit-mask: var(--pattern-icon-url) center / contain no-repeat;
+    mask: var(--pattern-icon-url) center / contain no-repeat;
+}
+
 .pattern-icon:nth-child(even) { animation-delay: 2s; }
 
 @keyframes breathe {
-    0% { opacity: 0.5; filter: drop-shadow(0 0 5px rgba(56, 239, 125, 0)); }
-    100% { opacity: 1; filter: drop-shadow(0 0 15px rgba(56, 239, 125, 0.4)); }
+    0% { opacity: calc(var(--pattern-opacity) * 0.5); filter: drop-shadow(0 0 5px rgba(56, 239, 125, 0)); }
+    100% { opacity: var(--pattern-opacity); filter: drop-shadow(0 0 15px rgba(56, 239, 125, 0.4)); }
 }
 
 /* --- TABLA ZA IGRU --- */

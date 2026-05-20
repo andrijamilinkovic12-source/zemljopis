@@ -1,4 +1,4 @@
-// dnevniizazov.js - Logika za dnevni izazov (jednom dnevno, 1 minut, bez odustajanja)
+// dnevniizazov.js - Logika za dnevni izazov (jednom dnevno, 1 minut, bez odustajanja, auto-submit)
 
 const DnevniIzazovManager = {
     svaSlova: ["A","B","V","G","D","Đ","E","Ž","Z","I","J","K","L","LJ","M","N","NJ","O","P","R","S","T","Ć","U","F","H","C","Č","DŽ","Š"],
@@ -75,9 +75,6 @@ const DnevniIzazovManager = {
         this.snimiStanje();
         this.izazovUToku = true;
 
-        const btn = document.getElementById('btn-zavrsi-dnevni');
-        if(btn) btn.disabled = false;
-
         this.prikaziZadatke();
         UIManager.prikaziEkran('dnevni-izazov-screen');
 
@@ -103,19 +100,50 @@ const DnevniIzazovManager = {
         });
         kontejner.innerHTML = html;
         
-        // NOVO: Povezivanje dinamički generisanih polja sa custom tastaturom
+        // Povezivanje dinamički generisanih polja sa custom tastaturom
         if (typeof KeyboardManager !== 'undefined') {
             KeyboardManager.bindInputs();
         }
         
-        // Fokusiraj odmah prvo polje i otvori custom tastaturu
         setTimeout(() => {
+            const inputs = document.querySelectorAll('#dnevni-izazov-polja .game-input');
+            
+            inputs.forEach((input, index) => {
+                // Slušamo 'focus' event da osiguramo skrolovanje i vezu sa tastaturom svaki put kada se pređe na polje
+                input.addEventListener('focus', function() {
+                    if (typeof KeyboardManager !== 'undefined') {
+                        KeyboardManager.setActiveInput(input);
+                    }
+                    setTimeout(() => {
+                        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 200);
+                });
+
+                // Obezbeđujemo da 'OK' (Enter) prelazi na sledeće polje
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus(); // Fokusira sledeće polje (trigeruje focus event iznad)
+                        } else {
+                            input.blur();
+                            if (typeof KeyboardManager !== 'undefined') {
+                                KeyboardManager.hideKeyboard();
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Fokusiraj odmah prvo polje čim se učita
             const prvoPolje = document.getElementById('dnevni-input-0');
-            if (prvoPolje && typeof KeyboardManager !== 'undefined') {
-                KeyboardManager.setActiveInput(prvoPolje);
-                KeyboardManager.showKeyboard();
-            } else if (prvoPolje) {
-                prvoPolje.focus();
+            if (prvoPolje) {
+                if (typeof KeyboardManager !== 'undefined') {
+                    KeyboardManager.setActiveInput(prvoPolje);
+                    KeyboardManager.showKeyboard();
+                } else {
+                    prvoPolje.focus();
+                }
             }
         }, 100);
     },
@@ -133,6 +161,9 @@ const DnevniIzazovManager = {
                 clearInterval(this.tajmerInterval);
                 if (this.izazovUToku) {
                     // Vreme isteklo - Automatski predajemo rad!
+                    if (typeof KeyboardManager !== 'undefined') {
+                        KeyboardManager.hideKeyboard();
+                    }
                     UIManager.prikaziObavestenje("Vreme je isteklo!", "Proveravamo tvoje odgovore...", null, "...");
                     this.zavrsiIzazov();
                 }
@@ -172,9 +203,6 @@ const DnevniIzazovManager = {
         this.izazovUToku = false;
         clearInterval(this.tajmerInterval);
 
-        const btn = document.getElementById('btn-zavrsi-dnevni');
-        if(btn) btn.disabled = true;
-
         let ukupnoTacnih = 0;
 
         this.dnevniPodaci.zadaci.forEach((zadatak, index) => {
@@ -191,7 +219,7 @@ const DnevniIzazovManager = {
 
         let osvojenoDukata = ukupnoTacnih * 100;
         
-        // Još jedan sigurnosni snimak (iako je već zabeleženo na početku)
+        // Još jedan sigurnosni snimak
         this.dnevniPodaci.odigrano = true;
         this.snimiStanje();
 

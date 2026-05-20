@@ -46,7 +46,8 @@ const Game = {
             }
         });
 
-        setTimeout(() => { UIManager.prikaziEkran('main-menu'); }, 2600); 
+        // Produženo vreme učitavanja da isprati animaciju sa ikonicama
+        setTimeout(() => { UIManager.prikaziEkran('main-menu'); }, 3800); 
     },
 
     poveziSeNaServer: function() {

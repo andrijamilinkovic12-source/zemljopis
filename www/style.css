@@ -569,18 +569,90 @@ body {
 .modal-content p { color: #cbd5e0; margin-bottom: 2rem; font-size: 1.05rem; line-height: 1.5; }
 .modal-content .menu-btn { margin-bottom: 0; }
 
-/* --- SPLASH / LOADING EKRAN --- */
-#splash-screen { background: linear-gradient(135deg, #030a03, #0a1c0a, #0d290d); justify-content: center; align-items: center; z-index: 9999; }
-.splash-content { display: flex; flex-direction: column; align-items: center; }
-.splash-logo { font-size: 3.5rem; font-weight: 800; background: -webkit-linear-gradient(45deg, #38ef7d, #11998e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 4px; margin-bottom: 3rem; animation: pulseGlow 1.5s ease-in-out infinite alternate; }
-
-@keyframes pulseGlow {
-    from { text-shadow: 0 0 10px rgba(56, 239, 125, 0.1); transform: scale(0.98); }
-    to { text-shadow: 0 0 30px rgba(56, 239, 125, 0.7); transform: scale(1.03); }
+/* --- SPLASH / LOADING EKRAN (Slovo po slovo sa ikonicama) --- */
+#splash-screen { 
+    background: linear-gradient(135deg, #030a03, #0a1c0a, #0d290d); 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 9999; 
 }
 
+.splash-content { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
+
+.splash-logo { 
+    font-size: clamp(2.2rem, 9vw, 3.2rem); 
+    font-weight: 800; 
+    margin-bottom: 3rem; 
+    display: flex; 
+    justify-content: center;
+    align-items: center; /* Osigurava da su ikonice u istoj ravni sa slovima */
+    gap: clamp(2px, 0.8vw, 6px); 
+    /* Završni puls počinje nakon 3.2 sekunde */
+    animation: finalGlow 2s ease-in-out infinite alternate;
+    animation-delay: 3.2s; 
+}
+
+/* ZAJEDNIČKI STIL ZA SVA SLOVA I IKONICE (Samo animacija i pozicija) */
+.splash-logo span {
+    opacity: 0; 
+    transform: translateY(20px) scale(0.5); 
+    display: inline-block; 
+    animation: popInLetter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    animation-delay: calc(var(--i) * 0.3s); 
+}
+
+/* GRADIENT ZA OBIČNA SLOVA (Z, L, J, P, I, S) */
+.splash-logo span:not(.icon-letter) {
+    background: linear-gradient(to bottom, #38ef7d, #11998e);
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent; 
+}
+
+/* POPRAVKA ZA IKONICE: Gradient direktno na <i> element, da praznine ostanu prazne! */
+.splash-logo span.icon-letter i {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important; /* Forsira pravi oblik planine, sprečava običan emoji */
+    background: linear-gradient(to bottom, #38ef7d, #11998e);
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent; 
+    font-size: 0.9em; 
+    vertical-align: baseline;
+    display: inline-block;
+}
+
+/* --- KREIRANJE SLOVA M OD 2 PLANINE --- */
+.splash-logo span.custom-m {
+    display: inline-flex !important;
+    align-items: flex-end;
+}
+
+.splash-logo span.custom-m .small-peak {
+    font-size: 0.65em !important; /* Pravimo manji trougao */
+    margin-left: -0.35em;         /* Gura manji trougao preko većeg */
+    padding-bottom: 0.05em;       /* Fino poravnavanje u dnu */
+    z-index: 1;
+}
+
+@keyframes popInLetter {
+    100% { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+        filter: drop-shadow(0 0 10px rgba(56, 239, 125, 0.3));
+    }
+}
+
+@keyframes finalGlow {
+    0% { filter: drop-shadow(0 0 10px rgba(56, 239, 125, 0.2)); }
+    100% { filter: drop-shadow(0 0 25px rgba(56, 239, 125, 0.6)); }
+}
+
+/* Traka za učitavanje produžena na 3.5s */
 .loading-container { width: 220px; height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 4px; overflow: hidden; margin-bottom: 1rem; position: relative; }
-.loading-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #11998e, #38ef7d); box-shadow: 0 0 15px rgba(56, 239, 125, 0.8); border-radius: 4px; animation: fillBar 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.loading-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #11998e, #38ef7d); box-shadow: 0 0 15px rgba(56, 239, 125, 0.8); border-radius: 4px; animation: fillBar 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 @keyframes fillBar { 0% { width: 0%; } 40% { width: 50%; } 80% { width: 80%; } 100% { width: 100%; } }
 
 .loading-text { color: #38ef7d; font-size: 0.8rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; animation: blinkText 1s infinite alternate; }

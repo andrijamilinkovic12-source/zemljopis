@@ -11,7 +11,19 @@
 
     <div id="splash-screen" class="screen active">
         <div class="splash-content">
-            <div class="splash-logo">ZEMLJOPIS</div>
+            <div class="splash-logo">
+                <span style="--i:1">Z</span>
+                <span style="--i:2" class="icon-letter"><i class="fa-solid fa-water"></i></span>
+                <span style="--i:3" class="icon-letter custom-m">
+                    <i class="fa-solid fa-mountain"></i>
+                    <i class="fa-solid fa-mountain small-peak"></i>
+                </span>
+                <span style="--i:4">LJ</span>
+                <span style="--i:5" class="icon-letter"><i class="fa-solid fa-earth-europe"></i></span>
+                <span style="--i:6">P</span>
+                <span style="--i:7">I</span>
+                <span style="--i:8">S</span>
+            </div>
             <div class="loading-container">
                 <div class="loading-bar"></div>
             </div>
@@ -380,13 +392,12 @@
 
         <p style="text-align: center; color: #a0aec0; font-size: 0.85rem; margin-bottom: 1.5rem; z-index: 5; padding: 0 1rem;">Unesi pojmove na zadato slovo. Svaki tačan odgovor donosi <b>100 dukata</b> u tvoju Riznicu!</p>
         
-        <div style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; overflow: auto; scrollbar-width: none;">
+        <div style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem 250px 1rem; overflow: auto; scrollbar-width: none;">
             
             <div id="dnevni-izazov-polja" style="margin-bottom: 1rem;">
             </div>
-
-            <button id="btn-zavrsi-dnevni" class="btn-primary" style="padding: 1rem; border-radius: 12px; font-weight: 800; text-transform: uppercase; font-size: 1.1rem; border: none; cursor: pointer; margin-bottom: 1.5rem;" onclick="DnevniIzazovManager.zavrsiIzazov()">Proveri odgovore</button>
-        </div>
+            
+            </div>
     </div>
 
     <div id="game-board" class="screen">

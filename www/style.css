@@ -581,16 +581,21 @@ body {
     display: flex; 
     flex-direction: column; 
     align-items: center; 
+    width: 100%;
+    padding: 0 1.25rem;
 }
 
 .splash-logo { 
-    font-size: clamp(2.2rem, 9vw, 3.2rem); 
+    font-size: clamp(1.85rem, 7.2vw, 2.65rem); 
     font-weight: 800; 
     margin-bottom: 3rem; 
     display: flex; 
     justify-content: center;
     align-items: center; /* Osigurava da su ikonice u istoj ravni sa slovima */
-    gap: clamp(2px, 0.8vw, 6px); 
+    gap: clamp(1px, 0.45vw, 4px);
+    line-height: 1;
+    width: 100%;
+    max-width: 360px;
     /* Završni puls počinje nakon 3.2 sekunde */
     animation: finalGlow 2s ease-in-out infinite alternate;
     animation-delay: 3.2s; 

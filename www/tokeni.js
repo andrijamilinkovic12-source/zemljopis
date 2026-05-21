@@ -3,9 +3,21 @@
 const TokeniManager = {
     tokeni: 3,
     maxTokena: 3,
+    reklamaUToku: false,
     
     init: function() {
         this.proveriDnevniReset();
+    },
+
+    normalizujTokeni: function(vrednost) {
+        const broj = parseInt(vrednost, 10);
+        if (Number.isNaN(broj)) return this.maxTokena;
+        return Math.max(0, Math.min(this.maxTokena, broj));
+    },
+
+    postaviStanje: function(vrednost) {
+        this.tokeni = this.normalizujTokeni(vrednost);
+        this.snimiStanje();
     },
     
     proveriDnevniReset: function() {
@@ -21,13 +33,14 @@ const TokeniManager = {
             // Isti dan - samo pročitaj stanje iz memorije
             const sacuvaniTokeni = localStorage.getItem('zemljopis_tokeni_stanje');
             if (sacuvaniTokeni !== null) {
-                this.tokeni = parseInt(sacuvaniTokeni, 10);
+                this.tokeni = this.normalizujTokeni(sacuvaniTokeni);
             }
         }
         this.azurirajPrikaz();
     },
     
     snimiStanje: function() {
+        this.tokeni = this.normalizujTokeni(this.tokeni);
         localStorage.setItem('zemljopis_tokeni_stanje', this.tokeni);
         this.azurirajPrikaz();
     },
@@ -44,7 +57,13 @@ const TokeniManager = {
         // Ažuriranje dugmeta za gledanje reklame
         const btnReklama = document.getElementById('btn-gledaj-reklamu');
         if (btnReklama) {
-            if (this.tokeni >= this.maxTokena) {
+            if (this.reklamaUToku) {
+                btnReklama.disabled = true;
+                btnReklama.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> Reklama se prikazuje...';
+                btnReklama.style.background = 'rgba(255,255,255,0.1)';
+                btnReklama.style.color = '#a0aec0';
+                btnReklama.style.boxShadow = 'none';
+            } else if (this.tokeni >= this.maxTokena) {
                 btnReklama.disabled = true;
                 btnReklama.innerHTML = '<i class="fa-solid fa-check"></i> Maksimalan broj tokena';
                 btnReklama.style.background = 'rgba(255,255,255,0.1)';
@@ -65,10 +84,21 @@ const TokeniManager = {
     },
     
     potrosiToken: function() {
-        if (this.tokeni > 0) {
-            this.tokeni--;
-            this.snimiStanje();
+        if (!this.imaTokena()) {
+            this.azurirajPrikaz();
+            return false;
         }
+
+        this.tokeni--;
+        this.snimiStanje();
+        return true;
+    },
+
+    dodajToken: function(kolicina = 1) {
+        const prethodno = this.tokeni;
+        this.tokeni = this.normalizujTokeni(this.tokeni + kolicina);
+        this.snimiStanje();
+        return this.tokeni > prethodno;
     },
     
     otvoriEkran: function() {
@@ -77,7 +107,10 @@ const TokeniManager = {
     },
     
     pogledajReklamu: function() {
-        if (this.tokeni >= this.maxTokena) return;
+        if (this.reklamaUToku || this.tokeni >= this.maxTokena) {
+            this.azurirajPrikaz();
+            return;
+        }
         
         /* =========================================================
            OVDJE INTEGRISATI PRAVI ADMOB KOD (npr. showRewardVideo)
@@ -85,6 +118,8 @@ const TokeniManager = {
         */
 
         // Za sada pokrećemo MOCK (Simulaciju) učitavanja reklame:
+        this.reklamaUToku = true;
+        this.azurirajPrikaz();
         UIManager.prikaziObavestenje("Učitavanje reklame...", "Molim te sačekaj, reklama se prikazuje...", null, "...");
         
         const modalBtn = document.getElementById('modal-btn');
@@ -92,8 +127,8 @@ const TokeniManager = {
         
         setTimeout(() => {
             // Po završetku reklame:
-            this.tokeni++;
-            this.snimiStanje();
+            this.reklamaUToku = false;
+            this.dodajToken(1);
             
             if(modalBtn) modalBtn.style.display = 'block'; // Vraćamo dugme
             UIManager.prikaziObavestenje(

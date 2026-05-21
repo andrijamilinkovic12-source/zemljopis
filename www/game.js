@@ -98,10 +98,12 @@ const Game = {
                 const tokeniVelikoEl = document.getElementById('tokeni-stanje-veliko');
                 
                 if (dukatiEl) dukatiEl.innerText = podaci.dukati;
-                if (tokeniEl) tokeniEl.innerText = tokeniVelikoEl ? tokeniVelikoEl.innerText = podaci.tokeni : podaci.tokeni + "/3";
-                if (tokeniVelikoEl) tokeniVelikoEl.innerText = podaci.tokeni;
-
-                if (typeof TokeniManager !== 'undefined') TokeniManager.trenutnoTokena = podaci.tokeni;
+                if (typeof TokeniManager !== 'undefined') {
+                    TokeniManager.azurirajPrikaz();
+                } else {
+                    if (tokeniEl) tokeniEl.innerText = `${podaci.tokeni}/3`;
+                    if (tokeniVelikoEl) tokeniVelikoEl.innerText = podaci.tokeni;
+                }
                 if (typeof RiznicaManager !== 'undefined') RiznicaManager.stanjeDukata = podaci.dukati;
             });
 
@@ -497,13 +499,13 @@ const Game = {
 
     pokreniIgru: function(mod, zadatoSlovoSaServera = null) {
         if (typeof TokeniManager !== 'undefined') {
-            if (mod === 'solo') {
-                if (!TokeniManager.imaTokena()) {
-                    UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
-                    return; 
-                }
+            if (!TokeniManager.imaTokena()) {
+                if (mod === 'multi' && this.socket) this.socket.emit('napustiSobu');
+                UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
+                return;
             }
-            TokeniManager.potrosiToken();
+
+            if (!TokeniManager.potrosiToken()) return;
         }
 
         this.trenutniMod = mod;

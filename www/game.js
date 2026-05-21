@@ -52,13 +52,24 @@ const Game = {
             if (splashScreen) splashScreen.classList.add('leaving');
 
             setTimeout(() => {
-                UIManager.prikaziEkran('main-menu');
-
                 const mainMenu = document.getElementById('main-menu');
                 if (mainMenu) {
                     mainMenu.classList.add('soft-enter');
-                    setTimeout(() => mainMenu.classList.remove('soft-enter'), 800);
+                    const ukloniSoftEnter = () => mainMenu.classList.remove('soft-enter');
+                    const zavrsiSoftEnter = (event) => {
+                        if (event.target !== mainMenu) return;
+                        mainMenu.removeEventListener('animationend', zavrsiSoftEnter);
+                        ukloniSoftEnter();
+                    };
+
+                    mainMenu.addEventListener('animationend', zavrsiSoftEnter);
+                    setTimeout(() => {
+                        mainMenu.removeEventListener('animationend', zavrsiSoftEnter);
+                        ukloniSoftEnter();
+                    }, 850);
                 }
+
+                UIManager.prikaziEkran('main-menu');
 
                 if (splashScreen) splashScreen.classList.remove('leaving');
             }, 650);

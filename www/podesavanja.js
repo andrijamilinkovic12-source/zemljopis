@@ -12,13 +12,15 @@ const PodesavanjaManager = {
     audio1: null,
     audio2: null,
     aktivniAudio: 1,
+    muzikaInterakcijaHandler: null,
 
     init: function() {
         const sacuvano = localStorage.getItem('zemljopis_postavke');
         if (sacuvano) {
-            this.postavke = JSON.parse(sacuvano);
+            this.postavke = { ...this.postavke, ...JSON.parse(sacuvano) };
             // Zbog starih sačuvanih verzija
             if (!this.postavke.pismo) this.postavke.pismo = "latinica";
+            if (typeof this.postavke.zvuk !== 'boolean') this.postavke.zvuk = true;
         }
         
         this.primeniPostavkeGlobalno();
@@ -32,31 +34,52 @@ const PodesavanjaManager = {
         // Učitavanje izabrane teme na body element
         document.body.setAttribute('data-tema', this.postavke.tema || 'tamna');
 
-        // Pokušaj puštanja muzike ako je uključena (verovatno će biti blokirano dok korisnik ne klikne)
-        this.upravljajMuzikom();
+        // Pokušaj puštanja muzike ako je uključena; browser/WebView može da traži interakciju.
+        this.osluskujPokretanjeMuzike();
+        this.upravljajMuzikom().then((pokrenuta) => {
+            if (pokrenuta) this.ukloniOsluskivanjeMuzike();
+        });
 
-        // Osluškujemo bilo koju interakciju da bismo zaobišli zabranu pregledača
-        const pokreniMuzikuNaInterakciju = () => {
-            if (this.postavke.zvuk) {
-                let trenutni = this.aktivniAudio === 1 ? this.audio1 : this.audio2;
-                if (trenutni && trenutni.paused) {
-                    trenutni.play().catch(e => console.log("Nije moguće pustiti muziku:", e));
-                }
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && this.postavke.zvuk) {
+                this.upravljajMuzikom();
             }
-            // Uklanjamo listenere nakon prve interakcije kako se ne bi gomilali
-            document.removeEventListener('click', pokreniMuzikuNaInterakciju);
-            document.removeEventListener('touchstart', pokreniMuzikuNaInterakciju);
+        });
+    },
+
+    osluskujPokretanjeMuzike: function() {
+        if (this.muzikaInterakcijaHandler) return;
+
+        this.muzikaInterakcijaHandler = () => {
+            if (!this.postavke.zvuk) {
+                this.ukloniOsluskivanjeMuzike();
+                return;
+            }
+
+            this.upravljajMuzikom().then((pokrenuta) => {
+                if (pokrenuta) this.ukloniOsluskivanjeMuzike();
+            });
         };
 
-        document.addEventListener('click', pokreniMuzikuNaInterakciju);
-        document.addEventListener('touchstart', pokreniMuzikuNaInterakciju);
+        ['pointerdown', 'touchstart', 'click', 'keydown'].forEach((eventName) => {
+            document.addEventListener(eventName, this.muzikaInterakcijaHandler, { passive: true });
+        });
+    },
+
+    ukloniOsluskivanjeMuzike: function() {
+        if (!this.muzikaInterakcijaHandler) return;
+
+        ['pointerdown', 'touchstart', 'click', 'keydown'].forEach((eventName) => {
+            document.removeEventListener(eventName, this.muzikaInterakcijaHandler);
+        });
+        this.muzikaInterakcijaHandler = null;
     },
 
     upravljajMuzikom: function() {
         // Inicijalizacija plejera pri prvom pokretanju
         if (!this.audio1) {
             this.audio1 = document.getElementById('bg-music');
-            if (!this.audio1) return;
+            if (!this.audio1) return Promise.resolve(false);
 
             // Pronalazimo putanju do pesme i pravimo drugog plejera (klona)
             let izvor = this.audio1.querySelector('source') ? this.audio1.querySelector('source').src : this.audio1.src;
@@ -109,11 +132,20 @@ const PodesavanjaManager = {
         if (this.postavke.zvuk) {
             if (aktuelniPlej.paused) {
                 aktuelniPlej.volume = 0.3;
-                aktuelniPlej.play().catch(e => console.log("Čekam interakciju..."));
+                return aktuelniPlej.play()
+                    .then(() => true)
+                    .catch(e => {
+                        console.log("Čekam interakciju za muziku...", e);
+                        this.osluskujPokretanjeMuzike();
+                        return false;
+                    });
             }
+            return Promise.resolve(true);
         } else {
             aktuelniPlej.pause();
             pauzirani.pause();
+            this.ukloniOsluskivanjeMuzike();
+            return Promise.resolve(false);
         }
     },
 
@@ -154,6 +186,11 @@ const PodesavanjaManager = {
         this.snimiULokalnuMemoriju();
         this.azurirajDugmeZvuk();
         this.upravljajMuzikom(); // Pozivamo funkciju za muziku
+        if (this.postavke.zvuk) {
+            this.osluskujPokretanjeMuzike();
+        } else {
+            this.ukloniOsluskivanjeMuzike();
+        }
     },
 
     azurirajDugmeZvuk: function() {

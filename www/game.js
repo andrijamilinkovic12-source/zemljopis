@@ -4,6 +4,7 @@ const Game = {
     // === MULTIPLAYER VARIJABLE ===
     socketURL: 'https://zemljopis.onrender.com', // TVOJ PRAVI RENDER LINK
     socket: null,
+    profilPrijavljen: false,
     trenutnaSoba: null,
     jeHost: false,
 
@@ -69,7 +70,11 @@ const Game = {
                     }, 850);
                 }
 
-                UIManager.prikaziEkran('main-menu');
+                if (typeof PodesavanjaManager !== 'undefined' && PodesavanjaManager.profilKompletan()) {
+                    UIManager.prikaziEkran('main-menu');
+                } else if (typeof PodesavanjaManager !== 'undefined') {
+                    PodesavanjaManager.prikaziObavezniProfil();
+                }
 
                 if (splashScreen) splashScreen.classList.remove('leaving');
             }, 650);
@@ -86,12 +91,18 @@ const Game = {
 
             this.socket.on('connect', () => {
                 console.log("Povezan na server sa ID:", this.socket.id);
-                let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
-                this.socket.emit('prijavaNadimka', mojNadimak);
+                this.prijaviSacuvanProfil();
             });
 
             this.socket.on('podaciProfila', (podaci) => {
                 console.log("📥 Podaci učitani iz baze:", podaci);
+
+                if (typeof PodesavanjaManager !== 'undefined' && podaci) {
+                    if (podaci.nadimak) PodesavanjaManager.postavke.nadimak = podaci.nadimak;
+                    if (podaci.avatar) PodesavanjaManager.postavke.avatar = podaci.avatar;
+                    PodesavanjaManager.primeniPostavkeGlobalno();
+                    PodesavanjaManager.snimiULokalnuMemoriju();
+                }
                 
                 const dukatiEl = document.getElementById('meni-dukati');
                 const tokeniEl = document.getElementById('meni-tokeni');
@@ -286,6 +297,38 @@ const Game = {
         }
     },
 
+    prijaviSacuvanProfil: function() {
+        if (
+            !this.socket
+            || !this.socket.connected
+            || typeof PodesavanjaManager === 'undefined'
+            || !PodesavanjaManager.profilKompletan()
+        ) {
+            this.profilPrijavljen = false;
+            return;
+        }
+
+        this.socket.timeout(10000).emit(
+            'prijavaProfila',
+            { profilKljuc: PodesavanjaManager.postavke.profilKljuc },
+            (greska, odgovor) => {
+                if (greska || !odgovor || !odgovor.uspeh) {
+                    this.profilPrijavljen = false;
+                    console.warn("Profil nije potvrđen na serveru.", odgovor || greska);
+                    return;
+                }
+
+                this.profilPrijavljen = true;
+                if (odgovor.profil) {
+                    PodesavanjaManager.postavke.nadimak = odgovor.profil.nadimak;
+                    PodesavanjaManager.postavke.avatar = odgovor.profil.avatar;
+                    PodesavanjaManager.snimiULokalnuMemoriju();
+                    PodesavanjaManager.primeniPostavkeGlobalno();
+                }
+            }
+        );
+    },
+
     zapocniProveruTokenaZaSobu: function() {
         if (this.proveraTokenaInterval) clearInterval(this.proveraTokenaInterval);
         
@@ -305,7 +348,13 @@ const Game = {
         }, 1000);
     },
 
+    profilSpremanZaIgru: function() {
+        if (typeof PodesavanjaManager === 'undefined') return false;
+        return PodesavanjaManager.zahtevajProfil();
+    },
+
     traziSobu: function(brojIgraca) {
+        if (!this.profilSpremanZaIgru()) return;
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
         if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
@@ -340,6 +389,7 @@ const Game = {
     },
 
     kreirajPrivatnuSobu: function(brojIgraca) {
+        if (!this.profilSpremanZaIgru()) return;
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
         if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
@@ -371,6 +421,7 @@ const Game = {
     },
 
     pridruziSeSobi: function() {
+        if (!this.profilSpremanZaIgru()) return;
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
         const input = document.getElementById('room-code-input');
@@ -417,6 +468,7 @@ const Game = {
     },
 
     pridruziSeSobiDirektno: function(kodSobe) {
+        if (!this.profilSpremanZaIgru()) return;
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
         if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
@@ -454,6 +506,7 @@ const Game = {
     },
 
     kreirajPrivatnuSobuIPozovi: function() {
+        if (!this.profilSpremanZaIgru()) return;
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
         if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
@@ -498,6 +551,7 @@ const Game = {
     },
 
     pokreniIgru: function(mod, zadatoSlovoSaServera = null) {
+        if (!this.profilSpremanZaIgru()) return;
         if (typeof TokeniManager !== 'undefined') {
             if (!TokeniManager.imaTokena()) {
                 if (mod === 'multi' && this.socket) this.socket.emit('napustiSobu');

@@ -1,9 +1,22 @@
 // managers.js - Zadužen za kontrolu DOM-a (HTML elemenata i CSS klasa)
 
 const UIManager = {
-    prikaziEkran: function(ekranId) {
+    prikaziEkran: function(ekranId, preskociProveruProfila = false) {
+        const dozvoljeniBezProfila = ['splash-screen', 'profil-setup-screen'];
+        if (
+            !preskociProveruProfila
+            && !dozvoljeniBezProfila.includes(ekranId)
+            && typeof PodesavanjaManager !== 'undefined'
+            && !PodesavanjaManager.profilKompletan()
+        ) {
+            PodesavanjaManager.prikaziObavezniProfil();
+            return;
+        }
+
         document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-        document.getElementById(ekranId).classList.add('active');
+        const ekran = document.getElementById(ekranId);
+        if (!ekran) return;
+        ekran.classList.add('active');
         
         // Uvek sakrij tastaturu kada se menja ekran da ne bi blokirala UI
         if (typeof KeyboardManager !== 'undefined') {

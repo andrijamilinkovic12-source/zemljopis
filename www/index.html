@@ -28,6 +28,52 @@
         </div>
     </div>
 
+    <div id="profil-setup-screen" class="screen">
+        <div class="profile-setup-pattern" aria-hidden="true"></div>
+        <div class="profile-setup-shell">
+            <div class="profile-setup-heading">
+                <span class="profile-setup-kicker">Dobro došao u Zemljopis</span>
+                <h1>Kreiraj svoj profil</h1>
+                <p>Izaberi avatar i jedinstven nadimak da otključaš igru.</p>
+            </div>
+
+            <div class="profile-setup-card">
+                <span class="settings-label">Tvoj avatar</span>
+                <button type="button" class="profile-setup-avatar" id="profil-setup-avatar-preview" onclick="PodesavanjaManager.toggleSetupAvatarPicker(event)" title="Izaberi avatar">
+                    <span class="profile-setup-avatar-empty" id="profil-setup-avatar-empty">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </span>
+                    <span class="avatar-portrait" id="profil-setup-avatar-figura"></span>
+                    <span class="profile-setup-avatar-action"><i class="fa-solid fa-pen"></i></span>
+                </button>
+
+                <div class="profile-setup-picker" id="profil-setup-avatar-picker" aria-hidden="true">
+                    <div class="profile-setup-picker-head">
+                        <strong>Izaberi lika</strong>
+                        <button type="button" onclick="PodesavanjaManager.zatvoriSetupAvatarPicker()" title="Zatvori">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="avatar-grid profile-setup-avatar-grid" id="profil-setup-avatar-lista" aria-label="Izbor avatara"></div>
+                </div>
+
+                <label class="settings-label" for="profil-setup-nadimak">Jedinstven nadimak</label>
+                <div class="profile-setup-name-row">
+                    <i class="fa-solid fa-at"></i>
+                    <input id="profil-setup-nadimak" type="text" maxlength="20" autocomplete="off" placeholder="Unesi nadimak">
+                </div>
+                <p class="profile-setup-hint" id="profil-setup-poruka">Nadimak može imati 2-20 slova ili brojeva.</p>
+
+                <button type="button" class="profile-setup-submit" id="profil-setup-submit" onclick="PodesavanjaManager.registrujObavezniProfil()">
+                    <span>Napravi profil</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <p class="profile-setup-note"><i class="fa-solid fa-lock"></i> Izabrani nadimak biće rezervisan samo za tvoj profil.</p>
+        </div>
+    </div>
+
     <div id="main-menu" class="screen">
         <div class="menu-pattern">
             <img class="pattern-map" src="assets/menu-pattern-atlas.svg" alt="" aria-hidden="true" decoding="async">
@@ -325,22 +371,50 @@
             <i class="fa-solid fa-gear pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
         </div>
         
-        <h2 style="color: #38ef7d; margin-bottom: min(1rem, 2vh); z-index: 5; font-size: min(1.6rem, 4vh); text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Podešavanja</h2>
+        <h2 style="color: #38ef7d; margin-bottom: min(0.55rem, 1vh); z-index: 5; font-size: min(1.45rem, 3.3vh); text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Podešavanja</h2>
         
-        <div style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; gap: min(0.8rem, 1.5vh); padding: 0 1rem; overflow: hidden; flex: 1; padding-bottom: min(1rem, 2vh);">
+        <div class="settings-content" style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; gap: min(0.45rem, 0.9vh); padding: 0 1rem; overflow: visible; min-height: 0; flex: 1; padding-bottom: min(0.45rem, 0.8vh); scrollbar-width: none;">
+
+            <div class="settings-panel">
+                <label class="settings-label"><i class="fa-solid fa-id-card"></i> Način igranja</label>
+                <div class="profile-choice-group">
+                    <button class="profile-choice active" id="profil-opcija-lokalni" onclick="PodesavanjaManager.izaberiProfilTip('lokalni')">
+                        <span class="profile-choice-icon"><i class="fa-solid fa-user-pen"></i></span>
+                        <span class="profile-choice-copy">
+                            <b>Ime i avatar</b>
+                            <small>Lokalni profil</small>
+                        </span>
+                        <span class="profile-choice-status" id="profil-lokalni-status">AKTIVNO</span>
+                    </button>
+                    <button class="profile-choice google" id="profil-opcija-google" onclick="PodesavanjaManager.prikaziGoogleUskoro()">
+                        <span class="profile-choice-icon"><i class="fa-brands fa-google"></i></span>
+                        <span class="profile-choice-copy">
+                            <b>Google nalog</b>
+                                <small>Prijavi se</small>
+                        </span>
+                        <span class="profile-choice-status soon" id="profil-google-status">USKORO</span>
+                    </button>
+                </div>
+            </div>
             
-            <div style="background: rgba(0,0,0,0.5); padding: min(1rem, 2vh) 1.2rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
-                <label style="display: block; font-size: min(0.75rem, 1.5vh); color: #a0aec0; margin-bottom: min(0.6rem, 1.2vh); text-transform: uppercase; font-weight: 800; letter-spacing: 1px;"><i class="fa-solid fa-user"></i> Tvoj profil</label>
-                <div style="display: flex; gap: 0.5rem;">
+            <div class="settings-panel settings-profile-panel">
+                <label class="settings-label"><i class="fa-solid fa-user"></i> Tvoj profil</label>
+                <div class="settings-profile-row">
+                    <button type="button" class="settings-avatar-preview" id="postavke-avatar-preview" title="Izaberi avatar" onclick="PodesavanjaManager.toggleAvatarPicker(event)">
+                        <span class="avatar-portrait" id="postavke-avatar-figura"></span>
+                    </button>
                     <input type="text" id="postavke-nadimak" placeholder="Unesi nadimak..." maxlength="20" style="flex: 1; min-width: 0; padding: min(0.6rem, 1.2vh); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.3); color: #fff; font-size: min(0.95rem, 2vh); outline: none; transition: border-color 0.3s;" autocomplete="off" autocorrect="off" spellcheck="false">
                     <button class="btn-primary" style="border: none; border-radius: 10px; padding: 0 min(1.2rem, 4vw); font-weight: 800; cursor: pointer; transition: transform 0.2s;" onclick="PodesavanjaManager.sacuvajNadimak()">
                         <i class="fa-solid fa-check"></i>
                     </button>
                 </div>
+                <div class="avatar-picker" id="postavke-avatar-picker" aria-hidden="true">
+                    <div class="avatar-grid" id="postavke-avatar-lista" aria-label="Izbor avatara"></div>
+                </div>
             </div>
 
-            <div style="background: rgba(0,0,0,0.5); padding: min(1rem, 2vh) 1.2rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: min(0.5rem, 1vh);">
-                <label style="display: block; font-size: min(0.75rem, 1.5vh); color: #a0aec0; margin-bottom: 2px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;"><i class="fa-solid fa-sliders"></i> Sistem</label>
+            <div class="settings-panel" style="display: flex; flex-direction: column; gap: min(0.5rem, 1vh);">
+                <label class="settings-label" style="margin-bottom: 2px;"><i class="fa-solid fa-sliders"></i> Sistem</label>
                 
                 <button class="menu-btn" id="btn-zvuk" style="margin-bottom: 0; border: 1px solid transparent; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: min(0.6rem, 1.2vh);" onclick="PodesavanjaManager.toggleZvuk()">
                     <span style="font-size: min(0.9rem, 2vh);"><i class="fa-solid fa-volume-high" id="ikona-zvuk"></i> Zvuk</span> 
@@ -352,8 +426,8 @@
                     <span id="pismo-status" style="font-weight: 800; font-size: min(0.9rem, 2vh);">LATINICA</span>
                 </button>
 
-                <label style="display: block; font-size: min(0.7rem, 1.4vh); color: #a0aec0; margin-top: 4px; margin-bottom: 2px; text-transform: uppercase; font-weight: 600;">Izgled aplikacije</label>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
+                <label class="settings-theme-label" style="display: block; font-size: min(0.7rem, 1.4vh); color: #a0aec0; margin-top: 4px; margin-bottom: 2px; text-transform: uppercase; font-weight: 600;">Izgled aplikacije</label>
+                <div class="settings-theme-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;">
                     <button class="menu-btn" id="btn-tema-tamna" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('tamna')">Tamna</button>
                     <button class="menu-btn" id="btn-tema-svetla" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('svetla')">Svetla</button>
                     <button class="menu-btn" id="btn-tema-neon" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('neon')">Neon</button>
@@ -581,6 +655,7 @@
         let selectedMode = '';
         
         function showPlayerSelect(mode) {
+            if (typeof PodesavanjaManager !== 'undefined' && !PodesavanjaManager.zahtevajProfil()) return;
             selectedMode = mode;
             const overlay = document.getElementById('player-select-overlay');
             const title = document.getElementById('player-select-title');

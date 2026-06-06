@@ -34,6 +34,9 @@ mongoose.connect(MONGO_URI)
 // ==========================================
 const IgracSchema = new mongoose.Schema({
     nadimak: { type: String, required: true, unique: true },
+    nadimakNormalizovan: { type: String, unique: true, sparse: true },
+    profilKljuc: { type: String, unique: true, sparse: true },
+    avatar: { type: String, default: "atlas" },
     dukati: { type: Number, default: 500 },
     tokeni: { type: Number, default: 3 },
     sezonskiPojmovi: { type: Number, default: 0 },
@@ -59,6 +62,10 @@ const MAX_PORUKA_ISTORIJA = 50;
 let istorijaChata = [];
 const onlineIgraci = {}; 
 const bazaPrijatelja = {};
+const DOZVOLJENI_AVATARI = new Set([
+    "atlas", "luna", "orion", "tara", "niko", "mila",
+    "sava", "zara", "vuk", "iris", "leo", "nova"
+]);
 
 function osigurajBazu(ime) {
     if (!bazaPrijatelja[ime]) {
@@ -77,6 +84,52 @@ function escapeHTML(str) {
             '"': '&quot;'
         }[tag] || tag)
     );
+}
+
+function ocistiNadimak(vrednost) {
+    return String(vrednost || "")
+        .normalize("NFKC")
+        .trim()
+        .replace(/\s+/g, " ");
+}
+
+function normalizujNadimak(vrednost) {
+    return ocistiNadimak(vrednost).toLocaleLowerCase("sr");
+}
+
+function nadimakJeIspravan(nadimak) {
+    return nadimak.length >= 2
+        && nadimak.length <= 20
+        && /^[\p{L}\p{N}_ -]+$/u.test(nadimak);
+}
+
+function profilKljucJeIspravan(profilKljuc) {
+    return typeof profilKljuc === "string"
+        && profilKljuc.length >= 16
+        && profilKljuc.length <= 100
+        && /^[a-zA-Z0-9_-]+$/.test(profilKljuc);
+}
+
+function podaciProfilaZaKlijenta(igrac) {
+    return {
+        nadimak: igrac.nadimak,
+        avatar: igrac.avatar || "atlas",
+        dukati: igrac.dukati,
+        tokeni: igrac.tokeni,
+        sezonskiPojmovi: igrac.sezonskiPojmovi,
+        svaVremenaPojmovi: igrac.svaVremenaPojmovi
+    };
+}
+
+function prijaviOnlineIgraca(socket, igrac) {
+    onlineIgraci[socket.id] = {
+        id: socket.id,
+        ime: igrac.nadimak,
+        avatar: igrac.avatar || "atlas",
+        bazaId: igrac._id
+    };
+    io.emit('azurirajBrojOnline', Object.keys(onlineIgraci).length);
+    socket.emit('podaciProfila', podaciProfilaZaKlijenta(igrac));
 }
 
 // Pomoćne funkcije za igru
@@ -128,32 +181,99 @@ function proveriIPokreniSledecuRundu(soba) {
 io.on('connection', (socket) => {
     console.log(`🟢 Novi igrač se povezao: ${socket.id}`);
 
-    // --- PRIJAVA IGRAČA I ČITANJE IZ BAZE ---
-    socket.on('prijavaNadimka', async (ime) => {
-        const cistoIme = escapeHTML(ime).substring(0, 20);
-        try {
-            let igrac = await Igrac.findOneAndUpdate(
-                { nadimak: cistoIme },
-                { $setOnInsert: { dukati: 500, tokeni: 3, sezonskiPojmovi: 0, svaVremenaPojmovi: 0, pobede: 0, najboljiMecPoeni: 0, nedeljniPoeni: 0, mesecniPoeni: 0, svaVremenaPoeni: 0 } },
-                { upsert: true, returnDocument: 'after' }
-            );
+    // --- REGISTRACIJA OBAVEZNOG PROFILA I REZERVACIJA NADIMKA ---
+    socket.on('registrujProfil', async (podaci, callback = () => {}) => {
+        const nadimak = ocistiNadimak(podaci && podaci.nadimak);
+        const nadimakNormalizovan = normalizujNadimak(nadimak);
+        const profilKljuc = podaci && podaci.profilKljuc;
+        const avatar = podaci && podaci.avatar;
 
-            onlineIgraci[socket.id] = { id: socket.id, ime: igrac.nadimak, bazaId: igrac._id };
-            io.emit('azurirajBrojOnline', Object.keys(onlineIgraci).length);
-            
-            socket.emit('podaciProfila', {
-                dukati: igrac.dukati,
-                tokeni: igrac.tokeni,
-                sezonskiPojmovi: igrac.sezonskiPojmovi,
-                svaVremenaPojmovi: igrac.svaVremenaPojmovi
+        if (!profilKljucJeIspravan(profilKljuc)) {
+            return callback({ uspeh: false, kod: "NEISPRAVAN_PROFIL", poruka: "Profil nije ispravan. Ponovo pokreni aplikaciju." });
+        }
+        if (!nadimakJeIspravan(nadimak)) {
+            return callback({ uspeh: false, kod: "NEISPRAVAN_NADIMAK", poruka: "Nadimak mora imati 2-20 slova ili brojeva." });
+        }
+        if (!DOZVOLJENI_AVATARI.has(avatar)) {
+            return callback({ uspeh: false, kod: "NEISPRAVAN_AVATAR", poruka: "Izaberi jedan od ponuđenih avatara." });
+        }
+
+        try {
+            let igrac = await Igrac.findOne({ profilKljuc });
+            const zauzetiProfil = await Igrac.findOne({
+                $or: [
+                    { nadimakNormalizovan },
+                    { nadimak: { $regex: `^${nadimak.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: "i" } }
+                ]
             });
 
-            console.log(`👤 Igrač ${cistoIme} je povezan i učitan iz baze.`);
+            if (zauzetiProfil && (!igrac || String(zauzetiProfil._id) !== String(igrac._id))) {
+                if (zauzetiProfil.profilKljuc && zauzetiProfil.profilKljuc !== profilKljuc) {
+                    return callback({ uspeh: false, kod: "NADIMAK_ZAUZET", poruka: "Ovaj nadimak je već zauzet. Izaberi drugi." });
+                }
+
+                // Jednokratna migracija profila napravljenih prije uvođenja vlasničkog ključa.
+                igrac = zauzetiProfil;
+            }
+
+            if (igrac) {
+                igrac.nadimak = nadimak;
+                igrac.nadimakNormalizovan = nadimakNormalizovan;
+                igrac.profilKljuc = profilKljuc;
+                igrac.avatar = avatar;
+                igrac.poslednjaPrijava = new Date();
+                await igrac.save();
+            } else {
+                igrac = await Igrac.create({
+                    nadimak,
+                    nadimakNormalizovan,
+                    profilKljuc,
+                    avatar
+                });
+            }
+
+            prijaviOnlineIgraca(socket, igrac);
+            callback({ uspeh: true, profil: podaciProfilaZaKlijenta(igrac) });
+            console.log(`👤 Profil ${nadimak} je registrovan i povezan.`);
         } catch (error) {
-            console.error("Greška pri prijavi igrača (Baza):", error);
-            onlineIgraci[socket.id] = { id: socket.id, ime: cistoIme };
-            io.emit('azurirajBrojOnline', Object.keys(onlineIgraci).length);
+            if (error && error.code === 11000) {
+                return callback({ uspeh: false, kod: "NADIMAK_ZAUZET", poruka: "Ovaj nadimak je već zauzet. Izaberi drugi." });
+            }
+            console.error("Greška pri registraciji profila:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA", poruka: "Profil trenutno nije moguće sačuvati. Pokušaj ponovo." });
         }
+    });
+
+    // --- AUTOMATSKA PRIJAVA VEĆ REGISTROVANOG PROFILA ---
+    socket.on('prijavaProfila', async (podaci, callback = () => {}) => {
+        const profilKljuc = podaci && podaci.profilKljuc;
+        if (!profilKljucJeIspravan(profilKljuc)) {
+            return callback({ uspeh: false, kod: "NEISPRAVAN_PROFIL" });
+        }
+
+        try {
+            const igrac = await Igrac.findOne({ profilKljuc });
+            if (!igrac) {
+                return callback({ uspeh: false, kod: "PROFIL_NIJE_PRONADJEN" });
+            }
+
+            igrac.poslednjaPrijava = new Date();
+            await igrac.save();
+            prijaviOnlineIgraca(socket, igrac);
+            callback({ uspeh: true, profil: podaciProfilaZaKlijenta(igrac) });
+        } catch (error) {
+            console.error("Greška pri prijavi profila:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA" });
+        }
+    });
+
+    // Stare verzije aplikacije više ne mogu prisvojiti postojeći nadimak bez vlasničkog ključa.
+    socket.on('prijavaNadimka', (ime, callback = () => {}) => {
+        callback({
+            uspeh: false,
+            kod: "AZURIRANJE_OBAVEZNO",
+            poruka: "Ažuriraj aplikaciju i kreiraj svoj zaštićeni profil."
+        });
     });
 
     socket.on('dodajPojmove', async (brojPojmova) => {
@@ -218,6 +338,10 @@ io.on('connection', (socket) => {
 
     // --- 1. KREIRANJE PRIVATNE SOBE ---
     socket.on('kreirajSobu', (brojIgraca, callback) => {
+        if (!onlineIgraci[socket.id]) {
+            return callback({ uspeh: false, poruka: "Prvo kreiraj i potvrdi svoj profil." });
+        }
+
         const karakteri = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let kodSobe = "";
         for (let i = 0; i < 4; i++) kodSobe += karakteri.charAt(Math.floor(Math.random() * karakteri.length)); 
@@ -226,7 +350,7 @@ io.on('connection', (socket) => {
             id: kodSobe,
             host: socket.id,
             maxIgraca: brojIgraca,
-            igraci: [{ id: socket.id, ime: onlineIgraci[socket.id] ? onlineIgraci[socket.id].ime : "Host", spremniOdgovori: false, spremniZaSledecuRundu: false }],
+            igraci: [{ id: socket.id, ime: onlineIgraci[socket.id].ime, spremniOdgovori: false, spremniZaSledecuRundu: false }],
             status: 'cekanje',
             iskoriscenaSlova: [],
             trenutnaRunda: 0,
@@ -241,6 +365,10 @@ io.on('connection', (socket) => {
 
     // --- 1b. KREIRANJE PRIVATNE SOBE I POZIVANJE PRIJATELJA ---
     socket.on('kreirajSobuIPozovi', (podaci, callback) => {
+        if (!onlineIgraci[socket.id]) {
+            return callback({ uspeh: false, poruka: "Prvo kreiraj i potvrdi svoj profil." });
+        }
+
         let brojIgraca = podaci.pozvani.length + 1;
         if (brojIgraca === 1) brojIgraca = 5; 
 
@@ -252,7 +380,7 @@ io.on('connection', (socket) => {
             id: kodSobe,
             host: socket.id,
             maxIgraca: brojIgraca,
-            igraci: [{ id: socket.id, ime: onlineIgraci[socket.id] ? onlineIgraci[socket.id].ime : "Host", spremniOdgovori: false, spremniZaSledecuRundu: false }],
+            igraci: [{ id: socket.id, ime: onlineIgraci[socket.id].ime, spremniOdgovori: false, spremniZaSledecuRundu: false }],
             status: 'cekanje',
             iskoriscenaSlova: [],
             trenutnaRunda: 0,
@@ -263,7 +391,7 @@ io.on('connection', (socket) => {
 
         socket.join(kodSobe);
         
-        const hostIme = onlineIgraci[socket.id] ? onlineIgraci[socket.id].ime : "Tvoj prijatelj";
+        const hostIme = onlineIgraci[socket.id].ime;
         podaci.pozvani.forEach(imePrijatelja => {
             const ciljSocket = Object.values(onlineIgraci).find(oi => oi.ime.toLowerCase() === imePrijatelja.toLowerCase());
             if (ciljSocket) {
@@ -276,6 +404,10 @@ io.on('connection', (socket) => {
 
     // --- 2. PRIDRUŽIVANJE SOBI ---
     socket.on('pridruziSeSobi', (podaci, callback) => {
+        if (!onlineIgraci[socket.id]) {
+            return callback({ uspeh: false, poruka: "Prvo kreiraj i potvrdi svoj profil." });
+        }
+
         const kodSobe = podaci.kodSobe.toUpperCase();
         const soba = sobe[kodSobe];
 
@@ -283,7 +415,7 @@ io.on('connection', (socket) => {
         if (soba.status !== 'cekanje') return callback({ uspeh: false, poruka: "Igra u ovoj sobi je već počela!" });
         if (soba.igraci.length >= soba.maxIgraca) return callback({ uspeh: false, poruka: "Soba je puna!" });
 
-        soba.igraci.push({ id: socket.id, ime: podaci.ime || `Igrač ${soba.igraci.length + 1}`, spremniOdgovori: false, spremniZaSledecuRundu: false });
+        soba.igraci.push({ id: socket.id, ime: onlineIgraci[socket.id].ime, spremniOdgovori: false, spremniZaSledecuRundu: false });
         socket.join(kodSobe);
 
         io.to(kodSobe).emit('noviIgracUSobi', { brojIgraca: soba.igraci.length, max: soba.maxIgraca });
@@ -334,7 +466,12 @@ io.on('connection', (socket) => {
 
     // --- 5. MATCHMAKING JAVNE SOBE ---
     socket.on('traziJavnuSobu', (podaci, callback) => {
-        const { brojIgraca, ime } = podaci;
+        if (!onlineIgraci[socket.id]) {
+            return callback({ uspeh: false, poruka: "Prvo kreiraj i potvrdi svoj profil." });
+        }
+
+        const brojIgraca = Number(podaci.brojIgraca);
+        const ime = onlineIgraci[socket.id].ime;
         let nadjenaSoba = null;
 
         for (let kodSobe in sobe) {
@@ -346,7 +483,7 @@ io.on('connection', (socket) => {
         }
 
         if (nadjenaSoba) {
-            nadjenaSoba.igraci.push({ id: socket.id, ime: ime || `Igrač ${nadjenaSoba.igraci.length + 1}`, spremniOdgovori: false, spremniZaSledecuRundu: false });
+            nadjenaSoba.igraci.push({ id: socket.id, ime, spremniOdgovori: false, spremniZaSledecuRundu: false });
             socket.join(nadjenaSoba.id);
 
             io.to(nadjenaSoba.id).emit('azuriranjeJavneSobe', { brojIgraca: nadjenaSoba.igraci.length, max: nadjenaSoba.maxIgraca });
@@ -362,7 +499,7 @@ io.on('connection', (socket) => {
 
             sobe[kodSobe] = {
                 id: kodSobe, host: socket.id, maxIgraca: brojIgraca,
-                igraci: [{ id: socket.id, ime: ime || "Igrač 1", spremniOdgovori: false, spremniZaSledecuRundu: false }],
+                igraci: [{ id: socket.id, ime, spremniOdgovori: false, spremniZaSledecuRundu: false }],
                 status: 'cekanje', iskoriscenaSlova: [], trenutnaRunda: 0, odgovoriOveRunde: [], javna: true, timeoutRunde: null
             };
 

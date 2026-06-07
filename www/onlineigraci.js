@@ -35,7 +35,10 @@ const OnlineIgraciManager = {
 
         igraci.forEach(igrac => {
             // Proveravamo u GLAVNOJ listi da li smo već prijatelji
-            const vecPrijatelj = mojiPrijatelji.some(p => p.ime.toLowerCase() === igrac.ime.toLowerCase());
+            const vecPrijatelj = mojiPrijatelji.some(p => {
+                if (p.playerId && igrac.playerId) return p.playerId === igrac.playerId;
+                return p.ime.toLowerCase() === igrac.ime.toLowerCase();
+            });
             
             let actionHtml = '';
             if (vecPrijatelj) {
@@ -59,8 +62,6 @@ const OnlineIgraciManager = {
     },
 
     posaljiZahtev: function(ciljId, ime) {
-        Game.socket.emit('posaljiZahtevZaPrijateljstvo', { ciljId: ciljId });
-        
         // Menjamo izgled dugmeta u "na čekanju"
         const btn = document.getElementById(`btn-add-${ciljId}`);
         if (btn) {
@@ -68,7 +69,25 @@ const OnlineIgraciManager = {
             btn.classList.add('pending');
             btn.disabled = true;
         }
-        UIManager.prikaziObavestenje("Zahtev poslat", `Uspešno si poslao zahtev igraču: <b style="color:#38bdf8;">${ime}</b>.`, null, "U redu");
+
+        Game.socket.timeout(10000).emit('posaljiZahtevZaPrijateljstvo', { ciljId: ciljId }, (greska, odgovor) => {
+            if (greska || !odgovor || !odgovor.uspeh) {
+                if (btn) {
+                    btn.innerHTML = '<i class="fa-solid fa-user-plus"></i>';
+                    btn.classList.remove('pending');
+                    btn.disabled = false;
+                }
+                UIManager.prikaziObavestenje(
+                    "Nije poslato",
+                    (odgovor && odgovor.poruka) || "Zahtev trenutno nije moguće poslati.",
+                    null,
+                    "U redu"
+                );
+                return;
+            }
+
+            UIManager.prikaziObavestenje("Zahtev poslat", `Uspešno si poslao zahtev igraču: <b style="color:#38bdf8;">${ime}</b>.`, null, "U redu");
+        });
     },
 
     prikaziZahtev: function(podaci) {
@@ -81,32 +100,47 @@ const OnlineIgraciManager = {
         const btnOdbij = document.getElementById('btn-odbij-zahtev');
         
         btnPrihvati.onclick = () => {
-            this.odgovoriNaZahtev(podaci.idPosiljaoca, podaci.imePosiljaoca, true);
+            this.odgovoriNaZahtev(podaci.idPosiljaoca, podaci.imePosiljaoca, true, podaci.playerIdPosiljaoca);
             modal.classList.remove('active');
         };
         
         btnOdbij.onclick = () => {
-            this.odgovoriNaZahtev(podaci.idPosiljaoca, podaci.imePosiljaoca, false);
+            this.odgovoriNaZahtev(podaci.idPosiljaoca, podaci.imePosiljaoca, false, podaci.playerIdPosiljaoca);
             modal.classList.remove('active');
         };
 
         modal.classList.add('active');
     },
 
-    odgovoriNaZahtev: function(idPosiljaoca, imePosiljaoca, prihvaceno) {
-        Game.socket.emit('odgovorNaZahtev', { ciljId: idPosiljaoca, prihvaceno: prihvaceno });
-        
-        if (prihvaceno) {
-            UIManager.prikaziObavestenje("Novi prijatelj!", `Ti i <b style="color:#38ef7d;">${imePosiljaoca}</b> ste sada prijatelji!`, null, "Super");
-            
-            // ODMAH TRAŽIMO OSVEŽENJE GLAVNE SOBE PRIJATELJA
-            Game.socket.emit('traziOsvezenjePrijatelja');
-            
-            // Osveži listu ako je ekran trenutno otvoren
-            if (document.getElementById('online-igraci-screen').classList.contains('active')) {
-                Game.socket.emit('traziOnlineIgrace');
+    odgovoriNaZahtev: function(idPosiljaoca, imePosiljaoca, prihvaceno, playerIdPosiljaoca = null) {
+        Game.socket.timeout(10000).emit(
+            'odgovorNaZahtev',
+            {
+                ciljId: idPosiljaoca,
+                playerIdPosiljaoca,
+                prihvaceno: prihvaceno
+            },
+            (greska, odgovor) => {
+                if (greska || !odgovor || !odgovor.uspeh) {
+                    UIManager.prikaziObavestenje(
+                        "Nije sačuvano",
+                        "Odgovor trenutno nije moguće sačuvati. Otvori Sobu prijatelja i pokušaj ponovo.",
+                        null,
+                        "U redu"
+                    );
+                    return;
+                }
+
+                if (prihvaceno) {
+                    UIManager.prikaziObavestenje("Novi prijatelj!", `Ti i <b style="color:#38ef7d;">${imePosiljaoca}</b> ste sada prijatelji!`, null, "Super");
+                    Game.socket.emit('traziOsvezenjePrijatelja');
+
+                    if (document.getElementById('online-igraci-screen').classList.contains('active')) {
+                        Game.socket.emit('traziOnlineIgrace');
+                    }
+                }
             }
-        }
+        );
     },
 
     uspesnoDodatPrijatelj: function(podaci) {

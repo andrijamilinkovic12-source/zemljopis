@@ -169,7 +169,8 @@ const Game = {
                 }
             });
 
-            this.socket.on('noviOfflineZahtev', (imePosiljaoca) => {
+            this.socket.on('noviOfflineZahtev', (zahtev) => {
+                const imePosiljaoca = typeof zahtev === "string" ? zahtev : zahtev.ime;
                 UIManager.prikaziObavestenje(
                     "Novi zahtev!", 
                     `Igrač <b style="color:#f5af19;">${imePosiljaoca}</b> ti je poslao zahtev za prijateljstvo!`, 

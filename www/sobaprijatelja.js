@@ -5,12 +5,26 @@ const SobaPrijateljaManager = {
     prijatelji: [], 
     zahtevi: [], 
 
+    normalizujZahtev: function(zahtev) {
+        if (typeof zahtev === "string") {
+            return { playerId: null, ime: zahtev, avatar: "atlas" };
+        }
+        return {
+            playerId: zahtev && zahtev.playerId ? zahtev.playerId : null,
+            ime: zahtev && zahtev.ime ? zahtev.ime : "Igrač",
+            avatar: zahtev && zahtev.avatar ? zahtev.avatar : "atlas"
+        };
+    },
+
     init: function() {
         const sacuvaniPrijatelji = localStorage.getItem('zemljopis_prijatelji_detalji');
         if (sacuvaniPrijatelji) this.prijatelji = JSON.parse(sacuvaniPrijatelji);
         
         const sacuvaniZahtevi = localStorage.getItem('zemljopis_zahtevi');
-        if (sacuvaniZahtevi) this.zahtevi = JSON.parse(sacuvaniZahtevi);
+        if (sacuvaniZahtevi) {
+            this.zahtevi = JSON.parse(sacuvaniZahtevi)
+                .map(zahtev => this.normalizujZahtev(zahtev));
+        }
     },
 
     otvoriEkran: function() {
@@ -76,16 +90,17 @@ const SobaPrijateljaManager = {
             if (this.zahtevi.length === 0) {
                 html = '<p style="text-align:center; color:#a0aec0; margin-top:2rem;">Nemaš novih zahteva na čekanju.</p>';
             } else {
-                this.zahtevi.forEach(ime => {
+                this.zahtevi.forEach((sacuvaniZahtev, indeks) => {
+                    const zahtev = this.normalizujZahtev(sacuvaniZahtev);
                     html += `
                         <div class="online-igrac-red" style="margin-bottom:0.8rem; background:rgba(245,175,25,0.1); border-color:rgba(245,175,25,0.3);">
                             <div class="online-igrac-info">
                                 <i class="fa-solid fa-user-clock" style="color:#f5af19;"></i>
-                                <span>${ime}</span>
+                                <span>${zahtev.ime}</span>
                             </div>
                             <div style="display:flex; gap:0.5rem;">
-                                <button class="btn-prijatelj" style="color:#ff416c; border-color:#ff416c; background:rgba(255,65,108,0.1);" onclick="SobaPrijateljaManager.odgovoriNaZahtev('${ime}', false)"><i class="fa-solid fa-xmark"></i></button>
-                                <button class="btn-prijatelj" style="color:#38ef7d; border-color:#38ef7d; background:rgba(56,239,125,0.1);" onclick="SobaPrijateljaManager.odgovoriNaZahtev('${ime}', true)"><i class="fa-solid fa-check"></i></button>
+                                <button class="btn-prijatelj" style="color:#ff416c; border-color:#ff416c; background:rgba(255,65,108,0.1);" onclick="SobaPrijateljaManager.odgovoriNaZahtev(${indeks}, false)"><i class="fa-solid fa-xmark"></i></button>
+                                <button class="btn-prijatelj" style="color:#38ef7d; border-color:#38ef7d; background:rgba(56,239,125,0.1);" onclick="SobaPrijateljaManager.odgovoriNaZahtev(${indeks}, true)"><i class="fa-solid fa-check"></i></button>
                             </div>
                         </div>
                     `;
@@ -113,30 +128,59 @@ const SobaPrijateljaManager = {
             return;
         }
         
-        Game.socket.emit('posaljiOfflineZahtev', ime);
-        input.value = '';
-        UIManager.prikaziObavestenje("Poslato", `Zahtev za prijateljstvo poslat igraču: <b>${ime}</b>.<br><br>Kada uđe u igru dobiće obaveštenje.`, null, "Super");
+        Game.socket.timeout(10000).emit('posaljiOfflineZahtev', ime, (greska, odgovor) => {
+            if (greska || !odgovor || !odgovor.uspeh) {
+                UIManager.prikaziObavestenje(
+                    "Nije poslato",
+                    (odgovor && odgovor.poruka) || "Zahtev trenutno nije moguće poslati.",
+                    null,
+                    "U redu"
+                );
+                return;
+            }
+
+            input.value = '';
+            UIManager.prikaziObavestenje("Poslato", `Zahtev za prijateljstvo poslat igraču: <b>${ime}</b>.<br><br>Kada uđe u igru dobiće obaveštenje.`, null, "Super");
+        });
     },
 
-    odgovoriNaZahtev: function(imePosiljaoca, prihvaceno) {
-        Game.socket.emit('odgovorNaOfflineZahtev', { imePosiljaoca: imePosiljaoca, prihvaceno: prihvaceno });
-        
-        this.zahtevi = this.zahtevi.filter(z => z !== imePosiljaoca);
-        localStorage.setItem('zemljopis_zahtevi', JSON.stringify(this.zahtevi));
-        if (typeof SinhronizacijaManager !== "undefined") {
-            SinhronizacijaManager.zakaziSlanje();
-        }
-        
-        this.osveziPrikaz();
-        if (prihvaceno) {
-            UIManager.prikaziObavestenje("Uspešno", `Prihvatio si zahtev od <b>${imePosiljaoca}</b>! On je sada na tvojoj listi.`, null, "U redu");
-            Game.socket.emit('traziOsvezenjePrijatelja'); 
-        }
+    odgovoriNaZahtev: function(indeks, prihvaceno) {
+        const sacuvaniZahtev = this.zahtevi[indeks];
+        if (!sacuvaniZahtev) return;
+        const zahtev = this.normalizujZahtev(sacuvaniZahtev);
+
+        Game.socket.timeout(10000).emit(
+            'odgovorNaOfflineZahtev',
+            {
+                playerIdPosiljaoca: zahtev.playerId,
+                imePosiljaoca: zahtev.ime,
+                prihvaceno
+            },
+            (greska, odgovor) => {
+                if (greska || !odgovor || !odgovor.uspeh) {
+                    UIManager.prikaziObavestenje(
+                        "Nije sačuvano",
+                        "Odgovor trenutno nije moguće sačuvati. Pokušaj ponovo.",
+                        null,
+                        "U redu"
+                    );
+                    return;
+                }
+
+                this.zahtevi.splice(indeks, 1);
+                this.osveziPrikaz();
+                Game.socket.emit('traziOsvezenjePrijatelja');
+
+                if (prihvaceno) {
+                    UIManager.prikaziObavestenje("Uspešno", `Prihvatio si zahtev od <b>${zahtev.ime}</b>! On je sada na tvojoj listi.`, null, "U redu");
+                }
+            }
+        );
     },
     
     primiSinhronizaciju: function(podaci) {
         this.prijatelji = podaci.prijatelji || [];
-        this.zahtevi = podaci.zahtevi || [];
+        this.zahtevi = (podaci.zahtevi || []).map(zahtev => this.normalizujZahtev(zahtev));
         
         localStorage.setItem('zemljopis_prijatelji_detalji', JSON.stringify(this.prijatelji));
         localStorage.setItem('zemljopis_zahtevi', JSON.stringify(this.zahtevi));

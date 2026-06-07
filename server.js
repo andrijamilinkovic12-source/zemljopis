@@ -40,6 +40,15 @@ const IgracSchema = new mongoose.Schema({
     profilKljuc: { type: String, unique: true, sparse: true },
     googleUid: { type: String, unique: true, sparse: true },
     avatar: { type: String, default: "atlas" },
+    prijatelji: { type: [String], default: [] },
+    zahteviPrijateljstva: {
+        type: [{
+            _id: false,
+            playerId: { type: String, required: true },
+            poslatoAt: { type: Date, default: Date.now }
+        }],
+        default: []
+    },
     dukati: { type: Number, default: 500 },
     tokeni: { type: Number, default: 3 },
     sezonskiPojmovi: { type: Number, default: 0 },
@@ -68,17 +77,10 @@ const svaSlova = ["A","B","V","G","D","Đ","E","Ž","Z","I","J","K","L","LJ","M"
 const MAX_PORUKA_ISTORIJA = 50;
 let istorijaChata = [];
 const onlineIgraci = {}; 
-const bazaPrijatelja = {};
 const DOZVOLJENI_AVATARI = new Set([
     "atlas", "luna", "orion", "tara", "niko", "mila",
     "sava", "zara", "vuk", "iris", "leo", "nova"
 ]);
-
-function osigurajBazu(ime) {
-    if (!bazaPrijatelja[ime]) {
-        bazaPrijatelja[ime] = { prijatelji: [], zahtevi: [] };
-    }
-}
 
 function escapeHTML(str) {
     if (!str) return "";
@@ -215,6 +217,158 @@ function prijaviOnlineIgraca(socket, igrac) {
     };
     io.emit('azurirajBrojOnline', Object.keys(onlineIgraci).length);
     socket.emit('podaciProfila', podaciProfilaZaKlijenta(igrac));
+    osveziPrijateljeZaSocket(socket.id).catch(error => {
+        console.error("Greška pri početnom učitavanju prijatelja:", error);
+    });
+}
+
+function pronadjiOnlineIgracaPoPlayerId(playerId) {
+    return Object.values(onlineIgraci).find(igrac => igrac.playerId === playerId);
+}
+
+async function podaciPrijateljaZaKlijenta(igrac) {
+    osigurajIdentitetIgraca(igrac);
+
+    const prijateljIds = [...new Set((igrac.prijatelji || []).filter(Boolean))];
+    const zahtevIds = [...new Set(
+        (igrac.zahteviPrijateljstva || [])
+            .map(zahtev => zahtev && zahtev.playerId)
+            .filter(Boolean)
+    )];
+    const sviIds = [...new Set([...prijateljIds, ...zahtevIds])];
+
+    const profili = sviIds.length > 0
+        ? await Igrac.find({ playerId: { $in: sviIds } })
+            .select('playerId nadimak avatar najboljiMecPoeni svaVremenaPojmovi')
+            .lean()
+        : [];
+    const profiliPoId = new Map(profili.map(profil => [profil.playerId, profil]));
+
+    const prijatelji = prijateljIds
+        .map(playerId => profiliPoId.get(playerId))
+        .filter(Boolean)
+        .map(profil => ({
+            playerId: profil.playerId,
+            ime: profil.nadimak,
+            avatar: profil.avatar || "atlas",
+            poeni: profil.najboljiMecPoeni || 0,
+            pojmovi: profil.svaVremenaPojmovi || 0,
+            indeks: "0%",
+            online: Boolean(pronadjiOnlineIgracaPoPlayerId(profil.playerId))
+        }));
+
+    const zahtevi = zahtevIds
+        .map(playerId => profiliPoId.get(playerId))
+        .filter(Boolean)
+        .map(profil => ({
+            playerId: profil.playerId,
+            ime: profil.nadimak,
+            avatar: profil.avatar || "atlas"
+        }));
+
+    return { prijatelji, zahtevi };
+}
+
+async function osveziPrijateljeZaSocket(socketId) {
+    const onlineIgrac = onlineIgraci[socketId];
+    if (!onlineIgrac) return;
+
+    const igrac = await Igrac.findById(onlineIgrac.bazaId);
+    if (!igrac) return;
+
+    socketId && io.to(socketId).emit(
+        'sinhronizacijaPrijatelja',
+        await podaciPrijateljaZaKlijenta(igrac)
+    );
+}
+
+async function posaljiTrajniZahtev(posiljalacOnline, ciljIgrac) {
+    const posiljalac = await Igrac.findById(posiljalacOnline.bazaId);
+    if (!posiljalac || !ciljIgrac) {
+        return { uspeh: false, kod: "PROFIL_NIJE_PRONADJEN", poruka: "Igrač nije pronađen." };
+    }
+
+    osigurajIdentitetIgraca(posiljalac);
+    osigurajIdentitetIgraca(ciljIgrac);
+    await Promise.all([posiljalac.save(), ciljIgrac.save()]);
+
+    if (posiljalac.playerId === ciljIgrac.playerId) {
+        return { uspeh: false, kod: "SOPSTVENI_PROFIL", poruka: "Ne možeš poslati zahtev samom sebi." };
+    }
+    if ((posiljalac.prijatelji || []).includes(ciljIgrac.playerId)) {
+        return { uspeh: false, kod: "VEC_PRIJATELJI", poruka: "Ovaj igrač ti je već prijatelj." };
+    }
+
+    const rezultat = await Igrac.updateOne(
+        {
+            _id: ciljIgrac._id,
+            prijatelji: { $ne: posiljalac.playerId },
+            "zahteviPrijateljstva.playerId": { $ne: posiljalac.playerId }
+        },
+        {
+            $push: {
+                zahteviPrijateljstva: {
+                    playerId: posiljalac.playerId,
+                    poslatoAt: new Date()
+                }
+            }
+        }
+    );
+
+    if (rezultat.modifiedCount === 0) {
+        return { uspeh: true, kod: "ZAHTEV_VEC_POSLAT", poruka: "Zahtev je već na čekanju." };
+    }
+
+    return {
+        uspeh: true,
+        kod: "ZAHTEV_POSLAT",
+        zahtev: {
+            playerId: posiljalac.playerId,
+            ime: posiljalac.nadimak,
+            avatar: posiljalac.avatar || "atlas"
+        }
+    };
+}
+
+async function obradiTrajniZahtev(primalacOnline, playerIdPosiljaoca, prihvaceno) {
+    if (typeof playerIdPosiljaoca !== "string" || playerIdPosiljaoca.length < 10) {
+        return { uspeh: false, kod: "ZAHTEV_NIJE_PRONADJEN" };
+    }
+
+    const primalac = await Igrac.findById(primalacOnline.bazaId);
+    const posiljalac = await Igrac.findOne({ playerId: playerIdPosiljaoca });
+    if (!primalac || !posiljalac) {
+        return { uspeh: false, kod: "PROFIL_NIJE_PRONADJEN" };
+    }
+
+    osigurajIdentitetIgraca(primalac);
+    const zahtevPostoji = (primalac.zahteviPrijateljstva || [])
+        .some(zahtev => zahtev.playerId === posiljalac.playerId);
+    if (!zahtevPostoji) {
+        return { uspeh: false, kod: "ZAHTEV_NIJE_PRONADJEN" };
+    }
+
+    const operacije = [{
+        updateOne: {
+            filter: { _id: primalac._id },
+            update: {
+                $pull: { zahteviPrijateljstva: { playerId: posiljalac.playerId } },
+                ...(prihvaceno ? { $addToSet: { prijatelji: posiljalac.playerId } } : {})
+            }
+        }
+    }];
+
+    if (prihvaceno) {
+        operacije.push({
+            updateOne: {
+                filter: { _id: posiljalac._id },
+                update: { $addToSet: { prijatelji: primalac.playerId } }
+            }
+        });
+    }
+
+    await Igrac.bulkWrite(operacije);
+    return { uspeh: true, primalac, posiljalac };
 }
 
 // Pomoćne funkcije za igru
@@ -710,88 +864,165 @@ io.on('connection', (socket) => {
 
     // --- 8. OFLAJN PRIJATELJI I ZAHTEVI ---
     socket.on('traziOnlineIgrace', () => {
-        const lista = Object.values(onlineIgraci).filter(igrac => igrac.id !== socket.id);
+        const lista = Object.values(onlineIgraci)
+            .filter(igrac => igrac.id !== socket.id)
+            .map(igrac => ({
+                id: igrac.id,
+                playerId: igrac.playerId,
+                ime: igrac.ime,
+                avatar: igrac.avatar
+            }));
         socket.emit('listaOnlineIgraca', lista);
     });
 
-    socket.on('posaljiZahtevZaPrijateljstvo', (podaci) => {
+    socket.on('posaljiZahtevZaPrijateljstvo', async (podaci, callback = () => {}) => {
         const posiljalac = onlineIgraci[socket.id];
-        if (posiljalac && onlineIgraci[podaci.ciljId]) {
-            io.to(podaci.ciljId).emit('zahtevZaPrijateljstvo', { idPosiljaoca: socket.id, imePosiljaoca: posiljalac.ime });
+        const ciljOnline = podaci && onlineIgraci[podaci.ciljId];
+        if (!posiljalac || !ciljOnline) {
+            return callback({ uspeh: false, kod: "IGRAC_NIJE_ONLINE", poruka: "Igrač više nije na mreži." });
+        }
+
+        try {
+            const ciljIgrac = await Igrac.findById(ciljOnline.bazaId);
+            const rezultat = await posaljiTrajniZahtev(posiljalac, ciljIgrac);
+            callback(rezultat);
+
+            if (rezultat.kod === "ZAHTEV_POSLAT") {
+                io.to(ciljOnline.id).emit('zahtevZaPrijateljstvo', {
+                    idPosiljaoca: socket.id,
+                    playerIdPosiljaoca: posiljalac.playerId,
+                    imePosiljaoca: posiljalac.ime
+                });
+                await osveziPrijateljeZaSocket(ciljOnline.id);
+            }
+        } catch (error) {
+            console.error("Greška pri slanju zahteva za prijateljstvo:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA", poruka: "Zahtev trenutno nije moguće poslati." });
         }
     });
 
-    socket.on('odgovorNaZahtev', (podaci) => {
+    socket.on('odgovorNaZahtev', async (podaci, callback = () => {}) => {
         const primalac = onlineIgraci[socket.id];
-        if (primalac && onlineIgraci[podaci.ciljId]) {
-            io.to(podaci.ciljId).emit('odgovorPrijateljstvo', { prihvaceno: podaci.prihvaceno, idPrijatelja: socket.id, imePrijatelja: primalac.ime });
-            
-            if (podaci.prihvaceno) {
-                let imePosiljaoca = onlineIgraci[podaci.ciljId].ime;
-                
-                osigurajBazu(primalac.ime);
-                osigurajBazu(imePosiljaoca);
-                
-                if (!bazaPrijatelja[primalac.ime].prijatelji.some(p => p.ime === imePosiljaoca)) {
-                    bazaPrijatelja[primalac.ime].prijatelji.push({ ime: imePosiljaoca, poeni: 0, pojmovi: 0, indeks: '0%' });
-                }
-                if (!bazaPrijatelja[imePosiljaoca].prijatelji.some(p => p.ime === primalac.ime)) {
-                    bazaPrijatelja[imePosiljaoca].prijatelji.push({ ime: primalac.ime, poeni: 0, pojmovi: 0, indeks: '0%' });
-                }
+        if (!primalac) {
+            return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN" });
+        }
 
-                let podaciPrimalac = bazaPrijatelja[primalac.ime];
-                podaciPrimalac.prijatelji.forEach(p => p.online = Object.values(onlineIgraci).some(oi => oi.ime.toLowerCase() === p.ime.toLowerCase()));
-                socket.emit('sinhronizacijaPrijatelja', podaciPrimalac);
+        const posiljalacOnline = podaci && onlineIgraci[podaci.ciljId];
+        const playerIdPosiljaoca = podaci && (
+            podaci.playerIdPosiljaoca
+            || (posiljalacOnline && posiljalacOnline.playerId)
+        );
+        if (!playerIdPosiljaoca) {
+            return callback({ uspeh: false, kod: "ZAHTEV_NIJE_PRONADJEN" });
+        }
 
-                let podaciPosiljaoca = bazaPrijatelja[imePosiljaoca];
-                podaciPosiljaoca.prijatelji.forEach(p => p.online = Object.values(onlineIgraci).some(oi => oi.ime.toLowerCase() === p.ime.toLowerCase()));
-                io.to(podaci.ciljId).emit('sinhronizacijaPrijatelja', podaciPosiljaoca);
+        try {
+            const rezultat = await obradiTrajniZahtev(
+                primalac,
+                playerIdPosiljaoca,
+                Boolean(podaci.prihvaceno)
+            );
+            callback(rezultat.uspeh ? { uspeh: true } : rezultat);
+            if (!rezultat.uspeh) return;
+
+            const aktivniPosiljalac = pronadjiOnlineIgracaPoPlayerId(playerIdPosiljaoca);
+            if (aktivniPosiljalac) {
+                io.to(aktivniPosiljalac.id).emit('odgovorPrijateljstvo', {
+                    prihvaceno: Boolean(podaci.prihvaceno),
+                    idPrijatelja: socket.id,
+                    playerIdPrijatelja: primalac.playerId,
+                    imePrijatelja: primalac.ime
+                });
+                await osveziPrijateljeZaSocket(aktivniPosiljalac.id);
             }
+
+            await osveziPrijateljeZaSocket(socket.id);
+        } catch (error) {
+            console.error("Greška pri odgovoru na zahtev za prijateljstvo:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA" });
         }
     });
 
-    socket.on('traziOsvezenjePrijatelja', () => {
-        const ja = onlineIgraci[socket.id];
-        if (ja) {
-            osigurajBazu(ja.ime);
-            let mojiPodaci = bazaPrijatelja[ja.ime];
-            mojiPodaci.prijatelji.forEach(p => p.online = Object.values(onlineIgraci).some(oi => oi.ime.toLowerCase() === p.ime.toLowerCase()));
-            socket.emit('sinhronizacijaPrijatelja', mojiPodaci);
+    socket.on('traziOsvezenjePrijatelja', async () => {
+        try {
+            await osveziPrijateljeZaSocket(socket.id);
+        } catch (error) {
+            console.error("Greška pri osvežavanju prijatelja:", error);
         }
     });
 
-    socket.on('posaljiOfflineZahtev', (ciljIme) => {
+    socket.on('posaljiOfflineZahtev', async (ciljIme, callback = () => {}) => {
         const ja = onlineIgraci[socket.id];
-        if (!ja) return;
-        const cistoCiljIme = escapeHTML(ciljIme).substring(0, 20);
-        osigurajBazu(cistoCiljIme);
-
-        if (!bazaPrijatelja[cistoCiljIme].zahtevi.includes(ja.ime) && !bazaPrijatelja[cistoCiljIme].prijatelji.some(p => p.ime === ja.ime)) {
-            bazaPrijatelja[cistoCiljIme].zahtevi.push(ja.ime);
-            const ciljSocket = Object.values(onlineIgraci).find(oi => oi.ime.toLowerCase() === cistoCiljIme.toLowerCase());
-            if (ciljSocket) io.to(ciljSocket.id).emit('noviOfflineZahtev', ja.ime);
+        if (!ja) {
+            return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN" });
         }
-    });
 
-    socket.on('odgovorNaOfflineZahtev', (podaci) => {
-        const ja = onlineIgraci[socket.id];
-        if (!ja) return;
+        const cistoCiljIme = ocistiNadimak(ciljIme);
+        if (!nadimakJeIspravan(cistoCiljIme)) {
+            return callback({ uspeh: false, kod: "NEISPRAVAN_NADIMAK", poruka: "Unesi ispravan nadimak." });
+        }
 
-        osigurajBazu(ja.ime);
-        const { imePosiljaoca, prihvaceno } = podaci;
-        bazaPrijatelja[ja.ime].zahtevi = bazaPrijatelja[ja.ime].zahtevi.filter(z => z !== imePosiljaoca);
-
-        if (prihvaceno) {
-            osigurajBazu(imePosiljaoca);
-            if (!bazaPrijatelja[ja.ime].prijatelji.some(p => p.ime === imePosiljaoca)) bazaPrijatelja[ja.ime].prijatelji.push({ ime: imePosiljaoca, poeni: 0, pojmovi: 0, indeks: '0%' });
-            if (!bazaPrijatelja[imePosiljaoca].prijatelji.some(p => p.ime === ja.ime)) bazaPrijatelja[imePosiljaoca].prijatelji.push({ ime: ja.ime, poeni: 0, pojmovi: 0, indeks: '0%' });
-
-            const posiljalacSocket = Object.values(onlineIgraci).find(oi => oi.ime === imePosiljaoca);
-            if (posiljalacSocket) {
-                let podaciPosiljaoca = bazaPrijatelja[imePosiljaoca];
-                podaciPosiljaoca.prijatelji.forEach(p => p.online = Object.values(onlineIgraci).some(oi => oi.ime.toLowerCase() === p.ime.toLowerCase()));
-                io.to(posiljalacSocket.id).emit('sinhronizacijaPrijatelja', podaciPosiljaoca);
+        try {
+            const ciljIgrac = await Igrac.findOne({
+                nadimakNormalizovan: normalizujNadimak(cistoCiljIme)
+            });
+            if (!ciljIgrac) {
+                return callback({ uspeh: false, kod: "IGRAC_NIJE_PRONADJEN", poruka: "Igrač sa tim nadimkom ne postoji." });
             }
+
+            const rezultat = await posaljiTrajniZahtev(ja, ciljIgrac);
+            callback(rezultat);
+
+            if (rezultat.kod === "ZAHTEV_POSLAT") {
+                const ciljOnline = pronadjiOnlineIgracaPoPlayerId(ciljIgrac.playerId);
+                if (ciljOnline) {
+                    io.to(ciljOnline.id).emit('noviOfflineZahtev', rezultat.zahtev);
+                    await osveziPrijateljeZaSocket(ciljOnline.id);
+                }
+            }
+        } catch (error) {
+            console.error("Greška pri slanju zahteva po nadimku:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA", poruka: "Zahtev trenutno nije moguće poslati." });
+        }
+    });
+
+    socket.on('odgovorNaOfflineZahtev', async (podaci, callback = () => {}) => {
+        const ja = onlineIgraci[socket.id];
+        if (!ja) {
+            return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN" });
+        }
+
+        try {
+            let playerIdPosiljaoca = podaci && podaci.playerIdPosiljaoca;
+            if (!playerIdPosiljaoca && podaci && podaci.imePosiljaoca) {
+                const stariPosiljalac = await Igrac.findOne({
+                    nadimakNormalizovan: normalizujNadimak(podaci.imePosiljaoca)
+                });
+                playerIdPosiljaoca = stariPosiljalac && stariPosiljalac.playerId;
+            }
+
+            const rezultat = await obradiTrajniZahtev(
+                ja,
+                playerIdPosiljaoca,
+                Boolean(podaci && podaci.prihvaceno)
+            );
+            callback(rezultat.uspeh ? { uspeh: true } : rezultat);
+            if (!rezultat.uspeh) return;
+
+            const posiljalacOnline = pronadjiOnlineIgracaPoPlayerId(playerIdPosiljaoca);
+            if (posiljalacOnline) {
+                io.to(posiljalacOnline.id).emit('odgovorPrijateljstvo', {
+                    prihvaceno: Boolean(podaci.prihvaceno),
+                    playerIdPrijatelja: ja.playerId,
+                    imePrijatelja: ja.ime
+                });
+                await osveziPrijateljeZaSocket(posiljalacOnline.id);
+            }
+
+            await osveziPrijateljeZaSocket(socket.id);
+        } catch (error) {
+            console.error("Greška pri obradi zahteva iz Sobe prijatelja:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA" });
         }
     });
 });

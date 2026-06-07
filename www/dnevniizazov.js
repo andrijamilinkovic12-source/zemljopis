@@ -55,6 +55,9 @@ const DnevniIzazovManager = {
 
     snimiStanje: function() {
         localStorage.setItem('zemljopis_dnevni_izazov', JSON.stringify(this.dnevniPodaci));
+        if (typeof SinhronizacijaManager !== "undefined") {
+            SinhronizacijaManager.zakaziSlanje();
+        }
     },
 
     otvoriEkran: function() {

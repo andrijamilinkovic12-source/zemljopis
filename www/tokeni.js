@@ -43,6 +43,9 @@ const TokeniManager = {
         this.tokeni = this.normalizujTokeni(this.tokeni);
         localStorage.setItem('zemljopis_tokeni_stanje', this.tokeni);
         this.azurirajPrikaz();
+        if (typeof SinhronizacijaManager !== "undefined") {
+            SinhronizacijaManager.zakaziSlanje();
+        }
     },
     
     azurirajPrikaz: function() {

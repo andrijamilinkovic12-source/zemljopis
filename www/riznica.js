@@ -3,6 +3,7 @@
 const RiznicaManager = {
     dukati: 500, // Početni poklon dukati za testiranje
     aktivnaKategorija: 'teme', // Defaultna je sada teme
+    besplatanTestRezim: true,
 
     podaci: {
         teme: [
@@ -47,6 +48,13 @@ const RiznicaManager = {
             podaci: this.podaci
         }));
         this.azurirajPrikazDukata();
+        if (typeof SinhronizacijaManager !== "undefined") {
+            SinhronizacijaManager.zakaziSlanje();
+        }
+    },
+
+    jeOtkljucano: function(artikal) {
+        return this.besplatanTestRezim || artikal.kupljeno;
     },
 
     otvoriEkran: function() {
@@ -108,10 +116,11 @@ const RiznicaManager = {
         
         this.podaci[kategorija].forEach(artikal => {
             let statusHtml = '';
+            const otkljucano = this.jeOtkljucano(artikal);
             let okvirBoja = artikal.opremljeno ? '#38ef7d' : 'rgba(255,255,255,0.1)';
             let bgBoja = artikal.opremljeno ? 'rgba(56,239,125,0.1)' : 'rgba(0,0,0,0.4)';
 
-            if (!artikal.kupljeno) {
+            if (!otkljucano) {
                 statusHtml = `<button class="menu-btn" style="margin: 0; padding: 0.5rem; font-size: 0.8rem; width: 100%; background: rgba(245,175,25,0.2); color: #f5af19; border: 1px solid #f5af19;" onclick="RiznicaManager.kupiPredmet('${kategorija}', '${artikal.id}')"><i class="fa-solid fa-coins"></i> ${artikal.cena}</button>`;
             } else if (artikal.opremljeno) {
                 statusHtml = `<div style="text-align: center; color: #38ef7d; font-size: 0.8rem; font-weight: 800; padding: 0.5rem;"><i class="fa-solid fa-circle-check"></i> Opremljeno</div>`;
@@ -122,7 +131,7 @@ const RiznicaManager = {
             html += `
                 <div style="background: ${bgBoja}; border: 1px solid ${okvirBoja}; border-radius: 12px; padding: 1rem 0.5rem; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
-                        <i class="fa-solid ${artikal.ikona}" style="font-size: 2rem; color: ${artikal.kupljeno ? '#fff' : '#a0aec0'}; margin-bottom: 0.8rem;"></i>
+                        <i class="fa-solid ${artikal.ikona}" style="font-size: 2rem; color: ${otkljucano ? '#fff' : '#a0aec0'}; margin-bottom: 0.8rem;"></i>
                         <h4 style="color: #fff; font-size: 0.85rem; margin-bottom: 1rem;">${artikal.naziv}</h4>
                     </div>
                     ${statusHtml}
@@ -153,20 +162,19 @@ const RiznicaManager = {
     },
 
     opremiPredmet: function(kategorija, predmetId, preskociOsvezavanje = false) {
-        this.podaci[kategorija].forEach(p => p.opremljeno = false);
-        
         let artikal = this.podaci[kategorija].find(p => p.id === predmetId);
-        if (artikal) {
-            artikal.opremljeno = true;
-            
-            // Tiha sinhronizacija sa Podešavanjima
-            if (kategorija === 'teme' && typeof PodesavanjaManager !== 'undefined') {
-                let imeTeme = artikal.id.split('_')[1]; 
-                PodesavanjaManager.postavke.tema = imeTeme;
-                PodesavanjaManager.snimiULokalnuMemoriju();
-                PodesavanjaManager.azurirajDugmadTeme();
-                document.body.setAttribute('data-tema', imeTeme);
-            }
+        if (!artikal || !this.jeOtkljucano(artikal)) return;
+
+        this.podaci[kategorija].forEach(p => p.opremljeno = false);
+        artikal.opremljeno = true;
+        
+        // Tiha sinhronizacija sa Podešavanjima
+        if (kategorija === 'teme' && typeof PodesavanjaManager !== 'undefined') {
+            let imeTeme = artikal.id.split('_')[1];
+            PodesavanjaManager.postavke.tema = imeTeme;
+            PodesavanjaManager.snimiULokalnuMemoriju();
+            PodesavanjaManager.azurirajDugmadTeme();
+            document.body.setAttribute('data-tema', imeTeme);
         }
         
         this.snimiStanje();

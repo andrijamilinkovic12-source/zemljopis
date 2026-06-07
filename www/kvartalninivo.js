@@ -44,11 +44,14 @@ const KvartalniNivoManager = {
         this.statistika.sezonskiPojmovi += broj;
         this.statistika.svaVremenaPojmovi += broj;
         localStorage.setItem('zemljopis_kvartal', JSON.stringify(this.statistika));
+        if (typeof SinhronizacijaManager !== "undefined") {
+            SinhronizacijaManager.zakaziSlanje();
+        }
         this.azurirajBedzUMeniju();
 
         // 2. Slanje u bazu preko postojećeg Socket-a
         if (typeof Game !== 'undefined' && Game.socket) {
-            Game.socket.emit('dodajPojmoveKvartal', broj);
+            Game.socket.emit('dodajPojmove', broj);
         }
     },
 
@@ -57,6 +60,9 @@ const KvartalniNivoManager = {
         this.statistika.sezonskiPojmovi = podaci.sezonskiPojmovi || 0;
         this.statistika.svaVremenaPojmovi = podaci.svaVremenaPojmovi || 0;
         localStorage.setItem('zemljopis_kvartal', JSON.stringify(this.statistika));
+        if (typeof SinhronizacijaManager !== "undefined") {
+            SinhronizacijaManager.zakaziSlanje();
+        }
         this.azurirajBedzUMeniju();
     },
 

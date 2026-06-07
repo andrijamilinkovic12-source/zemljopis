@@ -40,6 +40,9 @@ const TrofejiManager = {
 
     snimiStanje: function() {
         localStorage.setItem('zemljopis_trofeji', JSON.stringify(this.podaci));
+        if (typeof SinhronizacijaManager !== "undefined") {
+            SinhronizacijaManager.zakaziSlanje();
+        }
     },
 
     otvoriEkran: function() {

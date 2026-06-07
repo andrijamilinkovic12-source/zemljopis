@@ -100,6 +100,8 @@ const Game = {
                 if (typeof PodesavanjaManager !== 'undefined' && podaci) {
                     if (podaci.nadimak) PodesavanjaManager.postavke.nadimak = podaci.nadimak;
                     if (podaci.avatar) PodesavanjaManager.postavke.avatar = podaci.avatar;
+                    if (podaci.playerId) PodesavanjaManager.postavke.playerId = podaci.playerId;
+                    PodesavanjaManager.postavke.profilTip = podaci.googlePovezan ? "google" : "lokalni";
                     PodesavanjaManager.primeniPostavkeGlobalno();
                     PodesavanjaManager.snimiULokalnuMemoriju();
                 }
@@ -115,7 +117,13 @@ const Game = {
                     if (tokeniEl) tokeniEl.innerText = `${podaci.tokeni}/3`;
                     if (tokeniVelikoEl) tokeniVelikoEl.innerText = podaci.tokeni;
                 }
-                if (typeof RiznicaManager !== 'undefined') RiznicaManager.stanjeDukata = podaci.dukati;
+                if (typeof RiznicaManager !== 'undefined' && !podaci.sinhronizacija?.imaPodatke) {
+                    RiznicaManager.dukati = podaci.dukati;
+                    RiznicaManager.azurirajPrikazDukata();
+                }
+                if (typeof SinhronizacijaManager !== 'undefined') {
+                    SinhronizacijaManager.obradiProfil(podaci);
+                }
             });
 
             this.socket.on('osveziMojeKvartalnePodatke', (podaci) => {
@@ -322,6 +330,8 @@ const Game = {
                 if (odgovor.profil) {
                     PodesavanjaManager.postavke.nadimak = odgovor.profil.nadimak;
                     PodesavanjaManager.postavke.avatar = odgovor.profil.avatar;
+                    PodesavanjaManager.postavke.playerId = odgovor.profil.playerId || PodesavanjaManager.postavke.playerId;
+                    PodesavanjaManager.postavke.profilTip = odgovor.profil.googlePovezan ? "google" : "lokalni";
                     PodesavanjaManager.snimiULokalnuMemoriju();
                     PodesavanjaManager.primeniPostavkeGlobalno();
                 }

@@ -123,6 +123,9 @@ const SobaPrijateljaManager = {
         
         this.zahtevi = this.zahtevi.filter(z => z !== imePosiljaoca);
         localStorage.setItem('zemljopis_zahtevi', JSON.stringify(this.zahtevi));
+        if (typeof SinhronizacijaManager !== "undefined") {
+            SinhronizacijaManager.zakaziSlanje();
+        }
         
         this.osveziPrikaz();
         if (prihvaceno) {
@@ -137,6 +140,9 @@ const SobaPrijateljaManager = {
         
         localStorage.setItem('zemljopis_prijatelji_detalji', JSON.stringify(this.prijatelji));
         localStorage.setItem('zemljopis_zahtevi', JSON.stringify(this.zahtevi));
+        if (typeof SinhronizacijaManager !== "undefined") {
+            SinhronizacijaManager.zakaziSlanje();
+        }
         
         if(document.getElementById('soba-prijatelja-screen').classList.contains('active')){
             this.osveziPrikaz();

@@ -4,6 +4,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 const app = express();
 const server = http.createServer(app);
@@ -33,9 +34,11 @@ mongoose.connect(MONGO_URI)
 // 2. MODEL IGRAČA U BAZI
 // ==========================================
 const IgracSchema = new mongoose.Schema({
+    playerId: { type: String, unique: true, sparse: true, default: () => crypto.randomUUID() },
     nadimak: { type: String, required: true, unique: true },
     nadimakNormalizovan: { type: String, unique: true, sparse: true },
     profilKljuc: { type: String, unique: true, sparse: true },
+    googleUid: { type: String, unique: true, sparse: true },
     avatar: { type: String, default: "atlas" },
     dukati: { type: Number, default: 500 },
     tokeni: { type: Number, default: 3 },
@@ -47,8 +50,12 @@ const IgracSchema = new mongoose.Schema({
     nedeljniPoeni: { type: Number, default: 0 },
     mesecniPoeni: { type: Number, default: 0 },
     svaVremenaPoeni: { type: Number, default: 0 },
+    cloudNapredak: { type: mongoose.Schema.Types.Mixed, default: {} },
+    cloudRevizija: { type: Number, default: 0 },
+    lokalnaMigracijaZavrsena: { type: Boolean, default: false },
+    cloudAzuriranAt: { type: Date, default: null },
     poslednjaPrijava: { type: Date, default: Date.now }
-});
+}, { minimize: false });
 
 const Igrac = mongoose.model('Igrac', IgracSchema);
 
@@ -110,20 +117,98 @@ function profilKljucJeIspravan(profilKljuc) {
         && /^[a-zA-Z0-9_-]+$/.test(profilKljuc);
 }
 
-function podaciProfilaZaKlijenta(igrac) {
+function osigurajIdentitetIgraca(igrac) {
+    if (!igrac.playerId) {
+        igrac.playerId = crypto.randomUUID();
+    }
+    return igrac;
+}
+
+function bezbednaJSONKopija(vrednost, dubina = 0) {
+    if (dubina > 8) return null;
+    if (vrednost === null || typeof vrednost === "boolean") return vrednost;
+    if (typeof vrednost === "number") return Number.isFinite(vrednost) ? vrednost : 0;
+    if (typeof vrednost === "string") return vrednost.slice(0, 500);
+    if (Array.isArray(vrednost)) {
+        return vrednost.slice(0, 300).map(stavka => bezbednaJSONKopija(stavka, dubina + 1));
+    }
+    if (typeof vrednost === "object") {
+        const kopija = {};
+        Object.entries(vrednost).slice(0, 100).forEach(([kljuc, podatak]) => {
+            if (
+                typeof kljuc === "string"
+                && kljuc.length <= 60
+                && !kljuc.startsWith("$")
+                && !kljuc.includes(".")
+                && kljuc !== "__proto__"
+                && kljuc !== "constructor"
+                && kljuc !== "prototype"
+            ) {
+                kopija[kljuc] = bezbednaJSONKopija(podatak, dubina + 1);
+            }
+        });
+        return kopija;
+    }
+    return null;
+}
+
+function sanitizujCloudNapredak(napredak) {
+    const dozvoljenaPolja = [
+        "verzija",
+        "podesavanja",
+        "riznica",
+        "trofeji",
+        "dnevniIzazov",
+        "tokeni",
+        "kvartal",
+        "prijatelji"
+    ];
+    const velicina = Buffer.byteLength(JSON.stringify(napredak || {}), "utf8");
+    if (velicina > 150000) {
+        const greska = new Error("Prevelik paket napretka.");
+        greska.kod = "PREVELIK_NAPREDAK";
+        throw greska;
+    }
+
+    const ocisceno = {};
+    dozvoljenaPolja.forEach(polje => {
+        if (napredak && Object.prototype.hasOwnProperty.call(napredak, polje)) {
+            ocisceno[polje] = bezbednaJSONKopija(napredak[polje]);
+        }
+    });
+    return ocisceno;
+}
+
+function podaciSinhronizacijeZaKlijenta(igrac) {
     return {
+        revizija: igrac.cloudRevizija || 0,
+        imaPodatke: Boolean(igrac.lokalnaMigracijaZavrsena),
+        azurirano: igrac.cloudAzuriranAt,
+        napredak: igrac.cloudNapredak || {}
+    };
+}
+
+function podaciProfilaZaKlijenta(igrac) {
+    osigurajIdentitetIgraca(igrac);
+    return {
+        playerId: igrac.playerId,
         nadimak: igrac.nadimak,
         avatar: igrac.avatar || "atlas",
+        profilTip: igrac.googleUid ? "google" : "lokalni",
+        googlePovezan: Boolean(igrac.googleUid),
         dukati: igrac.dukati,
         tokeni: igrac.tokeni,
         sezonskiPojmovi: igrac.sezonskiPojmovi,
-        svaVremenaPojmovi: igrac.svaVremenaPojmovi
+        svaVremenaPojmovi: igrac.svaVremenaPojmovi,
+        sinhronizacija: podaciSinhronizacijeZaKlijenta(igrac)
     };
 }
 
 function prijaviOnlineIgraca(socket, igrac) {
+    osigurajIdentitetIgraca(igrac);
     onlineIgraci[socket.id] = {
         id: socket.id,
+        playerId: igrac.playerId,
         ime: igrac.nadimak,
         avatar: igrac.avatar || "atlas",
         bazaId: igrac._id
@@ -212,7 +297,7 @@ io.on('connection', (socket) => {
                     return callback({ uspeh: false, kod: "NADIMAK_ZAUZET", poruka: "Ovaj nadimak je već zauzet. Izaberi drugi." });
                 }
 
-                // Jednokratna migracija profila napravljenih prije uvođenja vlasničkog ključa.
+                // Jednokratna migracija profila napravljenih pre uvođenja vlasničkog ključa.
                 igrac = zauzetiProfil;
             }
 
@@ -257,6 +342,7 @@ io.on('connection', (socket) => {
                 return callback({ uspeh: false, kod: "PROFIL_NIJE_PRONADJEN" });
             }
 
+            osigurajIdentitetIgraca(igrac);
             igrac.poslednjaPrijava = new Date();
             await igrac.save();
             prijaviOnlineIgraca(socket, igrac);
@@ -264,6 +350,55 @@ io.on('connection', (socket) => {
         } catch (error) {
             console.error("Greška pri prijavi profila:", error);
             callback({ uspeh: false, kod: "GRESKA_SERVERA" });
+        }
+    });
+
+    // --- VERZIONISANA REZERVNA KOPIJA NAPRETKA ZA BUDUĆI GOOGLE NALOG ---
+    socket.on('sacuvajCloudNapredak', async (podaci, callback = () => {}) => {
+        const prijavljeniIgrac = onlineIgraci[socket.id];
+        if (!prijavljeniIgrac) {
+            return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN" });
+        }
+
+        try {
+            const igrac = await Igrac.findById(prijavljeniIgrac.bazaId);
+            if (!igrac) {
+                return callback({ uspeh: false, kod: "PROFIL_NIJE_PRONADJEN" });
+            }
+
+            osigurajIdentitetIgraca(igrac);
+            const ocekivanaRevizija = Number(podaci && podaci.revizija);
+            const trenutnaRevizija = igrac.cloudRevizija || 0;
+
+            if (
+                igrac.lokalnaMigracijaZavrsena
+                && (!Number.isInteger(ocekivanaRevizija) || ocekivanaRevizija !== trenutnaRevizija)
+            ) {
+                return callback({
+                    uspeh: false,
+                    kod: "SUKOB_REVIZIJE",
+                    sinhronizacija: podaciSinhronizacijeZaKlijenta(igrac)
+                });
+            }
+
+            igrac.cloudNapredak = sanitizujCloudNapredak(podaci && podaci.napredak);
+            igrac.cloudRevizija = trenutnaRevizija + 1;
+            igrac.lokalnaMigracijaZavrsena = true;
+            igrac.cloudAzuriranAt = new Date();
+            await igrac.save();
+
+            callback({
+                uspeh: true,
+                playerId: igrac.playerId,
+                sinhronizacija: podaciSinhronizacijeZaKlijenta(igrac)
+            });
+        } catch (error) {
+            console.error("Greška pri sinhronizaciji napretka:", error);
+            callback({
+                uspeh: false,
+                kod: error && error.kod ? error.kod : "GRESKA_SERVERA",
+                poruka: "Napredak trenutno nije moguće sinhronizovati."
+            });
         }
     });
 
@@ -280,7 +415,7 @@ io.on('connection', (socket) => {
         if (onlineIgraci[socket.id]) {
             try {
                 await Igrac.findOneAndUpdate(
-                    { nadimak: onlineIgraci[socket.id].ime },
+                    { _id: onlineIgraci[socket.id].bazaId },
                     { $inc: { sezonskiPojmovi: brojPojmova, svaVremenaPojmovi: brojPojmova } },
                     { returnDocument: 'after' }
                 );
@@ -292,7 +427,7 @@ io.on('connection', (socket) => {
         if (onlineIgraci[socket.id]) {
             try {
                 await Igrac.findOneAndUpdate(
-                    { nadimak: onlineIgraci[socket.id].ime },
+                    { _id: onlineIgraci[socket.id].bazaId },
                     { $inc: { pobede: 1 } },
                     { returnDocument: 'after' }
                 );
@@ -305,7 +440,7 @@ io.on('connection', (socket) => {
         if (onlineIgraci[socket.id] && poeni > 0) {
             try {
                 await Igrac.findOneAndUpdate(
-                    { nadimak: onlineIgraci[socket.id].ime },
+                    { _id: onlineIgraci[socket.id].bazaId },
                     { 
                         $inc: { nedeljniPoeni: poeni, mesecniPoeni: poeni, svaVremenaPoeni: poeni },
                         $max: { najboljiMecPoeni: poeni } // Postavlja vrednost samo ako je nova veća od stare

@@ -7,6 +7,7 @@ const PodesavanjaManager = {
         profilTip: "lokalni",
         googleUid: null,
         profilKljuc: null,
+        playerId: null,
         profilZavrsen: false,
         zvuk: true,
         tema: "tamna",
@@ -47,6 +48,7 @@ const PodesavanjaManager = {
             if (!this.avatari.some(a => a.id === this.postavke.avatar)) this.postavke.avatar = null;
             if (!this.postavke.profilTip) this.postavke.profilTip = "lokalni";
             if (typeof this.postavke.googleUid === 'undefined') this.postavke.googleUid = null;
+            if (typeof this.postavke.playerId === 'undefined') this.postavke.playerId = null;
             if (typeof this.postavke.profilZavrsen !== 'boolean') this.postavke.profilZavrsen = false;
             if (typeof this.postavke.zvuk !== 'boolean') this.postavke.zvuk = true;
         }
@@ -318,6 +320,9 @@ const PodesavanjaManager = {
             this.postavke.avatar = odgovor.profil && odgovor.profil.avatar
                 ? odgovor.profil.avatar
                 : avatar;
+            this.postavke.playerId = odgovor.profil && odgovor.profil.playerId
+                ? odgovor.profil.playerId
+                : this.postavke.playerId;
             this.postavke.profilTip = "lokalni";
             this.postavke.profilZavrsen = true;
             this.snimiULokalnuMemoriju();
@@ -378,6 +383,9 @@ const PodesavanjaManager = {
             this.postavke.nadimak = odgovor.profil && odgovor.profil.nadimak
                 ? odgovor.profil.nadimak
                 : unos;
+            this.postavke.playerId = odgovor.profil && odgovor.profil.playerId
+                ? odgovor.profil.playerId
+                : this.postavke.playerId;
             this.postavke.profilTip = "lokalni";
             this.postavke.profilZavrsen = true;
             this.snimiULokalnuMemoriju();
@@ -966,7 +974,7 @@ const PodesavanjaManager = {
         if (typeof RiznicaManager !== 'undefined') {
             const temaPodaci = RiznicaManager.podaci.teme.find(t => t.id === 'tema_' + novaTema);
             
-            if (temaPodaci && !temaPodaci.kupljeno) {
+            if (temaPodaci && !RiznicaManager.jeOtkljucano(temaPodaci)) {
                 UIManager.prikaziObavestenje(
                     "Tema je zaključana", 
                     `Ova tema mora prvo da se otključa u <b>Riznici</b>.<br><br>Cena: <i class="fa-solid fa-coins" style="color:#f5af19;"></i> <b style="color:#f5af19;">${temaPodaci.cena}</b>`, 
@@ -1010,7 +1018,7 @@ const PodesavanjaManager = {
                 let kupljeno = true;
                 if (typeof RiznicaManager !== 'undefined') {
                     const temaPodaci = RiznicaManager.podaci.teme.find(t => t.id === 'tema_' + tema);
-                    if (temaPodaci) kupljeno = temaPodaci.kupljeno;
+                    if (temaPodaci) kupljeno = RiznicaManager.jeOtkljucano(temaPodaci);
                 }
 
                 // Dodavanje ikonice katanca ako tema nije otključana
@@ -1045,6 +1053,9 @@ const PodesavanjaManager = {
 
     snimiULokalnuMemoriju: function() {
         localStorage.setItem('zemljopis_postavke', JSON.stringify(this.postavke));
+        if (typeof SinhronizacijaManager !== "undefined") {
+            SinhronizacijaManager.zakaziSlanje();
+        }
     },
 
     prikaziPravila: function() {

@@ -30,6 +30,18 @@ mongoose.connect(MONGO_URI)
     .then(() => console.log('✅ Uspesno povezan na MongoDB bazu: zemljopis_db!'))
     .catch((err) => console.error('❌ Greska pri povezivanju na MongoDB:', err));
 
+function oznakaKvartala(datum = new Date()) {
+    if (process.env.KVARTALNI_TEST_CIKLUS) return process.env.KVARTALNI_TEST_CIKLUS;
+    const kvartal = Math.floor(datum.getUTCMonth() / 3) + 1;
+    return `${datum.getUTCFullYear()}-Q${kvartal}`;
+}
+
+function nazivKvartala(oznaka) {
+    const poklapanje = /^(\d{4})-Q([1-4])$/.exec(String(oznaka || ""));
+    if (!poklapanje) return String(oznaka || "Kvartalni ciklus");
+    return `${poklapanje[2]}. kvartal ${poklapanje[1]}`;
+}
+
 // ==========================================
 // 2. MODEL IGRAČA U BAZI
 // ==========================================
@@ -52,7 +64,9 @@ const IgracSchema = new mongoose.Schema({
     dukati: { type: Number, default: 500 },
     tokeni: { type: Number, default: 3 },
     sezonskiPojmovi: { type: Number, default: 0 },
+    sezonskiCiklus: { type: String, default: () => oznakaKvartala() },
     svaVremenaPojmovi: { type: Number, default: 0 },
+    kvartalniObradjeniDogadjaji: { type: [String], default: [] },
     pobede: { type: Number, default: 0 },
     // POLJA ZA TOP LISTU POENA
     najboljiMecPoeni: { type: Number, default: 0 },
@@ -67,6 +81,31 @@ const IgracSchema = new mongoose.Schema({
 }, { minimize: false });
 
 const Igrac = mongoose.model('Igrac', IgracSchema);
+
+const KvartalniCiklusSchema = new mongoose.Schema({
+    ciklus: { type: String, required: true, unique: true },
+    naziv: { type: String, required: true },
+    zavrsenAt: { type: Date, default: Date.now },
+    topTri: {
+        type: [{
+            _id: false,
+            playerId: String,
+            ime: String,
+            avatar: String,
+            pojmovi: Number,
+            pozicija: Number
+        }],
+        default: []
+    }
+});
+
+const LigaStanjeSchema = new mongoose.Schema({
+    kljuc: { type: String, required: true, unique: true },
+    aktivniCiklus: { type: String, required: true }
+});
+
+const KvartalniCiklus = mongoose.model('KvartalniCiklus', KvartalniCiklusSchema);
+const LigaStanje = mongoose.model('LigaStanje', LigaStanjeSchema);
 
 // ==========================================
 // 3. GLOBALNE VARIJABLE (Sobe, Chat, Prijatelji)
@@ -220,6 +259,9 @@ function prijaviOnlineIgraca(socket, igrac) {
     osveziPrijateljeZaSocket(socket.id).catch(error => {
         console.error("Greška pri početnom učitavanju prijatelja:", error);
     });
+    osveziKvartalnePodatkeZaSocket(socket.id).catch(error => {
+        console.error("Greška pri početnom učitavanju kvartalnih podataka:", error);
+    });
 }
 
 function pronadjiOnlineIgracaPoPlayerId(playerId) {
@@ -369,6 +411,211 @@ async function obradiTrajniZahtev(primalacOnline, playerIdPosiljaoca, prihvaceno
 
     await Igrac.bulkWrite(operacije);
     return { uspeh: true, primalac, posiljalac };
+}
+
+const KVARTALNI_LIGA_KLJUC = process.env.KVARTALNI_LIGA_KLJUC || "glavna";
+const KVARTALNI_NIVOI = [
+    { min: 0, max: 999 },
+    { min: 1000, max: 2499 },
+    { min: 2500, max: 4999 },
+    { min: 5000, max: 8999 },
+    { min: 9000, max: Number.MAX_SAFE_INTEGER }
+];
+
+async function osigurajAktivniKvartal() {
+    const trenutniCiklus = oznakaKvartala();
+    let stanje = await LigaStanje.findOne({ kljuc: KVARTALNI_LIGA_KLJUC });
+
+    if (!stanje) {
+        try {
+            stanje = await LigaStanje.create({
+                kljuc: KVARTALNI_LIGA_KLJUC,
+                aktivniCiklus: trenutniCiklus
+            });
+        } catch (error) {
+            if (!error || error.code !== 11000) throw error;
+            stanje = await LigaStanje.findOne({ kljuc: KVARTALNI_LIGA_KLJUC });
+        }
+    }
+
+    if (stanje.aktivniCiklus !== trenutniCiklus) {
+        const prethodniCiklus = stanje.aktivniCiklus;
+        const najbolji = await Igrac.find({
+            sezonskiCiklus: prethodniCiklus,
+            sezonskiPojmovi: { $gt: 0 }
+        })
+            .sort({ sezonskiPojmovi: -1, nadimakNormalizovan: 1 })
+            .limit(3)
+            .select('playerId nadimak avatar sezonskiPojmovi')
+            .lean();
+
+        await KvartalniCiklus.findOneAndUpdate(
+            { ciklus: prethodniCiklus },
+            {
+                $setOnInsert: {
+                    ciklus: prethodniCiklus,
+                    naziv: nazivKvartala(prethodniCiklus),
+                    zavrsenAt: new Date(),
+                    topTri: najbolji.map((igrac, indeks) => ({
+                        playerId: igrac.playerId,
+                        ime: igrac.nadimak,
+                        avatar: igrac.avatar || "atlas",
+                        pojmovi: igrac.sezonskiPojmovi || 0,
+                        pozicija: indeks + 1
+                    }))
+                }
+            },
+            { upsert: true, returnDocument: 'after' }
+        );
+
+        await Igrac.updateMany(
+            { sezonskiCiklus: prethodniCiklus },
+            {
+                $set: {
+                    sezonskiPojmovi: 0,
+                    sezonskiCiklus: trenutniCiklus,
+                    kvartalniObradjeniDogadjaji: []
+                }
+            }
+        );
+
+        await LigaStanje.updateOne(
+            { _id: stanje._id, aktivniCiklus: prethodniCiklus },
+            { $set: { aktivniCiklus: trenutniCiklus } }
+        );
+        stanje.aktivniCiklus = trenutniCiklus;
+    }
+
+    await Igrac.updateMany(
+        {
+            $or: [
+                { sezonskiCiklus: { $exists: false } },
+                { sezonskiCiklus: null },
+                { sezonskiCiklus: "" }
+            ]
+        },
+        { $set: { sezonskiCiklus: trenutniCiklus } }
+    );
+
+    return trenutniCiklus;
+}
+
+function igracZaKvartalnuListu(igrac, polje) {
+    return {
+        playerId: igrac.playerId,
+        ime: igrac.nadimak,
+        avatar: igrac.avatar || "atlas",
+        pojmovi: igrac[polje] || 0
+    };
+}
+
+async function napraviKvartalneListe() {
+    const ciklus = await osigurajAktivniKvartal();
+
+    const sezona = await Promise.all(KVARTALNI_NIVOI.map(async nivo => {
+        const igraci = await Igrac.find({
+            sezonskiCiklus: ciklus,
+            sezonskiPojmovi: { $gte: Math.max(1, nivo.min), $lte: nivo.max }
+        })
+            .sort({ sezonskiPojmovi: -1, nadimakNormalizovan: 1 })
+            .limit(100)
+            .select('playerId nadimak avatar sezonskiPojmovi')
+            .lean();
+        return igraci.map(igrac => igracZaKvartalnuListu(igrac, 'sezonskiPojmovi'));
+    }));
+
+    const svaVremenaIgraci = await Igrac.find({ svaVremenaPojmovi: { $gt: 0 } })
+        .sort({ svaVremenaPojmovi: -1, nadimakNormalizovan: 1 })
+        .limit(100)
+        .select('playerId nadimak avatar svaVremenaPojmovi')
+        .lean();
+
+    const zavrseniCiklusi = await KvartalniCiklus.find()
+        .sort({ zavrsenAt: -1 })
+        .lean();
+    const medaljePoIgracu = new Map();
+
+    zavrseniCiklusi.forEach(zavrseniCiklus => {
+        (zavrseniCiklus.topTri || []).forEach(osvajac => {
+            if (!osvajac.playerId) return;
+            const postojeci = medaljePoIgracu.get(osvajac.playerId) || {
+                playerId: osvajac.playerId,
+                ime: osvajac.ime,
+                avatar: osvajac.avatar || "atlas",
+                zlato: 0,
+                srebro: 0,
+                bronza: 0
+            };
+            if (osvajac.pozicija === 1) postojeci.zlato++;
+            else if (osvajac.pozicija === 2) postojeci.srebro++;
+            else if (osvajac.pozicija === 3) postojeci.bronza++;
+            medaljePoIgracu.set(osvajac.playerId, postojeci);
+        });
+    });
+
+    const medalje = [...medaljePoIgracu.values()];
+    const aktuelniProfili = medalje.length > 0
+        ? await Igrac.find({ playerId: { $in: medalje.map(igrac => igrac.playerId) } })
+            .select('playerId nadimak avatar')
+            .lean()
+        : [];
+    const profiliPoId = new Map(aktuelniProfili.map(igrac => [igrac.playerId, igrac]));
+
+    medalje.forEach(igrac => {
+        const profil = profiliPoId.get(igrac.playerId);
+        if (profil) {
+            igrac.ime = profil.nadimak;
+            igrac.avatar = profil.avatar || "atlas";
+        }
+    });
+    medalje.sort((a, b) => {
+        const ukupnoA = a.zlato + a.srebro + a.bronza;
+        const ukupnoB = b.zlato + b.srebro + b.bronza;
+        return ukupnoB - ukupnoA
+            || b.zlato - a.zlato
+            || b.srebro - a.srebro
+            || a.ime.localeCompare(b.ime, 'sr');
+    });
+
+    const sampioni = zavrseniCiklusi
+        .map(zavrseniCiklus => {
+            const sampion = (zavrseniCiklus.topTri || []).find(igrac => igrac.pozicija === 1);
+            if (!sampion) return null;
+            const profil = profiliPoId.get(sampion.playerId);
+            return {
+                playerId: sampion.playerId,
+                ime: profil ? profil.nadimak : sampion.ime,
+                avatar: profil ? (profil.avatar || "atlas") : (sampion.avatar || "atlas"),
+                ciklus: zavrseniCiklus.naziv,
+                poeni: sampion.pojmovi || 0
+            };
+        })
+        .filter(Boolean);
+
+    return {
+        ciklus,
+        sezona,
+        svaVremena: svaVremenaIgraci.map(igrac => igracZaKvartalnuListu(igrac, 'svaVremenaPojmovi')),
+        medalje,
+        sampioni
+    };
+}
+
+async function osveziKvartalnePodatkeZaSocket(socketId) {
+    const onlineIgrac = onlineIgraci[socketId];
+    if (!onlineIgrac) return;
+
+    const ciklus = await osigurajAktivniKvartal();
+    const igrac = await Igrac.findById(onlineIgrac.bazaId)
+        .select('sezonskiPojmovi svaVremenaPojmovi')
+        .lean();
+    if (!igrac) return;
+
+    io.to(socketId).emit('osveziMojeKvartalnePodatke', {
+        ciklus,
+        sezonskiPojmovi: igrac.sezonskiPojmovi || 0,
+        svaVremenaPojmovi: igrac.svaVremenaPojmovi || 0
+    });
 }
 
 // Pomoćne funkcije za igru
@@ -565,15 +812,68 @@ io.on('connection', (socket) => {
         });
     });
 
-    socket.on('dodajPojmove', async (brojPojmova) => {
-        if (onlineIgraci[socket.id]) {
-            try {
-                await Igrac.findOneAndUpdate(
-                    { _id: onlineIgraci[socket.id].bazaId },
-                    { $inc: { sezonskiPojmovi: brojPojmova, svaVremenaPojmovi: brojPojmova } },
-                    { returnDocument: 'after' }
-                );
-            } catch (err) {}
+    socket.on('dodajPojmove', async (podaci, callback = () => {}) => {
+        const prijavljeniIgrac = onlineIgraci[socket.id];
+        if (!prijavljeniIgrac) {
+            return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN" });
+        }
+
+        const brojPojmova = Number(typeof podaci === "number" ? podaci : podaci && podaci.broj);
+        const dogadjajId = typeof podaci === "object" && typeof podaci.dogadjajId === "string"
+            ? podaci.dogadjajId.trim()
+            : "";
+
+        if (!Number.isInteger(brojPojmova) || brojPojmova < 1 || brojPojmova > 7) {
+            return callback({ uspeh: false, kod: "NEISPRAVAN_BROJ_POJMOVA" });
+        }
+        if (dogadjajId && (dogadjajId.length > 120 || !/^[a-zA-Z0-9:_-]+$/.test(dogadjajId))) {
+            return callback({ uspeh: false, kod: "NEISPRAVAN_DOGADJAJ" });
+        }
+
+        try {
+            const ciklus = await osigurajAktivniKvartal();
+            const filter = { _id: prijavljeniIgrac.bazaId };
+            if (dogadjajId) {
+                filter.kvartalniObradjeniDogadjaji = { $ne: dogadjajId };
+            }
+
+            const azuriranje = {
+                $inc: {
+                    sezonskiPojmovi: brojPojmova,
+                    svaVremenaPojmovi: brojPojmova
+                },
+                $set: { sezonskiCiklus: ciklus }
+            };
+            if (dogadjajId) {
+                azuriranje.$push = {
+                    kvartalniObradjeniDogadjaji: {
+                        $each: [dogadjajId],
+                        $slice: -300
+                    }
+                };
+            }
+
+            let igrac = await Igrac.findOneAndUpdate(filter, azuriranje, {
+                returnDocument: 'after'
+            });
+            const duplikat = !igrac;
+            if (!igrac) {
+                igrac = await Igrac.findById(prijavljeniIgrac.bazaId);
+            }
+            if (!igrac) {
+                return callback({ uspeh: false, kod: "PROFIL_NIJE_PRONADJEN" });
+            }
+
+            const statistika = {
+                ciklus,
+                sezonskiPojmovi: igrac.sezonskiPojmovi || 0,
+                svaVremenaPojmovi: igrac.svaVremenaPojmovi || 0
+            };
+            socket.emit('osveziMojeKvartalnePodatke', statistika);
+            callback({ uspeh: true, duplikat, statistika });
+        } catch (error) {
+            console.error("Greška pri upisu kvartalnih pojmova:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA" });
         }
     });
 
@@ -622,6 +922,18 @@ io.on('connection', (socket) => {
             });
         } catch (err) {
             console.error("Greška pri povlačenju top liste:", err);
+        }
+    });
+
+    socket.on('traziKvartalneListe', async (callback = () => {}) => {
+        try {
+            const podaci = await napraviKvartalneListe();
+            socket.emit('kvartalnaTopListaServer', podaci);
+            await osveziKvartalnePodatkeZaSocket(socket.id);
+            callback({ uspeh: true, ciklus: podaci.ciklus });
+        } catch (error) {
+            console.error("Greška pri učitavanju kvartalnih lista:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA" });
         }
     });
 

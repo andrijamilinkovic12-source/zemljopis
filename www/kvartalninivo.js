@@ -18,6 +18,10 @@ const KvartalniNivoManager = {
     aktivniTab: 'sezona',
     aktivniNivoTab: 0,
     aktivniSlavniTab: 'medalje',
+    ucitavanje: false,
+    slanjeUToku: false,
+    dogadjajiNaCekanju: [],
+    poslatiDogadjaji: [],
 
     // Ovde se smeštaju podaci koji stignu iz MongoDB/Servera
     serverPodaci: {
@@ -30,33 +34,93 @@ const KvartalniNivoManager = {
     init: function() {
         let sacuvano = localStorage.getItem('zemljopis_kvartal');
         if (sacuvano) {
-            this.statistika = JSON.parse(sacuvano);
+            try {
+                this.statistika = { ...this.statistika, ...JSON.parse(sacuvano) };
+            } catch (error) {
+                console.warn("Sačuvana kvartalna statistika nije ispravna.", error);
+            }
+        }
+        try {
+            this.dogadjajiNaCekanju = JSON.parse(
+                localStorage.getItem('zemljopis_kvartal_cekanje') || "[]"
+            );
+            this.poslatiDogadjaji = JSON.parse(
+                localStorage.getItem('zemljopis_kvartal_poslato') || "[]"
+            );
+        } catch (error) {
+            this.dogadjajiNaCekanju = [];
+            this.poslatiDogadjaji = [];
         }
         this.azurirajBedzUMeniju();
     },
 
     // --- SLANJE POENA NA SERVER ---
     // Ova funkcija se poziva iz game.js za SOLO, MULTI, PRIVATNE SOBE i TURNIRE
-    dodajPojmove: function(broj) {
-        if (broj <= 0) return;
+    dodajPojmove: function(broj, dogadjajId = null) {
+        broj = Number(broj);
+        if (!Number.isInteger(broj) || broj <= 0 || broj > 7) return;
 
-        // 1. Brzo lokalno ažuriranje radi UI-ja
+        const id = dogadjajId || `kv_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+        if (
+            this.poslatiDogadjaji.includes(id)
+            || this.dogadjajiNaCekanju.some(dogadjaj => dogadjaj.dogadjajId === id)
+        ) {
+            return;
+        }
+
         this.statistika.sezonskiPojmovi += broj;
         this.statistika.svaVremenaPojmovi += broj;
+        this.dogadjajiNaCekanju.push({ broj, dogadjajId: id });
         localStorage.setItem('zemljopis_kvartal', JSON.stringify(this.statistika));
+        this.sacuvajRedSlanja();
         if (typeof SinhronizacijaManager !== "undefined") {
             SinhronizacijaManager.zakaziSlanje();
         }
         this.azurirajBedzUMeniju();
+        this.posaljiDogadjajeNaCekanju();
+    },
 
-        // 2. Slanje u bazu preko postojećeg Socket-a
-        if (typeof Game !== 'undefined' && Game.socket) {
-            Game.socket.emit('dodajPojmove', broj);
+    sacuvajRedSlanja: function() {
+        localStorage.setItem(
+            'zemljopis_kvartal_cekanje',
+            JSON.stringify(this.dogadjajiNaCekanju.slice(-100))
+        );
+        localStorage.setItem(
+            'zemljopis_kvartal_poslato',
+            JSON.stringify(this.poslatiDogadjaji.slice(-300))
+        );
+    },
+
+    posaljiDogadjajeNaCekanju: function() {
+        if (
+            this.slanjeUToku
+            || this.dogadjajiNaCekanju.length === 0
+            || typeof Game === 'undefined'
+            || !Game.socket
+            || !Game.socket.connected
+        ) {
+            return;
         }
+
+        this.slanjeUToku = true;
+        const dogadjaj = this.dogadjajiNaCekanju[0];
+        Game.socket.timeout(10000).emit('dodajPojmove', dogadjaj, (greska, odgovor) => {
+            this.slanjeUToku = false;
+            if (greska || !odgovor || !odgovor.uspeh) return;
+
+            this.dogadjajiNaCekanju = this.dogadjajiNaCekanju
+                .filter(stavka => stavka.dogadjajId !== dogadjaj.dogadjajId);
+            this.poslatiDogadjaji.push(dogadjaj.dogadjajId);
+            this.poslatiDogadjaji = this.poslatiDogadjaji.slice(-300);
+            this.sacuvajRedSlanja();
+            this.primiMojePodatke(odgovor.statistika);
+            this.posaljiDogadjajeNaCekanju();
+        });
     },
 
     // --- PRIJEM PODATAKA SA SERVERA ---
     primiMojePodatke: function(podaci) {
+        if (!podaci) return;
         this.statistika.sezonskiPojmovi = podaci.sezonskiPojmovi || 0;
         this.statistika.svaVremenaPojmovi = podaci.svaVremenaPojmovi || 0;
         localStorage.setItem('zemljopis_kvartal', JSON.stringify(this.statistika));
@@ -64,13 +128,30 @@ const KvartalniNivoManager = {
             SinhronizacijaManager.zakaziSlanje();
         }
         this.azurirajBedzUMeniju();
+        this.posaljiDogadjajeNaCekanju();
     },
 
     primiTopListe: function(podaci) {
-        this.serverPodaci = podaci;
-        if (document.getElementById('kvartalni-nivo-screen').classList.contains('active')) {
+        this.ucitavanje = false;
+        this.serverPodaci = {
+            sezona: Array.isArray(podaci && podaci.sezona) ? podaci.sezona : [[], [], [], [], []],
+            svaVremena: Array.isArray(podaci && podaci.svaVremena) ? podaci.svaVremena : [],
+            medalje: Array.isArray(podaci && podaci.medalje) ? podaci.medalje : [],
+            sampioni: Array.isArray(podaci && podaci.sampioni) ? podaci.sampioni : []
+        };
+        const ekran = document.getElementById('kvartalni-nivo-screen');
+        if (ekran && ekran.classList.contains('active')) {
             this.renderEkran();
         }
+    },
+
+    napraviAvatarHTML: function(avatarId, velicina = 40) {
+        if (typeof PodesavanjaManager !== 'undefined') {
+            const avatar = PodesavanjaManager.avatari.find(stavka => stavka.id === avatarId)
+                || PodesavanjaManager.avatari[0];
+            return `<div style="width:${velicina}px;height:${velicina}px;flex:0 0 ${velicina}px;">${PodesavanjaManager.napraviAvatarSvg(avatar)}</div>`;
+        }
+        return `<i class="fa-solid fa-user-astronaut" style="font-size:${Math.round(velicina * 0.5)}px;"></i>`;
     },
 
     odrediTrenutniNivo: function() {
@@ -114,6 +195,7 @@ const KvartalniNivoManager = {
         
         // Zatraži osvežene liste iz baze prilikom ulaska
         if (typeof Game !== 'undefined' && Game.socket) {
+            this.ucitavanje = true;
             Game.socket.emit('traziKvartalneListe');
         }
 
@@ -185,16 +267,15 @@ const KvartalniNivoManager = {
         html += `<h4 style="text-align: center; color: ${izabraniNivo.boja}; margin: 0.5rem 0; font-size: 0.9rem; text-transform: uppercase;">Top lista: ${izabraniNivo.ime}</h4>`;
         
         if (listaIgraca.length === 0) {
-            html += `<div style="text-align: center; padding: 1rem; color: #a0aec0; font-size: 0.8rem;">Učitavanje igrača ili niko još nije na ovom nivou...</div>`;
+            html += `<div style="text-align: center; padding: 1rem; color: #a0aec0; font-size: 0.8rem;">${this.ucitavanje ? 'Učitavanje igrača...' : 'Još nema igrača na ovom nivou.'}</div>`;
         } else {
             listaIgraca.forEach((igrac, index) => {
-                let defaultAvatar = "fa-user-astronaut"; // Fallback avatar ako baza ne prosledi avatar
                 html += `
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); margin-bottom: 0.3rem; border-radius: 8px;">
                         <div style="display: flex; align-items: center; gap: 0.8rem;">
                             <b style="color: #a0aec0; width: 20px;">${index + 1}.</b>
                             <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid ${izabraniNivo.boja}; display: flex; justify-content: center; align-items: center; color: ${izabraniNivo.boja}; font-size: 1.1rem;">
-                                <i class="fa-solid ${igrac.avatar || defaultAvatar}"></i>
+                                ${this.napraviAvatarHTML(igrac.avatar, 34)}
                             </div>
                             <span style="color: #fff; font-weight: 600; font-size: 0.95rem;">${igrac.ime}</span>
                         </div>
@@ -219,11 +300,10 @@ const KvartalniNivoManager = {
         `;
 
         if (!this.serverPodaci.svaVremena || this.serverPodaci.svaVremena.length === 0) {
-            html += `<div style="text-align: center; padding: 1rem; color: #a0aec0; font-size: 0.8rem;">Učitavanje podataka sa servera...</div>`;
+            html += `<div style="text-align: center; padding: 1rem; color: #a0aec0; font-size: 0.8rem;">${this.ucitavanje ? 'Učitavanje podataka sa servera...' : 'Još nema upisanih rezultata.'}</div>`;
         } else {
             this.serverPodaci.svaVremena.forEach((igrac, index) => {
                 let kruna = "";
-                let defaultAvatar = "fa-user-ninja";
                 if (index === 0) kruna = `<i class="fa-solid fa-crown" style="color: #ffd700; position: absolute; top: -8px; right: -5px; font-size: 0.8rem; transform: rotate(15deg);"></i>`;
                 
                 html += `
@@ -231,7 +311,7 @@ const KvartalniNivoManager = {
                         <div style="display: flex; align-items: center; gap: 0.8rem;">
                             <b style="color: ${index < 3 ? '#38bdf8' : '#a0aec0'}; width: 20px;">${index + 1}.</b>
                             <div style="position: relative; width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 2px solid ${index < 3 ? '#38bdf8' : '#cbd5e0'}; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 1.2rem;">
-                                <i class="fa-solid ${igrac.avatar || defaultAvatar}"></i>
+                                ${this.napraviAvatarHTML(igrac.avatar, 38)}
                                 ${kruna}
                             </div>
                             <span style="color: #fff; font-weight: 600; font-size: 1rem;">${igrac.ime}</span>
@@ -257,16 +337,15 @@ const KvartalniNivoManager = {
             html += `<p style="text-align: center; font-size: 0.75rem; color: #a0aec0; margin-bottom: 1rem;">Igrači koji su završili u TOP 3 u bilo kom kvartalnom ciklusu.</p>`;
             
             if (!this.serverPodaci.medalje || this.serverPodaci.medalje.length === 0) {
-                 html += `<div style="text-align: center; color: #a0aec0; font-size: 0.8rem;">Čekamo prve osvajače medalja...</div>`;
+                  html += `<div style="text-align: center; color: #a0aec0; font-size: 0.8rem;">Čekamo prve osvajače medalja...</div>`;
             } else {
                 this.serverPodaci.medalje.forEach((igrac, index) => {
-                    let defaultAvatar = "fa-user-ninja";
                     html += `
                         <div style="display: flex; flex-direction: column; background: rgba(0,0,0,0.4); border: 1px solid rgba(177, 34, 229, 0.2); border-radius: 12px; padding: 0.8rem; margin-bottom: 0.8rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
                             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">
                                 <b style="color: #b122e5;">${index + 1}.</b>
                                 <div style="width: 45px; height: 45px; border-radius: 50%; background: rgba(177, 34, 229, 0.1); border: 2px solid #b122e5; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 1.4rem;">
-                                    <i class="fa-solid ${igrac.avatar || defaultAvatar}"></i>
+                                    ${this.napraviAvatarHTML(igrac.avatar, 43)}
                                 </div>
                                 <span style="color: #fff; font-weight: 800; font-size: 1.1rem; flex: 1;">${igrac.ime}</span>
                             </div>
@@ -283,10 +362,9 @@ const KvartalniNivoManager = {
             html += `<p style="text-align: center; font-size: 0.75rem; color: #a0aec0; margin-bottom: 1rem;">Osvajači prvog mesta na kraju svakog ciklusa lige.</p>`;
             
             if (!this.serverPodaci.sampioni || this.serverPodaci.sampioni.length === 0) {
-                 html += `<div style="text-align: center; color: #a0aec0; font-size: 0.8rem;">Čekamo prve šampione...</div>`;
+                  html += `<div style="text-align: center; color: #a0aec0; font-size: 0.8rem;">Čekamo prve šampione...</div>`;
             } else {
                 this.serverPodaci.sampioni.forEach(igrac => {
-                    let defaultAvatar = "fa-crown";
                     html += `
                         <div style="display: flex; align-items: center; background: linear-gradient(135deg, rgba(177, 34, 229, 0.15), rgba(0,0,0,0.5)); border: 1px solid rgba(177, 34, 229, 0.4); border-radius: 12px; padding: 1rem; margin-bottom: 0.8rem; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
                             <div style="margin-right: 1rem; text-align: center;">
@@ -295,7 +373,7 @@ const KvartalniNivoManager = {
                             <div style="flex: 1;">
                                 <div style="font-size: 0.7rem; color: #b122e5; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px;">${igrac.ciklus}</div>
                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <i class="fa-solid ${igrac.avatar || defaultAvatar}" style="color: #fff;"></i>
+                                    ${this.napraviAvatarHTML(igrac.avatar, 30)}
                                     <span style="color: #fff; font-weight: 800; font-size: 1.2rem;">${igrac.ime}</span>
                                 </div>
                                 <div style="font-size: 0.8rem; color: #38ef7d; margin-top: 3px;"><b>${igrac.poeni}</b> pojmova ukupno</div>

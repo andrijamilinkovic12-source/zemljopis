@@ -22,6 +22,7 @@ const Game = {
     rundaUToku: false, 
     kazneniPoeni: 0, 
     antiCheatTimeout: null, 
+    partijaId: null,
 
     // === PAMĆENJE SOBE ZA AUTO-JOIN NAKON REKLAME ===
     sobaNaCekanjuZbotTokena: null,
@@ -574,6 +575,7 @@ const Game = {
         }
 
         this.trenutniMod = mod;
+        this.partijaId = `partija_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
         this.trenutnaRunda = 1; 
         this.ukupanScore = 0;   
         this.ukupnoTacnihOdgovora = 0; 
@@ -688,7 +690,10 @@ const Game = {
             }
 
             if (typeof KvartalniNivoManager !== 'undefined') {
-                KvartalniNivoManager.dodajPojmove(tacnihOveRunde);
+                KvartalniNivoManager.dodajPojmove(
+                    tacnihOveRunde,
+                    `${this.partijaId}:r${this.trenutnaRunda}`
+                );
             }
 
             setTimeout(() => {
@@ -801,7 +806,10 @@ const Game = {
             if (mojiTacni === 7) TrofejiManager.azurirajNapredak('perfektno', 1);
             
             if (typeof KvartalniNivoManager !== 'undefined') {
-                KvartalniNivoManager.dodajPojmove(mojiTacni);
+                KvartalniNivoManager.dodajPojmove(
+                    mojiTacni,
+                    `${this.partijaId}:r${this.trenutnaRunda}`
+                );
             }
         }
 

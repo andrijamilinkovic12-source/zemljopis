@@ -10,7 +10,8 @@ dotenv.config();
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const port = String(3400 + Math.floor(Math.random() * 500));
-const url = `http://127.0.0.1:${port}`;
+const spoljasnjiServer = process.env.TEST_SERVER_URL || "";
+const url = spoljasnjiServer || `http://127.0.0.1:${port}`;
 const profilKljuc = `profil_test_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
 const nadimak = `Test${Date.now().toString(36).slice(-6)}`;
 const promenjenNadimak = `${nadimak}X`;
@@ -73,8 +74,10 @@ let socket;
 let drugiSocket;
 
 try {
-    serverProces = pokreniServer();
-    await sacekaj(3500);
+    if (!spoljasnjiServer) {
+        serverProces = pokreniServer();
+        await sacekaj(3500);
+    }
 
     const { io } = await ucitajSocketKlijent();
     socket = await povezi(io);

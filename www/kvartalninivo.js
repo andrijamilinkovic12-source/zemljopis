@@ -115,6 +115,16 @@ const KvartalniNivoManager = {
             this.sacuvajRedSlanja();
             this.primiMojePodatke(odgovor.statistika);
             this.posaljiDogadjajeNaCekanju();
+
+            const ekran = document.getElementById('kvartalni-nivo-screen');
+            if (
+                this.dogadjajiNaCekanju.length === 0
+                && ekran
+                && ekran.classList.contains('active')
+            ) {
+                this.ucitavanje = true;
+                Game.socket.emit('traziKvartalneListe');
+            }
         });
     },
 

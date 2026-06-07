@@ -15,6 +15,7 @@ const profili = [
     { profilKljuc: `profil_room_b_${oznaka}`, nadimak: `SobB${oznaka.slice(-5)}`, avatar: "luna" },
     { profilKljuc: `profil_room_c_${oznaka}`, nadimak: `SobC${oznaka.slice(-5)}`, avatar: "orion" }
 ];
+const spoljasnjiServer = process.env.TEST_SERVER_URL || "";
 let sledeciPort = 4500 + Math.floor(Math.random() * 300);
 
 function sacekaj(ms) {
@@ -26,6 +27,10 @@ function proveri(uslov, poruka) {
 }
 
 function pokreniServer() {
+    if (spoljasnjiServer) {
+        return { proces: null, url: spoljasnjiServer, izlaz: [] };
+    }
+
     const port = String(sledeciPort++);
     const izlaz = [];
     const proces = spawn(process.execPath, ["server.js"], {

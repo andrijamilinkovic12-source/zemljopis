@@ -13,10 +13,11 @@ const oznaka = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 
 const ligaKljuc = `kvartal_test_${oznaka}`;
 const stariCiklus = `test_${oznaka}_Q1`;
 const noviCiklus = `test_${oznaka}_Q2`;
+const profilPrefiks = `profil_kvartal_${oznaka}_`;
 const profili = [
-    { profilKljuc: `profil_kvartal_a_${oznaka}`, nadimak: `Kva${oznaka.slice(-5)}A`, avatar: "atlas", sezona: 120, svaVremena: 120 },
-    { profilKljuc: `profil_kvartal_b_${oznaka}`, nadimak: `Kva${oznaka.slice(-5)}B`, avatar: "luna", sezona: 80, svaVremena: 90 },
-    { profilKljuc: `profil_kvartal_c_${oznaka}`, nadimak: `Kva${oznaka.slice(-5)}C`, avatar: "orion", sezona: 40, svaVremena: 50 }
+    { profilKljuc: `${profilPrefiks}a`, nadimak: `Kva${oznaka.slice(-5)}A`, avatar: "atlas", sezona: 120, svaVremena: 120 },
+    { profilKljuc: `${profilPrefiks}b`, nadimak: `Kva${oznaka.slice(-5)}B`, avatar: "luna", sezona: 80, svaVremena: 90 },
+    { profilKljuc: `${profilPrefiks}c`, nadimak: `Kva${oznaka.slice(-5)}C`, avatar: "orion", sezona: 40, svaVremena: 50 }
 ];
 let sledeciPort = 4200 + Math.floor(Math.random() * 300);
 
@@ -37,7 +38,8 @@ function pokreniServer() {
             ...process.env,
             PORT: port,
             KVARTALNI_LIGA_KLJUC: ligaKljuc,
-            KVARTALNI_TEST_CIKLUS: noviCiklus
+            KVARTALNI_TEST_CIKLUS: noviCiklus,
+            KVARTALNI_TEST_PROFIL_PREFIX: profilPrefiks
         },
         stdio: ["ignore", "pipe", "pipe"]
     });

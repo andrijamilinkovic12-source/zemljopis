@@ -84,6 +84,7 @@ const Igrac = mongoose.model('Igrac', IgracSchema);
 
 const KvartalniCiklusSchema = new mongoose.Schema({
     ciklus: { type: String, required: true, unique: true },
+    ligaKljuc: { type: String, required: true, default: "glavna" },
     naziv: { type: String, required: true },
     zavrsenAt: { type: Date, default: Date.now },
     topTri: {
@@ -414,6 +415,7 @@ async function obradiTrajniZahtev(primalacOnline, playerIdPosiljaoca, prihvaceno
 }
 
 const KVARTALNI_LIGA_KLJUC = process.env.KVARTALNI_LIGA_KLJUC || "glavna";
+const KVARTALNI_TEST_PROFIL_PREFIX = process.env.KVARTALNI_TEST_PROFIL_PREFIX || "";
 const KVARTALNI_NIVOI = [
     { min: 0, max: 999 },
     { min: 1000, max: 2499 },
@@ -421,6 +423,12 @@ const KVARTALNI_NIVOI = [
     { min: 5000, max: 8999 },
     { min: 9000, max: Number.MAX_SAFE_INTEGER }
 ];
+
+function kvartalniOpsegIgraca() {
+    if (!KVARTALNI_TEST_PROFIL_PREFIX) return {};
+    const bezbedanPrefiks = KVARTALNI_TEST_PROFIL_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return { profilKljuc: { $regex: `^${bezbedanPrefiks}` } };
+}
 
 async function osigurajAktivniKvartal() {
     const trenutniCiklus = oznakaKvartala();
@@ -441,6 +449,7 @@ async function osigurajAktivniKvartal() {
     if (stanje.aktivniCiklus !== trenutniCiklus) {
         const prethodniCiklus = stanje.aktivniCiklus;
         const najbolji = await Igrac.find({
+            ...kvartalniOpsegIgraca(),
             sezonskiCiklus: prethodniCiklus,
             sezonskiPojmovi: { $gt: 0 }
         })
@@ -454,6 +463,7 @@ async function osigurajAktivniKvartal() {
             {
                 $setOnInsert: {
                     ciklus: prethodniCiklus,
+                    ligaKljuc: KVARTALNI_LIGA_KLJUC,
                     naziv: nazivKvartala(prethodniCiklus),
                     zavrsenAt: new Date(),
                     topTri: najbolji.map((igrac, indeks) => ({
@@ -469,7 +479,10 @@ async function osigurajAktivniKvartal() {
         );
 
         await Igrac.updateMany(
-            { sezonskiCiklus: prethodniCiklus },
+            {
+                ...kvartalniOpsegIgraca(),
+                sezonskiCiklus: prethodniCiklus
+            },
             {
                 $set: {
                     sezonskiPojmovi: 0,
@@ -488,6 +501,7 @@ async function osigurajAktivniKvartal() {
 
     await Igrac.updateMany(
         {
+            ...kvartalniOpsegIgraca(),
             $or: [
                 { sezonskiCiklus: { $exists: false } },
                 { sezonskiCiklus: null },
@@ -514,6 +528,7 @@ async function napraviKvartalneListe() {
 
     const sezona = await Promise.all(KVARTALNI_NIVOI.map(async nivo => {
         const igraci = await Igrac.find({
+            ...kvartalniOpsegIgraca(),
             sezonskiCiklus: ciklus,
             sezonskiPojmovi: { $gte: Math.max(1, nivo.min), $lte: nivo.max }
         })
@@ -524,13 +539,24 @@ async function napraviKvartalneListe() {
         return igraci.map(igrac => igracZaKvartalnuListu(igrac, 'sezonskiPojmovi'));
     }));
 
-    const svaVremenaIgraci = await Igrac.find({ svaVremenaPojmovi: { $gt: 0 } })
+    const svaVremenaIgraci = await Igrac.find({
+        ...kvartalniOpsegIgraca(),
+        svaVremenaPojmovi: { $gt: 0 }
+    })
         .sort({ svaVremenaPojmovi: -1, nadimakNormalizovan: 1 })
         .limit(100)
         .select('playerId nadimak avatar svaVremenaPojmovi')
         .lean();
 
-    const zavrseniCiklusi = await KvartalniCiklus.find()
+    const istorijaFilter = KVARTALNI_LIGA_KLJUC === "glavna"
+        ? {
+            $or: [
+                { ligaKljuc: KVARTALNI_LIGA_KLJUC },
+                { ligaKljuc: { $exists: false } }
+            ]
+        }
+        : { ligaKljuc: KVARTALNI_LIGA_KLJUC };
+    const zavrseniCiklusi = await KvartalniCiklus.find(istorijaFilter)
         .sort({ zavrsenAt: -1 })
         .lean();
     const medaljePoIgracu = new Map();

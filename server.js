@@ -1152,26 +1152,42 @@ io.on('connection', (socket) => {
             if (index !== -1) {
                 const igracKojiIzlazi = soba.igraci[index];
                 soba.igraci.splice(index, 1);
-                
-                io.to(kodSobe).emit('igracNapustioSobu', { 
-                    ostaloIgraca: soba.igraci.length,
-                    ime: igracKojiIzlazi.ime,
-                    uIgri: soba.status === 'u_igri', 
-                    razlog: razlog
-                });
 
-                if (soba.status === 'u_igri' && soba.igraci.length === 1) {
-                    io.to(kodSobe).emit('pobedaZbogNapustanja');
+                socket.leave(kodSobe);
+
+                if (soba.host === socket.id && !soba.javna && soba.status !== 'u_igri') {
+                    io.to(kodSobe).emit('hostJeNapustioSobu', {
+                        kodSobe,
+                        ime: igracKojiIzlazi.ime
+                    });
                     if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
                     delete sobe[kodSobe];
                     break;
                 }
-                
-                if (soba.host === socket.id && !soba.javna && soba.status !== 'u_igri') {
-                    io.to(kodSobe).emit('hostJeNapustioSobu');
+
+                io.to(kodSobe).emit('igracNapustioSobu', {
+                    kodSobe,
+                    ostaloIgraca: soba.igraci.length,
+                    max: soba.maxIgraca,
+                    ime: igracKojiIzlazi.ime,
+                    uIgri: soba.status === 'u_igri',
+                    javna: Boolean(soba.javna),
+                    razlog: razlog
+                });
+
+                if (soba.status === 'u_igri' && soba.igraci.length === 1) {
+                    io.to(kodSobe).emit('pobedaZbogNapustanja', {
+                        kodSobe,
+                        pobednikIme: soba.igraci[0].ime,
+                        napustioIme: igracKojiIzlazi.ime,
+                        razlog
+                    });
                     if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
                     delete sobe[kodSobe];
-                } else if (soba.igraci.length === 0) {
+                    break;
+                }
+
+                if (soba.igraci.length === 0) {
                     if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
                     delete sobe[kodSobe]; 
                 } else {

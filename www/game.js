@@ -7,6 +7,7 @@ const Game = {
     profilPrijavljen: false,
     trenutnaSoba: null,
     jeHost: false,
+    odustajanjeOdSobeNaCekanju: false,
 
     // === LOKALNE VARIJABLE ===
     trenutniMod: '',
@@ -629,7 +630,7 @@ const Game = {
             "Traženje protivnika...",
             `Pronađena soba! Čekamo ostale...<br><br>Igrača: <b style="color:#f5af19; font-size: 1.2rem;">${brojIgraca} / ${max}</b><br><br>Igra počinje automatski kada se soba napuni.`,
             () => {
-                this.napustiAktivnuSobu('odustao');
+                this.zatraziNapustanjeOnlineModa('odustao', true);
             },
             "Odustani"
         );
@@ -660,7 +661,7 @@ const Game = {
             "Traženje protivnika...", 
             `Tražim slobodnu sobu za ${brojIgraca} igrača...<br><br>Igrača: <b style="color:#f5af19; font-size: 1.2rem;">1 / ${brojIgraca}</b>`, 
             () => { 
-                this.napustiAktivnuSobu('odustao');
+                this.zatraziNapustanjeOnlineModa('odustao', true);
             },
             "Odustani"
         );
@@ -669,6 +670,14 @@ const Game = {
             if (odgovor.uspeh) {
                 this.trenutnaSoba = odgovor.kodSobe;
                 this.jeHost = odgovor.isHost;
+                if (this.odustajanjeOdSobeNaCekanju) {
+                    this.socket.emit('napustiSobu', 'odustao');
+                    this.trenutnaSoba = null;
+                    this.jeHost = false;
+                    this.odustajanjeOdSobeNaCekanju = false;
+                }
+            } else {
+                this.odustajanjeOdSobeNaCekanju = false;
             }
         });
     },
@@ -1360,8 +1369,12 @@ const Game = {
 
     napustiAktivnuSobu: function(razlog = "napustio", prikaziPoruku = false) {
         const bioUMecu = this.trenutniMod === 'multi';
+        const imaoAktivnuSobu = Boolean(this.trenutnaSoba);
         if (this.socket && this.trenutnaSoba) {
             this.socket.emit('napustiSobu', razlog);
+        }
+        if (imaoAktivnuSobu) {
+            this.odustajanjeOdSobeNaCekanju = false;
         }
         this.trenutnaSoba = null;
         this.jeHost = false;
@@ -1379,19 +1392,33 @@ const Game = {
         }
     },
 
-    zatraziIzlazIzMeca: function() {
-        if (this.trenutniMod === 'multi' && this.trenutnaSoba) {
-            const bioUMecu = this.trenutniMod === 'multi';
-            UIManager.prikaziPotvrdu(
-                bioUMecu ? "Napusti meč?" : "Napusti sobu?",
-                bioUMecu
-                    ? "Ako izađeš iz meča, svi ostali igrači će odmah dobiti obaveštenje da si napustio meč."
-                    : "Ako izađeš iz sobe, ostali igrači će odmah dobiti obaveštenje.",
-                () => this.napustiAktivnuSobu('napustio', true)
-            );
+    zatraziNapustanjeOnlineModa: function(razlog = "napustio", forsirajPotvrdu = false) {
+        const bioUMecu = this.trenutniMod === 'multi';
+        const imaAktivnuSobu = Boolean(this.trenutnaSoba);
+
+        if (!bioUMecu && !imaAktivnuSobu && !forsirajPotvrdu) {
+            this.povratakUMeni();
             return;
         }
-        this.povratakUMeni();
+
+        UIManager.prikaziPotvrdu(
+            bioUMecu ? "Napusti meč?" : "Napusti sobu?",
+            bioUMecu
+                ? "Da li si siguran da želiš da napustiš meč?<br><br>Ostali igrači će odmah dobiti obaveštenje da si napustio meč."
+                : "Da li si siguran da želiš da napustiš sobu?<br><br>Ostali igrači će odmah dobiti obaveštenje da si napustio sobu.",
+            () => {
+                if (!this.trenutnaSoba && forsirajPotvrdu) {
+                    this.odustajanjeOdSobeNaCekanju = true;
+                }
+                this.napustiAktivnuSobu(razlog, true);
+            },
+            bioUMecu ? "Napusti meč" : "Napusti sobu",
+            "Ostani"
+        );
+    },
+
+    zatraziIzlazIzMeca: function() {
+        this.zatraziNapustanjeOnlineModa('napustio');
     },
 
     podesiTastaturu: function() {

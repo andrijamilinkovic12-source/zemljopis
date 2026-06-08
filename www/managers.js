@@ -137,7 +137,7 @@ const UIManager = {
         document.getElementById('custom-modal').classList.remove('active');
     },
 
-    prikaziPotvrdu: function(naslov, poruka, akcijaPotvrde) {
+    prikaziPotvrdu: function(naslov, poruka, akcijaPotvrde, tekstPotvrde = "Završi rundu", tekstOdustani = "Odustani") {
         const modal = document.getElementById('confirm-modal');
         if (!modal) return;
 
@@ -149,9 +149,11 @@ const UIManager = {
 
         // Kloniramo dugmiće da bismo očistili stare Event Listenere
         const novoDugmePotvrdi = btnPotvrdi.cloneNode(true);
+        novoDugmePotvrdi.innerText = tekstPotvrde;
         btnPotvrdi.parentNode.replaceChild(novoDugmePotvrdi, btnPotvrdi);
 
         const novoDugmeOdustani = btnOdustani.cloneNode(true);
+        novoDugmeOdustani.innerText = tekstOdustani;
         btnOdustani.parentNode.replaceChild(novoDugmeOdustani, btnOdustani);
 
         // Akcija za DA

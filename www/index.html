@@ -481,7 +481,7 @@
                 <span class="stat-value">Runda <span id="round-number">1</span>/6</span>
             </div>
             <div class="timer" id="timer-display">02:00</div>
-            <button class="btn-close" onclick="Game.povratakUMeni()"><i class="fa-solid fa-xmark"></i></button>
+            <button class="btn-close" onclick="Game.zatraziIzlazIzMeca()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         
         <div class="current-letter">
@@ -595,7 +595,7 @@
                 <b id="game-invite-name" style="color: #fff;">Neko</b> te poziva u svoju sobu!
             </p>
             <div style="display: flex; gap: 0.5rem;">
-                <button id="btn-odbij-igru" class="menu-btn btn-secondary" style="flex: 1; margin: 0; padding: 0.8rem;" onclick="document.getElementById('game-invite-modal').classList.remove('active')">Odbij</button>
+                <button id="btn-odbij-igru" class="menu-btn btn-secondary" style="flex: 1; margin: 0; padding: 0.8rem;" onclick="Game.odbijPozivUSobu()">Odbij</button>
                 <button id="btn-prihvati-igru" class="menu-btn btn-primary" style="flex: 1; margin: 0; padding: 0.8rem;">Prihvati</button>
             </div>
         </div>

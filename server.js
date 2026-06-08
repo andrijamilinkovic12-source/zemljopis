@@ -687,6 +687,82 @@ function proveriIPokreniSledecuRundu(soba) {
     }
 }
 
+function opisRazlogaNapustanja(razlog = "napustio") {
+    const kod = razlog === "varanje" ? "anti_cit" : razlog;
+    if (kod === "anti_cit") {
+        return {
+            kod,
+            naslov: "Anti-Cheat izbacivanje",
+            tekst: "je izbačen Anti-Cheat sistemom zbog napuštanja aplikacije tokom runde."
+        };
+    }
+    if (kod === "diskonekt") {
+        return {
+            kod,
+            naslov: "Igrač je izgubio vezu",
+            tekst: "je izgubio konekciju sa serverom."
+        };
+    }
+    if (kod === "odustao") {
+        return {
+            kod,
+            naslov: "Igrač je odustao",
+            tekst: "je odustao od čekanja."
+        };
+    }
+    if (kod === "zavrsio") {
+        return {
+            kod,
+            naslov: "Igrač je završio",
+            tekst: "je završio meč."
+        };
+    }
+    if (kod === "bez_tokena") {
+        return {
+            kod,
+            naslov: "Igrač nema token",
+            tekst: "nije imao token za početak meča."
+        };
+    }
+    return {
+        kod: "napustio",
+        naslov: "Igrač je napustio meč",
+        tekst: "je napustio meč."
+    };
+}
+
+function snimakSobe(soba) {
+    return {
+        kodSobe: soba.id,
+        javna: Boolean(soba.javna),
+        status: soba.status,
+        uIgri: soba.status === "u_igri",
+        brojIgraca: soba.igraci.length,
+        max: soba.maxIgraca,
+        runda: soba.trenutnaRunda || 0,
+        igraci: soba.igraci.map(igrac => ({
+            id: igrac.id,
+            ime: igrac.ime
+        }))
+    };
+}
+
+function napraviDogadjajSobe(soba, tip, detalji = {}) {
+    return {
+        tip,
+        vreme: Date.now(),
+        soba: snimakSobe(soba),
+        kodSobe: soba.id,
+        ...detalji
+    };
+}
+
+function posaljiDogadjajSobe(soba, tip, detalji = {}) {
+    const dogadjaj = napraviDogadjajSobe(soba, tip, detalji);
+    io.to(soba.id).emit('dogadjajSobe', dogadjaj);
+    return dogadjaj;
+}
+
 // ==========================================
 // 4. GLAVNA SOCKET.IO LOGIKA
 // ==========================================
@@ -983,6 +1059,8 @@ io.on('connection', (socket) => {
             trenutnaRunda: 0,
             odgovoriOveRunde: [],
             javna: false,
+            hostIme: onlineIgraci[socket.id].ime,
+            pozvaniSocketIds: [],
             timeoutRunde: null
         };
 
@@ -1013,6 +1091,8 @@ io.on('connection', (socket) => {
             trenutnaRunda: 0,
             odgovoriOveRunde: [],
             javna: false,
+            hostIme: onlineIgraci[socket.id].ime,
+            pozvaniSocketIds: [],
             timeoutRunde: null
         };
 
@@ -1022,6 +1102,7 @@ io.on('connection', (socket) => {
         podaci.pozvani.forEach(imePrijatelja => {
             const ciljSocket = Object.values(onlineIgraci).find(oi => oi.ime.toLowerCase() === imePrijatelja.toLowerCase());
             if (ciljSocket) {
+                sobe[kodSobe].pozvaniSocketIds.push(ciljSocket.id);
                 io.to(ciljSocket.id).emit('pozivUSobu', { kodSobe: kodSobe, hostIme: hostIme });
             }
         });
@@ -1042,11 +1123,33 @@ io.on('connection', (socket) => {
         if (soba.status !== 'cekanje') return callback({ uspeh: false, poruka: "Igra u ovoj sobi je već počela!" });
         if (soba.igraci.length >= soba.maxIgraca) return callback({ uspeh: false, poruka: "Soba je puna!" });
 
-        soba.igraci.push({ id: socket.id, ime: onlineIgraci[socket.id].ime, spremniOdgovori: false, spremniZaSledecuRundu: false });
+        const imeIgraca = onlineIgraci[socket.id].ime;
+        soba.igraci.push({ id: socket.id, ime: imeIgraca, spremniOdgovori: false, spremniZaSledecuRundu: false });
+        soba.pozvaniSocketIds = (soba.pozvaniSocketIds || []).filter(id => id !== socket.id);
         socket.join(kodSobe);
 
-        io.to(kodSobe).emit('noviIgracUSobi', { brojIgraca: soba.igraci.length, max: soba.maxIgraca });
+        posaljiDogadjajSobe(soba, 'igrac_usao', {
+            ime: imeIgraca,
+            popunjena: soba.igraci.length === soba.maxIgraca
+        });
+        io.to(kodSobe).emit('noviIgracUSobi', { brojIgraca: soba.igraci.length, max: soba.maxIgraca, _dogadjajSobe: true });
         callback({ uspeh: true, poruka: "Uspešno povezan!" });
+    });
+
+    socket.on('odbijPozivUSobu', (podaci = {}) => {
+        const kodSobe = String(podaci.kodSobe || "").toUpperCase();
+        const soba = sobe[kodSobe];
+        const igrac = onlineIgraci[socket.id];
+        if (!soba || !igrac || soba.status !== 'cekanje') return;
+
+        const bioPozvan = (soba.pozvaniSocketIds || []).includes(socket.id);
+        if (!bioPozvan) return;
+
+        soba.pozvaniSocketIds = (soba.pozvaniSocketIds || []).filter(id => id !== socket.id);
+        const dogadjaj = napraviDogadjajSobe(soba, 'poziv_odbijen', {
+            ime: igrac.ime
+        });
+        io.to(soba.host).emit('dogadjajSobe', dogadjaj);
     });
 
     // --- 3. POKRETANJE IGRE (Privatna soba) ---
@@ -1113,7 +1216,11 @@ io.on('connection', (socket) => {
             nadjenaSoba.igraci.push({ id: socket.id, ime, spremniOdgovori: false, spremniZaSledecuRundu: false });
             socket.join(nadjenaSoba.id);
 
-            io.to(nadjenaSoba.id).emit('azuriranjeJavneSobe', { brojIgraca: nadjenaSoba.igraci.length, max: nadjenaSoba.maxIgraca });
+            posaljiDogadjajSobe(nadjenaSoba, 'igrac_usao', {
+                ime,
+                popunjena: nadjenaSoba.igraci.length === nadjenaSoba.maxIgraca
+            });
+            io.to(nadjenaSoba.id).emit('azuriranjeJavneSobe', { brojIgraca: nadjenaSoba.igraci.length, max: nadjenaSoba.maxIgraca, _dogadjajSobe: true });
 
             if (nadjenaSoba.igraci.length === nadjenaSoba.maxIgraca) {
                 setTimeout(() => zapocniRunduUSobi(nadjenaSoba, io), 1500);
@@ -1127,7 +1234,7 @@ io.on('connection', (socket) => {
             sobe[kodSobe] = {
                 id: kodSobe, host: socket.id, maxIgraca: brojIgraca,
                 igraci: [{ id: socket.id, ime, spremniOdgovori: false, spremniZaSledecuRundu: false }],
-                status: 'cekanje', iskoriscenaSlova: [], trenutnaRunda: 0, odgovoriOveRunde: [], javna: true, timeoutRunde: null
+                status: 'cekanje', iskoriscenaSlova: [], trenutnaRunda: 0, odgovoriOveRunde: [], javna: true, hostIme: ime, pozvaniSocketIds: [], timeoutRunde: null
             };
 
             socket.join(kodSobe);
@@ -1140,9 +1247,28 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         ukloniIgracaIzSoba(socket, 'diskonekt');
+        ukloniPozivIzSoba(socket, 'diskonekt');
         delete onlineIgraci[socket.id]; 
         io.emit('azurirajBrojOnline', Object.keys(onlineIgraci).length);
     });
+
+    function ukloniPozivIzSoba(socket, razlog = "diskonekt") {
+        const igrac = onlineIgraci[socket.id];
+        if (!igrac) return;
+
+        const opisRazloga = opisRazlogaNapustanja(razlog);
+        Object.values(sobe).forEach(soba => {
+            if (!(soba.pozvaniSocketIds || []).includes(socket.id)) return;
+
+            soba.pozvaniSocketIds = (soba.pozvaniSocketIds || []).filter(id => id !== socket.id);
+            const dogadjaj = napraviDogadjajSobe(soba, 'pozvani_nedostupan', {
+                ime: igrac.ime,
+                razlog: opisRazloga.kod,
+                razlogTekst: opisRazloga.tekst
+            });
+            io.to(soba.host).emit('dogadjajSobe', dogadjaj);
+        });
+    }
 
     function ukloniIgracaIzSoba(socket, razlog = "napustio") {
         for (let kodSobe in sobe) {
@@ -1154,17 +1280,33 @@ io.on('connection', (socket) => {
                 soba.igraci.splice(index, 1);
 
                 socket.leave(kodSobe);
+                const opisRazloga = opisRazlogaNapustanja(razlog);
 
                 if (soba.host === socket.id && !soba.javna && soba.status !== 'u_igri') {
+                    const dogadjaj = posaljiDogadjajSobe(soba, 'host_zatvorio_sobu', {
+                        ime: igracKojiIzlazi.ime,
+                        razlog: opisRazloga.kod,
+                        razlogTekst: opisRazloga.tekst
+                    });
                     io.to(kodSobe).emit('hostJeNapustioSobu', {
                         kodSobe,
-                        ime: igracKojiIzlazi.ime
+                        ime: igracKojiIzlazi.ime,
+                        _dogadjajSobe: true
+                    });
+                    (soba.pozvaniSocketIds || []).forEach(socketId => {
+                        io.to(socketId).emit('pozivUSobuOtkazan', dogadjaj);
                     });
                     if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
                     delete sobe[kodSobe];
                     break;
                 }
 
+                posaljiDogadjajSobe(soba, 'igrac_napustio', {
+                    ime: igracKojiIzlazi.ime,
+                    razlog: opisRazloga.kod,
+                    razlogNaslov: opisRazloga.naslov,
+                    razlogTekst: opisRazloga.tekst
+                });
                 io.to(kodSobe).emit('igracNapustioSobu', {
                     kodSobe,
                     ostaloIgraca: soba.igraci.length,
@@ -1172,15 +1314,23 @@ io.on('connection', (socket) => {
                     ime: igracKojiIzlazi.ime,
                     uIgri: soba.status === 'u_igri',
                     javna: Boolean(soba.javna),
-                    razlog: razlog
+                    razlog: opisRazloga.kod,
+                    _dogadjajSobe: true
                 });
 
                 if (soba.status === 'u_igri' && soba.igraci.length === 1) {
+                    posaljiDogadjajSobe(soba, 'automatska_pobeda', {
+                        pobednikIme: soba.igraci[0].ime,
+                        napustioIme: igracKojiIzlazi.ime,
+                        razlog: opisRazloga.kod,
+                        razlogTekst: opisRazloga.tekst
+                    });
                     io.to(kodSobe).emit('pobedaZbogNapustanja', {
                         kodSobe,
                         pobednikIme: soba.igraci[0].ime,
                         napustioIme: igracKojiIzlazi.ime,
-                        razlog
+                        razlog: opisRazloga.kod,
+                        _dogadjajSobe: true
                     });
                     if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
                     delete sobe[kodSobe];

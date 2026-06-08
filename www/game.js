@@ -27,6 +27,7 @@ const Game = {
     // === PAMĆENJE SOBE ZA AUTO-JOIN NAKON REKLAME ===
     sobaNaCekanjuZbotTokena: null,
     akcijaNakonTokena: null,
+    aktivniPozivSobe: null,
     proveraTokenaInterval: null,
 
     init: function() {
@@ -187,16 +188,35 @@ const Game = {
             this.socket.on('pozivUSobu', (podaci) => {
                 const modal = document.getElementById('game-invite-modal');
                 if (modal) {
+                    this.aktivniPozivSobe = podaci;
                     document.getElementById('game-invite-name').innerText = podaci.hostIme;
                     document.getElementById('btn-prihvati-igru').onclick = () => {
                         modal.classList.remove('active');
+                        this.aktivniPozivSobe = null;
                         this.pridruziSeSobiDirektno(podaci.kodSobe); 
                     };
                     modal.classList.add('active');
                 }
             });
 
+            this.socket.on('pozivUSobuOtkazan', (podaci = {}) => {
+                this.aktivniPozivSobe = null;
+                const modal = document.getElementById('game-invite-modal');
+                if (modal) modal.classList.remove('active');
+                UIManager.prikaziObavestenje(
+                    "Poziv je otkazan",
+                    `Host <b style="color:#f5af19;">${podaci.ime || "sobe"}</b> je zatvorio sobu pre početka meča.`,
+                    null,
+                    "U redu"
+                );
+            });
+
+            this.socket.on('dogadjajSobe', (dogadjaj) => {
+                this.obradiDogadjajSobe(dogadjaj);
+            });
+
             this.socket.on('noviIgracUSobi', (podaci) => {
+                if (podaci && podaci._dogadjajSobe) return;
                 if (this.jeHost) {
                     if (podaci.brojIgraca < podaci.max) {
                         UIManager.prikaziObavestenje(
@@ -226,6 +246,7 @@ const Game = {
             });
 
             this.socket.on('hostJeNapustioSobu', (podaci = {}) => {
+                if (podaci && podaci._dogadjajSobe) return;
                 this.rundaUToku = false;
                 clearInterval(this.tajmerInterval);
                 this.trenutnaSoba = null;
@@ -266,13 +287,15 @@ const Game = {
             });
 
             this.socket.on('azuriranjeJavneSobe', (podaci) => {
+                if (podaci && podaci._dogadjajSobe) return;
                 this.prikaziCekanjeJavneSobe(podaci.brojIgraca, podaci.max);
             });
 
             this.socket.on('igracNapustioSobu', (podaci) => {
+                if (podaci && podaci._dogadjajSobe) return;
                 if (podaci.uIgri && podaci.ime) {
                     let razlogTekst = "je napustio meč.";
-                    if (podaci.razlog === 'varanje') razlogTekst = "je izbačen zbog izlaska iz aplikacije (Anti-Cheat).";
+                    if (podaci.razlog === 'varanje' || podaci.razlog === 'anti_cit') razlogTekst = "je izbačen zbog izlaska iz aplikacije (Anti-Cheat).";
                     else if (podaci.razlog === 'diskonekt') razlogTekst = "je izgubio konekciju sa serverom.";
                     
                     UIManager.prikaziObavestenje(
@@ -301,6 +324,7 @@ const Game = {
             });
 
             this.socket.on('pobedaZbogNapustanja', (podaci = {}) => {
+                if (podaci && podaci._dogadjajSobe) return;
                 if (this.trenutnaRunda >= 6 && !this.rundaUToku) return;
 
                 this.rundaUToku = false;
@@ -318,6 +342,8 @@ const Game = {
                     "🏆 AUTOMATSKA POBEDA 🏆", 
                     `${podaci.napustioIme ? `<b style='color:#ff416c'>${podaci.napustioIme}</b> je poslednji napustio meč.<br><br>` : ""}Svi protivnici su napustili meč ili su izbačeni.<br><br><b style='color:#38ef7d'>Ostao si jedini igrač i osvojio 1. mesto!</b>`,
                     () => {
+                        this.trenutnaSoba = null;
+                        this.jeHost = false;
                         this.povratakUMeni();
                     },
                     "Završi" 
@@ -390,6 +416,167 @@ const Game = {
         }, 1000);
     },
 
+    mojeIme: function() {
+        return typeof PodesavanjaManager !== 'undefined'
+            ? PodesavanjaManager.postavke.nadimak
+            : "";
+    },
+
+    odbijPozivUSobu: function() {
+        const poziv = this.aktivniPozivSobe;
+        this.aktivniPozivSobe = null;
+        const modal = document.getElementById('game-invite-modal');
+        if (modal) modal.classList.remove('active');
+
+        if (poziv && this.socket) {
+            this.socket.emit('odbijPozivUSobu', { kodSobe: poziv.kodSobe });
+        }
+    },
+
+    obradiDogadjajSobe: function(dogadjaj) {
+        if (!dogadjaj || !dogadjaj.tip || !dogadjaj.soba) return;
+        const soba = dogadjaj.soba;
+        const kodSobe = dogadjaj.kodSobe || soba.kodSobe;
+        const broj = `${soba.brojIgraca}/${soba.max}`;
+
+        if (
+            this.trenutnaSoba
+            && kodSobe
+            && this.trenutnaSoba !== kodSobe
+            && dogadjaj.tip !== "poziv_odbijen"
+        ) {
+            return;
+        }
+
+        if (dogadjaj.tip === "igrac_usao") {
+            if (dogadjaj.ime === this.mojeIme()) return;
+
+            if (soba.status !== "cekanje") return;
+
+            if (soba.brojIgraca >= soba.max) {
+                if (this.jeHost) {
+                    UIManager.prikaziObavestenje(
+                        "Soba je puna!",
+                        `Svi igrači su uspešno ušli! (<b style="color:#38ef7d;">${broj}</b>)<br><br>Meč može da počne.`,
+                        () => { this.socket.emit('pokreniIgru', this.trenutnaSoba); },
+                        "Započni igru"
+                    );
+                } else {
+                    UIManager.prikaziObavestenje(
+                        "Soba je puna!",
+                        "Svi igrači su tu! Čekamo hosta da pokrene meč...",
+                        null,
+                        "Spreman sam"
+                    );
+                }
+                return;
+            }
+
+            UIManager.prikaziObavestenje(
+                soba.javna ? "Protivnik se povezao" : "Igrač se povezao",
+                `<b style="color:#38ef7d;">${dogadjaj.ime}</b> je ušao u sobu.<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.`,
+                () => {
+                    if (soba.javna) this.prikaziCekanjeJavneSobe(soba.brojIgraca, soba.max);
+                },
+                soba.javna ? "Nastavi čekanje" : "U redu"
+            );
+            return;
+        }
+
+        if (dogadjaj.tip === "igrac_napustio") {
+            if (soba.uIgri) {
+                if (soba.brojIgraca <= 1) return;
+
+                UIManager.prikaziObavestenje(
+                    dogadjaj.razlogNaslov || "Igrač je napustio meč",
+                    `<b style="color:#ff416c;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "je napustio meč."}<br><br>U meču je ostalo igrača: <b style="color:#f5af19;">${soba.brojIgraca}</b>.`,
+                    null,
+                    "Nastavi igru"
+                );
+                return;
+            }
+
+            if (soba.status === "zavrsena") {
+                UIManager.prikaziObavestenje(
+                    dogadjaj.razlogNaslov || "Igrač je završio meč",
+                    `<b style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "je završio meč."}<br><br>Konačni rezultati ostaju sačuvani.`,
+                    null,
+                    "U redu"
+                );
+                return;
+            }
+
+            UIManager.prikaziObavestenje(
+                soba.javna ? "Igrač je odustao" : "Igrač je napustio sobu",
+                `<b style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "je napustio sobu."}<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.${soba.javna ? "<br><br>Čekamo novog protivnika." : ""}`,
+                () => {
+                    if (soba.javna) this.prikaziCekanjeJavneSobe(soba.brojIgraca, soba.max);
+                },
+                soba.javna ? "Nastavi čekanje" : "U redu"
+            );
+            return;
+        }
+
+        if (dogadjaj.tip === "host_zatvorio_sobu") {
+            this.rundaUToku = false;
+            clearInterval(this.tajmerInterval);
+            this.trenutnaSoba = null;
+            this.jeHost = false;
+            UIManager.prikaziObavestenje(
+                "Soba je zatvorena",
+                `Host <b style="color:#f5af19;">${dogadjaj.ime || "sobe"}</b> je napustio sobu pre početka meča.<br><br>Soba više nije aktivna.`,
+                () => {
+                    this.trenutnaSoba = null;
+                    this.jeHost = false;
+                    this.povratakUMeni();
+                },
+                "Nazad u meni"
+            );
+            return;
+        }
+
+        if (dogadjaj.tip === "automatska_pobeda") {
+            if (this.trenutnaRunda >= 6 && !this.rundaUToku) return;
+            const poslednjiIzlazak = dogadjaj.razlogTekst || "je poslednji napustio meč.";
+            this.rundaUToku = false;
+            clearInterval(this.tajmerInterval);
+            if (typeof KeyboardManager !== 'undefined') KeyboardManager.hideKeyboard();
+            document.querySelectorAll('#game-board .game-input').forEach(input => input.disabled = true);
+            if (typeof TrofejiManager !== 'undefined') TrofejiManager.azurirajNapredak('pobede', 1);
+            if (this.socket) this.socket.emit('upisiPobedu');
+
+            UIManager.prikaziObavestenje(
+                "🏆 AUTOMATSKA POBEDA 🏆",
+                `${dogadjaj.napustioIme ? `<b style='color:#ff416c'>${dogadjaj.napustioIme}</b> ${poslednjiIzlazak}<br><br>` : ""}Svi protivnici su napustili meč ili su izbačeni.<br><br><b style='color:#38ef7d'>Ostao si jedini igrač i osvojio 1. mesto!</b>`,
+                () => {
+                    this.trenutnaSoba = null;
+                    this.jeHost = false;
+                    this.povratakUMeni();
+                },
+                "Završi"
+            );
+            return;
+        }
+
+        if (dogadjaj.tip === "poziv_odbijen" && this.jeHost) {
+            UIManager.prikaziObavestenje(
+                "Poziv odbijen",
+                `<b style="color:#f5af19;">${dogadjaj.ime}</b> je odbio poziv za sobu.<br><br>Možeš nastaviti da čekaš ostale igrače.`,
+                null,
+                "U redu"
+            );
+        }
+
+        if (dogadjaj.tip === "pozvani_nedostupan" && this.jeHost) {
+            UIManager.prikaziObavestenje(
+                "Pozvani igrač nije dostupan",
+                `<b style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "nije više na mreži."}<br><br>Možeš nastaviti da čekaš ostale igrače.`,
+                null,
+                "U redu"
+            );
+        }
+    },
+
     zatraziTokenZaAkciju: function(naslov, poruka, akcija) {
         this.akcijaNakonTokena = akcija;
         if (akcija && akcija.kodSobe) this.sobaNaCekanjuZbotTokena = akcija.kodSobe;
@@ -417,8 +604,7 @@ const Game = {
             "Traženje protivnika...",
             `Pronađena soba! Čekamo ostale...<br><br>Igrača: <b style="color:#f5af19; font-size: 1.2rem;">${brojIgraca} / ${max}</b><br><br>Igra počinje automatski kada se soba napuni.`,
             () => {
-                this.povratakUMeni();
-                if (this.socket) this.socket.emit('napustiSobu');
+                this.napustiAktivnuSobu('odustao');
             },
             "Odustani"
         );
@@ -449,8 +635,7 @@ const Game = {
             "Traženje protivnika...", 
             `Tražim slobodnu sobu za ${brojIgraca} igrača...<br><br>Igrača: <b style="color:#f5af19; font-size: 1.2rem;">1 / ${brojIgraca}</b>`, 
             () => { 
-                this.povratakUMeni(); 
-                this.socket.emit('napustiSobu'); 
+                this.napustiAktivnuSobu('odustao');
             },
             "Odustani"
         );
@@ -620,7 +805,11 @@ const Game = {
         if (!this.profilSpremanZaIgru()) return;
         if (typeof TokeniManager !== 'undefined') {
             if (!TokeniManager.imaTokena()) {
-                if (mod === 'multi' && this.socket) this.socket.emit('napustiSobu');
+                if (mod === 'multi' && this.socket) {
+                    this.socket.emit('napustiSobu', 'bez_tokena');
+                    this.trenutnaSoba = null;
+                    this.jeHost = false;
+                }
                 UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
                 return;
             }
@@ -1078,8 +1267,7 @@ const Game = {
                 "🏆 KRAJ IGRE 🏆", 
                 `Konačan plasman takmičara:<br> ${tabelaHtml}`, 
                 () => {
-                    if (this.socket) this.socket.emit('napustiSobu');
-                    this.povratakUMeni();
+                    this.napustiAktivnuSobu('zavrsio');
                 },
                 "Nazad u Meni" 
             );
@@ -1127,6 +1315,42 @@ const Game = {
         UIManager.prikaziEkran('main-menu');
     },
 
+    napustiAktivnuSobu: function(razlog = "napustio", prikaziPoruku = false) {
+        const bioUMecu = this.trenutniMod === 'multi';
+        if (this.socket && this.trenutnaSoba) {
+            this.socket.emit('napustiSobu', razlog);
+        }
+        this.trenutnaSoba = null;
+        this.jeHost = false;
+        this.povratakUMeni();
+
+        if (prikaziPoruku) {
+            UIManager.prikaziObavestenje(
+                bioUMecu ? "Meč napušten" : "Soba napuštena",
+                bioUMecu
+                    ? "Napustio si meč. Ostali igrači su obavešteni u realnom vremenu."
+                    : "Napustio si sobu. Ostali igrači su obavešteni u realnom vremenu.",
+                null,
+                "U redu"
+            );
+        }
+    },
+
+    zatraziIzlazIzMeca: function() {
+        if (this.trenutniMod === 'multi' && this.trenutnaSoba) {
+            const bioUMecu = this.trenutniMod === 'multi';
+            UIManager.prikaziPotvrdu(
+                bioUMecu ? "Napusti meč?" : "Napusti sobu?",
+                bioUMecu
+                    ? "Ako izađeš iz meča, svi ostali igrači će odmah dobiti obaveštenje da si napustio meč."
+                    : "Ako izađeš iz sobe, ostali igrači će odmah dobiti obaveštenje.",
+                () => this.napustiAktivnuSobu('napustio', true)
+            );
+            return;
+        }
+        this.povratakUMeni();
+    },
+
     podesiTastaturu: function() {
         const inputs = document.querySelectorAll('#game-board .game-input');
         inputs.forEach((input, index) => {
@@ -1149,8 +1373,8 @@ const Game = {
                 this.izbaciZbogVremena();
             } else {
                 UIManager.prikaziObavestenje(
-                    "Upozorenje!",
-                    "Izlazak iz aplikacije tokom runde nije dozvoljen! Sledeći put ćeš biti izbačen.",
+                    "Anti-Cheat upozorenje",
+                    "Izlazak iz aplikacije tokom runde nije dozvoljen. Ako se ponovi, bićeš izbačen iz meča i ostali igrači će dobiti obaveštenje.",
                     null,
                     "Razumem"
                 );
@@ -1163,12 +1387,14 @@ const Game = {
         clearInterval(this.tajmerInterval);
         
         if (this.socket) {
-            this.socket.emit('napustiSobu', 'varanje');
+            this.socket.emit('napustiSobu', 'anti_cit');
         }
+        this.trenutnaSoba = null;
+        this.jeHost = false;
 
         UIManager.prikaziObavestenje(
-            "Izbačen si!",
-            "Izbačen si iz runde zbog napuštanja aplikacije tokom partije.",
+            "Anti-Cheat izbacivanje",
+            "Izbačen si iz meča jer si napustio aplikaciju tokom runde. Ostali igrači su obavešteni u realnom vremenu.",
             () => {
                 this.povratakUMeni();
             },
@@ -1181,11 +1407,11 @@ const Game = {
         if (!statusEl) return;
         
         if (this.kazneniPoeni === 0) {
-            statusEl.innerHTML = '<i class="fa-solid fa-shield-halved"></i> АНТИ ЧИТ: <span style="color:#38ef7d;">У игри</span>';
+            statusEl.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Anti-Cheat: <span style="color:#38ef7d;">u igri</span>';
         } else if (this.kazneniPoeni === 1) {
-            statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> АНТИ ЧИТ: <span style="color:#f5af19;">Упозорење</span>';
+            statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Anti-Cheat: <span style="color:#f5af19;">upozorenje</span>';
         } else {
-            statusEl.innerHTML = '<i class="fa-solid fa-ban"></i> АНТИ ЧИТ: <span style="color:#ff416c;">Избачен</span>';
+            statusEl.innerHTML = '<i class="fa-solid fa-ban"></i> Anti-Cheat: <span style="color:#ff416c;">izbačen</span>';
         }
     }
 };

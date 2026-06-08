@@ -156,16 +156,16 @@ try {
         pozvani: [profili[2].nadimak]
     });
     proveri(sobaOdbijanje.uspeh, "Soba sa pozivom nije kreirana.");
-    const hostVidiOdbijanje = sacekajSobniDogadjaj(
+    const hostVidiZatvaranjePosleOdbijanja = sacekajSobniDogadjaj(
         socketA,
-        "poziv_odbijen",
+        "soba_zatvorena",
         dogadjaj => dogadjaj.kodSobe === sobaOdbijanje.kodSobe
             && dogadjaj.ime === profili[2].nadimak
+            && dogadjaj.razlogZatvaranja === "poziv_odbijen"
     );
     const poziv = await pozivZaOdbijanje;
     socketC.emit("odbijPozivUSobu", { kodSobe: poziv.kodSobe });
-    await hostVidiOdbijanje;
-    await napusti(socketA, "odustao");
+    await hostVidiZatvaranjePosleOdbijanja;
 
     const pozivZaNestanak = sacekajDogadjaj(
         socketC,
@@ -177,20 +177,97 @@ try {
     });
     proveri(sobaNestanak.uspeh, "Soba za nestanak pozvanog igraca nije kreirana.");
     await pozivZaNestanak;
-    const hostVidiNestanak = sacekajSobniDogadjaj(
+    const hostVidiZatvaranjePosleNestanka = sacekajSobniDogadjaj(
         socketA,
-        "pozvani_nedostupan",
+        "soba_zatvorena",
         dogadjaj => dogadjaj.kodSobe === sobaNestanak.kodSobe
             && dogadjaj.ime === profili[2].nadimak
             && dogadjaj.razlog === "diskonekt"
+            && dogadjaj.razlogZatvaranja === "pozvani_nedostupan"
     );
     socketC.disconnect();
-    await hostVidiNestanak;
-    await napusti(socketA, "odustao");
+    await hostVidiZatvaranjePosleNestanka;
     await sacekaj(300);
 
     socketC = await povezi(io, server.url);
     await registruj(socketC, profili[2]);
+
+    const pozivZaB = sacekajDogadjaj(
+        socketB,
+        "pozivUSobu",
+        podaci => podaci.hostIme === profili[0].nadimak
+    );
+    const pozivZaC = sacekajDogadjaj(
+        socketC,
+        "pozivUSobu",
+        podaci => podaci.hostIme === profili[0].nadimak
+    );
+    const sobaVisePozvanih = await emitAck(socketA, "kreirajSobuIPozovi", {
+        pozvani: [profili[1].nadimak, profili[2].nadimak]
+    });
+    proveri(sobaVisePozvanih.uspeh, "Soba sa vise pozvanih nije kreirana.");
+    const pozivB = await pozivZaB;
+    const pozivC = await pozivZaC;
+    const hostVidiOdbijanjeBezZatvaranja = sacekajSobniDogadjaj(
+        socketA,
+        "poziv_odbijen",
+        dogadjaj => dogadjaj.kodSobe === sobaVisePozvanih.kodSobe
+            && dogadjaj.ime === profili[2].nadimak
+            && dogadjaj.soba.max === 2
+            && dogadjaj.soba.brojIgraca === 1
+            && dogadjaj.sobaSpremna === false
+    );
+    socketC.emit("odbijPozivUSobu", { kodSobe: pozivC.kodSobe });
+    await hostVidiOdbijanjeBezZatvaranja;
+
+    const hostVidiPopunjenuSobu = sacekajSobniDogadjaj(
+        socketA,
+        "igrac_usao",
+        dogadjaj => dogadjaj.kodSobe === sobaVisePozvanih.kodSobe
+            && dogadjaj.ime === profili[1].nadimak
+            && dogadjaj.soba.max === 2
+            && dogadjaj.soba.brojIgraca === 2
+            && dogadjaj.popunjena
+    );
+    await emitAck(socketB, "pridruziSeSobi", { kodSobe: pozivB.kodSobe });
+    await hostVidiPopunjenuSobu;
+    const bVidiHostZatvaranje = sacekajSobniDogadjaj(
+        socketB,
+        "host_zatvorio_sobu",
+        dogadjaj => dogadjaj.kodSobe === sobaVisePozvanih.kodSobe
+            && dogadjaj.ime === profili[0].nadimak
+    );
+    socketA.emit("napustiSobu", "odustao");
+    await bVidiHostZatvaranje;
+
+    const pozivBZaIzlazak = sacekajDogadjaj(
+        socketB,
+        "pozivUSobu",
+        podaci => podaci.hostIme === profili[0].nadimak
+    );
+    const sobaIzlazakPreStarta = await emitAck(socketA, "kreirajSobuIPozovi", {
+        pozvani: [profili[1].nadimak]
+    });
+    proveri(sobaIzlazakPreStarta.uspeh, "Soba za izlazak pre starta nije kreirana.");
+    await pozivBZaIzlazak;
+    const hostVidiUlazakB = sacekajSobniDogadjaj(
+        socketA,
+        "igrac_usao",
+        dogadjaj => dogadjaj.kodSobe === sobaIzlazakPreStarta.kodSobe
+            && dogadjaj.ime === profili[1].nadimak
+            && dogadjaj.soba.brojIgraca === 2
+    );
+    await emitAck(socketB, "pridruziSeSobi", { kodSobe: sobaIzlazakPreStarta.kodSobe });
+    await hostVidiUlazakB;
+    const hostVidiZatvaranjePosleIzlaska = sacekajSobniDogadjaj(
+        socketA,
+        "soba_zatvorena",
+        dogadjaj => dogadjaj.kodSobe === sobaIzlazakPreStarta.kodSobe
+            && dogadjaj.ime === profili[1].nadimak
+            && dogadjaj.razlogZatvaranja === "igrac_napustio"
+    );
+    socketB.emit("napustiSobu", "odustao");
+    await hostVidiZatvaranjePosleIzlaska;
 
     const sobaBezTokena = await emitAckBroj(socketA, "kreirajSobu", 2);
     proveri(sobaBezTokena.uspeh, "Soba za proveru tokena nije kreirana.");
@@ -279,7 +356,7 @@ try {
     socketC.emit("napustiSobu", "diskonekt");
     await automatskaPobeda;
 
-    console.log("OK: real-time obavestenja sobe pokrivaju pozive, cekanje, anti-cheat, diskonekt i automatsku pobedu.");
+    console.log("OK: real-time obavestenja sobe pokrivaju pozive, automatsko zatvaranje, cekanje, anti-cheat, diskonekt i automatsku pobedu.");
 } catch (error) {
     if (server && server.izlaz.length > 0) {
         console.error(server.izlaz.join("").slice(-4000));

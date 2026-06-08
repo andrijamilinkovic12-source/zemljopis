@@ -444,6 +444,7 @@ const Game = {
             && kodSobe
             && this.trenutnaSoba !== kodSobe
             && dogadjaj.tip !== "poziv_odbijen"
+            && dogadjaj.tip !== "soba_zatvorena"
         ) {
             return;
         }
@@ -506,13 +507,33 @@ const Game = {
                 return;
             }
 
+            const sobaSpremna = !soba.javna && soba.brojIgraca >= soba.max && soba.max >= 2;
+            const mozePokretanje = sobaSpremna && this.jeHost;
             UIManager.prikaziObavestenje(
                 soba.javna ? "Igrač je odustao" : "Igrač je napustio sobu",
-                `<b style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "je napustio sobu."}<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.${soba.javna ? "<br><br>Čekamo novog protivnika." : ""}`,
+                `<b style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "je napustio sobu."}<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.${soba.javna ? "<br><br>Čekamo novog protivnika." : ""}${sobaSpremna ? `<br><br>${this.jeHost ? "Soba je sada spremna za početak." : "Soba je sada spremna. Čekamo hosta da pokrene meč."}` : ""}`,
                 () => {
+                    if (mozePokretanje) {
+                        this.socket.emit('pokreniIgru', this.trenutnaSoba);
+                        return;
+                    }
                     if (soba.javna) this.prikaziCekanjeJavneSobe(soba.brojIgraca, soba.max);
                 },
-                soba.javna ? "Nastavi čekanje" : "U redu"
+                mozePokretanje ? "Započni igru" : (soba.javna ? "Nastavi čekanje" : "U redu")
+            );
+            return;
+        }
+
+        if (dogadjaj.tip === "soba_zatvorena") {
+            this.rundaUToku = false;
+            clearInterval(this.tajmerInterval);
+            this.trenutnaSoba = null;
+            this.jeHost = false;
+            UIManager.prikaziObavestenje(
+                dogadjaj.naslov || "Soba je zatvorena",
+                dogadjaj.poruka || "Soba je zatvorena jer nema više igrača koji mogu da uđu.",
+                () => this.povratakUMeni(),
+                "Nazad u meni"
             );
             return;
         }
@@ -558,21 +579,25 @@ const Game = {
             return;
         }
 
-        if (dogadjaj.tip === "poziv_odbijen" && this.jeHost) {
+        if (dogadjaj.tip === "poziv_odbijen") {
+            const sobaSpremna = dogadjaj.sobaSpremna && soba.brojIgraca >= 2;
+            const mozePokretanje = sobaSpremna && this.jeHost;
             UIManager.prikaziObavestenje(
                 "Poziv odbijen",
-                `<b style="color:#f5af19;">${dogadjaj.ime}</b> je odbio poziv za sobu.<br><br>Možeš nastaviti da čekaš ostale igrače.`,
-                null,
-                "U redu"
+                `<b style="color:#f5af19;">${dogadjaj.ime}</b> je odbio poziv za sobu.<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.${sobaSpremna ? `<br><br>${this.jeHost ? "Soba je i dalje spremna za početak." : "Soba je i dalje spremna. Čekamo hosta da pokrene meč."}` : "<br><br>Čekamo ostale pozvane igrače."}`,
+                mozePokretanje ? () => this.socket.emit('pokreniIgru', this.trenutnaSoba) : null,
+                mozePokretanje ? "Započni igru" : "U redu"
             );
         }
 
-        if (dogadjaj.tip === "pozvani_nedostupan" && this.jeHost) {
+        if (dogadjaj.tip === "pozvani_nedostupan") {
+            const sobaSpremna = dogadjaj.sobaSpremna && soba.brojIgraca >= 2;
+            const mozePokretanje = sobaSpremna && this.jeHost;
             UIManager.prikaziObavestenje(
                 "Pozvani igrač nije dostupan",
-                `<b style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "nije više na mreži."}<br><br>Možeš nastaviti da čekaš ostale igrače.`,
-                null,
-                "U redu"
+                `<b style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "nije više na mreži."}<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.${sobaSpremna ? `<br><br>${this.jeHost ? "Soba je i dalje spremna za početak." : "Soba je i dalje spremna. Čekamo hosta da pokrene meč."}` : "<br><br>Čekamo ostale pozvane igrače."}`,
+                mozePokretanje ? () => this.socket.emit('pokreniIgru', this.trenutnaSoba) : null,
+                mozePokretanje ? "Započni igru" : "U redu"
             );
         }
     },
@@ -787,7 +812,16 @@ const Game = {
         this.socket.emit('kreirajSobuIPozovi', { pozvani: pozvani }, (odgovor) => {
             if (odgovor.uspeh) {
                 this.trenutnaSoba = odgovor.kodSobe;
+                brojIgraca = odgovor.brojIgraca || brojIgraca;
+                this.brojIgracaUSobi = brojIgraca;
+
+                const nedostupni = Array.isArray(odgovor.nedostupniPozvani)
+                    ? odgovor.nedostupniPozvani
+                    : [];
                 let poruka = `Pozivnice su uspešno poslate!<br><br>Čekamo tvoje prijatelje da prihvate poziv.<br><br>Igrača u sobi: <b style="color:#f5af19;">1/${brojIgraca}</b>`;
+                if (nedostupni.length > 0) {
+                    poruka += `<br><br><span style="color:#f5af19;">Nisu trenutno dostupni:</span> ${nedostupni.join(", ")}`;
+                }
 
                 UIManager.prikaziObavestenje(
                     "Soba je spremna!",
@@ -797,6 +831,15 @@ const Game = {
                 );
                 
                 if (typeof hidePlayerSelect === 'function') hidePlayerSelect(); 
+            } else {
+                this.trenutnaSoba = null;
+                this.jeHost = false;
+                UIManager.prikaziObavestenje(
+                    "Poziv nije poslat",
+                    odgovor.poruka || "Nijedan pozvani prijatelj trenutno nije dostupan.",
+                    null,
+                    "U redu"
+                );
             }
         });
     },

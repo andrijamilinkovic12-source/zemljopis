@@ -763,6 +763,48 @@ function posaljiDogadjajSobe(soba, tip, detalji = {}) {
     return dogadjaj;
 }
 
+function zatvoriSobuZbogNeuspesnogPoziva(soba, detalji = {}) {
+    const dogadjaj = posaljiDogadjajSobe(soba, 'soba_zatvorena', {
+        naslov: detalji.naslov || "Soba je zatvorena",
+        poruka: detalji.poruka || "Soba je zatvorena jer nema više pozvanih igrača koji mogu da uđu.",
+        ...detalji
+    });
+
+    (soba.pozvaniSocketIds || []).forEach(socketId => {
+        io.to(socketId).emit('pozivUSobuOtkazan', dogadjaj);
+    });
+    if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
+    delete sobe[soba.id];
+    return dogadjaj;
+}
+
+function smanjiPozivnuSobuIliZatvori(soba, tip, detalji = {}) {
+    if (!soba || soba.tipSobe !== "poziv" || soba.status !== "cekanje") return null;
+
+    soba.maxIgraca = Math.max(1, soba.maxIgraca - 1);
+    if (soba.maxIgraca <= 1) {
+        return {
+            zatvorena: true,
+            dogadjaj: zatvoriSobuZbogNeuspesnogPoziva(soba, {
+                ...detalji,
+                razlogZatvaranja: tip,
+                naslov: detalji.naslov || "Poziv nije prihvaćen",
+                poruka: detalji.poruka || "Soba je zatvorena jer nema drugih pozvanih igrača."
+            })
+        };
+    }
+
+    const sobaSpremna = soba.igraci.length >= soba.maxIgraca;
+    return {
+        zatvorena: false,
+        sobaSpremna,
+        dogadjaj: posaljiDogadjajSobe(soba, tip, {
+            ...detalji,
+            sobaSpremna
+        })
+    };
+}
+
 // ==========================================
 // 4. GLAVNA SOCKET.IO LOGIKA
 // ==========================================
@@ -1059,6 +1101,7 @@ io.on('connection', (socket) => {
             trenutnaRunda: 0,
             odgovoriOveRunde: [],
             javna: false,
+            tipSobe: "kod",
             hostIme: onlineIgraci[socket.id].ime,
             pozvaniSocketIds: [],
             timeoutRunde: null
@@ -1074,8 +1117,36 @@ io.on('connection', (socket) => {
             return callback({ uspeh: false, poruka: "Prvo kreiraj i potvrdi svoj profil." });
         }
 
-        let brojIgraca = podaci.pozvani.length + 1;
-        if (brojIgraca === 1) brojIgraca = 5; 
+        const pozvani = Array.isArray(podaci && podaci.pozvani) ? podaci.pozvani : [];
+        const jedinstveniPozvani = [...new Set(
+            pozvani
+                .map(ime => ocistiNadimak(ime))
+                .filter(Boolean)
+        )];
+        const ciljeviPoziva = [];
+        const nedostupniPozvani = [];
+
+        jedinstveniPozvani.forEach(imePrijatelja => {
+            const ciljSocket = Object.values(onlineIgraci).find(oi =>
+                oi.id !== socket.id
+                && oi.ime.toLowerCase() === imePrijatelja.toLowerCase()
+            );
+            if (ciljSocket && !ciljeviPoziva.some(cilj => cilj.id === ciljSocket.id)) {
+                ciljeviPoziva.push(ciljSocket);
+            } else {
+                nedostupniPozvani.push(imePrijatelja);
+            }
+        });
+
+        if (ciljeviPoziva.length === 0) {
+            return callback({
+                uspeh: false,
+                kod: "NEMA_DOSTUPNIH_POZVANIH",
+                poruka: "Pozvani prijatelj trenutno nije na mreži. Izaberi drugog igrača ili pokušaj kasnije."
+            });
+        }
+
+        let brojIgraca = ciljeviPoziva.length + 1;
 
         const karakteri = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let kodSobe = "";
@@ -1091,23 +1162,25 @@ io.on('connection', (socket) => {
             trenutnaRunda: 0,
             odgovoriOveRunde: [],
             javna: false,
+            tipSobe: "poziv",
             hostIme: onlineIgraci[socket.id].ime,
-            pozvaniSocketIds: [],
+            pozvaniSocketIds: ciljeviPoziva.map(cilj => cilj.id),
             timeoutRunde: null
         };
 
         socket.join(kodSobe);
         
         const hostIme = onlineIgraci[socket.id].ime;
-        podaci.pozvani.forEach(imePrijatelja => {
-            const ciljSocket = Object.values(onlineIgraci).find(oi => oi.ime.toLowerCase() === imePrijatelja.toLowerCase());
-            if (ciljSocket) {
-                sobe[kodSobe].pozvaniSocketIds.push(ciljSocket.id);
-                io.to(ciljSocket.id).emit('pozivUSobu', { kodSobe: kodSobe, hostIme: hostIme });
-            }
+        ciljeviPoziva.forEach(ciljSocket => {
+            io.to(ciljSocket.id).emit('pozivUSobu', { kodSobe: kodSobe, hostIme: hostIme });
         });
 
-        callback({ uspeh: true, kodSobe: kodSobe, brojIgraca: brojIgraca });
+        callback({
+            uspeh: true,
+            kodSobe: kodSobe,
+            brojIgraca: brojIgraca,
+            nedostupniPozvani
+        });
     });
 
     // --- 2. PRIDRUŽIVANJE SOBI ---
@@ -1146,10 +1219,13 @@ io.on('connection', (socket) => {
         if (!bioPozvan) return;
 
         soba.pozvaniSocketIds = (soba.pozvaniSocketIds || []).filter(id => id !== socket.id);
-        const dogadjaj = napraviDogadjajSobe(soba, 'poziv_odbijen', {
-            ime: igrac.ime
+        smanjiPozivnuSobuIliZatvori(soba, 'poziv_odbijen', {
+            ime: igrac.ime,
+            razlog: "odbijen",
+            razlogTekst: "je odbio poziv.",
+            naslov: "Poziv je odbijen",
+            poruka: `${igrac.ime} je odbio poziv. Soba je zatvorena jer nema drugih pozvanih igrača.`
         });
-        io.to(soba.host).emit('dogadjajSobe', dogadjaj);
     });
 
     // --- 3. POKRETANJE IGRE (Privatna soba) ---
@@ -1234,7 +1310,7 @@ io.on('connection', (socket) => {
             sobe[kodSobe] = {
                 id: kodSobe, host: socket.id, maxIgraca: brojIgraca,
                 igraci: [{ id: socket.id, ime, spremniOdgovori: false, spremniZaSledecuRundu: false }],
-                status: 'cekanje', iskoriscenaSlova: [], trenutnaRunda: 0, odgovoriOveRunde: [], javna: true, hostIme: ime, pozvaniSocketIds: [], timeoutRunde: null
+                status: 'cekanje', iskoriscenaSlova: [], trenutnaRunda: 0, odgovoriOveRunde: [], javna: true, tipSobe: "javna", hostIme: ime, pozvaniSocketIds: [], timeoutRunde: null
             };
 
             socket.join(kodSobe);
@@ -1261,12 +1337,13 @@ io.on('connection', (socket) => {
             if (!(soba.pozvaniSocketIds || []).includes(socket.id)) return;
 
             soba.pozvaniSocketIds = (soba.pozvaniSocketIds || []).filter(id => id !== socket.id);
-            const dogadjaj = napraviDogadjajSobe(soba, 'pozvani_nedostupan', {
+            smanjiPozivnuSobuIliZatvori(soba, 'pozvani_nedostupan', {
                 ime: igrac.ime,
                 razlog: opisRazloga.kod,
-                razlogTekst: opisRazloga.tekst
+                razlogTekst: opisRazloga.tekst,
+                naslov: "Pozvani igrač nije dostupan",
+                poruka: `${igrac.ime} je izgubio konekciju. Soba je zatvorena jer nema drugih pozvanih igrača.`
             });
-            io.to(soba.host).emit('dogadjajSobe', dogadjaj);
         });
     }
 
@@ -1298,6 +1375,30 @@ io.on('connection', (socket) => {
                     });
                     if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
                     delete sobe[kodSobe];
+                    break;
+                }
+
+                if (soba.tipSobe === "poziv" && soba.status === "cekanje") {
+                    const rezultatPoziva = smanjiPozivnuSobuIliZatvori(soba, 'igrac_napustio', {
+                        ime: igracKojiIzlazi.ime,
+                        razlog: opisRazloga.kod,
+                        razlogNaslov: opisRazloga.naslov,
+                        razlogTekst: opisRazloga.tekst,
+                        naslov: opisRazloga.naslov,
+                        poruka: `${igracKojiIzlazi.ime} ${opisRazloga.tekst} Soba je zatvorena jer nema drugih pozvanih igrača.`
+                    });
+                    if (!rezultatPoziva || !rezultatPoziva.zatvorena) {
+                        io.to(kodSobe).emit('igracNapustioSobu', {
+                            kodSobe,
+                            ostaloIgraca: soba.igraci.length,
+                            max: soba.maxIgraca,
+                            ime: igracKojiIzlazi.ime,
+                            uIgri: false,
+                            javna: false,
+                            razlog: opisRazloga.kod,
+                            _dogadjajSobe: true
+                        });
+                    }
                     break;
                 }
 

@@ -970,9 +970,12 @@ const PodesavanjaManager = {
     },
 
     promeniTemu: function(novaTema) {
+        let prikazNazivaTeme = novaTema;
+
         // PROVERA VLASNIŠTVA U RIZNICI
         if (typeof RiznicaManager !== 'undefined') {
             const temaPodaci = RiznicaManager.podaci.teme.find(t => t.id === 'tema_' + novaTema);
+            if (temaPodaci) prikazNazivaTeme = temaPodaci.naziv;
             
             if (temaPodaci && !RiznicaManager.jeOtkljucano(temaPodaci)) {
                 UIManager.prikaziObavestenje(
@@ -1002,15 +1005,15 @@ const PodesavanjaManager = {
         
         UIManager.prikaziObavestenje(
             "Tema primenjena", 
-            `Uspešno ste aktivirali temu: <b style="color:#38bdf8; text-transform:uppercase;">${novaTema}</b>.`, 
+            `Uspešno ste aktivirali temu: <b style="color:#38bdf8; text-transform:uppercase;">${prikazNazivaTeme}</b>.`,
             null, 
             "Super"
         );
     },
 
     azurirajDugmadTeme: function() {
-        const naziviTema = { 'tamna': 'Tamna', 'svetla': 'Svetla', 'neon': 'Neon', 'okean': 'Okean', 'zlatna': 'Zlatna' };
-        const teme = ['tamna', 'svetla', 'neon', 'okean', 'zlatna'];
+        const naziviTema = { 'tamna': 'Tamna', 'svetla': 'Svetla', 'neon': 'Neon', 'okean': 'Okean', 'zlatna': 'Zlatna', 'aurora': 'Aurora' };
+        const teme = ['tamna', 'svetla', 'neon', 'okean', 'zlatna', 'aurora'];
         
         teme.forEach(tema => {
             const btn = document.getElementById(`btn-tema-${tema}`);

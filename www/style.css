@@ -1577,6 +1577,122 @@ body[data-tema="zlatna"] .modal-content { background: linear-gradient(135deg, #2
 body[data-tema="zlatna"] #splash-screen { background: linear-gradient(135deg, #1a1500, #2b2200, #403300); }
 body[data-tema="zlatna"] .btn-close { background: rgba(255,215,0,0.15); color: #ffd700; }
 
+/* --- TEMA: AURORA PRIME --- */
+body[data-tema="aurora"] {
+    background:
+        linear-gradient(135deg, #04070d 0%, #101624 32%, #062b31 64%, #24142d 100%);
+    color: #f8fbff;
+}
+body[data-tema="aurora"] h2,
+body[data-tema="aurora"] .loading-text,
+body[data-tema="aurora"] .current-letter span,
+body[data-tema="aurora"] .stats-header,
+body[data-tema="aurora"] .modal-content h2,
+body[data-tema="aurora"] .pattern-icon {
+    color: #8fffe2;
+    text-shadow: 0 0 14px rgba(143, 255, 226, 0.55), 0 0 28px rgba(255, 199, 95, 0.22);
+}
+body[data-tema="aurora"] .btn-primary,
+body[data-tema="aurora"] .loading-bar,
+body[data-tema="aurora"] .badge-multi,
+body[data-tema="aurora"] .current-player .player-score {
+    background: linear-gradient(45deg, #8fffe2, #5bbdff 52%, #ffc75f);
+    box-shadow: 0 0 22px rgba(91, 189, 255, 0.45), 0 10px 28px rgba(0, 0, 0, 0.45);
+    color: #061019;
+    border: 1px solid rgba(255, 255, 255, 0.65);
+}
+body[data-tema="aurora"] .menu-btn {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(143, 255, 226, 0.22);
+    box-shadow: inset 0 0 18px rgba(143, 255, 226, 0.08), 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+body[data-tema="aurora"] .circle-btn {
+    border-color: rgba(143, 255, 226, 0.38);
+    color: #8fffe2;
+    background: rgba(6, 16, 25, 0.58);
+    box-shadow: 0 0 16px rgba(91, 189, 255, 0.22);
+}
+body[data-tema="aurora"] .circle-btn:active {
+    border-color: #ffc75f;
+    color: #ffc75f;
+    box-shadow: 0 0 18px rgba(255, 199, 95, 0.45);
+}
+body[data-tema="aurora"] .status-pill {
+    background: rgba(6, 16, 25, 0.68);
+    border-color: rgba(143, 255, 226, 0.28);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+body[data-tema="aurora"] .ducats-pill { color: #ffc75f; }
+body[data-tema="aurora"] .tokens-pill { color: #8fffe2; }
+body[data-tema="aurora"] .online-pill { color: #5bbdff; }
+body[data-tema="aurora"] .big-circle {
+    background: linear-gradient(145deg, rgba(6, 16, 25, 0.92), rgba(13, 41, 45, 0.85));
+    border-color: rgba(143, 255, 226, 0.28);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.55), 0 0 34px rgba(91, 189, 255, 0.16);
+}
+body[data-tema="aurora"] .top-half i { color: #8fffe2; text-shadow: 0 0 18px rgba(143, 255, 226, 0.55); }
+body[data-tema="aurora"] .bottom-half i { color: #ffc75f; text-shadow: 0 0 18px rgba(255, 199, 95, 0.45); }
+body[data-tema="aurora"] .circle-divider { background: rgba(143, 255, 226, 0.22); }
+body[data-tema="aurora"] .top-circle-btn {
+    border-color: rgba(143, 255, 226, 0.32);
+    color: #8fffe2;
+    background: rgba(6, 16, 25, 0.55);
+}
+body[data-tema="aurora"] .rank-btn {
+    border-color: #ffc75f;
+    color: #ffc75f;
+    background: rgba(255, 199, 95, 0.1);
+    box-shadow: 0 0 22px rgba(255, 199, 95, 0.28);
+}
+body[data-tema="aurora"] .rank-label { background: #ffc75f; color: #061019; }
+body[data-tema="aurora"] .solo-btn {
+    background: rgba(143, 255, 226, 0.1);
+    border-color: #8fffe2;
+    color: #8fffe2;
+}
+body[data-tema="aurora"] .tournament-btn {
+    background: rgba(255, 199, 95, 0.1);
+    border-color: #ffc75f;
+    color: #ffc75f;
+}
+body[data-tema="aurora"] .input-group input {
+    background: rgba(6, 16, 25, 0.72);
+    border: 2px solid rgba(143, 255, 226, 0.26);
+}
+body[data-tema="aurora"] .input-group input:focus {
+    border-color: #8fffe2;
+    box-shadow: 0 0 16px rgba(143, 255, 226, 0.32);
+}
+body[data-tema="aurora"] .input-correct {
+    border-color: #8fffe2 !important;
+    background: rgba(143, 255, 226, 0.16) !important;
+    box-shadow: 0 0 14px rgba(143, 255, 226, 0.32);
+}
+body[data-tema="aurora"] .game-header,
+body[data-tema="aurora"] .modal-content,
+body[data-tema="aurora"] .stats-panel,
+body[data-tema="aurora"] #riznica-sadrzaj > div,
+body[data-tema="aurora"] #trofeji-sadrzaj > div,
+body[data-tema="aurora"] #podesavanja-screen > div > div,
+body[data-tema="aurora"] #private-room-setup > div > div {
+    background: linear-gradient(145deg, rgba(6, 16, 25, 0.9), rgba(18, 30, 46, 0.86));
+    border: 1px solid rgba(143, 255, 226, 0.22);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.48), inset 0 0 24px rgba(91, 189, 255, 0.06);
+}
+body[data-tema="aurora"] .modal-content p,
+body[data-tema="aurora"] .stat-value,
+body[data-tema="aurora"] .opponent-player { color: #c8d7e3; }
+body[data-tema="aurora"] .opponent-player,
+body[data-tema="aurora"] .current-player {
+    background: rgba(143, 255, 226, 0.08);
+    border-color: rgba(143, 255, 226, 0.24);
+}
+body[data-tema="aurora"] #splash-screen {
+    background: linear-gradient(135deg, #04070d 0%, #101624 36%, #062b31 72%, #24142d 100%);
+}
+body[data-tema="aurora"] .action-footer { background: linear-gradient(to top, #04070d 85%, transparent); }
+body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); color: #8fffe2; }
+
 /* ========================================================
    ANIMACIJA VRATA (MODERNI UI/UX EKRAN ZA UČITAVANJE)
    ======================================================== */
@@ -1827,6 +1943,12 @@ body[data-tema="zlatna"] #custom-keyboard { background: rgba(26, 21, 0, 0.98); b
 body[data-tema="zlatna"] .kb-key { background: rgba(255,215,0,0.08); color: #ffd700; border-color: rgba(255,215,0,0.2); }
 body[data-tema="zlatna"] .kb-key:active { background: #ffd700; color: #000; }
 body[data-tema="zlatna"] .kb-enter { background: linear-gradient(45deg, #ffaa00, #ffd700); color: #000; border:none; }
+
+body[data-tema="aurora"] #custom-keyboard { background: rgba(4, 7, 13, 0.98); border-top-color: #8fffe2; }
+body[data-tema="aurora"] .kb-key { background: rgba(143, 255, 226, 0.08); color: #8fffe2; border-color: rgba(143, 255, 226, 0.22); }
+body[data-tema="aurora"] .kb-key:active { background: #8fffe2; color: #061019; box-shadow: 0 0 14px rgba(143, 255, 226, 0.42); }
+body[data-tema="aurora"] .kb-special { background: rgba(91, 189, 255, 0.12); color: #5bbdff; }
+body[data-tema="aurora"] .kb-enter { background: linear-gradient(45deg, #8fffe2, #5bbdff, #ffc75f); color: #061019; border: none; }
 
 /* ========================================================
    GLOBAL CHAT STILIZACIJA

@@ -61,6 +61,7 @@ const PodesavanjaManager = {
             this.postavke.profilZavrsen = false;
         }
         this.snimiULokalnuMemoriju();
+        document.body.setAttribute('data-tema', this.postavke.tema || 'tamna');
         
         this.primeniPostavkeGlobalno();
 
@@ -70,8 +71,6 @@ const PodesavanjaManager = {
             this.pokreniCirilicaPosmatraca();
         }
 
-        // Učitavanje izabrane teme na body element
-        document.body.setAttribute('data-tema', this.postavke.tema || 'tamna');
         this.poveziAvatarPicker();
         this.renderujAvatare();
         this.azurirajAvatarPreview();
@@ -869,6 +868,21 @@ const PodesavanjaManager = {
         `;
     },
 
+    tematskeBoje: function() {
+        const stil = getComputedStyle(document.body);
+        const uzmi = (naziv, fallback) => stil.getPropertyValue(naziv).trim() || fallback;
+
+        return {
+            primary: uzmi('--theme-primary', '#38ef7d'),
+            primaryRgb: uzmi('--theme-primary-rgb', '56, 239, 125'),
+            danger: uzmi('--theme-danger', '#ff416c'),
+            dangerRgb: uzmi('--theme-danger-rgb', '255, 65, 108'),
+            muted: uzmi('--theme-muted', '#a0aec0'),
+            controlBg: uzmi('--theme-control-bg', 'rgba(255,255,255,0.05)'),
+            border: uzmi('--theme-border', 'rgba(255,255,255,0.12)')
+        };
+    },
+
     toggleZvuk: function() {
         this.postavke.zvuk = !this.postavke.zvuk;
         this.snimiULokalnuMemoriju();
@@ -885,19 +899,20 @@ const PodesavanjaManager = {
         const btn = document.getElementById('btn-zvuk');
         const statusTekst = document.getElementById('zvuk-status');
         const ikona = document.getElementById('ikona-zvuk');
+        const boje = this.tematskeBoje();
 
         if (btn && statusTekst && ikona) {
             if (this.postavke.zvuk) {
                 statusTekst.innerText = this.postavke.pismo === "cirilica" ? "УКЉ" : "UKLJ";
-                statusTekst.style.color = "#38ef7d";
-                btn.style.borderColor = "rgba(56, 239, 125, 0.4)";
-                btn.style.background = "rgba(56, 239, 125, 0.05)";
+                statusTekst.style.color = boje.primary;
+                btn.style.borderColor = `rgba(${boje.primaryRgb}, 0.42)`;
+                btn.style.background = `rgba(${boje.primaryRgb}, 0.1)`;
                 ikona.className = "fa-solid fa-volume-high";
             } else {
                 statusTekst.innerText = this.postavke.pismo === "cirilica" ? "ИСКЉ" : "ISKLJ";
-                statusTekst.style.color = "#ff416c";
-                btn.style.borderColor = "rgba(255, 65, 108, 0.4)";
-                btn.style.background = "rgba(255, 65, 108, 0.05)";
+                statusTekst.style.color = boje.danger;
+                btn.style.borderColor = `rgba(${boje.dangerRgb}, 0.42)`;
+                btn.style.background = `rgba(${boje.dangerRgb}, 0.1)`;
                 ikona.className = "fa-solid fa-volume-xmark";
             }
         }
@@ -916,9 +931,10 @@ const PodesavanjaManager = {
 
     azurirajDugmePismo: function() {
         const statusTekst = document.getElementById('pismo-status');
+        const boje = this.tematskeBoje();
         if (statusTekst) {
             statusTekst.innerText = this.postavke.pismo === "cirilica" ? "ЋИРИЛИЦА" : "LATINICA";
-            statusTekst.style.color = this.postavke.pismo === "cirilica" ? "#38ef7d" : "#a0aec0";
+            statusTekst.style.color = this.postavke.pismo === "cirilica" ? boje.primary : boje.muted;
         }
     },
 
@@ -999,13 +1015,15 @@ const PodesavanjaManager = {
         // PRIMENA TEME
         this.postavke.tema = novaTema;
         this.snimiULokalnuMemoriju();
-        this.azurirajDugmadTeme();
-        
         document.body.setAttribute('data-tema', novaTema);
+        this.azurirajDugmadTeme();
+        this.azurirajDugmeZvuk();
+        this.azurirajDugmePismo();
+        const boje = this.tematskeBoje();
         
         UIManager.prikaziObavestenje(
             "Tema primenjena", 
-            `Uspešno ste aktivirali temu: <b style="color:#38bdf8; text-transform:uppercase;">${prikazNazivaTeme}</b>.`,
+            `Uspešno ste aktivirali temu: <b style="color:${boje.primary}; text-transform:uppercase;">${prikazNazivaTeme}</b>.`,
             null, 
             "Super"
         );
@@ -1014,6 +1032,7 @@ const PodesavanjaManager = {
     azurirajDugmadTeme: function() {
         const naziviTema = { 'tamna': 'Tamna', 'svetla': 'Svetla', 'neon': 'Neon', 'okean': 'Okean', 'zlatna': 'Zlatna', 'aurora': 'Aurora' };
         const teme = ['tamna', 'svetla', 'neon', 'okean', 'zlatna', 'aurora'];
+        const boje = this.tematskeBoje();
         
         teme.forEach(tema => {
             const btn = document.getElementById(`btn-tema-${tema}`);
@@ -1028,14 +1047,14 @@ const PodesavanjaManager = {
                 btn.innerHTML = naziviTema[tema] + (!kupljeno ? ' <i class="fa-solid fa-lock" style="font-size:0.7rem; margin-left:4px;"></i>' : '');
 
                 if (this.postavke.tema === tema) {
-                    btn.style.background = "rgba(56,239,125,0.2)";
-                    btn.style.borderColor = "#38ef7d";
-                    btn.style.color = "#38ef7d";
+                    btn.style.background = `rgba(${boje.primaryRgb}, 0.18)`;
+                    btn.style.borderColor = boje.primary;
+                    btn.style.color = boje.primary;
                     btn.style.fontWeight = "800";
                 } else {
-                    btn.style.background = "rgba(255,255,255,0.05)";
-                    btn.style.borderColor = "transparent";
-                    btn.style.color = !kupljeno ? "rgba(160,174,192,0.5)" : "#a0aec0";
+                    btn.style.background = boje.controlBg;
+                    btn.style.borderColor = boje.border;
+                    btn.style.color = !kupljeno ? `rgba(${boje.primaryRgb}, 0.45)` : boje.muted;
                     btn.style.fontWeight = "600";
                 }
             }

@@ -114,16 +114,21 @@ const Game = {
                 const tokeniEl = document.getElementById('meni-tokeni');
                 const tokeniVelikoEl = document.getElementById('tokeni-stanje-veliko');
                 
-                if (dukatiEl) dukatiEl.innerText = podaci.dukati;
+                const imaCloudRiznicu = Boolean(podaci.sinhronizacija?.imaPodatke);
+                if (typeof RiznicaManager !== 'undefined') {
+                    if (!imaCloudRiznicu) {
+                        RiznicaManager.postaviPocetneDukateAkoNemaStanja(podaci.dukati);
+                    } else {
+                        RiznicaManager.azurirajPrikazDukata();
+                    }
+                } else if (dukatiEl) {
+                    dukatiEl.innerText = podaci.dukati;
+                }
                 if (typeof TokeniManager !== 'undefined') {
                     TokeniManager.azurirajPrikaz();
                 } else {
                     if (tokeniEl) tokeniEl.innerText = `${podaci.tokeni}/3`;
                     if (tokeniVelikoEl) tokeniVelikoEl.innerText = podaci.tokeni;
-                }
-                if (typeof RiznicaManager !== 'undefined' && !podaci.sinhronizacija?.imaPodatke) {
-                    RiznicaManager.dukati = podaci.dukati;
-                    RiznicaManager.azurirajPrikazDukata();
                 }
                 if (typeof SinhronizacijaManager !== 'undefined') {
                     SinhronizacijaManager.obradiProfil(podaci);

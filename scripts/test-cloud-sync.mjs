@@ -132,6 +132,8 @@ try {
     proveri(prijava.uspeh === true, "Ponovna prijava nije uspela.");
     proveri(prijava.profil.playerId === playerId, "Ponovna prijava nije vratila isti playerId.");
     proveri(prijava.profil.sinhronizacija.napredak.podesavanja.tema === "neon", "Cloud napredak nije učitan.");
+    proveri(prijava.profil.sinhronizacija.napredak.riznica.dukati === 777, "Cloud riznica nije vratila tačno stanje dukata.");
+    proveri(prijava.profil.dukati === 777, "Profil nije uskladio dukate sa cloud riznicom.");
 
     console.log("OK: cloud sync, playerId i promena nadimka rade.");
 } finally {

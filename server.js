@@ -230,6 +230,12 @@ function podaciSinhronizacijeZaKlijenta(igrac) {
     };
 }
 
+function normalizujDukate(vrednost, podrazumevano = 500) {
+    const broj = Number(vrednost);
+    if (!Number.isFinite(broj)) return podrazumevano;
+    return Math.max(0, Math.floor(broj));
+}
+
 function podaciProfilaZaKlijenta(igrac) {
     osigurajIdentitetIgraca(igrac);
     return {
@@ -238,7 +244,7 @@ function podaciProfilaZaKlijenta(igrac) {
         avatar: igrac.avatar || "atlas",
         profilTip: igrac.googleUid ? "google" : "lokalni",
         googlePovezan: Boolean(igrac.googleUid),
-        dukati: igrac.dukati,
+        dukati: normalizujDukate(igrac.dukati),
         tokeni: igrac.tokeni,
         sezonskiPojmovi: igrac.sezonskiPojmovi,
         svaVremenaPojmovi: igrac.svaVremenaPojmovi,
@@ -926,7 +932,14 @@ io.on('connection', (socket) => {
                 });
             }
 
-            igrac.cloudNapredak = sanitizujCloudNapredak(podaci && podaci.napredak);
+            const ocisceniNapredak = sanitizujCloudNapredak(podaci && podaci.napredak);
+            igrac.cloudNapredak = ocisceniNapredak;
+            if (
+                ocisceniNapredak.riznica
+                && typeof ocisceniNapredak.riznica.dukati !== "undefined"
+            ) {
+                igrac.dukati = normalizujDukate(ocisceniNapredak.riznica.dukati, igrac.dukati || 500);
+            }
             igrac.cloudRevizija = trenutnaRevizija + 1;
             igrac.lokalnaMigracijaZavrsena = true;
             igrac.cloudAzuriranAt = new Date();

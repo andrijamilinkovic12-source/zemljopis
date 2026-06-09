@@ -42,7 +42,30 @@ const RiznicaManager = {
         }
     },
 
+    normalizujDukate: function(vrednost, podrazumevano = this.dukati) {
+        const broj = Number(vrednost);
+        if (!Number.isFinite(broj)) return podrazumevano;
+        return Math.max(0, Math.floor(broj));
+    },
+
+    imaLokalnoStanje: function() {
+        return localStorage.getItem('zemljopis_riznica') !== null;
+    },
+
+    postaviPocetneDukateAkoNemaStanja: function(dukati) {
+        if (this.imaLokalnoStanje()) {
+            this.init();
+            this.azurirajPrikazDukata();
+            return false;
+        }
+
+        this.dukati = this.normalizujDukate(dukati, this.dukati);
+        this.snimiStanje();
+        return true;
+    },
+
     snimiStanje: function() {
+        this.dukati = this.normalizujDukate(this.dukati, 0);
         localStorage.setItem('zemljopis_riznica', JSON.stringify({
             dukati: this.dukati,
             podaci: this.podaci

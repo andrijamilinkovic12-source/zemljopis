@@ -1418,6 +1418,17 @@ const Game = {
     },
 
     zatraziIzlazIzMeca: function() {
+        if (this.trenutniMod === 'solo') {
+            UIManager.prikaziPotvrdu(
+                "Napusti igru?",
+                "Da li si siguran da želiš da napustiš solo partiju?<br><br>Tvoj trenutni rezultat iz ove partije neće biti sačuvan.",
+                () => this.povratakUMeni(),
+                "Napusti igru",
+                "Ostani"
+            );
+            return;
+        }
+
         this.zatraziNapustanjeOnlineModa('napustio');
     },
 

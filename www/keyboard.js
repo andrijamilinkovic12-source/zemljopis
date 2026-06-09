@@ -199,7 +199,14 @@ const KeyboardManager = {
         
         // Povećaj padding na dnu containera da tastatura ne prekrije polja
         const container = this.getInputScrollContainer();
-        if (container) container.style.paddingBottom = '260px';
+        if (container) {
+            const keyboardHeight = kb ? Math.ceil(kb.getBoundingClientRect().height || 260) : 260;
+            container.style.paddingBottom = `${keyboardHeight + 24}px`;
+        }
+        if (this.activeInput) {
+            setTimeout(() => this.scrollInputIntoView(this.activeInput), 80);
+            setTimeout(() => this.scrollInputIntoView(this.activeInput), 320);
+        }
     },
 
     hideKeyboard: function() {

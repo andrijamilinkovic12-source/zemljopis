@@ -1232,12 +1232,12 @@ body[data-tema="svetla"] #postavke-nadimak {
 }
 
 body.keyboard-open #dnevni-izazov-screen {
-    padding-top: 3vh;
+    padding-top: 1vh !important;
+    overflow: hidden;
 }
 
 body.keyboard-open #dnevni-izazov-screen h2 {
-    font-size: 1.25rem !important;
-    margin-bottom: 0.25rem !important;
+    display: none;
 }
 
 body.keyboard-open .dnevni-timer-wrap {
@@ -1258,9 +1258,30 @@ body.keyboard-open .dnevni-aktivni-zadatak {
     padding: 0.45rem 0.65rem;
 }
 
+body.keyboard-open .dnevni-izazov-inputs {
+    min-height: 0;
+    padding-top: 0 !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    scroll-padding-top: 0.5rem;
+    scroll-padding-bottom: 285px;
+}
+
+body.keyboard-open #dnevni-izazov-polja {
+    margin-bottom: 0 !important;
+}
+
 body.keyboard-open .dnevni-input-group {
     margin-bottom: 0.75rem !important;
     padding: 0.65rem !important;
+}
+
+body.keyboard-open .dnevni-input-group label {
+    margin-bottom: 0.35rem !important;
+}
+
+body.keyboard-open .dnevni-input-group input {
+    padding: 0.55rem 0.75rem !important;
 }
 
 .action-footer { 

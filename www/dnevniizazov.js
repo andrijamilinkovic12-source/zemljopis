@@ -119,9 +119,9 @@ const DnevniIzazovManager = {
                         KeyboardManager.setActiveInput(input);
                     }
                     DnevniIzazovManager.azurirajAktivniZadatak(index);
-                    setTimeout(() => {
-                        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 200);
+                    if (typeof KeyboardManager !== 'undefined') {
+                        setTimeout(() => KeyboardManager.scrollInputIntoView(input), 220);
+                    }
                 });
 
                 // Obezbeđujemo da 'OK' (Enter) prelazi na sledeće polje
@@ -146,6 +146,7 @@ const DnevniIzazovManager = {
                 if (typeof KeyboardManager !== 'undefined') {
                     KeyboardManager.setActiveInput(prvoPolje);
                     KeyboardManager.showKeyboard();
+                    setTimeout(() => KeyboardManager.scrollInputIntoView(prvoPolje), 280);
                 } else {
                     prvoPolje.focus();
                 }

@@ -621,10 +621,83 @@
         </div>
     </div>
 
-    <div id="door-transition" class="door-overlay">
-        <span class="door-text">PRIPREMA...</span>
+    <div id="door-transition" class="door-overlay" aria-hidden="true">
         <div class="door door-left"></div>
         <div class="door door-right"></div>
+        <div class="door-stage" role="status" aria-live="polite">
+            <div class="door-brand">
+                <i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i>
+                <span>ZEMLJOPIS</span>
+            </div>
+            <span class="door-text">PRIPREMA</span>
+            <div class="door-progress" aria-hidden="true"><span></span></div>
+            <div class="door-dots" aria-hidden="true">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="round-winner-effect" class="round-winner-effect" aria-hidden="true">
+        <div class="round-winner-grid" aria-hidden="true"></div>
+        <div class="round-winner-stage" role="status" aria-live="polite">
+            <span id="round-winner-round" class="round-winner-round">RUNDA 1</span>
+            <div class="round-winner-heading">
+                <i class="fa-solid fa-ranking-star" aria-hidden="true"></i>
+                <h2 id="round-winner-title">NAJBOLJI U RUNDI</h2>
+            </div>
+            <div id="round-winner-list" class="round-winner-list"></div>
+        </div>
+    </div>
+
+    <div id="final-ranking-overlay" class="final-ranking-overlay" aria-hidden="true">
+        <div class="final-ranking-grid" aria-hidden="true"></div>
+        <div class="final-ranking-stage">
+            <header class="final-ranking-header">
+                <span class="final-ranking-kicker">KRAJ MEČA</span>
+                <i class="fa-solid fa-trophy" aria-hidden="true"></i>
+                <h2>KONAČAN PLASMAN</h2>
+            </header>
+
+            <div id="final-ranking-list" class="final-ranking-list"></div>
+
+            <section class="final-bonus-panel" aria-labelledby="final-bonus-title">
+                <div class="final-bonus-copy">
+                    <span class="final-bonus-label">NAGRADA ZA POJMOVE</span>
+                    <h3 id="final-bonus-title"><span id="final-base-concepts">0</span> tačnih pojmova kroz <span id="final-round-count">6</span> rundi</h3>
+                    <p id="final-bonus-status">Izaberi jedno uvećanje. Nagrada se može preuzeti samo jednom.</p>
+                </div>
+
+                <div class="final-bonus-actions">
+                    <button id="btn-final-5x" class="final-bonus-btn final-bonus-5x" type="button">
+                        <i class="fa-solid fa-rectangle-ad" aria-hidden="true"></i>
+                        <span><strong>5x</strong> Intersticijalna</span>
+                        <small id="final-total-5x">0 pojmova</small>
+                    </button>
+                    <button id="btn-final-10x" class="final-bonus-btn final-bonus-10x" type="button">
+                        <i class="fa-solid fa-gift" aria-hidden="true"></i>
+                        <span><strong>10x</strong> Nagrađena</span>
+                        <small id="final-total-10x">0 pojmova</small>
+                    </button>
+                </div>
+            </section>
+
+            <button id="btn-final-finish" class="btn-finish final-ranking-finish" type="button">
+                ZAVRŠI BEZ BONUSA
+            </button>
+        </div>
+    </div>
+
+    <div id="ad-preview-overlay" class="ad-preview-overlay" aria-hidden="true">
+        <div class="ad-preview-panel" role="status" aria-live="polite">
+            <span class="ad-preview-badge">TEST REŽIM</span>
+            <i class="fa-solid fa-clapperboard" aria-hidden="true"></i>
+            <h2 id="ad-preview-title">REKLAMA</h2>
+            <p id="ad-preview-description">Reklama se prikazuje.</p>
+            <strong id="ad-preview-time">3s</strong>
+            <div class="ad-preview-progress" aria-hidden="true">
+                <span id="ad-preview-progress-fill"></span>
+            </div>
+        </div>
     </div>
 
     <div id="custom-keyboard" class="keyboard-hidden">
@@ -692,6 +765,7 @@
                     const slot = document.getElementById('invite-slot-' + i);
                     slot.innerHTML = '<i class="fa-solid fa-plus"></i>';
                     slot.classList.remove('filled');
+                    delete slot.dataset.ime;
                 }
 
                 // NOVO: Automatski zatraži svežu listu od servera kako bismo znali ko je TAČNO ONLINE
@@ -742,8 +816,18 @@
         }
 
         function izaberiPrijateljaZaSobu(ime) {
-            izabraniPrijateljiZaSobu.push(ime);
             const slot = document.getElementById('invite-slot-' + currentSlotIndex);
+            if (!slot || currentSlotIndex < 1 || currentSlotIndex > 4) return;
+
+            const prethodnoIme = slot.dataset.ime;
+            if (prethodnoIme) {
+                izabraniPrijateljiZaSobu = izabraniPrijateljiZaSobu.filter(izabranoIme => izabranoIme !== prethodnoIme);
+            }
+
+            if (!izabraniPrijateljiZaSobu.includes(ime)) {
+                izabraniPrijateljiZaSobu.push(ime);
+            }
+            slot.dataset.ime = ime;
             
             // Umesto slika (pošto ih jos nemamo), ispisujemo lepo Inicijal prijatelja!
             let inicijal = ime.charAt(0).toUpperCase();

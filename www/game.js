@@ -24,6 +24,11 @@ const Game = {
     kazneniPoeni: 0, 
     antiCheatTimeout: null, 
     partijaId: null,
+    odstupanjeServerVremena: 0,
+    vremeSinhronizovano: false,
+    tajmerPocetkaRunde: null,
+    krajRundeAt: 0,
+    aktivnaRundaId: null,
 
     // === PAMĆENJE SOBE ZA AUTO-JOIN NAKON REKLAME ===
     sobaNaCekanjuZbotTokena: null,
@@ -95,6 +100,8 @@ const Game = {
 
             this.socket.on('connect', () => {
                 console.log("Povezan na server sa ID:", this.socket.id);
+                this.vremeSinhronizovano = false;
+                this.sinhronizujVremeSaServerom();
                 this.prijaviSacuvanProfil();
             });
 
@@ -254,7 +261,7 @@ const Game = {
             this.socket.on('hostJeNapustioSobu', (podaci = {}) => {
                 if (podaci && podaci._dogadjajSobe) return;
                 this.rundaUToku = false;
-                clearInterval(this.tajmerInterval);
+                this.zaustaviTajmereRunde();
                 this.trenutnaSoba = null;
                 this.jeHost = false;
                 UIManager.prikaziObavestenje(
@@ -267,14 +274,14 @@ const Game = {
 
             this.socket.on('igraPocela', (podaci) => {
                 UIManager.zatvoriObavestenje();
-                this.pokreniIgru('multi', podaci.slovo);
+                this.pokreniIgru('multi', podaci.slovo, podaci);
             });
 
             this.socket.on('sviOdgovoriPrikupjeni', (odgovoriSobe) => {
                 UIManager.zatvoriObavestenje();
                 
                 this.rundaUToku = false;
-                clearInterval(this.tajmerInterval);
+                this.zaustaviTajmereRunde();
                 
                 if (typeof KeyboardManager !== 'undefined') {
                     KeyboardManager.hideKeyboard();
@@ -289,7 +296,7 @@ const Game = {
             this.socket.on('sledecaRundaPocinje', (podaci) => {
                 UIManager.zatvoriObavestenje();
                 this.trenutnaRunda = podaci.runda;
-                this.zapocniRundu(podaci.slovo);
+                this.zapocniRundu(podaci.slovo, podaci);
             });
 
             this.socket.on('azuriranjeJavneSobe', (podaci) => {
@@ -334,7 +341,7 @@ const Game = {
                 if (this.trenutnaRunda >= 6 && !this.rundaUToku) return;
 
                 this.rundaUToku = false;
-                clearInterval(this.tajmerInterval);
+                this.zaustaviTajmereRunde();
                 
                 if (typeof KeyboardManager !== 'undefined') {
                     KeyboardManager.hideKeyboard();
@@ -358,6 +365,68 @@ const Game = {
 
         } else {
             console.error("Socket.IO nije učitan! Proveri index.html");
+        }
+    },
+
+    sinhronizujVremeSaServerom: function() {
+        if (!this.socket || !this.socket.connected) return;
+
+        const uzorci = [];
+        let zavrseniPokusaji = 0;
+        const brojPokusaja = 3;
+
+        const zavrsiPokusaj = () => {
+            zavrseniPokusaji++;
+            if (zavrseniPokusaji < brojPokusaja || uzorci.length === 0) return;
+
+            uzorci.sort((a, b) => a.rtt - b.rtt);
+            this.odstupanjeServerVremena = uzorci[0].odstupanje;
+            this.vremeSinhronizovano = true;
+        };
+
+        for (let i = 0; i < brojPokusaja; i++) {
+            setTimeout(() => {
+                if (!this.socket || !this.socket.connected) {
+                    zavrsiPokusaj();
+                    return;
+                }
+
+                const poslatoAt = Date.now();
+                this.socket.timeout(3000).emit('sinhronizujVreme', (greska, odgovor) => {
+                    const primljenoAt = Date.now();
+                    const serverVreme = Number(odgovor && odgovor.serverVreme);
+
+                    if (!greska && Number.isFinite(serverVreme)) {
+                        const sredinaPutovanja = (poslatoAt + primljenoAt) / 2;
+                        uzorci.push({
+                            rtt: primljenoAt - poslatoAt,
+                            odstupanje: serverVreme - sredinaPutovanja
+                        });
+                    }
+
+                    zavrsiPokusaj();
+                });
+            }, i * 140);
+        }
+    },
+
+    serverSada: function() {
+        return Date.now() + this.odstupanjeServerVremena;
+    },
+
+    zaustaviTajmereRunde: function() {
+        clearTimeout(this.tajmerPocetkaRunde);
+        clearInterval(this.tajmerInterval);
+        this.tajmerPocetkaRunde = null;
+        this.tajmerInterval = null;
+        this.krajRundeAt = 0;
+    },
+
+    uskladiVremeIzDogadjaja: function(podaci = {}) {
+        if (this.vremeSinhronizovano) return;
+        const serverVreme = Number(podaci.serverVreme);
+        if (Number.isFinite(serverVreme)) {
+            this.odstupanjeServerVremena = serverVreme - Date.now();
         }
     },
 
@@ -532,7 +601,7 @@ const Game = {
 
         if (dogadjaj.tip === "soba_zatvorena") {
             this.rundaUToku = false;
-            clearInterval(this.tajmerInterval);
+            this.zaustaviTajmereRunde();
             this.trenutnaSoba = null;
             this.jeHost = false;
             UIManager.prikaziObavestenje(
@@ -546,7 +615,7 @@ const Game = {
 
         if (dogadjaj.tip === "host_zatvorio_sobu") {
             this.rundaUToku = false;
-            clearInterval(this.tajmerInterval);
+            this.zaustaviTajmereRunde();
             this.trenutnaSoba = null;
             this.jeHost = false;
             UIManager.prikaziObavestenje(
@@ -566,7 +635,7 @@ const Game = {
             if (this.trenutnaRunda >= 6 && !this.rundaUToku) return;
             const poslednjiIzlazak = dogadjaj.razlogTekst || "je poslednji napustio meč.";
             this.rundaUToku = false;
-            clearInterval(this.tajmerInterval);
+            this.zaustaviTajmereRunde();
             if (typeof KeyboardManager !== 'undefined') KeyboardManager.hideKeyboard();
             document.querySelectorAll('#game-board .game-input').forEach(input => input.disabled = true);
             if (typeof TrofejiManager !== 'undefined') TrofejiManager.azurirajNapredak('pobede', 1);
@@ -650,6 +719,12 @@ const Game = {
         if (!this.profilSpremanZaIgru()) return;
         if (!this.socket) return alert("Nema konekcije sa serverom!");
 
+        brojIgraca = Number(brojIgraca);
+        if (!Number.isInteger(brojIgraca) || brojIgraca < 2 || brojIgraca > 5) {
+            UIManager.prikaziObavestenje("Neispravan broj igrača", "Izaberi sobu za 2 do 5 igrača.", null, "U redu");
+            return;
+        }
+
         if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
             this.zatraziTokenZaAkciju(
                 "Potrošio si sve tokene!", 
@@ -690,6 +765,12 @@ const Game = {
     kreirajPrivatnuSobu: function(brojIgraca) {
         if (!this.profilSpremanZaIgru()) return;
         if (!this.socket) return alert("Nema konekcije sa serverom!");
+
+        brojIgraca = Number(brojIgraca);
+        if (!Number.isInteger(brojIgraca) || brojIgraca < 2 || brojIgraca > 5) {
+            UIManager.prikaziObavestenje("Neispravan broj igrača", "Izaberi sobu za 2 do 5 igrača.", null, "U redu");
+            return;
+        }
 
         if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
             this.zatraziTokenZaAkciju(
@@ -802,6 +883,17 @@ const Game = {
     },
 
     kreirajPrivatnuSobuIPozoviSaListom: function(pozvani) {
+        pozvani = [...new Set(
+            (Array.isArray(pozvani) ? pozvani : [])
+                .map(ime => String(ime || "").trim())
+                .filter(Boolean)
+        )];
+
+        if (pozvani.length > 4) {
+            UIManager.prikaziObavestenje("Previše igrača", "Možeš pozvati najviše četiri prijatelja.", null, "U redu");
+            return;
+        }
+
         if (typeof TokeniManager !== 'undefined' && !TokeniManager.imaTokena()) {
             this.zatraziTokenZaAkciju(
                 "Nemaš više tokena!", 
@@ -858,7 +950,7 @@ const Game = {
         });
     },
 
-    pokreniIgru: function(mod, zadatoSlovoSaServera = null) {
+    pokreniIgru: function(mod, zadatoSlovoSaServera = null, podaciRunde = {}) {
         if (!this.profilSpremanZaIgru()) return;
         if (typeof TokeniManager !== 'undefined') {
             if (!TokeniManager.imaTokena()) {
@@ -876,7 +968,7 @@ const Game = {
 
         this.trenutniMod = mod;
         this.partijaId = `partija_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
-        this.trenutnaRunda = 1; 
+        this.trenutnaRunda = Number(podaciRunde.runda) || 1;
         this.ukupanScore = 0;   
         this.ukupnoTacnihOdgovora = 0; 
         this.iskoriscenaSlova = []; 
@@ -890,10 +982,16 @@ const Game = {
         
         this.rezultatiProtivnika = {}; 
         
-        this.zapocniRundu(zadatoSlovoSaServera);    
+        this.zapocniRundu(zadatoSlovoSaServera, podaciRunde);
     },
 
-    zapocniRundu: function(zadatoSlovoSaServera = null) {
+    zapocniRundu: function(zadatoSlovoSaServera = null, podaciRunde = {}) {
+        clearTimeout(this.tajmerPocetkaRunde);
+        this.tajmerPocetkaRunde = null;
+
+        const onlineRunda = this.trenutniMod === 'multi' && zadatoSlovoSaServera;
+        if (onlineRunda) this.uskladiVremeIzDogadjaja(podaciRunde);
+
         if (this.trenutniMod === 'solo' || !zadatoSlovoSaServera) {
             const svaSlova = "ABVGDĐEŽZIJKLLJMNNJOPRSTĆUFHCČDŽŠ".split("");
             let dostupnaSlova = svaSlova.filter(slovo => !this.iskoriscenaSlova.includes(slovo));
@@ -907,29 +1005,65 @@ const Game = {
         }
 
         this.iskoriscenaSlova.push(this.zadatoSlovo);
-        this.rundaUToku = true; 
+        this.rundaUToku = false;
+        this.aktivnaRundaId = onlineRunda
+            ? (podaciRunde.rundaId || `${this.trenutnaSoba}:${this.trenutnaRunda}`)
+            : `solo:${this.trenutnaRunda}:${Date.now()}`;
+        this.krajRundeAt = onlineRunda ? Number(podaciRunde.krajRundeAt) || 0 : 0;
 
         UIManager.pripremiPolja();
         UIManager.podesiTabluZaIgru(this.trenutniMod, this.zadatoSlovo);
         UIManager.azurirajRundu(this.trenutnaRunda); 
+        document.querySelectorAll('#game-board .game-input').forEach(input => {
+            input.disabled = true;
+        });
         
         let prikazRezultata = this.trenutniMod === 'solo' ? this.ukupnoTacnihOdgovora : this.ukupanScore;
         let arrayZaLiveStatistiku = Object.values(this.rezultatiProtivnika).map(p => ({ ime: p.ime, poeni: p.poeni }));
         UIManager.azurirajLiveStatistiku(prikazRezultata, this.trenutniMod, arrayZaLiveStatistiku.length > 0 ? arrayZaLiveStatistiku : this.brojIgracaUSobi);
         
-        const prikaziIPokreni = () => {
+        const prikaziTablu = () => {
             UIManager.prikaziEkran('game-board');
-            this.pokreniTajmer(120);
+        };
+
+        const rundaIdPriZakazivanju = this.aktivnaRundaId;
+        const pokreniIgruNaTabli = () => {
+            if (this.aktivnaRundaId !== rundaIdPriZakazivanju) return;
+
+            prikaziTablu();
+            document.querySelectorAll('#game-board .game-input').forEach(input => {
+                input.disabled = false;
+            });
+            this.rundaUToku = true;
+
+            if (onlineRunda && this.krajRundeAt > 0) {
+                this.pokreniTajmerDoServerskogRoka(this.krajRundeAt);
+            } else {
+                this.pokreniTajmer(120);
+            }
+
             setTimeout(() => {
                 const prviUnos = document.querySelector('#game-board .game-input');
                 if (prviUnos) prviUnos.focus();
             }, 100);
         };
 
+        const zakaziPocetak = () => {
+            const pocetakRundeAt = onlineRunda ? Number(podaciRunde.pocetakRundeAt) : 0;
+            const cekanje = Number.isFinite(pocetakRundeAt) && pocetakRundeAt > 0
+                ? Math.max(0, pocetakRundeAt - this.serverSada())
+                : 0;
+
+            this.tajmerPocetkaRunde = setTimeout(() => {
+                this.tajmerPocetkaRunde = null;
+                pokreniIgruNaTabli();
+            }, cekanje);
+        };
+
         if (this.trenutnaRunda === 1) {
-            UIManager.pokreniTranzicijuVrata(prikaziIPokreni);
+            UIManager.pokreniTranzicijuVrata(prikaziTablu, zakaziPocetak);
         } else {
-            prikaziIPokreni();
+            zakaziPocetak();
         }
     },
 
@@ -1015,9 +1149,19 @@ const Game = {
                 "..." 
             );
 
+            const opremljeniEfekat = typeof RiznicaManager !== 'undefined'
+                ? RiznicaManager.vratiOpremljeniEfekatId()
+                : 'ef_nista';
+
+            // Rezervno polje omogućava prikaz efekta i dok sobu još opslužuje starija verzija servera.
+            mojiOdgovori.__efekat = opremljeniEfekat;
+
             this.socket.emit('posaljiOdgovore', {
                 kodSobe: this.trenutnaSoba,
-                odgovori: mojiOdgovori
+                odgovori: mojiOdgovori,
+                efekat: opremljeniEfekat,
+                runda: this.trenutnaRunda,
+                rundaId: this.aktivnaRundaId
             });
         }
     },
@@ -1025,19 +1169,28 @@ const Game = {
     obradiMultiplayerOdgovore: function(odgovoriSobeSaServera) {
         let pregledIgraca = {};
         let scoreOveRunde = {}; 
+        let tacniOveRunde = {};
 
         odgovoriSobeSaServera.forEach(p => {
             let isMe = p.idIgraca === this.socket.id;
             pregledIgraca[p.idIgraca] = {
                 ime: isMe ? `👤 ${p.ime}` : `🌍 ${p.ime}`,
+                nadimak: p.ime,
                 ukupnoPoena: 0,
                 odgovori: [],
-                isMe: isMe
+                isMe: isMe,
+                efekat: p.efekat || p.odgovori?.__efekat || 'ef_nista'
             };
             scoreOveRunde[p.idIgraca] = 0;
+            tacniOveRunde[p.idIgraca] = 0;
 
             if (!isMe && !this.rezultatiProtivnika[p.idIgraca]) {
-                this.rezultatiProtivnika[p.idIgraca] = { ime: p.ime, poeni: 0 };
+                this.rezultatiProtivnika[p.idIgraca] = {
+                    ime: p.ime,
+                    poeni: 0,
+                    tacniPojmovi: 0,
+                    efekat: p.efekat || p.odgovori?.__efekat || 'ef_nista'
+                };
             }
         });
 
@@ -1052,6 +1205,7 @@ const Game = {
             odgovoriSobeSaServera.forEach(p => {
                 let odgovorIgraca = p.odgovori[kategorija] || "";
                 let isCorrect = BazaPodataka.proveriPojam(kategorija, odgovorIgraca, this.zadatoSlovo);
+                if (isCorrect) tacniOveRunde[p.idIgraca]++;
 
                 if (p.idIgraca === this.socket.id) {
                     UIManager.zakljucajIObojiPolje(input, isCorrect);
@@ -1090,18 +1244,18 @@ const Game = {
 
             if (pregledIgraca[socketId].isMe) {
                 this.ukupanScore += scoreOveRunde[socketId];
+                this.ukupnoTacnihOdgovora += tacniOveRunde[socketId];
             } else {
                 this.rezultatiProtivnika[socketId].poeni += scoreOveRunde[socketId];
+                this.rezultatiProtivnika[socketId].tacniPojmovi =
+                    (this.rezultatiProtivnika[socketId].tacniPojmovi || 0) + tacniOveRunde[socketId];
+                this.rezultatiProtivnika[socketId].efekat = pregledIgraca[socketId].efekat;
                 arrayZaLiveStatistiku.push({ ime: this.rezultatiProtivnika[socketId].ime, poeni: this.rezultatiProtivnika[socketId].poeni });
             }
         }
 
         if (typeof TrofejiManager !== 'undefined') {
-            let mojiTacni = 0;
-            const inputPoljaZaPojmove = document.querySelectorAll('#game-board .game-input');
-            inputPoljaZaPojmove.forEach(input => {
-                if (input.classList.contains('input-correct')) mojiTacni++;
-            });
+            const mojiTacni = tacniOveRunde[this.socket.id] || 0;
             TrofejiManager.azurirajNapredak('pojmovi', mojiTacni);
             if (mojiTacni === 7) TrofejiManager.azurirajNapredak('perfektno', 1);
             
@@ -1115,9 +1269,23 @@ const Game = {
 
         UIManager.azurirajLiveStatistiku(this.ukupanScore, 'multi', arrayZaLiveStatistiku);
 
+        const najboljiRezultat = Math.max(...Object.values(scoreOveRunde));
+        const pobedniciRunde = Object.keys(scoreOveRunde)
+            .filter(socketId => scoreOveRunde[socketId] === najboljiRezultat)
+            .map(socketId => ({
+                ime: pregledIgraca[socketId].nadimak,
+                poeni: scoreOveRunde[socketId],
+                efekat: pregledIgraca[socketId].efekat,
+                isMe: pregledIgraca[socketId].isMe
+            }));
+
         setTimeout(() => {
-            this.prikaziRezimeRunde(pregledIgraca, 0);
-        }, 1200);
+            UIManager.prikaziEfekatPobednikaRunde(
+                pobedniciRunde,
+                this.trenutnaRunda,
+                () => this.prikaziRezimeRunde(pregledIgraca, 0)
+            );
+        }, 900);
     },
 
     obracunajKategoriju: function(kategorija, odgovoriIgraca) {
@@ -1264,7 +1432,14 @@ const Game = {
                     btnNext.style.color = '#a0aec0';
                     btnNext.style.boxShadow = 'none';
                     
-                    this.socket.emit('spremanZaSledecuRundu', this.trenutnaSoba);
+                    this.socket.emit(
+                        'spremanZaSledecuRundu',
+                        this.trenutnaSoba,
+                        {
+                            runda: this.trenutnaRunda,
+                            rundaId: this.aktivnaRundaId
+                        }
+                    );
                 } else {
                     this.trenutnaRunda++; 
                     this.zapocniRundu();  
@@ -1284,49 +1459,50 @@ const Game = {
 
         if (this.trenutniMod === 'multi') {
             let sviIgraci = [];
-            sviIgraci.push({ ime: `👤 ${mojNadimak}`, poeni: this.ukupanScore, isMe: true });
+            const mojEfekat = typeof RiznicaManager !== 'undefined'
+                ? RiznicaManager.vratiOpremljeniEfekatId()
+                : 'ef_nista';
+
+            sviIgraci.push({
+                ime: mojNadimak,
+                poeni: this.ukupanScore,
+                tacniPojmovi: this.ukupnoTacnihOdgovora,
+                efekat: mojEfekat,
+                isMe: true
+            });
             
             for (let socketId in this.rezultatiProtivnika) {
-                sviIgraci.push({ ime: `🌍 ${this.rezultatiProtivnika[socketId].ime}`, poeni: this.rezultatiProtivnika[socketId].poeni, isMe: false });
+                const protivnik = this.rezultatiProtivnika[socketId];
+                sviIgraci.push({
+                    ime: protivnik.ime,
+                    poeni: protivnik.poeni,
+                    tacniPojmovi: protivnik.tacniPojmovi || 0,
+                    efekat: protivnik.efekat || 'ef_nista',
+                    isMe: false
+                });
             }
             
             sviIgraci.sort((a, b) => b.poeni - a.poeni);
 
-            if (typeof TrofejiManager !== 'undefined' && sviIgraci[0].isMe) {
+            const najboljiRezultat = sviIgraci.length > 0 ? sviIgraci[0].poeni : 0;
+            const jaSamPobednik = sviIgraci.some(igrac => igrac.isMe && igrac.poeni === najboljiRezultat);
+
+            if (typeof TrofejiManager !== 'undefined' && jaSamPobednik) {
                 TrofejiManager.azurirajNapredak('pobede', 1);
 
                 if (this.socket) {
                     this.socket.emit('upisiPobedu');
                 }
             }
-            
-            let tabelaHtml = `<div style="text-align: left; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; margin-top: 1rem;">`;
-            
-            sviIgraci.forEach((igrac, index) => {
-                let medalja = "";
-                if (index === 0) medalja = "🥇";
-                else if (index === 1) medalja = "🥈";
-                else if (index === 2) medalja = "🥉";
-                else medalja = `<b>${index + 1}.</b>`;
-                
-                let fontWeigth = igrac.isMe ? '800' : '600';
-                let boja = igrac.isMe ? '#38ef7d' : '#cbd5e0';
-                
-                tabelaHtml += `
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem; font-weight: ${fontWeigth}; color: ${boja}; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.4rem;">
-                        <span>${medalja} ${igrac.ime}</span>
-                        <span>${igrac.poeni} pts</span>
-                    </div>`;
-            });
-            tabelaHtml += `</div>`;
 
-            UIManager.prikaziObavestenje(
-                "🏆 KRAJ IGRE 🏆", 
-                `Konačan plasman takmičara:<br> ${tabelaHtml}`, 
-                () => {
-                    this.napustiAktivnuSobu('zavrsio');
-                },
-                "Nazad u Meni" 
+            UIManager.prikaziKonacniPlasman(
+                sviIgraci,
+                6,
+                this.ukupnoTacnihOdgovora,
+                {
+                    onPomnozi: (mnozilac, tipReklame) => this.pomnoziPojmoveNaKraju(mnozilac, tipReklame),
+                    onZavrsi: () => this.napustiAktivnuSobu('zavrsio')
+                }
             );
         } else {
             UIManager.prikaziObavestenje(
@@ -1353,6 +1529,30 @@ const Game = {
         }, 1000);
     },
 
+    pokreniTajmerDoServerskogRoka: function(krajRundeAt) {
+        clearInterval(this.tajmerInterval);
+
+        const osvezi = () => {
+            const preostalo = Math.max(0, Math.ceil((krajRundeAt - this.serverSada()) / 1000));
+            if (preostalo !== this.preostaloVreme) {
+                this.preostaloVreme = preostalo;
+                UIManager.azurirajTajmer(this.preostaloVreme);
+            }
+
+            if (preostalo <= 0) {
+                clearInterval(this.tajmerInterval);
+                this.tajmerInterval = null;
+                this.zavrsiRundu(true);
+            }
+        };
+
+        this.preostaloVreme = -1;
+        osvezi();
+        if (this.rundaUToku) {
+            this.tajmerInterval = setInterval(osvezi, 250);
+        }
+    },
+
     posaljiKrajnjiRezultat: function() {
         if (this.trenutniMod === 'multi' && this.ukupanScore > 0 && this.socket) {
             this.socket.emit('upisiKrajnjiRezultat', this.ukupanScore);
@@ -1363,7 +1563,7 @@ const Game = {
     povratakUMeni: function() {
         this.posaljiKrajnjiRezultat(); 
         
-        clearInterval(this.tajmerInterval);
+        this.zaustaviTajmereRunde();
         if (this.antiCheatTimeout) {
             clearTimeout(this.antiCheatTimeout);
             this.antiCheatTimeout = null;
@@ -1394,6 +1594,84 @@ const Game = {
                 null,
                 "U redu"
             );
+        }
+    },
+
+    pomnoziPojmoveNaKraju: function(mnozilac, tipReklame) {
+        const osnovica = Math.max(0, Math.floor(Number(this.ukupnoTacnihOdgovora) || 0));
+        const dozvoljeno = (mnozilac === 5 && tipReklame === 'interstitial')
+            || (mnozilac === 10 && tipReklame === 'rewarded');
+
+        if (
+            !dozvoljeno
+            || osnovica <= 0
+            || typeof TokeniManager === 'undefined'
+            || typeof KvartalniNivoManager === 'undefined'
+        ) {
+            return;
+        }
+
+        const kljucMeceva = 'zemljopis_bonus_mecevi';
+        let preuzetiBonusi = {};
+
+        try {
+            preuzetiBonusi = JSON.parse(localStorage.getItem(kljucMeceva) || '{}');
+        } catch (error) {
+            preuzetiBonusi = {};
+        }
+
+        if (!this.partijaId) {
+            this.partijaId = `partija_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+        }
+        const kljucPartije = this.partijaId;
+        if (preuzetiBonusi[kljucPartije]) {
+            UIManager.azurirajKonacniBonus({
+                status: 'preuzet',
+                ukupno: osnovica * preuzetiBonusi[kljucPartije]
+            });
+            return;
+        }
+
+        UIManager.azurirajKonacniBonus({ status: 'reklama' });
+
+        const reklamaPokrenuta = TokeniManager.prikaziReklamu(tipReklame, {
+            onUspeh: () => {
+                const bonusPojmovi = osnovica * (mnozilac - 1);
+
+                KvartalniNivoManager.dodajPojmoveUSerijama(
+                    bonusPojmovi,
+                    `${kljucPartije}:bonus${mnozilac}x`
+                );
+
+                preuzetiBonusi[kljucPartije] = mnozilac;
+                const sacuvaniKljucevi = Object.keys(preuzetiBonusi).slice(-100);
+                const skraceniBonusi = {};
+                sacuvaniKljucevi.forEach(kljuc => {
+                    skraceniBonusi[kljuc] = preuzetiBonusi[kljuc];
+                });
+                localStorage.setItem(kljucMeceva, JSON.stringify(skraceniBonusi));
+
+                UIManager.azurirajKonacniBonus({
+                    status: 'preuzet',
+                    mnozilac,
+                    osnovica,
+                    bonus: bonusPojmovi,
+                    ukupno: osnovica * mnozilac
+                });
+            },
+            onNeuspeh: poruka => {
+                UIManager.azurirajKonacniBonus({
+                    status: 'greska',
+                    poruka: poruka || 'Reklama nije završena. Pokušaj ponovo.'
+                });
+            }
+        });
+
+        if (!reklamaPokrenuta) {
+            UIManager.azurirajKonacniBonus({
+                status: 'greska',
+                poruka: 'Druga reklama je već u toku. Sačekaj njen završetak.'
+            });
         }
     },
 
@@ -1470,7 +1748,7 @@ const Game = {
 
     izbaciZbogVremena: function() {
         this.rundaUToku = false;
-        clearInterval(this.tajmerInterval);
+        this.zaustaviTajmereRunde();
         
         if (this.socket) {
             this.socket.emit('napustiSobu', 'anti_cit');

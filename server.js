@@ -16,6 +16,13 @@ const io = new Server(server, {
     }
 });
 
+const DOZVOLJENI_EFEKTI_RUNDE = new Set(['ef_nista', 'ef_konfete', 'ef_vatromet']);
+
+function normalizujEfekatRunde(efekatId) {
+    const vrednost = String(efekatId || 'ef_nista');
+    return DOZVOLJENI_EFEKTI_RUNDE.has(vrednost) ? vrednost : 'ef_nista';
+}
+
 // ==========================================
 // 1. MONGODB BAZA PODATAKA (Povezivanje)
 // ==========================================
@@ -651,10 +658,73 @@ async function osveziKvartalnePodatkeZaSocket(socketId) {
 }
 
 // Pomoćne funkcije za igru
+const TRAJANJE_RUNDE_MS = 120000;
+const PRIPREMA_PRVE_RUNDE_MS = 6200;
+const PRIPREMA_SLEDECE_RUNDE_MS = 1800;
+const MREZNA_REZERVA_NAKON_RUNDE_MS = 2500;
+const MAKSIMALNO_CEKANJE_IZMEDJU_RUNDI_MS = 30000;
+
+function ocistiTajmereSobe(soba) {
+    if (!soba) return;
+    if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
+    if (soba.timeoutCekanjaSledeceRunde) clearTimeout(soba.timeoutCekanjaSledeceRunde);
+    soba.timeoutRunde = null;
+    soba.timeoutCekanjaSledeceRunde = null;
+}
+
+function zavrsiRunduUSobi(soba, razlog = "svi_odgovorili") {
+    if (!soba || soba.rundaZakljucena) return;
+
+    soba.rundaZakljucena = true;
+    if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
+    soba.timeoutRunde = null;
+
+    const poslaliOdgovore = new Set(soba.odgovoriOveRunde.map(odgovor => odgovor.idIgraca));
+    soba.igraci.forEach(igrac => {
+        if (poslaliOdgovore.has(igrac.id)) return;
+        igrac.spremniOdgovori = true;
+        soba.odgovoriOveRunde.push({
+            idIgraca: igrac.id,
+            ime: igrac.ime,
+            odgovori: {},
+            efekat: 'ef_nista'
+        });
+    });
+
+    if (soba.trenutnaRunda >= 6) {
+        soba.status = 'zavrsena';
+    } else {
+        if (soba.timeoutCekanjaSledeceRunde) clearTimeout(soba.timeoutCekanjaSledeceRunde);
+        soba.timeoutCekanjaSledeceRunde = setTimeout(() => {
+            if (
+                sobe[soba.id] !== soba
+                || soba.status !== 'u_igri'
+                || !soba.rundaZakljucena
+            ) {
+                return;
+            }
+
+            console.log(`⏭️ Isteklo čekanje između rundi u sobi ${soba.id}. Pokrećem sledeću rundu za sve.`);
+            zapocniRunduUSobi(soba, io);
+        }, MAKSIMALNO_CEKANJE_IZMEDJU_RUNDI_MS);
+    }
+
+    io.to(soba.id).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde);
+    console.log(`Runda ${soba.trenutnaRunda} u sobi ${soba.id} zaključena (${razlog}).`);
+}
+
 function zapocniRunduUSobi(soba, io) {
+    if (!soba || sobe[soba.id] !== soba || soba.igraci.length === 0) return;
+
+    if (soba.timeoutCekanjaSledeceRunde) {
+        clearTimeout(soba.timeoutCekanjaSledeceRunde);
+        soba.timeoutCekanjaSledeceRunde = null;
+    }
+
     soba.status = 'u_igri';
     soba.trenutnaRunda++;
     soba.odgovoriOveRunde = [];
+    soba.rundaZakljucena = false;
 
     soba.igraci.forEach(i => {
         i.spremniOdgovori = false;
@@ -667,28 +737,42 @@ function zapocniRunduUSobi(soba, io) {
     const zadatoSlovo = dostupnaSlova[Math.floor(Math.random() * dostupnaSlova.length)];
     soba.iskoriscenaSlova.push(zadatoSlovo);
 
+    const serverVreme = Date.now();
+    const pripremaMs = soba.trenutnaRunda === 1
+        ? PRIPREMA_PRVE_RUNDE_MS
+        : PRIPREMA_SLEDECE_RUNDE_MS;
+    soba.pocetakRundeAt = serverVreme + pripremaMs;
+    soba.krajRundeAt = soba.pocetakRundeAt + TRAJANJE_RUNDE_MS;
+    soba.rundaId = `${soba.id}:${soba.trenutnaRunda}:${soba.pocetakRundeAt}`;
+
+    const podaciRunde = {
+        slovo: zadatoSlovo,
+        runda: soba.trenutnaRunda,
+        rundaId: soba.rundaId,
+        serverVreme,
+        pocetakRundeAt: soba.pocetakRundeAt,
+        krajRundeAt: soba.krajRundeAt
+    };
+
     if (soba.trenutnaRunda === 1) {
-        io.to(soba.id).emit('igraPocela', { slovo: zadatoSlovo, runda: soba.trenutnaRunda });
+        io.to(soba.id).emit('igraPocela', podaciRunde);
     } else {
-        io.to(soba.id).emit('sledecaRundaPocinje', { slovo: zadatoSlovo, runda: soba.trenutnaRunda });
+        io.to(soba.id).emit('sledecaRundaPocinje', podaciRunde);
     }
 
-    console.log(`Runda ${soba.trenutnaRunda} u sobi ${soba.id} počela. Slovo: ${zadatoSlovo}`);
+    console.log(`Runda ${soba.trenutnaRunda} u sobi ${soba.id} zakazana za ${new Date(soba.pocetakRundeAt).toISOString()}. Slovo: ${zadatoSlovo}`);
 
     if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
     soba.timeoutRunde = setTimeout(() => {
-        console.log(`⏳ Istekao sigurnosni tajmer za sobu ${soba.id}. Forsiram prosleđivanje odgovora.`);
-        if (soba.trenutnaRunda >= 6) {
-            soba.status = 'zavrsena';
-        }
-        io.to(soba.id).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde);
-    }, 125000);
+        console.log(`⏳ Istekao autoritativni tajmer za sobu ${soba.id}. Zaključujem rundu.`);
+        zavrsiRunduUSobi(soba, "istek_vremena");
+    }, Math.max(0, soba.krajRundeAt - Date.now() + MREZNA_REZERVA_NAKON_RUNDE_MS));
 }
 
 function proveriIPokreniSledecuRundu(soba) {
     if (soba.igraci.length === 0) return;
     const sviSpremni = soba.igraci.every(i => i.spremniZaSledecuRundu);
-    if (sviSpremni && soba.status === 'u_igri') {
+    if (sviSpremni && soba.status === 'u_igri' && soba.rundaZakljucena) {
         zapocniRunduUSobi(soba, io);
     }
 }
@@ -779,7 +863,7 @@ function zatvoriSobuZbogNeuspesnogPoziva(soba, detalji = {}) {
     (soba.pozvaniSocketIds || []).forEach(socketId => {
         io.to(socketId).emit('pozivUSobuOtkazan', dogadjaj);
     });
-    if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
+    ocistiTajmereSobe(soba);
     delete sobe[soba.id];
     return dogadjaj;
 }
@@ -816,6 +900,10 @@ function smanjiPozivnuSobuIliZatvori(soba, tip, detalji = {}) {
 // ==========================================
 io.on('connection', (socket) => {
     console.log(`🟢 Novi igrač se povezao: ${socket.id}`);
+
+    socket.on('sinhronizujVreme', (callback = () => {}) => {
+        callback({ serverVreme: Date.now() });
+    });
 
     // --- REGISTRACIJA OBAVEZNOG PROFILA I REZERVACIJA NADIMKA ---
     socket.on('registrujProfil', async (podaci, callback = () => {}) => {
@@ -1100,6 +1188,11 @@ io.on('connection', (socket) => {
             return callback({ uspeh: false, poruka: "Prvo kreiraj i potvrdi svoj profil." });
         }
 
+        const maksimalnoIgraca = Number(brojIgraca);
+        if (!Number.isInteger(maksimalnoIgraca) || maksimalnoIgraca < 2 || maksimalnoIgraca > 5) {
+            return callback({ uspeh: false, poruka: "Soba može imati od 2 do 5 igrača." });
+        }
+
         const karakteri = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let kodSobe = "";
         for (let i = 0; i < 4; i++) kodSobe += karakteri.charAt(Math.floor(Math.random() * karakteri.length)); 
@@ -1107,7 +1200,7 @@ io.on('connection', (socket) => {
         sobe[kodSobe] = {
             id: kodSobe,
             host: socket.id,
-            maxIgraca: brojIgraca,
+            maxIgraca: maksimalnoIgraca,
             igraci: [{ id: socket.id, ime: onlineIgraci[socket.id].ime, spremniOdgovori: false, spremniZaSledecuRundu: false }],
             status: 'cekanje',
             iskoriscenaSlova: [],
@@ -1117,7 +1210,9 @@ io.on('connection', (socket) => {
             tipSobe: "kod",
             hostIme: onlineIgraci[socket.id].ime,
             pozvaniSocketIds: [],
-            timeoutRunde: null
+            timeoutRunde: null,
+            timeoutCekanjaSledeceRunde: null,
+            rundaZakljucena: false
         };
 
         socket.join(kodSobe);
@@ -1136,6 +1231,14 @@ io.on('connection', (socket) => {
                 .map(ime => ocistiNadimak(ime))
                 .filter(Boolean)
         )];
+        if (jedinstveniPozvani.length > 4) {
+            return callback({
+                uspeh: false,
+                kod: "PREVISE_POZVANIH",
+                poruka: "Možeš pozvati najviše četiri prijatelja."
+            });
+        }
+
         const ciljeviPoziva = [];
         const nedostupniPozvani = [];
 
@@ -1159,7 +1262,7 @@ io.on('connection', (socket) => {
             });
         }
 
-        let brojIgraca = ciljeviPoziva.length + 1;
+        const brojIgraca = ciljeviPoziva.length + 1;
 
         const karakteri = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let kodSobe = "";
@@ -1178,7 +1281,9 @@ io.on('connection', (socket) => {
             tipSobe: "poziv",
             hostIme: onlineIgraci[socket.id].ime,
             pozvaniSocketIds: ciljeviPoziva.map(cilj => cilj.id),
-            timeoutRunde: null
+            timeoutRunde: null,
+            timeoutCekanjaSledeceRunde: null,
+            rundaZakljucena: false
         };
 
         socket.join(kodSobe);
@@ -1251,30 +1356,45 @@ io.on('connection', (socket) => {
 
     // --- 4. ODGOVORI I SLEDEĆA RUNDA ---
     socket.on('posaljiOdgovore', (podaci) => {
-        const { kodSobe, odgovori } = podaci;
+        const { kodSobe, odgovori, efekat, runda, rundaId } = podaci;
         const soba = sobe[kodSobe];
 
-        if (soba) {
+        if (soba && !soba.rundaZakljucena) {
+            if (runda !== undefined && Number(runda) !== soba.trenutnaRunda) return;
+            if (rundaId && rundaId !== soba.rundaId) return;
+
             const igrac = soba.igraci.find(i => i.id === socket.id);
             if (igrac && !igrac.spremniOdgovori) {
                 igrac.spremniOdgovori = true;
-                soba.odgovoriOveRunde.push({ idIgraca: socket.id, ime: igrac.ime, odgovori: odgovori });
+                const provereniEfekat = normalizujEfekatRunde(efekat || odgovori?.__efekat);
+                const ocisceniOdgovori = { ...(odgovori || {}) };
+                delete ocisceniOdgovori.__efekat;
+
+                soba.odgovoriOveRunde.push({
+                    idIgraca: socket.id,
+                    ime: igrac.ime,
+                    odgovori: ocisceniOdgovori,
+                    efekat: provereniEfekat
+                });
 
                 const sviPoslali = soba.igraci.every(i => i.spremniOdgovori);
                 if (sviPoslali) {
-                    if (soba.timeoutRunde) { clearTimeout(soba.timeoutRunde); soba.timeoutRunde = null; }
-                    if (soba.trenutnaRunda >= 6) {
-                        soba.status = 'zavrsena';
-                    }
-                    io.to(kodSobe).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde);
+                    zavrsiRunduUSobi(soba, "svi_odgovorili");
                 }
             }
         }
     });
 
-    socket.on('spremanZaSledecuRundu', (kodSobe) => {
+    socket.on('spremanZaSledecuRundu', (prviArgument, dodatniPodaci = {}) => {
+        const podaci = typeof prviArgument === 'string'
+            ? { ...dodatniPodaci, kodSobe: prviArgument }
+            : (prviArgument || {});
+        const kodSobe = podaci.kodSobe;
         const soba = sobe[kodSobe];
         if (soba) {
+            if (podaci.runda !== undefined && Number(podaci.runda) !== soba.trenutnaRunda) return;
+            if (podaci.rundaId && podaci.rundaId !== soba.rundaId) return;
+
             const igrac = soba.igraci.find(i => i.id === socket.id);
             if (igrac) {
                 igrac.spremniZaSledecuRundu = true;
@@ -1290,6 +1410,10 @@ io.on('connection', (socket) => {
         }
 
         const brojIgraca = Number(podaci.brojIgraca);
+        if (!Number.isInteger(brojIgraca) || brojIgraca < 2 || brojIgraca > 5) {
+            return callback({ uspeh: false, poruka: "Soba može imati od 2 do 5 igrača." });
+        }
+
         const ime = onlineIgraci[socket.id].ime;
         let nadjenaSoba = null;
 
@@ -1312,7 +1436,15 @@ io.on('connection', (socket) => {
             io.to(nadjenaSoba.id).emit('azuriranjeJavneSobe', { brojIgraca: nadjenaSoba.igraci.length, max: nadjenaSoba.maxIgraca, _dogadjajSobe: true });
 
             if (nadjenaSoba.igraci.length === nadjenaSoba.maxIgraca) {
-                setTimeout(() => zapocniRunduUSobi(nadjenaSoba, io), 1500);
+                setTimeout(() => {
+                    if (
+                        sobe[nadjenaSoba.id] === nadjenaSoba
+                        && nadjenaSoba.status === 'cekanje'
+                        && nadjenaSoba.igraci.length === nadjenaSoba.maxIgraca
+                    ) {
+                        zapocniRunduUSobi(nadjenaSoba, io);
+                    }
+                }, 1500);
             }
             callback({ uspeh: true, kodSobe: nadjenaSoba.id, isHost: false });
         } else {
@@ -1323,7 +1455,7 @@ io.on('connection', (socket) => {
             sobe[kodSobe] = {
                 id: kodSobe, host: socket.id, maxIgraca: brojIgraca,
                 igraci: [{ id: socket.id, ime, spremniOdgovori: false, spremniZaSledecuRundu: false }],
-                status: 'cekanje', iskoriscenaSlova: [], trenutnaRunda: 0, odgovoriOveRunde: [], javna: true, tipSobe: "javna", hostIme: ime, pozvaniSocketIds: [], timeoutRunde: null
+                status: 'cekanje', iskoriscenaSlova: [], trenutnaRunda: 0, odgovoriOveRunde: [], javna: true, tipSobe: "javna", hostIme: ime, pozvaniSocketIds: [], timeoutRunde: null, timeoutCekanjaSledeceRunde: null, rundaZakljucena: false
             };
 
             socket.join(kodSobe);
@@ -1386,7 +1518,7 @@ io.on('connection', (socket) => {
                     (soba.pozvaniSocketIds || []).forEach(socketId => {
                         io.to(socketId).emit('pozivUSobuOtkazan', dogadjaj);
                     });
-                    if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
+                    ocistiTajmereSobe(soba);
                     delete sobe[kodSobe];
                     break;
                 }
@@ -1446,22 +1578,18 @@ io.on('connection', (socket) => {
                         razlog: opisRazloga.kod,
                         _dogadjajSobe: true
                     });
-                    if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
+                    ocistiTajmereSobe(soba);
                     delete sobe[kodSobe];
                     break;
                 }
 
                 if (soba.igraci.length === 0) {
-                    if (soba.timeoutRunde) clearTimeout(soba.timeoutRunde);
+                    ocistiTajmereSobe(soba);
                     delete sobe[kodSobe]; 
                 } else {
                     const sviPoslali = soba.igraci.every(i => i.spremniOdgovori);
                     if (sviPoslali && soba.status === 'u_igri' && soba.igraci.length > 0) {
-                        if (soba.timeoutRunde) { clearTimeout(soba.timeoutRunde); soba.timeoutRunde = null; }
-                        if (soba.trenutnaRunda >= 6) {
-                            soba.status = 'zavrsena';
-                        }
-                        io.to(kodSobe).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde);
+                        zavrsiRunduUSobi(soba, "igrac_napustio");
                     }
                     proveriIPokreniSledecuRundu(soba);
                 }

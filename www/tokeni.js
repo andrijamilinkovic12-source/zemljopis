@@ -4,6 +4,7 @@ const TokeniManager = {
     tokeni: 3,
     maxTokena: 3,
     reklamaUToku: false,
+    adapterReklama: null,
     
     init: function() {
         this.proveriDnevniReset();
@@ -103,6 +104,102 @@ const TokeniManager = {
         this.snimiStanje();
         return this.tokeni > prethodno;
     },
+
+    postaviAdapterReklama: function(adapter) {
+        this.adapterReklama = adapter || null;
+    },
+
+    prikaziReklamu: function(tip, opcije = {}) {
+        if (this.reklamaUToku) return false;
+
+        const dozvoljeniTipovi = ['interstitial', 'rewarded'];
+        if (!dozvoljeniTipovi.includes(tip)) return false;
+
+        const metoda = tip === 'rewarded' ? 'prikaziRewarded' : 'prikaziInterstitial';
+        if (this.adapterReklama && typeof this.adapterReklama[metoda] === 'function') {
+            this.reklamaUToku = true;
+            this.azurirajPrikaz();
+
+            Promise.resolve(this.adapterReklama[metoda]())
+                .then(rezultat => {
+                    this.reklamaUToku = false;
+                    this.azurirajPrikaz();
+
+                    if (tip === 'rewarded' && rezultat && rezultat.nagradaDodeljena === false) {
+                        if (typeof opcije.onNeuspeh === 'function') opcije.onNeuspeh('Reklama nije odgledana do kraja.');
+                        return;
+                    }
+
+                    if (typeof opcije.onUspeh === 'function') opcije.onUspeh();
+                })
+                .catch(() => {
+                    this.reklamaUToku = false;
+                    this.azurirajPrikaz();
+                    if (typeof opcije.onNeuspeh === 'function') opcije.onNeuspeh('Reklama trenutno nije dostupna.');
+                });
+
+            return true;
+        }
+
+        return this.prikaziTestReklamu(tip, opcije);
+    },
+
+    prikaziTestReklamu: function(tip, opcije = {}) {
+        const overlay = document.getElementById('ad-preview-overlay');
+        const naslov = document.getElementById('ad-preview-title');
+        const opis = document.getElementById('ad-preview-description');
+        const vreme = document.getElementById('ad-preview-time');
+        const traka = document.getElementById('ad-preview-progress-fill');
+
+        if (!overlay || !naslov || !opis || !vreme || !traka) {
+            if (typeof opcije.onNeuspeh === 'function') opcije.onNeuspeh('Prikaz reklame nije spreman.');
+            return false;
+        }
+
+        const trajanje = tip === 'rewarded' ? 5 : 3;
+        let preostalo = trajanje;
+
+        this.reklamaUToku = true;
+        this.azurirajPrikaz();
+
+        naslov.textContent = tip === 'rewarded' ? 'NAGRAĐENA REKLAMA' : 'INTERSTICIJALNA REKLAMA';
+        opis.textContent = tip === 'rewarded'
+            ? 'Odgledaj reklamu do kraja da preuzmeš 10x nagradu.'
+            : 'Po završetku reklame preuzimaš 5x nagradu.';
+        vreme.textContent = `${preostalo}s`;
+        traka.style.transition = 'none';
+        traka.style.transform = 'scaleX(0)';
+
+        overlay.classList.remove('closing');
+        overlay.setAttribute('aria-hidden', 'false');
+        void overlay.offsetWidth;
+        overlay.classList.add('active');
+
+        requestAnimationFrame(() => {
+            traka.style.transition = `transform ${trajanje}s linear`;
+            traka.style.transform = 'scaleX(1)';
+        });
+
+        const interval = setInterval(() => {
+            preostalo--;
+            vreme.textContent = preostalo > 0 ? `${preostalo}s` : 'ZAVRŠENO';
+        }, 1000);
+
+        setTimeout(() => {
+            clearInterval(interval);
+            overlay.classList.add('closing');
+
+            setTimeout(() => {
+                overlay.classList.remove('active', 'closing');
+                overlay.setAttribute('aria-hidden', 'true');
+                this.reklamaUToku = false;
+                this.azurirajPrikaz();
+                if (typeof opcije.onUspeh === 'function') opcije.onUspeh();
+            }, 360);
+        }, trajanje * 1000);
+
+        return true;
+    },
     
     otvoriEkran: function() {
         this.proveriDnevniReset();
@@ -114,33 +211,27 @@ const TokeniManager = {
             this.azurirajPrikaz();
             return;
         }
-        
-        /* =========================================================
-           OVDJE INTEGRISATI PRAVI ADMOB KOD (npr. showRewardVideo)
-           ========================================================= 
-        */
 
-        // Za sada pokrećemo MOCK (Simulaciju) učitavanja reklame:
-        this.reklamaUToku = true;
-        this.azurirajPrikaz();
-        UIManager.prikaziObavestenje("Učitavanje reklame...", "Molim te sačekaj, reklama se prikazuje...", null, "...");
-        
-        const modalBtn = document.getElementById('modal-btn');
-        if(modalBtn) modalBtn.style.display = 'none'; // Sakrijemo dugme da igrač ne prekine reklamu
-        
-        setTimeout(() => {
-            // Po završetku reklame:
-            this.reklamaUToku = false;
-            this.dodajToken(1);
-            
-            if(modalBtn) modalBtn.style.display = 'block'; // Vraćamo dugme
-            UIManager.prikaziObavestenje(
-                "Čestitamo!", 
-                "Uspešno si odgledao reklamu i dobio <b style='color:#38ef7d; font-size:1.2rem;'>+1 Token</b>!", 
-                null, 
-                "Zatvori"
-            );
-        }, 3000); // Simulacija "trajanja reklame" od 3 sekunde
+        this.prikaziReklamu('rewarded', {
+            onUspeh: () => {
+                this.dodajToken(1);
+
+                UIManager.prikaziObavestenje(
+                    "Čestitamo!",
+                    "Uspešno si odgledao reklamu i dobio <b style='color:#38ef7d; font-size:1.2rem;'>+1 token</b>!",
+                    null,
+                    "Zatvori"
+                );
+            },
+            onNeuspeh: poruka => {
+                UIManager.prikaziObavestenje(
+                    "Reklama nije završena",
+                    poruka || "Pokušaj ponovo malo kasnije.",
+                    null,
+                    "U redu"
+                );
+            }
+        });
     }
 };
 

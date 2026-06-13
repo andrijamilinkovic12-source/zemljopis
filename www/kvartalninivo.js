@@ -80,6 +80,23 @@ const KvartalniNivoManager = {
         this.posaljiDogadjajeNaCekanju();
     },
 
+    dodajPojmoveUSerijama: function(broj, dogadjajId) {
+        broj = Math.floor(Number(broj));
+        if (!Number.isInteger(broj) || broj <= 0 || !dogadjajId) return 0;
+
+        let preostalo = broj;
+        let deo = 0;
+
+        while (preostalo > 0) {
+            const kolicina = Math.min(7, preostalo);
+            this.dodajPojmove(kolicina, `${dogadjajId}:deo${deo}`);
+            preostalo -= kolicina;
+            deo++;
+        }
+
+        return broj;
+    },
+
     sacuvajRedSlanja: function() {
         localStorage.setItem(
             'zemljopis_kvartal_cekanje',

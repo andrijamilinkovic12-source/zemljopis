@@ -81,6 +81,15 @@ const RiznicaManager = {
         return this.besplatanTestRezim || artikal.kupljeno;
     },
 
+    vratiOpremljeniEfekat: function() {
+        return this.podaci.efekti.find(efekat => efekat.opremljeno) || this.podaci.efekti[0];
+    },
+
+    vratiOpremljeniEfekatId: function() {
+        const efekat = this.vratiOpremljeniEfekat();
+        return efekat ? efekat.id : 'ef_nista';
+    },
+
     otvoriEkran: function() {
         UIManager.prikaziEkran('riznica-screen');
         this.azurirajPrikazDukata();

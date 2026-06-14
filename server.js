@@ -75,6 +75,10 @@ const IgracSchema = new mongoose.Schema({
     svaVremenaPojmovi: { type: Number, default: 0 },
     kvartalniObradjeniDogadjaji: { type: [String], default: [] },
     pobede: { type: Number, default: 0 },
+    odigraniOnlineMecevi: { type: Number, default: 0 },
+    onlinePobede: { type: Number, default: 0 },
+    onlineObradjeniMecevi: { type: [String], default: [] },
+    onlineObradjenePobede: { type: [String], default: [] },
     // POLJA ZA TOP LISTU POENA
     najboljiMecPoeni: { type: Number, default: 0 },
     nedeljniPoeni: { type: Number, default: 0 },
@@ -282,6 +286,19 @@ function pronadjiOnlineIgracaPoPlayerId(playerId) {
     return Object.values(onlineIgraci).find(igrac => igrac.playerId === playerId);
 }
 
+function izracunajOnlineUspeh(profil = {}) {
+    const odigraniMecevi = Math.max(0, Number(profil.odigraniOnlineMecevi) || 0);
+    const pobede = Math.max(0, Number(profil.onlinePobede) || 0);
+    const procenat = odigraniMecevi > 0
+        ? Math.min(100, Math.round((pobede / odigraniMecevi) * 100))
+        : 0;
+    return {
+        odigraniMecevi,
+        pobede,
+        indeks: `${procenat}%`
+    };
+}
+
 async function podaciPrijateljaZaKlijenta(igrac) {
     osigurajIdentitetIgraca(igrac);
 
@@ -295,7 +312,7 @@ async function podaciPrijateljaZaKlijenta(igrac) {
 
     const profili = sviIds.length > 0
         ? await Igrac.find({ playerId: { $in: sviIds } })
-            .select('playerId nadimak avatar svaVremenaPoeni svaVremenaPojmovi')
+            .select('playerId nadimak avatar svaVremenaPoeni svaVremenaPojmovi odigraniOnlineMecevi onlinePobede')
             .lean()
         : [];
     const profiliPoId = new Map(profili.map(profil => [profil.playerId, profil]));
@@ -304,12 +321,12 @@ async function podaciPrijateljaZaKlijenta(igrac) {
         .map(playerId => profiliPoId.get(playerId))
         .filter(Boolean)
         .map(profil => ({
+            ...izracunajOnlineUspeh(profil),
             playerId: profil.playerId,
             ime: profil.nadimak,
             avatar: profil.avatar || "atlas",
             poeni: profil.svaVremenaPoeni || 0,
             pojmovi: profil.svaVremenaPojmovi || 0,
-            indeks: "0%",
             online: Boolean(pronadjiOnlineIgracaPoPlayerId(profil.playerId))
         }));
 
@@ -718,6 +735,7 @@ const PRIPREMA_SLEDECE_RUNDE_MS = 4000;
 const MREZNA_REZERVA_NAKON_RUNDE_MS = 2500;
 const TRAJANJE_PRELAZA_DO_PREGLEDA_MS = 6000;
 const TRAJANJE_PREGLEDA_RUNDE_MS = 10000;
+const MAKSIMALNO_SACUVANIH_ONLINE_MECEVA = 300;
 
 function ocistiTajmereSobe(soba) {
     if (!soba) return;
@@ -725,6 +743,116 @@ function ocistiTajmereSobe(soba) {
     if (soba.timeoutCekanjaSledeceRunde) clearTimeout(soba.timeoutCekanjaSledeceRunde);
     soba.timeoutRunde = null;
     soba.timeoutCekanjaSledeceRunde = null;
+}
+
+function igracZaSobu(socketId) {
+    const onlineIgrac = onlineIgraci[socketId];
+    if (!onlineIgrac) return null;
+    return {
+        id: socketId,
+        playerId: onlineIgrac.playerId,
+        bazaId: onlineIgrac.bazaId,
+        ime: onlineIgrac.ime,
+        spremniOdgovori: false,
+        spremniZaSledecuRundu: false
+    };
+}
+
+function pripremiIdentitetOnlineMeca(soba) {
+    if (!soba.partijaId) {
+        soba.partijaId = `online_${soba.id}_${Date.now()}_${crypto.randomUUID()}`;
+    }
+    if (!Array.isArray(soba.ucesniciMeca) || soba.ucesniciMeca.length === 0) {
+        soba.ucesniciMeca = soba.igraci
+            .filter(igrac => igrac.playerId)
+            .map(igrac => ({
+                playerId: igrac.playerId,
+                ime: igrac.ime
+            }));
+    }
+}
+
+async function upisiOdigranOnlineMec(soba, pobednikPlayerIds = []) {
+    if (!soba || !soba.partijaId || !Array.isArray(soba.ucesniciMeca)) return;
+    if (soba.statistikaMecaPromise) return soba.statistikaMecaPromise;
+
+    const ucesnici = [...new Set(
+        soba.ucesniciMeca.map(igrac => igrac.playerId).filter(Boolean)
+    )];
+    const pobednici = [...new Set(
+        pobednikPlayerIds.filter(playerId => ucesnici.includes(playerId))
+    )];
+
+    soba.statistikaMecaPromise = (async () => {
+        const operacije = ucesnici.map(playerId => ({
+            updateOne: {
+                filter: {
+                    playerId,
+                    onlineObradjeniMecevi: { $ne: soba.partijaId }
+                },
+                update: {
+                    $inc: { odigraniOnlineMecevi: 1 },
+                    $push: {
+                        onlineObradjeniMecevi: {
+                            $each: [soba.partijaId],
+                            $slice: -MAKSIMALNO_SACUVANIH_ONLINE_MECEVA
+                        }
+                    }
+                }
+            }
+        }));
+
+        pobednici.forEach(playerId => {
+            operacije.push({
+                updateOne: {
+                    filter: {
+                        playerId,
+                        onlineObradjenePobede: { $ne: soba.partijaId }
+                    },
+                    update: {
+                        $inc: { onlinePobede: 1, pobede: 1 },
+                        $push: {
+                            onlineObradjenePobede: {
+                                $each: [soba.partijaId],
+                                $slice: -MAKSIMALNO_SACUVANIH_ONLINE_MECEVA
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        if (operacije.length > 0) {
+            await Igrac.bulkWrite(operacije);
+        }
+    })();
+
+    try {
+        await soba.statistikaMecaPromise;
+    } catch (error) {
+        soba.statistikaMecaPromise = null;
+        throw error;
+    }
+}
+
+async function upisiPobeduOnlineMeca(playerId, partijaId) {
+    if (!playerId || !partijaId) return false;
+    const rezultat = await Igrac.updateOne(
+        {
+            playerId,
+            onlineObradjenePobede: { $ne: partijaId }
+        },
+        {
+            $inc: { onlinePobede: 1, pobede: 1 },
+            $push: {
+                onlineObradjenePobede: {
+                    $each: [partijaId],
+                    $slice: -MAKSIMALNO_SACUVANIH_ONLINE_MECEVA
+                }
+            }
+        }
+    );
+    return rezultat.modifiedCount > 0;
 }
 
 function zavrsiRunduUSobi(soba, razlog = "svi_odgovorili") {
@@ -748,10 +876,14 @@ function zavrsiRunduUSobi(soba, razlog = "svi_odgovorili") {
 
     if (soba.trenutnaRunda >= 6) {
         soba.status = 'zavrsena';
+        upisiOdigranOnlineMec(soba).catch(error => {
+            console.error(`Greška pri upisu završenog online meča ${soba.partijaId}:`, error);
+        });
         io.to(soba.id).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde, {
             serverVreme: Date.now(),
             runda: soba.trenutnaRunda,
             rundaId: soba.rundaId,
+            partijaId: soba.partijaId,
             poslednjaRunda: true
         });
     } else {
@@ -764,6 +896,7 @@ function zavrsiRunduUSobi(soba, razlog = "svi_odgovorili") {
             serverVreme,
             runda: soba.trenutnaRunda,
             rundaId: soba.rundaId,
+            partijaId: soba.partijaId,
             poslednjaRunda: false,
             sledecaRundaPocinjeAt: soba.sledecaRundaPocinjeAt
         });
@@ -797,6 +930,11 @@ function zapocniRunduUSobi(soba, io, planiraniPocetakAt = null) {
         soba.timeoutCekanjaSledeceRunde = null;
     }
 
+    if (soba.trenutnaRunda === 0) {
+        if (soba.igraci.length < 2) return;
+        pripremiIdentitetOnlineMeca(soba);
+    }
+
     soba.status = 'u_igri';
     soba.trenutnaRunda++;
     soba.odgovoriOveRunde = [];
@@ -828,6 +966,7 @@ function zapocniRunduUSobi(soba, io, planiraniPocetakAt = null) {
         slovo: zadatoSlovo,
         runda: soba.trenutnaRunda,
         rundaId: soba.rundaId,
+        partijaId: soba.partijaId,
         serverVreme,
         pocetakRundeAt: soba.pocetakRundeAt,
         krajRundeAt: soba.krajRundeAt
@@ -1280,7 +1419,7 @@ io.on('connection', (socket) => {
             id: kodSobe,
             host: socket.id,
             maxIgraca: maksimalnoIgraca,
-            igraci: [{ id: socket.id, ime: onlineIgraci[socket.id].ime, spremniOdgovori: false, spremniZaSledecuRundu: false }],
+            igraci: [igracZaSobu(socket.id)],
             status: 'cekanje',
             iskoriscenaSlova: [],
             trenutnaRunda: 0,
@@ -1351,7 +1490,7 @@ io.on('connection', (socket) => {
             id: kodSobe,
             host: socket.id,
             maxIgraca: brojIgraca,
-            igraci: [{ id: socket.id, ime: onlineIgraci[socket.id].ime, spremniOdgovori: false, spremniZaSledecuRundu: false }],
+            igraci: [igracZaSobu(socket.id)],
             status: 'cekanje',
             iskoriscenaSlova: [],
             trenutnaRunda: 0,
@@ -1393,8 +1532,9 @@ io.on('connection', (socket) => {
         if (soba.status !== 'cekanje') return callback({ uspeh: false, poruka: "Igra u ovoj sobi je već počela!" });
         if (soba.igraci.length >= soba.maxIgraca) return callback({ uspeh: false, poruka: "Soba je puna!" });
 
-        const imeIgraca = onlineIgraci[socket.id].ime;
-        soba.igraci.push({ id: socket.id, ime: imeIgraca, spremniOdgovori: false, spremniZaSledecuRundu: false });
+        const noviIgrac = igracZaSobu(socket.id);
+        const imeIgraca = noviIgrac.ime;
+        soba.igraci.push(noviIgrac);
         soba.pozvaniSocketIds = (soba.pozvaniSocketIds || []).filter(id => id !== socket.id);
         socket.join(kodSobe);
 
@@ -1482,6 +1622,36 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('upisiIshodOnlineMeca', async (podaci = {}, callback = () => {}) => {
+        const onlineIgrac = onlineIgraci[socket.id];
+        const kodSobe = String(podaci.kodSobe || "").toUpperCase();
+        const partijaId = String(podaci.partijaId || "");
+        const soba = sobe[kodSobe];
+
+        if (!onlineIgrac || !soba || soba.status !== 'zavrsena' || soba.partijaId !== partijaId) {
+            return callback({ uspeh: false, kod: "MEC_NIJE_PRONADJEN" });
+        }
+
+        const ucesnik = (soba.ucesniciMeca || [])
+            .some(igrac => igrac.playerId === onlineIgrac.playerId);
+        const zavrsioMec = soba.igraci
+            .some(igrac => igrac.playerId === onlineIgrac.playerId);
+        if (!ucesnik || !zavrsioMec) {
+            return callback({ uspeh: false, kod: "IGRAC_NIJE_ZAVRSIO_MEC" });
+        }
+
+        try {
+            await upisiOdigranOnlineMec(soba);
+            if (Boolean(podaci.pobeda)) {
+                await upisiPobeduOnlineMeca(onlineIgrac.playerId, partijaId);
+            }
+            callback({ uspeh: true });
+        } catch (error) {
+            console.error("Greška pri upisu ishoda online meča:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA" });
+        }
+    });
+
     // --- 5. MATCHMAKING JAVNE SOBE ---
     socket.on('traziJavnuSobu', (podaci, callback) => {
         if (!onlineIgraci[socket.id]) {
@@ -1505,7 +1675,7 @@ io.on('connection', (socket) => {
         }
 
         if (nadjenaSoba) {
-            nadjenaSoba.igraci.push({ id: socket.id, ime, spremniOdgovori: false, spremniZaSledecuRundu: false });
+            nadjenaSoba.igraci.push(igracZaSobu(socket.id));
             socket.join(nadjenaSoba.id);
 
             posaljiDogadjajSobe(nadjenaSoba, 'igrac_usao', {
@@ -1533,7 +1703,7 @@ io.on('connection', (socket) => {
 
             sobe[kodSobe] = {
                 id: kodSobe, host: socket.id, maxIgraca: brojIgraca,
-                igraci: [{ id: socket.id, ime, spremniOdgovori: false, spremniZaSledecuRundu: false }],
+                igraci: [igracZaSobu(socket.id)],
                 status: 'cekanje', iskoriscenaSlova: [], trenutnaRunda: 0, odgovoriOveRunde: [], javna: true, tipSobe: "javna", hostIme: ime, pozvaniSocketIds: [], timeoutRunde: null, timeoutCekanjaSledeceRunde: null, rundaZakljucena: false
             };
 
@@ -1644,15 +1814,19 @@ io.on('connection', (socket) => {
                 });
 
                 if (soba.status === 'u_igri' && soba.igraci.length === 1) {
+                    const pobednik = soba.igraci[0];
                     posaljiDogadjajSobe(soba, 'automatska_pobeda', {
-                        pobednikIme: soba.igraci[0].ime,
+                        pobednikIme: pobednik.ime,
                         napustioIme: igracKojiIzlazi.ime,
                         razlog: opisRazloga.kod,
                         razlogTekst: opisRazloga.tekst
                     });
+                    upisiOdigranOnlineMec(soba, [pobednik.playerId]).catch(error => {
+                        console.error(`Greška pri upisu automatske pobede ${soba.partijaId}:`, error);
+                    });
                     io.to(kodSobe).emit('pobedaZbogNapustanja', {
                         kodSobe,
-                        pobednikIme: soba.igraci[0].ime,
+                        pobednikIme: pobednik.ime,
                         napustioIme: igracKojiIzlazi.ime,
                         razlog: opisRazloga.kod,
                         _dogadjajSobe: true

@@ -244,7 +244,15 @@ const DnevniIzazovManager = {
         
         // Još jedan sigurnosni snimak
         this.dnevniPodaci.odigrano = true;
+        this.dnevniPodaci.tacniPojmovi = ukupnoTacnih;
         this.snimiStanje();
+
+        if (typeof KvartalniNivoManager !== 'undefined') {
+            KvartalniNivoManager.dodajDnevnePojmove(
+                ukupnoTacnih,
+                this.dnevniPodaci.datum
+            );
+        }
 
         if (osvojenoDukata > 0 && typeof RiznicaManager !== 'undefined') {
             RiznicaManager.dukati += osvojenoDukata;

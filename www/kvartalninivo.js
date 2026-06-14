@@ -54,8 +54,7 @@ const KvartalniNivoManager = {
         this.azurirajBedzUMeniju();
     },
 
-    // --- SLANJE POENA NA SERVER ---
-    // Ova funkcija se poziva iz game.js za SOLO, MULTI, PRIVATNE SOBE i TURNIRE
+    // --- SLANJE POGOĐENIH POJMOVA NA SERVER ---
     dodajPojmove: function(broj, dogadjajId = null) {
         broj = Number(broj);
         if (!Number.isInteger(broj) || broj <= 0 || broj > 7) return;
@@ -78,6 +77,29 @@ const KvartalniNivoManager = {
         }
         this.azurirajBedzUMeniju();
         this.posaljiDogadjajeNaCekanju();
+    },
+
+    normalizujDogadjajId: function(vrednost, rezervnaVrednost = "dogadjaj") {
+        const normalizovano = String(vrednost || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-zA-Z0-9_-]+/g, "_")
+            .replace(/^_+|_+$/g, "")
+            .slice(0, 70);
+        return normalizovano || rezervnaVrednost;
+    },
+
+    dodajDnevnePojmove: function(broj, datum) {
+        const datumId = this.normalizujDogadjajId(datum, "nepoznat_datum");
+        this.dodajPojmove(broj, `dnevni:${datumId}`);
+    },
+
+    dodajTurnirskePojmove: function(broj, turnirId, runda) {
+        const brojRunde = Math.floor(Number(runda));
+        if (!Number.isInteger(brojRunde) || brojRunde < 1) return;
+
+        const bezbedanTurnirId = this.normalizujDogadjajId(turnirId, "turnir");
+        this.dodajPojmove(broj, `turnir:${bezbedanTurnirId}:r${brojRunde}`);
     },
 
     dodajPojmoveUSerijama: function(broj, dogadjajId) {

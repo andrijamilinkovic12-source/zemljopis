@@ -295,7 +295,7 @@ async function podaciPrijateljaZaKlijenta(igrac) {
 
     const profili = sviIds.length > 0
         ? await Igrac.find({ playerId: { $in: sviIds } })
-            .select('playerId nadimak avatar najboljiMecPoeni svaVremenaPojmovi')
+            .select('playerId nadimak avatar svaVremenaPoeni svaVremenaPojmovi')
             .lean()
         : [];
     const profiliPoId = new Map(profili.map(profil => [profil.playerId, profil]));
@@ -307,7 +307,7 @@ async function podaciPrijateljaZaKlijenta(igrac) {
             playerId: profil.playerId,
             ime: profil.nadimak,
             avatar: profil.avatar || "atlas",
-            poeni: profil.najboljiMecPoeni || 0,
+            poeni: profil.svaVremenaPoeni || 0,
             pojmovi: profil.svaVremenaPojmovi || 0,
             indeks: "0%",
             online: Boolean(pronadjiOnlineIgracaPoPlayerId(profil.playerId))

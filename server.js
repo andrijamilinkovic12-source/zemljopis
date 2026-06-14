@@ -1340,22 +1340,28 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('upisiPobedu', async () => {
+    socket.on('upisiPobedu', async (callback = () => {}) => {
         const onlineIgrac = onlineIgraci[socket.id];
-        if (!onlineIgrac) return;
+        if (!onlineIgrac) {
+            return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN" });
+        }
 
         const zavrsenaSoba = Object.values(sobe).find(soba =>
             soba.status === 'zavrsena'
             && soba.igraci.some(igrac => igrac.playerId === onlineIgrac.playerId)
             && (soba.ucesniciMeca || []).some(igrac => igrac.playerId === onlineIgrac.playerId)
         );
-        if (!zavrsenaSoba) return;
+        if (!zavrsenaSoba) {
+            return callback({ uspeh: false, kod: "MEC_NIJE_PRONADJEN" });
+        }
 
         try {
             await upisiOdigranOnlineMec(zavrsenaSoba);
             await upisiPobeduOnlineMeca(onlineIgrac.playerId, zavrsenaSoba.partijaId);
+            callback({ uspeh: true });
         } catch (error) {
             console.error("Greška pri kompatibilnom upisu pobede:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA" });
         }
     });
 

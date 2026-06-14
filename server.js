@@ -427,6 +427,60 @@ async function obradiTrajniZahtev(primalacOnline, playerIdPosiljaoca, prihvaceno
     return { uspeh: true, primalac, posiljalac };
 }
 
+async function obrisiTrajnoPrijateljstvo(igracOnline, playerIdPrijatelja) {
+    if (typeof playerIdPrijatelja !== "string" || playerIdPrijatelja.length < 10) {
+        return {
+            uspeh: false,
+            kod: "NEISPRAVAN_PRIJATELJ",
+            poruka: "Prijatelj nije pronađen."
+        };
+    }
+
+    const igrac = await Igrac.findById(igracOnline.bazaId);
+    const prijatelj = await Igrac.findOne({ playerId: playerIdPrijatelja });
+    if (!igrac || !prijatelj) {
+        return {
+            uspeh: false,
+            kod: "PROFIL_NIJE_PRONADJEN",
+            poruka: "Profil prijatelja više nije dostupan."
+        };
+    }
+
+    osigurajIdentitetIgraca(igrac);
+    osigurajIdentitetIgraca(prijatelj);
+
+    const prijateljstvoPostoji = (igrac.prijatelji || []).includes(prijatelj.playerId)
+        || (prijatelj.prijatelji || []).includes(igrac.playerId);
+    if (!prijateljstvoPostoji) {
+        return {
+            uspeh: false,
+            kod: "NIJE_PRIJATELJ",
+            poruka: "Ovaj igrač više nije na tvojoj listi prijatelja."
+        };
+    }
+
+    await Igrac.bulkWrite([
+        {
+            updateOne: {
+                filter: { _id: igrac._id },
+                update: { $pull: { prijatelji: prijatelj.playerId } }
+            }
+        },
+        {
+            updateOne: {
+                filter: { _id: prijatelj._id },
+                update: { $pull: { prijatelji: igrac.playerId } }
+            }
+        }
+    ]);
+
+    return {
+        uspeh: true,
+        igrac,
+        prijatelj
+    };
+}
+
 const KVARTALNI_LIGA_KLJUC = process.env.KVARTALNI_LIGA_KLJUC || "glavna";
 const KVARTALNI_TEST_PROFIL_PREFIX = process.env.KVARTALNI_TEST_PROFIL_PREFIX || "";
 const KVARTALNI_NIVOI = [
@@ -660,9 +714,10 @@ async function osveziKvartalnePodatkeZaSocket(socketId) {
 // Pomoćne funkcije za igru
 const TRAJANJE_RUNDE_MS = 120000;
 const PRIPREMA_PRVE_RUNDE_MS = 6200;
-const PRIPREMA_SLEDECE_RUNDE_MS = 1800;
+const PRIPREMA_SLEDECE_RUNDE_MS = 4000;
 const MREZNA_REZERVA_NAKON_RUNDE_MS = 2500;
-const MAKSIMALNO_CEKANJE_IZMEDJU_RUNDI_MS = 30000;
+const TRAJANJE_PRELAZA_DO_PREGLEDA_MS = 6000;
+const TRAJANJE_PREGLEDA_RUNDE_MS = 10000;
 
 function ocistiTajmereSobe(soba) {
     if (!soba) return;
@@ -693,7 +748,26 @@ function zavrsiRunduUSobi(soba, razlog = "svi_odgovorili") {
 
     if (soba.trenutnaRunda >= 6) {
         soba.status = 'zavrsena';
+        io.to(soba.id).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde, {
+            serverVreme: Date.now(),
+            runda: soba.trenutnaRunda,
+            rundaId: soba.rundaId,
+            poslednjaRunda: true
+        });
     } else {
+        const serverVreme = Date.now();
+        soba.sledecaRundaPocinjeAt = serverVreme
+            + TRAJANJE_PRELAZA_DO_PREGLEDA_MS
+            + TRAJANJE_PREGLEDA_RUNDE_MS;
+
+        io.to(soba.id).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde, {
+            serverVreme,
+            runda: soba.trenutnaRunda,
+            rundaId: soba.rundaId,
+            poslednjaRunda: false,
+            sledecaRundaPocinjeAt: soba.sledecaRundaPocinjeAt
+        });
+
         if (soba.timeoutCekanjaSledeceRunde) clearTimeout(soba.timeoutCekanjaSledeceRunde);
         soba.timeoutCekanjaSledeceRunde = setTimeout(() => {
             if (
@@ -704,16 +778,18 @@ function zavrsiRunduUSobi(soba, razlog = "svi_odgovorili") {
                 return;
             }
 
-            console.log(`⏭️ Isteklo čekanje između rundi u sobi ${soba.id}. Pokrećem sledeću rundu za sve.`);
-            zapocniRunduUSobi(soba, io);
-        }, MAKSIMALNO_CEKANJE_IZMEDJU_RUNDI_MS);
+            console.log(`⏭️ Serverski raspored pokreće sledeću rundu u sobi ${soba.id}.`);
+            zapocniRunduUSobi(soba, io, soba.sledecaRundaPocinjeAt);
+        }, Math.max(
+            0,
+            soba.sledecaRundaPocinjeAt - PRIPREMA_SLEDECE_RUNDE_MS - Date.now()
+        ));
     }
 
-    io.to(soba.id).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde);
     console.log(`Runda ${soba.trenutnaRunda} u sobi ${soba.id} zaključena (${razlog}).`);
 }
 
-function zapocniRunduUSobi(soba, io) {
+function zapocniRunduUSobi(soba, io, planiraniPocetakAt = null) {
     if (!soba || sobe[soba.id] !== soba || soba.igraci.length === 0) return;
 
     if (soba.timeoutCekanjaSledeceRunde) {
@@ -741,7 +817,10 @@ function zapocniRunduUSobi(soba, io) {
     const pripremaMs = soba.trenutnaRunda === 1
         ? PRIPREMA_PRVE_RUNDE_MS
         : PRIPREMA_SLEDECE_RUNDE_MS;
-    soba.pocetakRundeAt = serverVreme + pripremaMs;
+    const najranijiBezbedanPocetak = serverVreme + 1200;
+    soba.pocetakRundeAt = Number.isFinite(Number(planiraniPocetakAt))
+        ? Math.max(Number(planiraniPocetakAt), najranijiBezbedanPocetak)
+        : serverVreme + pripremaMs;
     soba.krajRundeAt = soba.pocetakRundeAt + TRAJANJE_RUNDE_MS;
     soba.rundaId = `${soba.id}:${soba.trenutnaRunda}:${soba.pocetakRundeAt}`;
 
@@ -773,7 +852,7 @@ function proveriIPokreniSledecuRundu(soba) {
     if (soba.igraci.length === 0) return;
     const sviSpremni = soba.igraci.every(i => i.spremniZaSledecuRundu);
     if (sviSpremni && soba.status === 'u_igri' && soba.rundaZakljucena) {
-        zapocniRunduUSobi(soba, io);
+        console.log(`✅ Svi igrači u sobi ${soba.id} spremni su za već zakazani zajednički start.`);
     }
 }
 
@@ -1694,6 +1773,49 @@ io.on('connection', (socket) => {
             await osveziPrijateljeZaSocket(socket.id);
         } catch (error) {
             console.error("Greška pri osvežavanju prijatelja:", error);
+        }
+    });
+
+    socket.on('obrisiPrijatelja', async (podaci = {}, callback = () => {}) => {
+        const ja = onlineIgraci[socket.id];
+        if (!ja) {
+            return callback({
+                uspeh: false,
+                kod: "PROFIL_NIJE_PRIJAVLJEN",
+                poruka: "Profil nije povezan sa serverom."
+            });
+        }
+
+        try {
+            const rezultat = await obrisiTrajnoPrijateljstvo(
+                ja,
+                podaci.playerIdPrijatelja
+            );
+            if (!rezultat.uspeh) {
+                await osveziPrijateljeZaSocket(socket.id);
+                return callback(rezultat);
+            }
+
+            await osveziPrijateljeZaSocket(socket.id);
+
+            const prijateljOnline = pronadjiOnlineIgracaPoPlayerId(
+                rezultat.prijatelj.playerId
+            );
+            if (prijateljOnline) {
+                await osveziPrijateljeZaSocket(prijateljOnline.id);
+            }
+
+            callback({
+                uspeh: true,
+                imePrijatelja: rezultat.prijatelj.nadimak
+            });
+        } catch (error) {
+            console.error("Greška pri brisanju prijatelja:", error);
+            callback({
+                uspeh: false,
+                kod: "GRESKA_SERVERA",
+                poruka: "Prijatelja trenutno nije moguće izbrisati."
+            });
         }
     });
 

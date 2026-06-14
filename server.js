@@ -1341,14 +1341,21 @@ io.on('connection', (socket) => {
     });
 
     socket.on('upisiPobedu', async () => {
-        if (onlineIgraci[socket.id]) {
-            try {
-                await Igrac.findOneAndUpdate(
-                    { _id: onlineIgraci[socket.id].bazaId },
-                    { $inc: { pobede: 1 } },
-                    { returnDocument: 'after' }
-                );
-            } catch (err) {}
+        const onlineIgrac = onlineIgraci[socket.id];
+        if (!onlineIgrac) return;
+
+        const zavrsenaSoba = Object.values(sobe).find(soba =>
+            soba.status === 'zavrsena'
+            && soba.igraci.some(igrac => igrac.playerId === onlineIgrac.playerId)
+            && (soba.ucesniciMeca || []).some(igrac => igrac.playerId === onlineIgrac.playerId)
+        );
+        if (!zavrsenaSoba) return;
+
+        try {
+            await upisiOdigranOnlineMec(zavrsenaSoba);
+            await upisiPobeduOnlineMeca(onlineIgrac.playerId, zavrsenaSoba.partijaId);
+        } catch (error) {
+            console.error("Greška pri kompatibilnom upisu pobede:", error);
         }
     });
 

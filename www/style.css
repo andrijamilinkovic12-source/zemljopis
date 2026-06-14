@@ -3678,6 +3678,36 @@ body[data-tema="svetla"] .tokeni-card div, body[data-tema="svetla"] .tokeni-card
     border-color: rgba(245, 175, 25, 0.4);
 }
 
+.btn-obrisi-prijatelja {
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    color: #ff416c;
+    border-color: rgba(255, 65, 108, 0.5);
+    background: rgba(255, 65, 108, 0.12);
+}
+
+.btn-obrisi-prijatelja:active {
+    color: #fff;
+    background: #ff416c;
+}
+
+.btn-obrisi-prijatelja:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+body[data-tema] .btn-obrisi-prijatelja {
+    color: var(--theme-danger);
+    border-color: rgba(var(--theme-danger-rgb), 0.48);
+    background: rgba(var(--theme-danger-rgb), 0.12);
+}
+
+body[data-tema] .btn-obrisi-prijatelja:active {
+    color: var(--theme-on-primary);
+    background: var(--theme-danger);
+}
+
 /* Prilagođavanje za Svetlu temu */
 body[data-tema="svetla"] .online-igrac-red {
     background: #ffffff;

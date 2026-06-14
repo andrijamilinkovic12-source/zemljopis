@@ -4,6 +4,7 @@ const SobaPrijateljaManager = {
     aktivniTab: 'lista',
     prijatelji: [], 
     zahtevi: [], 
+    brisanjeUToku: new Set(),
 
     normalizujZahtev: function(zahtev) {
         if (typeof zahtev === "string") {
@@ -67,19 +68,28 @@ const SobaPrijateljaManager = {
             } else {
                 this.prijatelji.forEach(p => {
                     let isOnline = p.online ? '<span class="prijatelj-status online">🟢 Na mreži</span>' : '<span class="prijatelj-status">🔴 Van mreže</span>';
+                    const brisanje = this.brisanjeUToku.has(p.playerId);
                     html += `
                         <div class="prijatelj-kartica">
                             <div class="prijatelj-header">
                                 <div class="prijatelj-avatar"><i class="fa-solid fa-user-ninja"></i></div>
                                 <div style="flex:1;">
-                                    <div class="prijatelj-ime">${p.ime}</div>
-                                    ${isOnline}
-                                </div>
-                                <button class="circle-btn" style="width:38px; height:38px; font-size:0.9rem;" onclick="Game.kreirajPrivatnuSobu(2)" title="Pozovi u igru"><i class="fa-solid fa-gamepad"></i></button>
+                                     <div class="prijatelj-ime">${p.ime}</div>
+                                     ${isOnline}
+                                 </div>
+                                <button
+                                    class="btn-prijatelj btn-obrisi-prijatelja"
+                                    onclick="SobaPrijateljaManager.potvrdiBrisanjePrijatelja('${p.playerId}')"
+                                    title="Izbriši prijatelja"
+                                    aria-label="Izbriši prijatelja ${p.ime}"
+                                    ${brisanje ? 'disabled' : ''}
+                                >
+                                    <i class="fa-solid ${brisanje ? 'fa-spinner fa-spin' : 'fa-trash-can'}"></i>
+                                </button>
                             </div>
                             <div class="prijatelj-stats">
                                 <div class="stat-box"><span>Uspešnost</span><strong>${p.indeks || '0%'}</strong></div>
-                                <div class="stat-box"><span>Top Poeni</span><strong>${p.poeni || 0}</strong></div>
+                                <div class="stat-box"><span>Poeni svih vremena</span><strong>${p.poeni || 0}</strong></div>
                                 <div class="stat-box" style="grid-column: span 2;"><span>Ukupno pogođenih pojmova</span><strong>${p.pojmovi || 0}</strong></div>
                             </div>
                         </div>
@@ -174,6 +184,70 @@ const SobaPrijateljaManager = {
                 if (prihvaceno) {
                     UIManager.prikaziObavestenje("Uspešno", `Prihvatio si zahtev od <b>${zahtev.ime}</b>! On je sada na tvojoj listi.`, null, "U redu");
                 }
+            }
+        );
+    },
+
+    potvrdiBrisanjePrijatelja: function(playerIdPrijatelja) {
+        const prijatelj = this.prijatelji.find(p => p.playerId === playerIdPrijatelja);
+        if (!prijatelj || this.brisanjeUToku.has(playerIdPrijatelja)) return;
+
+        UIManager.prikaziPotvrdu(
+            "IZBRIŠI PRIJATELJA?",
+            `Da li si siguran da želiš da izbrišeš igrača <b>${prijatelj.ime}</b> iz liste prijatelja?<br><br>Bićete uklonjeni sa liste prijatelja jedno drugom.`,
+            () => this.obrisiPrijatelja(playerIdPrijatelja),
+            "Izbriši",
+            "Odustani"
+        );
+    },
+
+    obrisiPrijatelja: function(playerIdPrijatelja) {
+        const prijatelj = this.prijatelji.find(p => p.playerId === playerIdPrijatelja);
+        if (!prijatelj || this.brisanjeUToku.has(playerIdPrijatelja)) return;
+
+        this.brisanjeUToku.add(playerIdPrijatelja);
+        this.osveziPrikaz();
+        UIManager.prikaziObavestenje(
+            "Brisanje...",
+            `Uklanjam igrača <b>${prijatelj.ime}</b> iz tvoje liste prijatelja.`,
+            null,
+            "..."
+        );
+
+        Game.socket.timeout(10000).emit(
+            'obrisiPrijatelja',
+            { playerIdPrijatelja },
+            (greska, odgovor) => {
+                this.brisanjeUToku.delete(playerIdPrijatelja);
+
+                if (greska || !odgovor || !odgovor.uspeh) {
+                    this.osveziPrikaz();
+                    UIManager.prikaziObavestenje(
+                        "Nije izbrisano",
+                        (odgovor && odgovor.poruka)
+                            || "Prijatelja trenutno nije moguće izbrisati. Pokušaj ponovo.",
+                        null,
+                        "U redu"
+                    );
+                    return;
+                }
+
+                this.prijatelji = this.prijatelji.filter(
+                    p => p.playerId !== playerIdPrijatelja
+                );
+                localStorage.setItem(
+                    'zemljopis_prijatelji_detalji',
+                    JSON.stringify(this.prijatelji)
+                );
+                this.osveziPrikaz();
+                Game.socket.emit('traziOsvezenjePrijatelja');
+
+                UIManager.prikaziObavestenje(
+                    "Prijatelj je izbrisan",
+                    `<b>${odgovor.imePrijatelja || prijatelj.ime}</b> više nije na tvojoj listi prijatelja.`,
+                    null,
+                    "U redu"
+                );
             }
         );
     },

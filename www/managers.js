@@ -190,11 +190,7 @@ const UIManager = {
         void overlay.offsetWidth;
         overlay.classList.add('active');
 
-        const trajanjePrikaza = pobednici.length >= 5
-            ? 4600
-            : pobednici.length >= 3
-                ? 4100
-                : 3600;
+        const trajanjePrikaza = 4600;
 
         this.tajmerEfektaPobednika = setTimeout(() => {
             overlay.classList.add('closing');

@@ -57,9 +57,11 @@ if (!MONGO_URI) {
     process.exit(1); 
 }
 
-mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ Uspesno povezan na MongoDB bazu: zemljopis_db!'))
-    .catch((err) => console.error('❌ Greska pri povezivanju na MongoDB:', err));
+if (process.env.ZEMLJOPIS_TEST_MODE !== "true") {
+    mongoose.connect(MONGO_URI)
+        .then(() => console.log('✅ Uspesno povezan na MongoDB bazu: zemljopis_db!'))
+        .catch((err) => console.error('❌ Greska pri povezivanju na MongoDB:', err));
+}
 
 function oznakaKvartala(datum = new Date()) {
     if (process.env.KVARTALNI_TEST_CIKLUS) return process.env.KVARTALNI_TEST_CIKLUS;
@@ -151,6 +153,16 @@ const LigaStanje = mongoose.model('LigaStanje', LigaStanjeSchema);
 // ==========================================
 const sobe = {}; 
 const svaSlova = ["A","B","V","G","D","Đ","E","Ž","Z","I","J","K","L","LJ","M","N","NJ","O","P","R","S","T","Ć","U","F","H","C","Č","DŽ","Š"];
+const DNEVNI_DOSTUPNA_SLOVA = Object.fromEntries(DNEVNI_KATEGORIJE.map(kategorija => {
+    const reci = [
+        ...(BazaPodataka.reci[kategorija.id] || []),
+        ...Object.keys(BazaPodataka.alijasi[kategorija.id] || {})
+    ];
+    return [
+        kategorija.id,
+        svaSlova.filter(slovo => reci.some(rec => BazaPodataka.presloviULatinicu(rec).startsWith(slovo)))
+    ];
+}));
 
 const MAX_PORUKA_ISTORIJA = 50;
 let istorijaChata = [];
@@ -506,14 +518,28 @@ function promesajDeterministicki(niz, random) {
 function napraviDnevneZadatke(datumId) {
     const random = napraviGenerator(`zemljopis:dnevni:${datumId}`);
     const kategorije = promesajDeterministicki(DNEVNI_KATEGORIJE, random).slice(0, 4);
-    const slova = promesajDeterministicki(svaSlova, random).slice(0, 4);
+    const zauzetaSlova = new Set();
 
-    return kategorije.map((kategorija, index) => ({
-        kategorija: kategorija.id,
-        ikona: kategorija.ikona,
-        naziv: kategorija.naziv,
-        slovo: slova[index]
-    }));
+    return kategorije.map(kategorija => {
+        const dostupnaSlova = promesajDeterministicki(
+            (DNEVNI_DOSTUPNA_SLOVA[kategorija.id] || [])
+                .filter(slovo => !zauzetaSlova.has(slovo)),
+            random
+        );
+        const slovo = dostupnaSlova[0];
+
+        if (!slovo) {
+            throw new Error(`Dnevni izazov nema dostupno slovo za kategoriju ${kategorija.id}.`);
+        }
+        zauzetaSlova.add(slovo);
+
+        return {
+            kategorija: kategorija.id,
+            ikona: kategorija.ikona,
+            naziv: kategorija.naziv,
+            slovo
+        };
+    });
 }
 
 function bonusZaDnevniNiz(brojDana) {
@@ -3370,6 +3396,21 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`🚀 Zemljopis Server uspešno pokrenut na portu ${PORT}`);
-});
+if (process.env.ZEMLJOPIS_TEST_MODE !== "true") {
+    server.listen(PORT, () => {
+        console.log(`🚀 Zemljopis Server uspešno pokrenut na portu ${PORT}`);
+    });
+}
+
+module.exports.dnevniTestApi = {
+    VREMENSKA_ZONA_IGRE,
+    DNEVNI_KATEGORIJE,
+    datumIdBeograd,
+    datumLabelaBeograd,
+    pomeriDatumId,
+    napraviDnevneZadatke,
+    bonusZaDnevniNiz,
+    izracunajDnevniNiz,
+    normalizujDnevneOdgovore,
+    napraviIstekliDnevniRezultat
+};

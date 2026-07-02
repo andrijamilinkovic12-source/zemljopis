@@ -20,6 +20,8 @@ const DnevniIzazovManager = {
     ucitavanje: false,
     zavrsavanjeUToku: false,
     serverOffsetMs: 0,
+    serverVremePriSinhronizaciji: 0,
+    monotonoVremePriSinhronizaciji: 0,
     pocetakIgreAt: null,
     rokAt: null,
     introTajmer: null,
@@ -62,6 +64,14 @@ const DnevniIzazovManager = {
     },
 
     sadaServer: function() {
+        if (
+            this.serverVremePriSinhronizaciji > 0
+            && typeof performance !== 'undefined'
+            && typeof performance.now === 'function'
+        ) {
+            return this.serverVremePriSinhronizaciji
+                + (performance.now() - this.monotonoVremePriSinhronizaciji);
+        }
         return Date.now() + this.serverOffsetMs;
     },
 
@@ -72,12 +82,17 @@ const DnevniIzazovManager = {
                 return;
             }
 
+            const poslatoAt = Date.now();
             Game.socket.timeout(12000).emit(dogadjaj, podaci, (greska, odgovor) => {
                 if (greska) {
                     reject(greska);
                     return;
                 }
-                resolve(odgovor || {});
+                const primljenoAt = Date.now();
+                const rezultat = odgovor || {};
+                rezultat.klijentSredinaZahteva = poslatoAt + ((primljenoAt - poslatoAt) / 2);
+                rezultat.klijentPrimljenoAt = primljenoAt;
+                resolve(rezultat);
             });
         });
     },
@@ -86,7 +101,15 @@ const DnevniIzazovManager = {
         if (!odgovor || !odgovor.datumId || !Array.isArray(odgovor.zadaci)) return;
 
         if (typeof odgovor.serverVreme === 'number') {
-            this.serverOffsetMs = odgovor.serverVreme - Date.now();
+            const sredinaZahteva = Number(odgovor.klijentSredinaZahteva) || Date.now();
+            const primljenoAt = Number(odgovor.klijentPrimljenoAt) || Date.now();
+            const procenjenoServerVreme = odgovor.serverVreme + Math.max(0, primljenoAt - sredinaZahteva);
+            this.serverOffsetMs = odgovor.serverVreme - sredinaZahteva;
+            this.serverVremePriSinhronizaciji = procenjenoServerVreme;
+            this.monotonoVremePriSinhronizaciji = typeof performance !== 'undefined'
+                && typeof performance.now === 'function'
+                ? performance.now()
+                : 0;
         }
 
         this.pocetakIgreAt = Number(odgovor.pocetakIgreAt) || null;
@@ -126,9 +149,14 @@ const DnevniIzazovManager = {
             this.primeniServerStanje(odgovor);
 
             if (!odgovor.uspeh) {
+                const vecOdigrano = odgovor.kod === 'VEC_ODIGRANO';
                 UIManager.prikaziObavestenje(
-                    "Već si odigrao!",
-                    odgovor.poruka || "Dnevni izazov možeš igrati samo jednom dnevno. Vrati se sutra za nove nagrade!",
+                    vecOdigrano ? "Već si odigrao!" : "Dnevni izazov",
+                    vecOdigrano
+                        ? (odgovor.poruka || "Dnevni izazov možeš igrati samo jednom dnevno. Vrati se sutra za nove nagrade!")
+                        : (odgovor.kod === 'PROFIL_NIJE_PRIJAVLJEN'
+                            ? "Profil se još povezuje sa serverom. Sačekaj trenutak i pokušaj ponovo."
+                            : (odgovor.poruka || "Dnevni izazov trenutno nije moguće pokrenuti. Pokušaj ponovo.")),
                     null,
                     "U redu"
                 );
@@ -165,6 +193,7 @@ const DnevniIzazovManager = {
     prikaziIntro: function(preostaloDoStarta, callback) {
         const overlay = document.getElementById('dnevni-intro-overlay');
         const trajanje = Math.max(4200, Math.min(6000, Math.ceil(preostaloDoStarta) || this.introTrajanjeMs));
+        const trajanjeZatvaranja = Math.min(420, trajanje);
 
         if (!overlay) {
             setTimeout(callback, trajanje);
@@ -183,8 +212,8 @@ const DnevniIzazovManager = {
                 overlay.classList.remove('active', 'closing');
                 overlay.setAttribute('aria-hidden', 'true');
                 callback();
-            }, 420);
-        }, trajanje);
+            }, trajanjeZatvaranja);
+        }, Math.max(0, trajanje - trajanjeZatvaranja));
     },
 
     pokreniIgruIzServera: function() {
@@ -237,9 +266,6 @@ const DnevniIzazovManager = {
                 input.addEventListener('focus', function() {
                     if (typeof KeyboardManager !== 'undefined') {
                         KeyboardManager.setActiveInput(input);
-                        if (DnevniIzazovManager.izazovUToku) {
-                            KeyboardManager.showKeyboard();
-                        }
                     }
                     osveziAktivniPrikaz();
                 });
@@ -572,6 +598,9 @@ const DnevniIzazovManager = {
     prikaziRezultat: function(rezultat) {
         this.poslednjiRezultat = rezultat || {};
         this.x2PreuzimanjeUToku = false;
+        if (typeof KeyboardManager !== 'undefined') {
+            KeyboardManager.hideKeyboard();
+        }
 
         UIManager.prikaziObavestenje(
             "Dnevni Izazov Završen!",

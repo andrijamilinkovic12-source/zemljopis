@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Dnevni izazov - vizuelni test</title>
+    <link rel="stylesheet" href="../www/style.css">
+</head>
+<body data-tema="tamna">
+    <div id="main-menu" class="screen"></div>
+
+    <div id="dnevni-izazov-screen" class="screen">
+        <div class="menu-pattern">
+            <img class="pattern-icon pattern-img pattern-accent-gold dnevni-pattern-icon" src="../www/assets/dnevni-izazov-v2.svg" alt="" aria-hidden="true">
+        </div>
+        <h2 class="dnevni-title">Dnevni Izazov</h2>
+        <div class="dnevni-timer-wrap"><span id="dnevni-tajmer">01:00</span></div>
+        <p class="dnevni-opis">Unesi pojmove na zadato slovo. Svaki tačan odgovor donosi <b>100 dukata</b> u tvoju Riznicu!</p>
+        <div id="dnevni-aktivni-zadatak" class="dnevni-aktivni-zadatak" aria-live="polite"></div>
+        <div class="dnevni-izazov-inputs"><div id="dnevni-izazov-polja"></div></div>
+    </div>
+
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title">Naslov</h2>
+            <p id="modal-message">Poruka</p>
+            <button id="modal-btn" class="menu-btn btn-primary">U redu</button>
+        </div>
+    </div>
+
+    <div id="ad-preview-overlay" class="ad-preview-overlay" aria-hidden="true">
+        <div class="ad-preview-card">
+            <span id="ad-preview-title">NAGRAĐENA REKLAMA</span>
+            <p id="ad-preview-description"></p>
+            <strong id="ad-preview-time">5s</strong>
+            <div class="ad-preview-progress"><span id="ad-preview-progress-fill"></span></div>
+        </div>
+    </div>
+
+    <div id="dnevni-intro-overlay" class="dnevni-intro-overlay" aria-hidden="true">
+        <div class="dnevni-intro-stage" role="status" aria-live="polite">
+            <div class="dnevni-intro-title">
+                <span class="dnevni-intro-word dnevni-intro-left">DNEVNI</span>
+                <img class="dnevni-intro-icon" src="../www/assets/dnevni-izazov-v2.svg" alt="" aria-hidden="true">
+                <span class="dnevni-intro-word dnevni-intro-right">IZAZOV</span>
+            </div>
+            <div class="dnevni-intro-line" aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <div id="custom-keyboard" class="keyboard-hidden"></div>
+
+    <script>
+        const PodesavanjaManager = { postavke: { pismo: 'latinica' } };
+        const SinhronizacijaManager = { zakaziSlanje() {} };
+        const RiznicaManager = {
+            dukati: 500,
+            normalizujDukate(vrednost) { return Number(vrednost) || 0; },
+            snimiStanje() {}
+        };
+        const UIManager = {
+            prikaziEkran(id) {
+                document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+                document.getElementById(id)?.classList.add('active');
+                if (typeof KeyboardManager !== 'undefined') KeyboardManager.hideKeyboard();
+            },
+            prikaziObavestenje(naslov, poruka, akcija, tekstDugmeta) {
+                document.getElementById('modal-title').innerHTML = naslov;
+                document.getElementById('modal-message').innerHTML = poruka;
+                const dugme = document.getElementById('modal-btn');
+                dugme.textContent = tekstDugmeta || 'U redu';
+                dugme.onclick = () => {
+                    document.getElementById('custom-modal').classList.remove('active');
+                    if (typeof akcija === 'function') akcija();
+                };
+                document.getElementById('custom-modal').classList.add('active');
+            },
+            zakljucajIObojiPolje(input, tacno) {
+                input.disabled = true;
+                input.classList.add(tacno ? 'input-correct' : 'input-wrong');
+            }
+        };
+    </script>
+    <script src="../www/tokeni.js"></script>
+    <script src="../www/keyboard.js"></script>
+    <script src="../www/dnevniizazov.js"></script>
+    <script>
+        window.addEventListener('load', () => {
+            const zadaci = [
+                { kategorija: 'drzava', ikona: '🌍', naziv: 'Država', slovo: 'S' },
+                { kategorija: 'grad', ikona: '🏙️', naziv: 'Grad', slovo: 'B' },
+                { kategorija: 'reka', ikona: '🏞️', naziv: 'Reka', slovo: 'D' },
+                { kategorija: 'planina', ikona: '⛰️', naziv: 'Planina', slovo: 'T' }
+            ];
+            const sada = Date.now();
+            DnevniIzazovManager.dnevniPodaci = {
+                datum: '02.07.2026.',
+                datumId: '2026-07-02',
+                zadaci,
+                status: 'u_toku',
+                zapoceto: true,
+                odigrano: false
+            };
+            DnevniIzazovManager.izazovUToku = true;
+            DnevniIzazovManager.serverVremePriSinhronizaciji = sada;
+            DnevniIzazovManager.monotonoVremePriSinhronizaciji = performance.now();
+            DnevniIzazovManager.rokAt = sada + 120000;
+
+            const prikaz = new URLSearchParams(location.search).get('prikaz') || 'igra';
+            if (prikaz === 'intro') {
+                DnevniIzazovManager.prikaziIntro(5200, () => DnevniIzazovManager.pokreniIgruIzServera());
+                return;
+            }
+
+            DnevniIzazovManager.pokreniIgruIzServera();
+            if (prikaz === 'rezultat') {
+                setTimeout(() => DnevniIzazovManager.prikaziRezultat({
+                    tacniPojmovi: 4,
+                    osnovnaNagrada: 400,
+                    bonusPerfektno: 200,
+                    bonusDnevniNiz: 150,
+                    osvojenoDukata: 750,
+                    dnevniNiz: 7,
+                    x2Preuzet: false,
+                    x2BonusDukata: 0,
+                    ukupnoDukata: 750,
+                    razlog: 'predato'
+                }), 150);
+            }
+        });
+    </script>
+</body>
+</html>

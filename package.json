@@ -4,7 +4,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node scripts/test-dnevni-local.mjs",
+    "test:dnevni": "node scripts/test-dnevni-local.mjs"
   },
   "repository": {
     "type": "git",

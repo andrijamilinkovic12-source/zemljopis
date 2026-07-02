@@ -322,7 +322,10 @@ const PodesavanjaManager = {
             this.postavke.playerId = odgovor.profil && odgovor.profil.playerId
                 ? odgovor.profil.playerId
                 : this.postavke.playerId;
-            this.postavke.profilTip = "lokalni";
+            this.postavke.profilTip = odgovor.profil && odgovor.profil.googlePovezan ? "google" : "lokalni";
+            this.postavke.googleUid = odgovor.profil && odgovor.profil.googleUid
+                ? odgovor.profil.googleUid
+                : null;
             this.postavke.profilZavrsen = true;
             this.snimiULokalnuMemoriju();
             this.primeniPostavkeGlobalno();
@@ -385,7 +388,10 @@ const PodesavanjaManager = {
             this.postavke.playerId = odgovor.profil && odgovor.profil.playerId
                 ? odgovor.profil.playerId
                 : this.postavke.playerId;
-            this.postavke.profilTip = "lokalni";
+            this.postavke.profilTip = odgovor.profil && odgovor.profil.googlePovezan ? "google" : "lokalni";
+            this.postavke.googleUid = odgovor.profil && odgovor.profil.googleUid
+                ? odgovor.profil.googleUid
+                : this.postavke.googleUid;
             this.postavke.profilZavrsen = true;
             this.snimiULokalnuMemoriju();
             this.primeniPostavkeGlobalno();
@@ -414,7 +420,29 @@ const PodesavanjaManager = {
 
     izaberiProfilTip: function(tip) {
         if (tip === "google") {
-            this.prikaziGoogleUskoro();
+            if (typeof GoogleAuthManager !== "undefined") {
+                GoogleAuthManager.poveziTrenutniProfil();
+            } else {
+                UIManager.prikaziObavestenje(
+                    "Google nalog",
+                    "Google prijava nije učitana. Ponovo pokreni aplikaciju i pokušaj opet.",
+                    null,
+                    "U redu"
+                );
+            }
+            return;
+        }
+
+        if (this.postavke.googleUid) {
+            this.postavke.profilTip = "google";
+            this.snimiULokalnuMemoriju();
+            this.azurirajProfilOpcije();
+            UIManager.prikaziObavestenje(
+                "Google nalog je aktivan",
+                "Ovaj profil je već povezan sa Google nalogom, pa se napredak čuva u cloudu.",
+                null,
+                "U redu"
+            );
             return;
         }
 
@@ -424,19 +452,13 @@ const PodesavanjaManager = {
     },
 
     prikaziGoogleUskoro: function() {
-        UIManager.prikaziObavestenje(
-            "Google nalog",
-            "Google prijava je sada postavljena kao opcija u podešavanjima.<br><br>Povezivanje naloga sa Google UID-om dodaćemo u sledećem koraku.",
-            null,
-            "U redu"
-        );
+        this.izaberiProfilTip("google");
     },
 
     izaberiAvatar: function(id) {
         if (!this.avatari.some(a => a.id === id)) return;
 
         this.postavke.avatar = id;
-        this.postavke.profilTip = "lokalni";
         this.snimiULokalnuMemoriju();
         this.azurirajAvatarPreview();
         this.azurirajProfilOpcije();
@@ -549,11 +571,25 @@ const PodesavanjaManager = {
         const google = document.getElementById('profil-opcija-google');
         const lokalniStatus = document.getElementById('profil-lokalni-status');
         const googleStatus = document.getElementById('profil-google-status');
+        const googlePovezan = this.postavke.profilTip === "google" && Boolean(this.postavke.googleUid);
+        const povezivanjeUToku = typeof GoogleAuthManager !== "undefined" && GoogleAuthManager.povezivanjeUToku;
 
         if (lokalni) lokalni.classList.toggle('active', this.postavke.profilTip === "lokalni");
-        if (google) google.classList.remove('active');
+        if (google) {
+            google.classList.toggle('active', googlePovezan || povezivanjeUToku);
+            google.disabled = Boolean(povezivanjeUToku);
+        }
         if (lokalniStatus) lokalniStatus.innerText = this.postavke.pismo === "cirilica" ? "АКТИВНО" : "AKTIVNO";
-        if (googleStatus) googleStatus.innerText = this.postavke.pismo === "cirilica" ? "УСКОРО" : "USKORO";
+        if (googleStatus) {
+            googleStatus.classList.toggle('soon', !googlePovezan);
+            if (povezivanjeUToku) {
+                googleStatus.innerText = this.postavke.pismo === "cirilica" ? "ПОВЕЗУЈЕ" : "POVEZUJE";
+            } else if (googlePovezan) {
+                googleStatus.innerText = this.postavke.pismo === "cirilica" ? "ПОВЕЗАНО" : "POVEZANO";
+            } else {
+                googleStatus.innerText = this.postavke.pismo === "cirilica" ? "ПРИЈАВИ СЕ" : "PRIJAVI SE";
+            }
+        }
     },
 
     getAvatarId: function() {

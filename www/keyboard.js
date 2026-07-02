@@ -40,6 +40,11 @@ const KeyboardManager = {
             if (!input.hasAttribute('data-kb-bound')) {
                 // Readonly sprečava nativnu tastaturu na telefonu
                 input.setAttribute('readonly', 'readonly'); 
+
+                input.addEventListener('focus', () => {
+                    if (input.disabled) return;
+                    this.setActiveInput(input);
+                });
                 
                 input.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -116,6 +121,7 @@ const KeyboardManager = {
         }
         
         this.scrollInputIntoView(input);
+        this.activeInput.dispatchEvent(new CustomEvent('zemljopis:active-input', { bubbles: true }));
     },
 
     renderKeyboard: function() {
@@ -149,6 +155,9 @@ const KeyboardManager = {
                     keyEl.innerText = 'OK';
                     keyEl.onclick = () => this.handleEnter();
                 } else {
+                    if (['LJ', 'NJ', 'DŽ', 'Љ', 'Њ', 'Џ'].includes(key)) {
+                        keyEl.classList.add('kb-digraph');
+                    }
                     keyEl.innerText = key;
                     keyEl.onclick = () => this.handleKeyPress(key);
                 }
@@ -162,12 +171,14 @@ const KeyboardManager = {
     handleKeyPress: function(char) {
         if (this.activeInput && !this.activeInput.disabled) {
             this.activeInput.value += char;
+            this.activeInput.dispatchEvent(new Event('input', { bubbles: true }));
         }
     },
 
     handleBackspace: function() {
         if (this.activeInput && !this.activeInput.disabled) {
             this.activeInput.value = this.activeInput.value.slice(0, -1);
+            this.activeInput.dispatchEvent(new Event('input', { bubbles: true }));
         }
     },
 
@@ -201,6 +212,10 @@ const KeyboardManager = {
         const container = this.getInputScrollContainer();
         if (container) {
             const keyboardHeight = kb ? Math.ceil(kb.getBoundingClientRect().height || 260) : 260;
+            document.body.style.setProperty('--keyboard-visible-height', `${keyboardHeight}px`);
+            if (container.dataset.kbDefaultPaddingBottom === undefined) {
+                container.dataset.kbDefaultPaddingBottom = container.style.paddingBottom || '';
+            }
             container.style.paddingBottom = `${keyboardHeight + 24}px`;
         }
         if (this.activeInput) {
@@ -213,6 +228,7 @@ const KeyboardManager = {
         const kb = document.getElementById('custom-keyboard');
         if (kb) kb.classList.remove('active');
         document.body.classList.remove('keyboard-open');
+        document.body.style.removeProperty('--keyboard-visible-height');
 
         const container = this.getInputScrollContainer();
         
@@ -224,7 +240,7 @@ const KeyboardManager = {
         
         // Vraćamo padding u zavisnosti od ekrana
         if (container) {
-            container.style.paddingBottom = container.classList.contains('dnevni-izazov-inputs') ? '250px' : '75px';
+            container.style.paddingBottom = container.dataset.kbDefaultPaddingBottom || '';
         }
     }
 };

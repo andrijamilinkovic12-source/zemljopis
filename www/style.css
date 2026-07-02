@@ -530,6 +530,15 @@ body[data-tema="svetla"] #profil-setup-nadimak {
     border-color: rgba(56, 239, 125, 0.55);
 }
 
+.profile-choice:disabled {
+    cursor: progress;
+    opacity: 0.82;
+}
+
+.profile-choice.active .profile-choice-status {
+    display: inline-flex;
+}
+
 .profile-choice.google {
     border-color: rgba(66, 133, 244, 0.35);
 }
@@ -1182,12 +1191,59 @@ body[data-tema="svetla"] #postavke-nadimak {
 }
 .input-group input:focus { border-color: #38ef7d; background: rgba(0, 0, 0, 0.4); transform: translateY(-1px); } 
 
+#dnevni-izazov-screen {
+    padding: clamp(0.75rem, 3vh, 1.75rem) 0 0;
+    overflow: hidden;
+    align-items: stretch;
+}
+
+.dnevni-title {
+    z-index: 5;
+    color: #f5af19;
+    margin-bottom: clamp(0.25rem, 0.8vh, 0.5rem);
+    font-size: min(1.55rem, 3.2vh);
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(245, 175, 25, 0.3);
+    text-align: center;
+    line-height: 1.1;
+}
+
+.dnevni-timer-wrap {
+    text-align: center;
+    z-index: 5;
+    margin-bottom: clamp(0.55rem, 1.5vh, 1rem);
+}
+
+#dnevni-tajmer {
+    font-size: min(1.55rem, 3.2vh);
+    font-weight: 800;
+    color: #ff416c;
+    background: rgba(0,0,0,0.5);
+    padding: 0.3rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255,65,108,0.3);
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+    transition: transform 0.2s;
+}
+
+.dnevni-opis {
+    z-index: 5;
+    text-align: center;
+    color: #a0aec0;
+    font-size: min(0.82rem, 1.75vh);
+    line-height: 1.35;
+    margin: 0 auto clamp(0.55rem, 1.5vh, 1rem);
+    padding: 0 1rem;
+    max-width: 380px;
+}
+
 .dnevni-aktivni-zadatak {
     z-index: 5;
     width: calc(100% - 2rem);
     max-width: 340px;
-    margin: 0 auto 0.8rem auto;
-    padding: 0.65rem 0.8rem;
+    margin: 0 auto clamp(0.5rem, 1.2vh, 0.8rem) auto;
+    padding: clamp(0.48rem, 1.2vh, 0.65rem) 0.8rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1201,15 +1257,19 @@ body[data-tema="svetla"] #postavke-nadimak {
 
 .dnevni-aktivni-redni {
     color: #a0aec0;
-    font-size: 0.68rem;
+    font-size: min(0.68rem, 1.45vh);
     font-weight: 800;
 }
 
 .dnevni-aktivni-pojam {
     flex: 1 1 115px;
     color: #fff;
-    font-size: 0.95rem;
+    font-size: min(0.95rem, 2vh);
     font-weight: 800;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .dnevni-aktivni-slovo {
@@ -1217,12 +1277,71 @@ body[data-tema="svetla"] #postavke-nadimak {
     background: #f5af19;
     border-radius: 8px;
     padding: 0.2rem 0.45rem;
-    font-size: 0.85rem;
+    font-size: min(0.85rem, 1.75vh);
     font-weight: 900;
+    flex: 0 0 auto;
+}
+
+.dnevni-izazov-inputs {
+    z-index: 5;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0 1rem clamp(1rem, 3vh, 1.5rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    scroll-padding: 0.75rem 0 calc(var(--keyboard-visible-height, 0px) + 1rem);
+    overscroll-behavior: contain;
+}
+
+.dnevni-izazov-inputs::-webkit-scrollbar {
+    display: none;
+}
+
+#dnevni-izazov-polja {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.55rem, 1.35vh, 0.85rem);
 }
 
 .dnevni-input-group {
+    margin-bottom: 0 !important;
+    background: rgba(0,0,0,0.3);
+    padding: clamp(0.55rem, 1.25vh, 0.8rem);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
     transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.dnevni-input-group label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: clamp(0.3rem, 0.8vh, 0.5rem);
+    min-width: 0;
+}
+
+.dnevni-zadatak-naziv {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: min(0.88rem, 1.8vh);
+    color: #fff;
+}
+
+.dnevni-zadatak-slovo {
+    flex: 0 0 auto;
+    color: #f5af19;
+    font-weight: 800;
+    font-size: min(1rem, 2.1vh);
 }
 
 .dnevni-input-group.active-dnevni-zadatak {
@@ -1232,30 +1351,36 @@ body[data-tema="svetla"] #postavke-nadimak {
 }
 
 body.keyboard-open #dnevni-izazov-screen {
-    padding-top: 1vh !important;
+    padding-top: max(0.35rem, env(safe-area-inset-top, 0px)) !important;
     overflow: hidden;
 }
 
 body.keyboard-open #dnevni-izazov-screen h2 {
-    display: none;
+    display: block;
+    font-size: min(0.95rem, 2.2vh);
+    line-height: 1;
+    margin-bottom: 0.15rem;
 }
 
 body.keyboard-open .dnevni-timer-wrap {
-    margin-bottom: 0.45rem !important;
+    margin-bottom: 0.25rem !important;
 }
 
 body.keyboard-open #dnevni-tajmer {
-    font-size: 1.25rem !important;
-    padding: 0.2rem 0.75rem !important;
+    font-size: min(1.05rem, 2.5vh) !important;
+    padding: 0.16rem 0.65rem !important;
 }
 
 body.keyboard-open #dnevni-izazov-screen > p {
-    display: none;
+    display: block;
+    font-size: min(0.62rem, 1.35vh);
+    line-height: 1.14;
+    margin-bottom: 0.25rem;
 }
 
 body.keyboard-open .dnevni-aktivni-zadatak {
-    margin-bottom: 0.45rem;
-    padding: 0.45rem 0.65rem;
+    margin-bottom: 0.25rem;
+    padding: 0.32rem 0.55rem;
 }
 
 body.keyboard-open .dnevni-izazov-inputs {
@@ -1264,7 +1389,7 @@ body.keyboard-open .dnevni-izazov-inputs {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
     scroll-padding-top: 0.5rem;
-    scroll-padding-bottom: 285px;
+    scroll-padding-bottom: calc(var(--keyboard-visible-height, 260px) + 1rem);
 }
 
 body.keyboard-open #dnevni-izazov-polja {
@@ -1272,16 +1397,15 @@ body.keyboard-open #dnevni-izazov-polja {
 }
 
 body.keyboard-open .dnevni-input-group {
-    margin-bottom: 0.75rem !important;
-    padding: 0.65rem !important;
+    padding: 0.42rem !important;
 }
 
 body.keyboard-open .dnevni-input-group label {
-    margin-bottom: 0.35rem !important;
+    margin-bottom: 0.2rem !important;
 }
 
 body.keyboard-open .dnevni-input-group input {
-    padding: 0.55rem 0.75rem !important;
+    padding: 0.4rem 0.65rem !important;
 }
 
 .action-footer { 
@@ -2878,7 +3002,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid rgba(56, 239, 125, 0.3);
-    padding: 12px 6px calc(15px + env(safe-area-inset-bottom, 10px)) 6px; 
+    padding: clamp(6px, 1vh, 10px) 6px calc(clamp(8px, 1vh, 12px) + env(safe-area-inset-bottom, 10px)) 6px; 
     
     /* OVE 4 LINIJE SU KLJUČNE ZA REŠAVANJE BAGA: */
     z-index: 10000; 
@@ -2889,7 +3013,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s;
     display: flex;
     flex-direction: column;
-    gap: 8px; 
+    gap: clamp(4px, 0.7vh, 6px); 
     box-shadow: 0 -5px 30px rgba(0,0,0,0.6);
 }
 
@@ -2908,13 +3032,14 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 
 .kb-key {
     flex: 1;
+    min-width: 0;
     max-width: 34px; 
-    height: 52px; 
+    height: clamp(38px, 5.7vh, 50px); 
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.05);
     color: #fff;
-    font-size: 1rem;
+    font-size: clamp(0.78rem, 1.85vh, 0.95rem);
     font-weight: 700;
     display: flex;
     justify-content: center;
@@ -2925,9 +3050,8 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     transition: background 0.1s, transform 0.1s;
 }
 
-.kb-key:contains('LJ'), .kb-key:contains('NJ'), .kb-key:contains('DŽ'),
-.kb-key:contains('Љ'), .kb-key:contains('Њ'), .kb-key:contains('Џ') {
-    font-size: 0.85rem;
+.kb-digraph {
+    font-size: clamp(0.68rem, 1.55vh, 0.78rem);
 }
 
 .kb-key:active {

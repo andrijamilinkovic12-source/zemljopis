@@ -7,6 +7,7 @@ const SinhronizacijaManager = {
     spreman: false,
     obradaUToku: false,
     primenaUToku: false,
+    slanjeNakonPrimene: false,
     tajmerSlanja: null,
 
     procitajJSON: function(kljuc, podrazumevano) {
@@ -51,9 +52,9 @@ const SinhronizacijaManager = {
         };
     },
 
-    obradiProfil: function(profil) {
+    obradiProfil: function(profil, opcije = {}) {
         if (!profil || !profil.playerId || this.obradaUToku) return;
-        if (this.spreman && this.playerId === profil.playerId) return;
+        if (this.spreman && this.playerId === profil.playerId && !opcije.prisilno) return;
 
         this.obradaUToku = true;
         this.playerId = profil.playerId;
@@ -65,6 +66,10 @@ const SinhronizacijaManager = {
             this.primeniNapredak(profil.sinhronizacija.napredak || {});
             this.spreman = true;
             this.obradaUToku = false;
+            if (this.slanjeNakonPrimene) {
+                this.slanjeNakonPrimene = false;
+                this.zakaziSlanje();
+            }
             return;
         }
 
@@ -75,7 +80,11 @@ const SinhronizacijaManager = {
     },
 
     zakaziSlanje: function() {
-        if (!this.spreman || this.primenaUToku) return;
+        if (this.primenaUToku) {
+            this.slanjeNakonPrimene = true;
+            return;
+        }
+        if (!this.spreman) return;
         clearTimeout(this.tajmerSlanja);
         this.tajmerSlanja = setTimeout(() => this.posaljiOdmah(), 700);
     },
@@ -166,7 +175,7 @@ const SinhronizacijaManager = {
                 localStorage.setItem("zemljopis_tokeni_stanje", String(napredak.tokeni.stanje));
                 if (typeof TokeniManager !== "undefined") {
                     TokeniManager.tokeni = TokeniManager.normalizujTokeni(napredak.tokeni.stanje);
-                    TokeniManager.azurirajPrikaz();
+                    TokeniManager.proveriDnevniReset();
                 }
             }
         }
@@ -187,5 +196,9 @@ const SinhronizacijaManager = {
         }
 
         this.primenaUToku = false;
+        if (this.slanjeNakonPrimene && this.spreman) {
+            this.slanjeNakonPrimene = false;
+            this.zakaziSlanje();
+        }
     }
 };

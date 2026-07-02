@@ -533,9 +533,9 @@ const UIManager = {
     },
 
     azurirajLiveStatistiku: function(trenutniSkor, mod, podaciProtivnika = []) {
-        // Prikaz tvog skora (sa kvačicom za Solo, samo poeni za Multi)
+        // Prikaz tvog skora.
         if (mod === 'solo') {
-            document.getElementById('my-player-score').innerText = trenutniSkor + ' ✓';
+            document.getElementById('my-player-score').innerText = trenutniSkor + ' pts';
         } else {
             document.getElementById('my-player-score').innerText = trenutniSkor;
         }

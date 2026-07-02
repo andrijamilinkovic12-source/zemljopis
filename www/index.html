@@ -386,13 +386,13 @@
                         </span>
                         <span class="profile-choice-status" id="profil-lokalni-status">AKTIVNO</span>
                     </button>
-                    <button class="profile-choice google" id="profil-opcija-google" onclick="PodesavanjaManager.prikaziGoogleUskoro()">
+                    <button class="profile-choice google" id="profil-opcija-google" onclick="PodesavanjaManager.izaberiProfilTip('google')">
                         <span class="profile-choice-icon"><i class="fa-brands fa-google"></i></span>
                         <span class="profile-choice-copy">
                             <b>Google nalog</b>
                                 <small>Prijavi se</small>
                         </span>
-                        <span class="profile-choice-status soon" id="profil-google-status">USKORO</span>
+                        <span class="profile-choice-status soon" id="profil-google-status">PRIJAVI SE</span>
                     </button>
                 </div>
             </div>
@@ -457,19 +457,19 @@
             <i class="fa-solid fa-bolt pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
         </div>
         
-        <h2 style="color: #f5af19; margin-bottom: 0.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(245, 175, 25, 0.3); text-align: center;">Dnevni Izazov</h2>
+        <h2 class="dnevni-title">Dnevni Izazov</h2>
         
-        <div class="dnevni-timer-wrap" style="text-align: center; z-index: 5; margin-bottom: 1rem;">
-            <span id="dnevni-tajmer" style="font-size: 1.6rem; font-weight: 800; color: #ff416c; background: rgba(0,0,0,0.5); padding: 0.3rem 1rem; border-radius: 10px; border: 1px solid rgba(255,65,108,0.3); display: inline-block; font-variant-numeric: tabular-nums; transition: transform 0.2s;">01:00</span>
+        <div class="dnevni-timer-wrap">
+            <span id="dnevni-tajmer">01:00</span>
         </div>
 
-        <p style="text-align: center; color: #a0aec0; font-size: 0.85rem; margin-bottom: 1rem; z-index: 5; padding: 0 1rem;">Unesi pojmove na zadato slovo. Svaki tačan odgovor donosi <b>100 dukata</b> u tvoju Riznicu!</p>
+        <p class="dnevni-opis">Unesi pojmove na zadato slovo. Svaki tačan odgovor donosi <b>100 dukata</b> u tvoju Riznicu!</p>
         
         <div id="dnevni-aktivni-zadatak" class="dnevni-aktivni-zadatak" aria-live="polite"></div>
         
-        <div class="dnevni-izazov-inputs" style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem 250px 1rem; overflow: auto; scrollbar-width: none;">
+        <div class="dnevni-izazov-inputs">
             
-            <div id="dnevni-izazov-polja" style="margin-bottom: 1rem;">
+            <div id="dnevni-izazov-polja">
             </div>
             
             </div>
@@ -709,6 +709,7 @@
 
     <script src="bazapodataka.js"></script>
     <script src="toplista.js"></script>
+    <script src="auth.js"></script>
     <script src="podesavanja.js"></script>
     <script src="riznica.js"></script> 
     <script src="trofeji.js"></script>

@@ -120,8 +120,12 @@ const Game = {
                     if (podaci.avatar) PodesavanjaManager.postavke.avatar = podaci.avatar;
                     if (podaci.playerId) PodesavanjaManager.postavke.playerId = podaci.playerId;
                     PodesavanjaManager.postavke.profilTip = podaci.googlePovezan ? "google" : "lokalni";
+                    PodesavanjaManager.postavke.googleUid = podaci.googleUid || null;
                     PodesavanjaManager.primeniPostavkeGlobalno();
                     PodesavanjaManager.snimiULokalnuMemoriju();
+                    if (typeof PodesavanjaManager.azurirajProfilOpcije === "function") {
+                        PodesavanjaManager.azurirajProfilOpcije();
+                    }
                 }
                 
                 const dukatiEl = document.getElementById('meni-dukati');
@@ -554,8 +558,12 @@ const Game = {
                     PodesavanjaManager.postavke.avatar = odgovor.profil.avatar;
                     PodesavanjaManager.postavke.playerId = odgovor.profil.playerId || PodesavanjaManager.postavke.playerId;
                     PodesavanjaManager.postavke.profilTip = odgovor.profil.googlePovezan ? "google" : "lokalni";
+                    PodesavanjaManager.postavke.googleUid = odgovor.profil.googleUid || null;
                     PodesavanjaManager.snimiULokalnuMemoriju();
                     PodesavanjaManager.primeniPostavkeGlobalno();
+                    if (typeof PodesavanjaManager.azurirajProfilOpcije === "function") {
+                        PodesavanjaManager.azurirajProfilOpcije();
+                    }
                 }
             }
         );
@@ -1120,7 +1128,7 @@ const Game = {
             input.disabled = true;
         });
         
-        let prikazRezultata = this.trenutniMod === 'solo' ? this.ukupnoTacnihOdgovora : this.ukupanScore;
+        let prikazRezultata = this.ukupanScore;
         let arrayZaLiveStatistiku = Object.values(this.rezultatiProtivnika).map(p => ({ ime: p.ime, poeni: p.poeni }));
         UIManager.azurirajLiveStatistiku(prikazRezultata, this.trenutniMod, arrayZaLiveStatistiku.length > 0 ? arrayZaLiveStatistiku : this.brojIgracaUSobi);
         
@@ -1233,12 +1241,26 @@ const Game = {
                     kategorija: nazivKategorije,
                     odgovor: mojOdgovor || "-",
                     boja: isCorrect ? 'green' : 'red',
-                    poeni: isCorrect ? '✓' : '✗'
+                    poeni: isCorrect ? '+10' : '0'
                 });
             });
 
+            const bonusPerfektneRunde = tacnihOveRunde === 7 ? 20 : 0;
+            const poeniOveRunde = (tacnihOveRunde * 10) + bonusPerfektneRunde;
+            pregledIgraca['ja'].ukupnoPoena = poeniOveRunde;
+
+            if (bonusPerfektneRunde > 0) {
+                pregledIgraca['ja'].odgovori.push({
+                    kategorija: "Bonus",
+                    odgovor: "Perfektna runda",
+                    boja: 'green',
+                    poeni: `+${bonusPerfektneRunde}`
+                });
+            }
+
             this.ukupnoTacnihOdgovora += tacnihOveRunde;
-            UIManager.azurirajLiveStatistiku(this.ukupnoTacnihOdgovora, this.trenutniMod, []);
+            this.ukupanScore += poeniOveRunde;
+            UIManager.azurirajLiveStatistiku(this.ukupanScore, this.trenutniMod, []);
             
             if (typeof TrofejiManager !== 'undefined') {
                 TrofejiManager.azurirajNapredak('pojmovi', tacnihOveRunde);
@@ -1354,7 +1376,7 @@ const Game = {
             obradjeniOdgovori.forEach(unos => {
                 let statusBoja = 'red'; 
                 if (unos.tacan && unos.odgovor !== "") {
-                    if (unos.poeni === 20) statusBoja = 'green';
+                    if (unos.poeni >= 15) statusBoja = 'green';
                     else if (unos.poeni === 10 || unos.poeni === 5) statusBoja = 'yellow';
                 }
 
@@ -1367,6 +1389,18 @@ const Game = {
                     poeni: unos.poeni > 0 ? `+${unos.poeni}` : '0'
                 });
             });
+        });
+
+        Object.keys(scoreOveRunde).forEach(socketId => {
+            if (tacniOveRunde[socketId] === 7) {
+                scoreOveRunde[socketId] += 10;
+                pregledIgraca[socketId].odgovori.push({
+                    kategorija: "Bonus",
+                    odgovor: "Perfektna runda",
+                    boja: 'green',
+                    poeni: '+10'
+                });
+            }
         });
 
         let arrayZaLiveStatistiku = [];
@@ -1452,7 +1486,7 @@ const Game = {
                 if (brojPonavljanja >= 2) {
                     unos.poeni = 5; 
                 } else if (brojPonavljanja === 1) {
-                    if (ukupanBrojTacnihOdgovora === 1) unos.poeni = 20; 
+                    if (ukupanBrojTacnihOdgovora === 1) unos.poeni = 15;
                     else unos.poeni = 10; 
                 }
             }
@@ -1529,7 +1563,7 @@ const Game = {
                 <div class="summary-card">
                     <h3>${igrac.ime}</h3>
                     <p style="text-align: center; color: #38ef7d; font-weight: 800; font-size: min(0.9rem, 1.8vh); margin-bottom: min(0.3rem, 0.6vh); padding-bottom: min(0.3rem, 0.6vh); border-bottom: 1px solid rgba(56,239,125,0.2);">
-                        ${this.trenutniMod === 'solo' ? `Pronađeno: ${tacnihOveRunde}/7` : `Osvojeno: +${igrac.ukupnoPoena} pts`}
+                        ${this.trenutniMod === 'solo' ? `Pronađeno: ${tacnihOveRunde}/7 | +${igrac.ukupnoPoena} pts` : `Osvojeno: +${igrac.ukupnoPoena} pts`}
                     </p>
                     <div style="flex: 1; overflow-y: auto; scrollbar-width: none;">
                         ${listHtml}
@@ -1684,7 +1718,7 @@ const Game = {
         } else {
             UIManager.prikaziObavestenje(
                 "Kraj treninga!", 
-                `Svaka čast, <b>${mojNadimak}</b>! Završio/la si svih 6 rundi.<br><br>Tvoj rezultat je: <b style="color:#38ef7d; font-size:1.2rem;">${this.ukupnoTacnihOdgovora} / 42</b> tačnih odgovora.`, 
+                `Svaka čast, <b>${mojNadimak}</b>! Završio/la si svih 6 rundi.<br><br>Tačni pojmovi: <b style="color:#38ef7d; font-size:1.2rem;">${this.ukupnoTacnihOdgovora} / 42</b><br>Poeni: <b style="color:#f5af19; font-size:1.2rem;">${this.ukupanScore}</b>`,
                 () => this.povratakUMeni(),
                 "Završi" 
             );

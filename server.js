@@ -5,6 +5,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const https = require('https');
 
 const app = express();
 const server = http.createServer(app);
@@ -17,6 +18,15 @@ const io = new Server(server, {
 });
 
 const DOZVOLJENI_EFEKTI_RUNDE = new Set(['ef_nista', 'ef_konfete', 'ef_vatromet']);
+const GOOGLE_CLIENT_IDS = String(process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_IDS || "")
+    .split(",")
+    .map(id => id.trim())
+    .filter(Boolean);
+const GOOGLE_AUTH_DEV_MODE = process.env.GOOGLE_AUTH_DEV_MODE === "true";
+let googleJwksCache = {
+    keys: null,
+    expiresAt: 0
+};
 
 function normalizujEfekatRunde(efekatId) {
     const vrednost = String(efekatId || 'ef_nista');
@@ -57,6 +67,7 @@ const IgracSchema = new mongoose.Schema({
     nadimak: { type: String, required: true, unique: true },
     nadimakNormalizovan: { type: String, unique: true, sparse: true },
     profilKljuc: { type: String, unique: true, sparse: true },
+    povezaniProfilKljucevi: { type: [String], default: [] },
     googleUid: { type: String, unique: true, sparse: true },
     avatar: { type: String, default: "atlas" },
     prijatelji: { type: [String], default: [] },
@@ -170,6 +181,160 @@ function profilKljucJeIspravan(profilKljuc) {
         && /^[a-zA-Z0-9_-]+$/.test(profilKljuc);
 }
 
+function googleUidJeIspravan(googleUid) {
+    return typeof googleUid === "string"
+        && googleUid.length >= 6
+        && googleUid.length <= 128
+        && /^[a-zA-Z0-9_.:-]+$/.test(googleUid);
+}
+
+function greskaSaKodom(kod, poruka) {
+    const greska = new Error(poruka || kod);
+    greska.kod = kod;
+    return greska;
+}
+
+function base64UrlBuffer(deo) {
+    const vrednost = String(deo || "").replace(/-/g, "+").replace(/_/g, "/");
+    const padding = vrednost.length % 4 === 0 ? "" : "=".repeat(4 - (vrednost.length % 4));
+    return Buffer.from(vrednost + padding, "base64");
+}
+
+function procitajJwt(idToken) {
+    const delovi = String(idToken || "").split(".");
+    if (delovi.length !== 3) {
+        throw greskaSaKodom("NEISPRAVAN_GOOGLE_TOKEN", "Google token nije ispravan.");
+    }
+
+    try {
+        return {
+            header: JSON.parse(base64UrlBuffer(delovi[0]).toString("utf8")),
+            payload: JSON.parse(base64UrlBuffer(delovi[1]).toString("utf8")),
+            potpis: base64UrlBuffer(delovi[2]),
+            potpisaniDeo: `${delovi[0]}.${delovi[1]}`
+        };
+    } catch (error) {
+        throw greskaSaKodom("NEISPRAVAN_GOOGLE_TOKEN", "Google token nije moguće pročitati.");
+    }
+}
+
+function preuzmiGoogleJwks() {
+    if (googleJwksCache.keys && googleJwksCache.expiresAt > Date.now()) {
+        return Promise.resolve(googleJwksCache.keys);
+    }
+
+    return new Promise((resolve, reject) => {
+        const zahtev = https.get(
+            "https://www.googleapis.com/oauth2/v3/certs",
+            { headers: { Accept: "application/json" } },
+            odgovor => {
+                let telo = "";
+                odgovor.setEncoding("utf8");
+                odgovor.on("data", deo => { telo += deo; });
+                odgovor.on("end", () => {
+                    if (odgovor.statusCode < 200 || odgovor.statusCode >= 300) {
+                        reject(greskaSaKodom("GOOGLE_CERTIFIKATI_NEDOSTUPNI", "Google certifikati trenutno nisu dostupni."));
+                        return;
+                    }
+
+                    try {
+                        const podaci = JSON.parse(telo);
+                        const cacheControl = odgovor.headers["cache-control"] || "";
+                        const maxAge = /max-age=(\d+)/.exec(cacheControl);
+                        const trajanje = maxAge ? Number(maxAge[1]) * 1000 : 60 * 60 * 1000;
+                        googleJwksCache = {
+                            keys: Array.isArray(podaci.keys) ? podaci.keys : [],
+                            expiresAt: Date.now() + Math.max(5 * 60 * 1000, trajanje)
+                        };
+                        resolve(googleJwksCache.keys);
+                    } catch (error) {
+                        reject(greskaSaKodom("GOOGLE_CERTIFIKATI_NEDOSTUPNI", "Google certifikati nisu ispravni."));
+                    }
+                });
+            }
+        );
+
+        zahtev.setTimeout(8000, () => {
+            zahtev.destroy(greskaSaKodom("GOOGLE_CERTIFIKATI_NEDOSTUPNI", "Google certifikati trenutno nisu dostupni."));
+        });
+        zahtev.on("error", reject);
+    });
+}
+
+async function verifikujGoogleIdToken(idToken) {
+    if (GOOGLE_CLIENT_IDS.length === 0) {
+        throw greskaSaKodom("GOOGLE_AUTH_NIJE_PODESEN", "Na serveru nije podešen GOOGLE_CLIENT_ID.");
+    }
+
+    const jwt = procitajJwt(idToken);
+    if (jwt.header.alg !== "RS256" || !jwt.header.kid) {
+        throw greskaSaKodom("NEISPRAVAN_GOOGLE_TOKEN", "Google token ima neispravan potpis.");
+    }
+
+    const kljucevi = await preuzmiGoogleJwks();
+    const jwk = kljucevi.find(kljuc => kljuc.kid === jwt.header.kid);
+    if (!jwk) {
+        googleJwksCache.expiresAt = 0;
+        throw greskaSaKodom("GOOGLE_KLJUC_NIJE_PRONADJEN", "Google ključ za proveru tokena nije pronađen.");
+    }
+
+    const javniKljuc = crypto.createPublicKey({ key: jwk, format: "jwk" });
+    const potpisValidan = crypto.verify(
+        "RSA-SHA256",
+        Buffer.from(jwt.potpisaniDeo),
+        javniKljuc,
+        jwt.potpis
+    );
+    if (!potpisValidan) {
+        throw greskaSaKodom("NEISPRAVAN_GOOGLE_TOKEN", "Google token nije prošao proveru potpisa.");
+    }
+
+    const sada = Math.floor(Date.now() / 1000);
+    if (!["accounts.google.com", "https://accounts.google.com"].includes(jwt.payload.iss)) {
+        throw greskaSaKodom("NEISPRAVAN_GOOGLE_TOKEN", "Google izdavalac tokena nije ispravan.");
+    }
+    if (!GOOGLE_CLIENT_IDS.includes(jwt.payload.aud)) {
+        throw greskaSaKodom("POGRESAN_GOOGLE_CLIENT", "Google token nije izdat za ovu aplikaciju.");
+    }
+    if (!jwt.payload.sub || !googleUidJeIspravan(jwt.payload.sub)) {
+        throw greskaSaKodom("NEISPRAVAN_GOOGLE_UID", "Google UID nije ispravan.");
+    }
+    if (!Number.isFinite(Number(jwt.payload.exp)) || Number(jwt.payload.exp) <= sada) {
+        throw greskaSaKodom("GOOGLE_TOKEN_ISTEKAO", "Google prijava je istekla. Prijavi se ponovo.");
+    }
+    if (jwt.payload.iat && Number(jwt.payload.iat) > sada + 300) {
+        throw greskaSaKodom("NEISPRAVAN_GOOGLE_TOKEN", "Google token još nije važeći.");
+    }
+
+    return jwt.payload.sub;
+}
+
+async function potvrdiGoogleIdentitet(podaci = {}) {
+    const trazeniUid = String(podaci.googleUid || "").trim();
+    const idToken = String(podaci.idToken || podaci.googleIdToken || "").trim();
+
+    if (idToken && GOOGLE_CLIENT_IDS.length > 0) {
+        const verifikovanUid = await verifikujGoogleIdToken(idToken);
+        if (trazeniUid && trazeniUid !== verifikovanUid) {
+            throw greskaSaKodom("GOOGLE_UID_SE_NE_POKLAPA", "Google UID se ne poklapa sa tokenom.");
+        }
+        return verifikovanUid;
+    }
+
+    if (googleUidJeIspravan(trazeniUid) && GOOGLE_AUTH_DEV_MODE) {
+        return trazeniUid;
+    }
+
+    if (!idToken && GOOGLE_CLIENT_IDS.length > 0) {
+        throw greskaSaKodom("GOOGLE_TOKEN_OBAVEZAN", "Za Google nalog je potreban ID token.");
+    }
+
+    throw greskaSaKodom(
+        "GOOGLE_AUTH_NIJE_PODESEN",
+        "Google prijava nije podešena. Dodaj GOOGLE_CLIENT_ID ili uključi GOOGLE_AUTH_DEV_MODE za lokalno testiranje."
+    );
+}
+
 function osigurajIdentitetIgraca(igrac) {
     if (!igrac.playerId) {
         igrac.playerId = crypto.randomUUID();
@@ -247,6 +412,209 @@ function normalizujDukate(vrednost, podrazumevano = 500) {
     return Math.max(0, Math.floor(broj));
 }
 
+function normalizujTokeni(vrednost, podrazumevano = 3) {
+    const broj = Number(vrednost);
+    if (!Number.isFinite(broj)) return podrazumevano;
+    return Math.max(0, Math.min(3, Math.floor(broj)));
+}
+
+async function pronadjiIgracaPoProfilKljucu(profilKljuc) {
+    if (!profilKljucJeIspravan(profilKljuc)) return null;
+    return Igrac.findOne({
+        $or: [
+            { profilKljuc },
+            { povezaniProfilKljucevi: profilKljuc }
+        ]
+    });
+}
+
+function dodajPovezaniProfilKljuc(igrac, profilKljuc) {
+    if (!igrac || !profilKljucJeIspravan(profilKljuc)) return false;
+    if (igrac.profilKljuc === profilKljuc) return false;
+
+    const postojeci = Array.isArray(igrac.povezaniProfilKljucevi)
+        ? igrac.povezaniProfilKljucevi
+        : [];
+    if (postojeci.includes(profilKljuc)) return false;
+
+    igrac.povezaniProfilKljucevi = [...postojeci, profilKljuc].slice(-12);
+    return true;
+}
+
+function objektIliPrazan(vrednost) {
+    return vrednost && typeof vrednost === "object" && !Array.isArray(vrednost)
+        ? vrednost
+        : {};
+}
+
+function spojiArtiklePoId(postojeci = [], dolazni = []) {
+    const mapa = new Map();
+    const dodaj = (artikal, prednostDolaznog = false) => {
+        if (!artikal || typeof artikal !== "object" || !artikal.id) return;
+        const prethodni = mapa.get(artikal.id) || {};
+        mapa.set(artikal.id, {
+            ...prethodni,
+            ...artikal,
+            kupljeno: Boolean(prethodni.kupljeno) || Boolean(artikal.kupljeno),
+            opremljeno: prednostDolaznog
+                ? Boolean(artikal.opremljeno)
+                : Boolean(prethodni.opremljeno || artikal.opremljeno)
+        });
+    };
+
+    if (Array.isArray(postojeci)) postojeci.forEach(artikal => dodaj(artikal, false));
+    if (Array.isArray(dolazni)) dolazni.forEach(artikal => dodaj(artikal, true));
+    return Array.from(mapa.values());
+}
+
+function spojiRiznicu(postojeca, dolazna) {
+    const stara = objektIliPrazan(postojeca);
+    const nova = objektIliPrazan(dolazna);
+    if (!Object.keys(stara).length) return nova;
+    if (!Object.keys(nova).length) return stara;
+
+    const stariPodaci = objektIliPrazan(stara.podaci);
+    const noviPodaci = objektIliPrazan(nova.podaci);
+    const podaci = { ...stariPodaci, ...noviPodaci };
+
+    ["teme", "efekti", "vauceri"].forEach(kategorija => {
+        if (Array.isArray(stariPodaci[kategorija]) || Array.isArray(noviPodaci[kategorija])) {
+            podaci[kategorija] = spojiArtiklePoId(stariPodaci[kategorija], noviPodaci[kategorija]);
+        }
+    });
+
+    return {
+        ...stara,
+        ...nova,
+        dukati: Math.max(
+            normalizujDukate(stara.dukati, 0),
+            normalizujDukate(nova.dukati, 0)
+        ),
+        podaci
+    };
+}
+
+function spojiTrofeje(postojeci = [], dolazni = []) {
+    const mapa = new Map();
+    const dodaj = trofej => {
+        if (!trofej || typeof trofej !== "object" || !trofej.id) return;
+        const prethodni = mapa.get(trofej.id) || {};
+        mapa.set(trofej.id, {
+            ...prethodni,
+            ...trofej,
+            napredak: Math.max(Number(prethodni.napredak) || 0, Number(trofej.napredak) || 0),
+            preuzeto: Boolean(prethodni.preuzeto) || Boolean(trofej.preuzeto)
+        });
+    };
+
+    if (Array.isArray(postojeci)) postojeci.forEach(dodaj);
+    if (Array.isArray(dolazni)) dolazni.forEach(dodaj);
+    return Array.from(mapa.values());
+}
+
+function spojiTokeni(postojeci, dolazni) {
+    const stari = objektIliPrazan(postojeci);
+    const novi = objektIliPrazan(dolazni);
+    if (!Object.keys(stari).length) return novi;
+    if (!Object.keys(novi).length) return stari;
+
+    return {
+        ...stari,
+        ...novi,
+        stanje: Math.max(
+            normalizujTokeni(stari.stanje, 0),
+            normalizujTokeni(novi.stanje, 0)
+        ),
+        datum: novi.datum || stari.datum || null
+    };
+}
+
+function spojiKvartal(postojeci, dolazni) {
+    const stari = objektIliPrazan(postojeci);
+    const novi = objektIliPrazan(dolazni);
+    return {
+        ...stari,
+        ...novi,
+        sezonskiPojmovi: Math.max(Number(stari.sezonskiPojmovi) || 0, Number(novi.sezonskiPojmovi) || 0),
+        svaVremenaPojmovi: Math.max(Number(stari.svaVremenaPojmovi) || 0, Number(novi.svaVremenaPojmovi) || 0)
+    };
+}
+
+function spojiListuPoPlayerId(stara = [], nova = []) {
+    const mapa = new Map();
+    const dodaj = stavka => {
+        if (!stavka || typeof stavka !== "object") return;
+        const playerId = stavka.playerId || stavka.id;
+        if (!playerId) return;
+        mapa.set(playerId, { ...(mapa.get(playerId) || {}), ...stavka, playerId });
+    };
+
+    if (Array.isArray(stara)) stara.forEach(dodaj);
+    if (Array.isArray(nova)) nova.forEach(dodaj);
+    return Array.from(mapa.values());
+}
+
+function spojiPrijatelje(postojeci, dolazni) {
+    const stari = objektIliPrazan(postojeci);
+    const novi = objektIliPrazan(dolazni);
+    return {
+        lista: spojiListuPoPlayerId(stari.lista, novi.lista),
+        zahtevi: spojiListuPoPlayerId(stari.zahtevi, novi.zahtevi)
+    };
+}
+
+function spojiCloudNapredak(postojeci, dolazni) {
+    const stari = objektIliPrazan(postojeci);
+    const novi = objektIliPrazan(dolazni);
+    const spojeno = { ...stari, ...novi };
+
+    spojeno.verzija = Math.max(Number(stari.verzija) || 1, Number(novi.verzija) || 1);
+    spojeno.podesavanja = {
+        ...objektIliPrazan(stari.podesavanja),
+        ...objektIliPrazan(novi.podesavanja)
+    };
+    spojeno.riznica = spojiRiznicu(stari.riznica, novi.riznica);
+    spojeno.trofeji = spojiTrofeje(stari.trofeji, novi.trofeji);
+    spojeno.tokeni = spojiTokeni(stari.tokeni, novi.tokeni);
+    spojeno.kvartal = spojiKvartal(stari.kvartal, novi.kvartal);
+    spojeno.prijatelji = spojiPrijatelje(stari.prijatelji, novi.prijatelji);
+
+    if (novi.dnevniIzazov || stari.dnevniIzazov) {
+        spojeno.dnevniIzazov = novi.dnevniIzazov || stari.dnevniIzazov;
+    }
+
+    return spojeno;
+}
+
+function primeniNapredakNaBrojkeProfila(igrac, napredak) {
+    if (
+        napredak.riznica
+        && typeof napredak.riznica.dukati !== "undefined"
+    ) {
+        igrac.dukati = normalizujDukate(napredak.riznica.dukati, igrac.dukati || 500);
+    }
+    if (
+        napredak.tokeni
+        && typeof napredak.tokeni.stanje !== "undefined"
+    ) {
+        igrac.tokeni = normalizujTokeni(napredak.tokeni.stanje, igrac.tokeni || 3);
+    }
+    if (napredak.kvartal) {
+        if (typeof napredak.kvartal.sezonskiPojmovi !== "undefined") {
+            igrac.sezonskiPojmovi = Math.max(
+                Number(igrac.sezonskiPojmovi) || 0,
+                Number(napredak.kvartal.sezonskiPojmovi) || 0
+            );
+        }
+        if (typeof napredak.kvartal.svaVremenaPojmovi !== "undefined") {
+            igrac.svaVremenaPojmovi = Math.max(
+                Number(igrac.svaVremenaPojmovi) || 0,
+                Number(napredak.kvartal.svaVremenaPojmovi) || 0
+            );
+        }
+    }
+}
+
 function podaciProfilaZaKlijenta(igrac) {
     osigurajIdentitetIgraca(igrac);
     return {
@@ -255,8 +623,9 @@ function podaciProfilaZaKlijenta(igrac) {
         avatar: igrac.avatar || "atlas",
         profilTip: igrac.googleUid ? "google" : "lokalni",
         googlePovezan: Boolean(igrac.googleUid),
+        googleUid: igrac.googleUid || null,
         dukati: normalizujDukate(igrac.dukati),
-        tokeni: igrac.tokeni,
+        tokeni: normalizujTokeni(igrac.tokeni),
         sezonskiPojmovi: igrac.sezonskiPojmovi,
         svaVremenaPojmovi: igrac.svaVremenaPojmovi,
         sinhronizacija: podaciSinhronizacijeZaKlijenta(igrac)
@@ -1141,7 +1510,7 @@ io.on('connection', (socket) => {
         }
 
         try {
-            let igrac = await Igrac.findOne({ profilKljuc });
+            let igrac = await pronadjiIgracaPoProfilKljucu(profilKljuc);
             const zauzetiProfil = await Igrac.findOne({
                 $or: [
                     { nadimakNormalizovan },
@@ -1150,7 +1519,10 @@ io.on('connection', (socket) => {
             });
 
             if (zauzetiProfil && (!igrac || String(zauzetiProfil._id) !== String(igrac._id))) {
-                if (zauzetiProfil.profilKljuc && zauzetiProfil.profilKljuc !== profilKljuc) {
+                const kljucPripadaZauzetomProfilu = zauzetiProfil.profilKljuc === profilKljuc
+                    || (Array.isArray(zauzetiProfil.povezaniProfilKljucevi)
+                        && zauzetiProfil.povezaniProfilKljucevi.includes(profilKljuc));
+                if (!kljucPripadaZauzetomProfilu && (zauzetiProfil.profilKljuc || zauzetiProfil.googleUid)) {
                     return callback({ uspeh: false, kod: "NADIMAK_ZAUZET", poruka: "Ovaj nadimak je već zauzet. Izaberi drugi." });
                 }
 
@@ -1161,7 +1533,11 @@ io.on('connection', (socket) => {
             if (igrac) {
                 igrac.nadimak = nadimak;
                 igrac.nadimakNormalizovan = nadimakNormalizovan;
-                igrac.profilKljuc = profilKljuc;
+                if (!igrac.profilKljuc) {
+                    igrac.profilKljuc = profilKljuc;
+                } else if (igrac.profilKljuc !== profilKljuc) {
+                    dodajPovezaniProfilKljuc(igrac, profilKljuc);
+                }
                 igrac.avatar = avatar;
                 igrac.poslednjaPrijava = new Date();
                 await igrac.save();
@@ -1194,7 +1570,7 @@ io.on('connection', (socket) => {
         }
 
         try {
-            const igrac = await Igrac.findOne({ profilKljuc });
+            const igrac = await pronadjiIgracaPoProfilKljucu(profilKljuc);
             if (!igrac) {
                 return callback({ uspeh: false, kod: "PROFIL_NIJE_PRONADJEN" });
             }
@@ -1240,12 +1616,7 @@ io.on('connection', (socket) => {
 
             const ocisceniNapredak = sanitizujCloudNapredak(podaci && podaci.napredak);
             igrac.cloudNapredak = ocisceniNapredak;
-            if (
-                ocisceniNapredak.riznica
-                && typeof ocisceniNapredak.riznica.dukati !== "undefined"
-            ) {
-                igrac.dukati = normalizujDukate(ocisceniNapredak.riznica.dukati, igrac.dukati || 500);
-            }
+            primeniNapredakNaBrojkeProfila(igrac, ocisceniNapredak);
             igrac.cloudRevizija = trenutnaRevizija + 1;
             igrac.lokalnaMigracijaZavrsena = true;
             igrac.cloudAzuriranAt = new Date();
@@ -1262,6 +1633,131 @@ io.on('connection', (socket) => {
                 uspeh: false,
                 kod: error && error.kod ? error.kod : "GRESKA_SERVERA",
                 poruka: "Napredak trenutno nije moguće sinhronizovati."
+            });
+        }
+    });
+
+    // --- POVEZIVANJE GOST PROFILA SA GOOGLE UID NALOGOM ---
+    socket.on('poveziGoogleNalog', async (podaci = {}, callback = () => {}) => {
+        const profilKljuc = podaci && podaci.profilKljuc;
+        const prijavljeniIgrac = onlineIgraci[socket.id];
+
+        if (!prijavljeniIgrac && !profilKljucJeIspravan(profilKljuc)) {
+            return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN", poruka: "Prvo napravi lokalni profil." });
+        }
+
+        try {
+            const googleUid = await potvrdiGoogleIdentitet(podaci);
+            const lokalniNapredak = sanitizujCloudNapredak(podaci && podaci.napredak);
+            let lokalniIgrac = prijavljeniIgrac
+                ? await Igrac.findById(prijavljeniIgrac.bazaId)
+                : await pronadjiIgracaPoProfilKljucu(profilKljuc);
+
+            if (!lokalniIgrac) {
+                return callback({ uspeh: false, kod: "PROFIL_NIJE_PRONADJEN", poruka: "Lokalni profil nije pronađen." });
+            }
+
+            osigurajIdentitetIgraca(lokalniIgrac);
+            let googleIgrac = await Igrac.findOne({ googleUid });
+            const istiProfil = googleIgrac && String(googleIgrac._id) === String(lokalniIgrac._id);
+            const ciljniIgrac = googleIgrac || lokalniIgrac;
+            const prethodniCloud = googleIgrac
+                ? (googleIgrac.cloudNapredak || {})
+                : (lokalniIgrac.cloudNapredak || {});
+            const spojeniNapredak = sanitizujCloudNapredak(spojiCloudNapredak(prethodniCloud, lokalniNapredak));
+
+            if (googleIgrac && !istiProfil) {
+                if (profilKljucJeIspravan(lokalniIgrac.profilKljuc)) {
+                    dodajPovezaniProfilKljuc(googleIgrac, lokalniIgrac.profilKljuc);
+                    lokalniIgrac.profilKljuc = undefined;
+                }
+                if (profilKljucJeIspravan(profilKljuc)) {
+                    dodajPovezaniProfilKljuc(googleIgrac, profilKljuc);
+                }
+
+                googleIgrac.dukati = Math.max(
+                    normalizujDukate(googleIgrac.dukati, 500),
+                    normalizujDukate(lokalniIgrac.dukati, 500)
+                );
+                googleIgrac.tokeni = Math.max(
+                    normalizujTokeni(googleIgrac.tokeni, 3),
+                    normalizujTokeni(lokalniIgrac.tokeni, 3)
+                );
+                googleIgrac.sezonskiPojmovi = Math.max(
+                    Number(googleIgrac.sezonskiPojmovi) || 0,
+                    Number(lokalniIgrac.sezonskiPojmovi) || 0
+                );
+                googleIgrac.svaVremenaPojmovi = Math.max(
+                    Number(googleIgrac.svaVremenaPojmovi) || 0,
+                    Number(lokalniIgrac.svaVremenaPojmovi) || 0
+                );
+
+                lokalniIgrac.lokalnaMigracijaZavrsena = true;
+                lokalniIgrac.poslednjaPrijava = new Date();
+                await lokalniIgrac.save();
+            } else if (profilKljucJeIspravan(profilKljuc)) {
+                dodajPovezaniProfilKljuc(ciljniIgrac, profilKljuc);
+            }
+
+            ciljniIgrac.googleUid = googleUid;
+            ciljniIgrac.cloudNapredak = spojeniNapredak;
+            ciljniIgrac.cloudRevizija = (ciljniIgrac.cloudRevizija || 0) + 1;
+            ciljniIgrac.lokalnaMigracijaZavrsena = true;
+            ciljniIgrac.cloudAzuriranAt = new Date();
+            ciljniIgrac.poslednjaPrijava = new Date();
+            primeniNapredakNaBrojkeProfila(ciljniIgrac, spojeniNapredak);
+            await ciljniIgrac.save();
+
+            prijaviOnlineIgraca(socket, ciljniIgrac);
+            callback({
+                uspeh: true,
+                googleUid,
+                migracija: {
+                    spojenoSaPostojecimGoogleProfilom: Boolean(googleIgrac && !istiProfil),
+                    sacuvanLokalniNapredak: true
+                },
+                profil: podaciProfilaZaKlijenta(ciljniIgrac)
+            });
+        } catch (error) {
+            if (error && error.code === 11000) {
+                return callback({ uspeh: false, kod: "GOOGLE_NALOG_VEC_POSTOJI", poruka: "Ovaj Google nalog je već povezan sa drugim profilom." });
+            }
+            console.error("Greška pri povezivanju Google naloga:", error);
+            callback({
+                uspeh: false,
+                kod: error && error.kod ? error.kod : "GRESKA_SERVERA",
+                poruka: error && error.message ? error.message : "Google nalog trenutno nije moguće povezati."
+            });
+        }
+    });
+
+    // --- DIREKTNA PRIJAVA POSTOJEĆEG GOOGLE PROFILA ---
+    socket.on('prijavaGoogleNaloga', async (podaci = {}, callback = () => {}) => {
+        try {
+            const googleUid = await potvrdiGoogleIdentitet(podaci);
+            const igrac = await Igrac.findOne({ googleUid });
+            if (!igrac) {
+                return callback({ uspeh: false, kod: "GOOGLE_PROFIL_NIJE_PRONADJEN", poruka: "Za ovaj Google nalog još ne postoji Zemljopis profil." });
+            }
+
+            if (profilKljucJeIspravan(podaci.profilKljuc)) {
+                const vlasnikKljuca = await pronadjiIgracaPoProfilKljucu(podaci.profilKljuc);
+                if (!vlasnikKljuca || String(vlasnikKljuca._id) === String(igrac._id)) {
+                    dodajPovezaniProfilKljuc(igrac, podaci.profilKljuc);
+                }
+            }
+
+            osigurajIdentitetIgraca(igrac);
+            igrac.poslednjaPrijava = new Date();
+            await igrac.save();
+            prijaviOnlineIgraca(socket, igrac);
+            callback({ uspeh: true, googleUid, profil: podaciProfilaZaKlijenta(igrac) });
+        } catch (error) {
+            console.error("Greška pri Google prijavi:", error);
+            callback({
+                uspeh: false,
+                kod: error && error.kod ? error.kod : "GRESKA_SERVERA",
+                poruka: error && error.message ? error.message : "Google prijava trenutno nije dostupna."
             });
         }
     });

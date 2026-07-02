@@ -22,12 +22,66 @@ const DnevniIzazovManager = {
         this.proveriIDodeliDnevniZadatak();
     },
 
+    vratiIdDana: function(datum = new Date()) {
+        const godina = datum.getFullYear();
+        const mesec = String(datum.getMonth() + 1).padStart(2, '0');
+        const dan = String(datum.getDate()).padStart(2, '0');
+        return `${godina}-${mesec}-${dan}`;
+    },
+
+    pomeriIdDana: function(datumId, brojDana) {
+        const delovi = String(datumId || '').split('-').map(Number);
+        if (delovi.length !== 3 || delovi.some(deo => !Number.isInteger(deo))) {
+            return this.vratiIdDana();
+        }
+
+        const datum = new Date(delovi[0], delovi[1] - 1, delovi[2]);
+        datum.setDate(datum.getDate() + brojDana);
+        return this.vratiIdDana(datum);
+    },
+
+    bonusZaDnevniNiz: function(brojDana) {
+        if (brojDana > 0 && brojDana % 14 === 0) return 300;
+        if (brojDana > 0 && brojDana % 7 === 0) return 150;
+        if (brojDana > 0 && brojDana % 3 === 0) return 50;
+        return 0;
+    },
+
+    azurirajDnevniNiz: function(danasId) {
+        const kljuc = 'zemljopis_dnevni_niz';
+        let niz = { poslednjiDatum: null, brojDana: 0 };
+
+        try {
+            niz = JSON.parse(localStorage.getItem(kljuc) || '{}') || niz;
+        } catch (error) {
+            niz = { poslednjiDatum: null, brojDana: 0 };
+        }
+
+        if (niz.poslednjiDatum === danasId) {
+            const brojDana = Math.max(1, Number(niz.brojDana) || 1);
+            return { brojDana, bonusDukata: this.bonusZaDnevniNiz(brojDana) };
+        }
+
+        const juceId = this.pomeriIdDana(danasId, -1);
+        const prethodniBrojDana = Math.max(0, Number(niz.brojDana) || 0);
+        const brojDana = niz.poslednjiDatum === juceId ? prethodniBrojDana + 1 : 1;
+        const novoStanje = { poslednjiDatum: danasId, brojDana };
+        localStorage.setItem(kljuc, JSON.stringify(novoStanje));
+
+        return { brojDana, bonusDukata: this.bonusZaDnevniNiz(brojDana) };
+    },
+
     proveriIDodeliDnevniZadatak: function() {
         const danas = new Date().toLocaleDateString('sr-RS'); 
+        const danasId = this.vratiIdDana();
         const sacuvano = localStorage.getItem('zemljopis_dnevni_izazov');
 
         if (sacuvano) {
-            this.dnevniPodaci = JSON.parse(sacuvano);
+            try {
+                this.dnevniPodaci = JSON.parse(sacuvano);
+            } catch (error) {
+                this.dnevniPodaci = null;
+            }
         }
 
         if (!this.dnevniPodaci || this.dnevniPodaci.datum !== danas) {
@@ -46,6 +100,7 @@ const DnevniIzazovManager = {
 
             this.dnevniPodaci = {
                 datum: danas,
+                datumId: danasId,
                 odigrano: false,
                 zadaci: zadaci
             };
@@ -78,8 +133,8 @@ const DnevniIzazovManager = {
         this.snimiStanje();
         this.izazovUToku = true;
 
-        this.prikaziZadatke();
         UIManager.prikaziEkran('dnevni-izazov-screen');
+        this.prikaziZadatke();
 
         // Pokretanje tajmera na tačno 60 sekundi
         this.pokreniTajmer(60);
@@ -92,16 +147,21 @@ const DnevniIzazovManager = {
         let html = '';
         this.dnevniPodaci.zadaci.forEach((zadatak, index) => {
             html += `
-            <div class="input-group dnevni-input-group" style="margin-bottom: 1.2rem; background: rgba(0,0,0,0.3); padding: 0.8rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                <label style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                    <span style="font-size: 0.9rem; color: #fff;">${zadatak.ikona} ${zadatak.naziv}</span>
-                    <span style="color: #f5af19; font-weight: 800; font-size: 1.1rem;">Slovo: ${zadatak.slovo}</span>
+            <div class="input-group dnevni-input-group">
+                <label>
+                    <span class="dnevni-zadatak-naziv">${zadatak.ikona} ${zadatak.naziv}</span>
+                    <span class="dnevni-zadatak-slovo">Slovo: ${zadatak.slovo}</span>
                 </label>
                 <input type="text" id="dnevni-input-${index}" class="game-input" data-kategorija="${zadatak.kategorija}" placeholder="${zadatak.naziv} na ${zadatak.slovo}..." autocomplete="off" autocorrect="off" spellcheck="false">
             </div>
             `;
         });
         kontejner.innerHTML = html;
+        const skrolKontejner = kontejner.closest('.dnevni-izazov-inputs');
+        if (skrolKontejner) {
+            skrolKontejner.scrollTop = 0;
+            skrolKontejner.style.paddingBottom = '';
+        }
         this.azurirajAktivniZadatak(0);
         
         // Povezivanje dinamički generisanih polja sa custom tastaturom
@@ -113,16 +173,24 @@ const DnevniIzazovManager = {
             const inputs = document.querySelectorAll('#dnevni-izazov-polja .game-input');
             
             inputs.forEach((input, index) => {
-                // Slušamo 'focus' event da osiguramo skrolovanje i vezu sa tastaturom svaki put kada se pređe na polje
-                input.addEventListener('focus', function() {
-                    if (typeof KeyboardManager !== 'undefined') {
-                        KeyboardManager.setActiveInput(input);
-                    }
+                const osveziAktivniPrikaz = function() {
                     DnevniIzazovManager.azurirajAktivniZadatak(index);
                     if (typeof KeyboardManager !== 'undefined') {
                         setTimeout(() => KeyboardManager.scrollInputIntoView(input), 220);
                     }
+                };
+
+                // Slušamo 'focus' event da osiguramo skrolovanje i vezu sa tastaturom svaki put kada se pređe na polje
+                input.addEventListener('focus', function() {
+                    if (typeof KeyboardManager !== 'undefined') {
+                        KeyboardManager.setActiveInput(input);
+                        if (DnevniIzazovManager.izazovUToku) {
+                            KeyboardManager.showKeyboard();
+                        }
+                    }
+                    osveziAktivniPrikaz();
                 });
+                input.addEventListener('zemljopis:active-input', osveziAktivniPrikaz);
 
                 // Obezbeđujemo da 'OK' (Enter) prelazi na sledeće polje
                 input.addEventListener('keypress', function(e) {
@@ -230,6 +298,7 @@ const DnevniIzazovManager = {
 
         this.dnevniPodaci.zadaci.forEach((zadatak, index) => {
             const inputEl = document.getElementById(`dnevni-input-${index}`);
+            if (!inputEl) return;
             const odgovor = inputEl.value.trim();
             
             const isCorrect = BazaPodataka.proveriPojam(zadatak.kategorija, odgovor, zadatak.slovo);
@@ -240,11 +309,18 @@ const DnevniIzazovManager = {
             }
         });
 
-        let osvojenoDukata = ukupnoTacnih * 100;
+        const osnovnaNagrada = ukupnoTacnih * 100;
+        const bonusPerfektno = ukupnoTacnih === this.dnevniPodaci.zadaci.length ? 200 : 0;
+        const danasId = this.dnevniPodaci.datumId || this.vratiIdDana();
+        const dnevniNiz = this.azurirajDnevniNiz(danasId);
+        let osvojenoDukata = osnovnaNagrada + bonusPerfektno + dnevniNiz.bonusDukata;
         
         // Još jedan sigurnosni snimak
         this.dnevniPodaci.odigrano = true;
+        this.dnevniPodaci.datumId = danasId;
         this.dnevniPodaci.tacniPojmovi = ukupnoTacnih;
+        this.dnevniPodaci.osvojenoDukata = osvojenoDukata;
+        this.dnevniPodaci.dnevniNiz = dnevniNiz.brojDana;
         this.snimiStanje();
 
         if (typeof KvartalniNivoManager !== 'undefined') {
@@ -262,7 +338,13 @@ const DnevniIzazovManager = {
         setTimeout(() => {
             let poruka = `Pronašao/la si <b>${ukupnoTacnih}/4</b> tačnih pojmova.<br><br>`;
             
-            if (ukupnoTacnih > 0) {
+            if (osvojenoDukata > 0) {
+                if (bonusPerfektno > 0) {
+                    poruka += `Bonus za 4/4: <b style="color:#38ef7d;">+${bonusPerfektno}</b><br>`;
+                }
+                if (dnevniNiz.bonusDukata > 0) {
+                    poruka += `Dnevni niz (${dnevniNiz.brojDana} dana): <b style="color:#38ef7d;">+${dnevniNiz.bonusDukata}</b><br>`;
+                }
                 poruka += `Osvojena nagrada: <br><b style="color:#f5af19; font-size:1.5rem; text-shadow: 0 0 10px rgba(245,175,25,0.4);">+${osvojenoDukata} <i class="fa-solid fa-coins"></i></b>`;
             } else {
                 poruka += `Nažalost, nisi uspeo/la da osvojiš dukate. Više sreće sutra!`;

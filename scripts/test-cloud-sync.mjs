@@ -13,6 +13,7 @@ const port = String(3400 + Math.floor(Math.random() * 500));
 const spoljasnjiServer = process.env.TEST_SERVER_URL || "";
 const url = spoljasnjiServer || `http://127.0.0.1:${port}`;
 const profilKljuc = `profil_test_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
+const googleUid = `google_test_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
 const nadimak = `Test${Date.now().toString(36).slice(-6)}`;
 const promenjenNadimak = `${nadimak}X`;
 
@@ -23,7 +24,7 @@ function sacekaj(ms) {
 function pokreniServer() {
     return spawn(process.execPath, ["server.js"], {
         cwd: rootDir,
-        env: { ...process.env, PORT: port },
+        env: { ...process.env, PORT: port, GOOGLE_AUTH_DEV_MODE: "true" },
         stdio: ["ignore", "pipe", "pipe"]
     });
 }
@@ -125,17 +126,58 @@ try {
     proveri(promenaImena.uspeh === true, "Promena nadimka nije uspela.");
     proveri(promenaImena.profil.playerId === playerId, "Promena nadimka je promenila playerId.");
 
+    const povezivanjeGoogleNaloga = await emitAck(socket, "poveziGoogleNalog", {
+        googleUid,
+        profilKljuc,
+        napredak: {
+            verzija: 1,
+            podesavanja: { zvuk: true, tema: "zlatna", pismo: "latinica" },
+            riznica: {
+                dukati: 1200,
+                podaci: {
+                    teme: [
+                        { id: "tema_neon", kupljeno: true, opremljeno: false },
+                        { id: "tema_zlatna", kupljeno: true, opremljeno: true }
+                    ],
+                    efekti: [
+                        { id: "ef_konfete", kupljeno: true, opremljeno: true }
+                    ]
+                }
+            },
+            trofeji: [{ id: "t1", napredak: 2, preuzeto: true }],
+            tokeni: { stanje: 1, datum: "test" },
+            kvartal: { sezonskiPojmovi: 21, svaVremenaPojmovi: 21 },
+            prijatelji: { lista: [], zahtevi: [] }
+        }
+    });
+
+    proveri(povezivanjeGoogleNaloga.uspeh === true, "Povezivanje Google naloga nije uspelo.");
+    proveri(povezivanjeGoogleNaloga.profil.googlePovezan === true, "Profil nije označen kao Google profil.");
+    proveri(povezivanjeGoogleNaloga.profil.googleUid === googleUid, "Server nije vratio povezani Google UID.");
+    proveri(povezivanjeGoogleNaloga.profil.playerId === playerId, "Prvo Google povezivanje ne sme promeniti playerId.");
+    proveri(
+        povezivanjeGoogleNaloga.profil.sinhronizacija.napredak.riznica.dukati === 1200,
+        "Dukati iz lokalne migracije nisu završili u Google cloudu."
+    );
+    proveri(
+        povezivanjeGoogleNaloga.profil.sinhronizacija.napredak.riznica.podaci.teme.some(t => t.id === "tema_zlatna" && t.kupljeno),
+        "Kupovine iz Riznice nisu migrirane na Google profil."
+    );
+
     socket.disconnect();
     drugiSocket = await povezi(io);
 
     const prijava = await emitAck(drugiSocket, "prijavaProfila", { profilKljuc });
     proveri(prijava.uspeh === true, "Ponovna prijava nije uspela.");
     proveri(prijava.profil.playerId === playerId, "Ponovna prijava nije vratila isti playerId.");
-    proveri(prijava.profil.sinhronizacija.napredak.podesavanja.tema === "neon", "Cloud napredak nije učitan.");
-    proveri(prijava.profil.sinhronizacija.napredak.riznica.dukati === 777, "Cloud riznica nije vratila tačno stanje dukata.");
-    proveri(prijava.profil.dukati === 777, "Profil nije uskladio dukate sa cloud riznicom.");
+    proveri(prijava.profil.googlePovezan === true, "Ponovna prijava nije vratila Google profil.");
+    proveri(prijava.profil.googleUid === googleUid, "Ponovna prijava nije vratila Google UID.");
+    proveri(prijava.profil.sinhronizacija.napredak.podesavanja.tema === "zlatna", "Cloud napredak nije učitan.");
+    proveri(prijava.profil.sinhronizacija.napredak.riznica.dukati === 1200, "Cloud riznica nije vratila tačno stanje dukata.");
+    proveri(prijava.profil.dukati === 1200, "Profil nije uskladio dukate sa cloud riznicom.");
+    proveri(prijava.profil.tokeni === 2, "Profil nije uskladio tokene sa cloud stanjem.");
 
-    console.log("OK: cloud sync, playerId i promena nadimka rade.");
+    console.log("OK: cloud sync, Google UID migracija, playerId i promena nadimka rade.");
 } finally {
     if (socket) socket.disconnect();
     if (drugiSocket) drugiSocket.disconnect();
@@ -143,7 +185,13 @@ try {
     if (process.env.MONGO_URI) {
         try {
             await mongoose.connect(process.env.MONGO_URI);
-            await mongoose.connection.collection("igracs").deleteMany({ profilKljuc });
+            await mongoose.connection.collection("igracs").deleteMany({
+                $or: [
+                    { profilKljuc },
+                    { povezaniProfilKljucevi: profilKljuc },
+                    { googleUid }
+                ]
+            });
             await mongoose.disconnect();
         } catch (error) {
             console.error("Čišćenje test profila nije uspelo:", error.message);

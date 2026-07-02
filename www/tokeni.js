@@ -162,10 +162,10 @@ const TokeniManager = {
         this.reklamaUToku = true;
         this.azurirajPrikaz();
 
-        naslov.textContent = tip === 'rewarded' ? 'NAGRAĐENA REKLAMA' : 'INTERSTICIJALNA REKLAMA';
-        opis.textContent = tip === 'rewarded'
+        naslov.textContent = opcije.naslov || (tip === 'rewarded' ? 'NAGRAĐENA REKLAMA' : 'INTERSTICIJALNA REKLAMA');
+        opis.textContent = opcije.opis || (tip === 'rewarded'
             ? 'Odgledaj reklamu do kraja da preuzmeš 10x nagradu.'
-            : 'Po završetku reklame preuzimaš 5x nagradu.';
+            : 'Po završetku reklame preuzimaš 5x nagradu.');
         vreme.textContent = `${preostalo}s`;
         traka.style.transition = 'none';
         traka.style.transform = 'scaleX(0)';
@@ -213,6 +213,8 @@ const TokeniManager = {
         }
 
         this.prikaziReklamu('rewarded', {
+            naslov: 'TOKEN REKLAMA',
+            opis: 'Odgledaj reklamu do kraja da dobiješ +1 token za igru.',
             onUspeh: () => {
                 this.dodajToken(1);
 

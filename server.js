@@ -1806,18 +1806,24 @@ function pripremiIdentitetOnlineMeca(soba) {
     }
 }
 
-async function upisiOdigranOnlineMec(soba, pobednikPlayerIds = []) {
-    if (!soba || !soba.partijaId || !Array.isArray(soba.ucesniciMeca)) return;
-    if (soba.statistikaMecaPromise) return soba.statistikaMecaPromise;
+function playerIdsZaUpisOnlineMeca(soba) {
+    if (!soba || !Array.isArray(soba.ucesniciMeca)) return [];
 
     const zavrsiliPlayerIds = new Set((soba.igraci || []).map(igrac => igrac.playerId).filter(Boolean));
-    const ucesnici = [...new Set(
+    return [...new Set(
         soba.ucesniciMeca
             .map(igrac => igrac.playerId)
             .filter(playerId => playerId && (
                 soba.status !== 'zavrsena' || zavrsiliPlayerIds.has(playerId)
             ))
     )];
+}
+
+async function upisiOdigranOnlineMec(soba, pobednikPlayerIds = []) {
+    if (!soba || !soba.partijaId || !Array.isArray(soba.ucesniciMeca)) return;
+    if (soba.statistikaMecaPromise) return soba.statistikaMecaPromise;
+
+    const ucesnici = playerIdsZaUpisOnlineMeca(soba);
     const pobednici = [...new Set(
         pobednikPlayerIds.filter(playerId => ucesnici.includes(playerId))
     )];
@@ -3483,13 +3489,15 @@ io.on('connection', (socket) => {
 
                 if (soba.status === 'u_igri' && soba.igraci.length === 1) {
                     const pobednik = soba.igraci[0];
+                    soba.status = 'zavrsena';
+                    soba.pobednikPlayerIds = pobednik.playerId ? [pobednik.playerId] : [];
                     posaljiDogadjajSobe(soba, 'automatska_pobeda', {
                         pobednikIme: pobednik.ime,
                         napustioIme: igracKojiIzlazi.ime,
                         razlog: opisRazloga.kod,
                         razlogTekst: opisRazloga.tekst
                     });
-                    upisiOdigranOnlineMec(soba, [pobednik.playerId]).catch(error => {
+                    upisiOdigranOnlineMec(soba, soba.pobednikPlayerIds).catch(error => {
                         console.error(`Greška pri upisu automatske pobede ${soba.partijaId}:`, error);
                     });
                     io.to(kodSobe).emit('pobedaZbogNapustanja', {
@@ -3762,5 +3770,6 @@ module.exports.topListaTestApi = {
     MAKSIMALNO_POENA_PO_MECU,
     raspodeliPoeneZaPojmove,
     spojiServerskiNapredakProfila,
-    odrediPobednikeMeca
+    odrediPobednikeMeca,
+    playerIdsZaUpisOnlineMeca
 };

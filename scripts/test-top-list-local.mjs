@@ -88,4 +88,17 @@ assert.deepEqual(
     'Igrač koji je napustio sobu ne sme biti pobednik.'
 );
 
-console.log('Top lista: periodi, bodovanje, spajanje profila i pobednik rade.');
+assert.deepEqual(
+    api.playerIdsZaUpisOnlineMeca({
+        status: 'zavrsena',
+        igraci: [{ playerId: 'pobednik' }],
+        ucesniciMeca: [
+            { playerId: 'pobednik' },
+            { playerId: 'napustio' }
+        ]
+    }),
+    ['pobednik'],
+    'Igrač koji je izašao usred meča ne sme dobiti upis odigranog meča.'
+);
+
+console.log('Top lista: periodi, bodovanje, spajanje profila, pobednik i izlazak iz meča rade.');

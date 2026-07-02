@@ -6,6 +6,7 @@ const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const https = require('https');
+const BazaPodataka = require('./www/bazapodataka.js');
 
 const app = express();
 const server = http.createServer(app);
@@ -18,6 +19,19 @@ const io = new Server(server, {
 });
 
 const DOZVOLJENI_EFEKTI_RUNDE = new Set(['ef_nista', 'ef_konfete', 'ef_vatromet']);
+const VREMENSKA_ZONA_IGRE = "Europe/Belgrade";
+const DNEVNI_TRAJANJE_MS = 60 * 1000;
+const DNEVNI_INTRO_MS = 5200;
+const DNEVNI_GRACE_MS = 10 * 1000;
+const DNEVNI_KATEGORIJE = [
+    { id: 'drzava', ikona: '🌍', naziv: 'Država' },
+    { id: 'grad', ikona: '🏙️', naziv: 'Grad' },
+    { id: 'reka', ikona: '🏞️', naziv: 'Reka' },
+    { id: 'planina', ikona: '⛰️', naziv: 'Planina' },
+    { id: 'biljka', ikona: '🌿', naziv: 'Biljka' },
+    { id: 'zivotinja', ikona: '🦁', naziv: 'Životinja' },
+    { id: 'predmet', ikona: '📦', naziv: 'Predmet' }
+];
 const GOOGLE_CLIENT_IDS = String(process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_IDS || "")
     .split(",")
     .map(id => id.trim())
@@ -96,6 +110,8 @@ const IgracSchema = new mongoose.Schema({
     mesecniPoeni: { type: Number, default: 0 },
     svaVremenaPoeni: { type: Number, default: 0 },
     cloudNapredak: { type: mongoose.Schema.Types.Mixed, default: {} },
+    dnevniIzazov: { type: mongoose.Schema.Types.Mixed, default: {} },
+    dnevniNiz: { type: mongoose.Schema.Types.Mixed, default: {} },
     cloudRevizija: { type: Number, default: 0 },
     lokalnaMigracijaZavrsena: { type: Boolean, default: false },
     cloudAzuriranAt: { type: Date, default: null },
@@ -418,6 +434,272 @@ function normalizujTokeni(vrednost, podrazumevano = 3) {
     return Math.max(0, Math.min(3, Math.floor(broj)));
 }
 
+function deloviDatumaBeograd(datum = new Date()) {
+    const delovi = new Intl.DateTimeFormat("en-CA", {
+        timeZone: VREMENSKA_ZONA_IGRE,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).formatToParts(datum);
+
+    const mapa = {};
+    delovi.forEach(deo => {
+        if (deo.type !== "literal") mapa[deo.type] = deo.value;
+    });
+    return mapa;
+}
+
+function datumIdBeograd(datum = new Date()) {
+    const delovi = deloviDatumaBeograd(datum);
+    return `${delovi.year}-${delovi.month}-${delovi.day}`;
+}
+
+function datumLabelaBeograd(datum = new Date()) {
+    const delovi = deloviDatumaBeograd(datum);
+    return `${delovi.day}.${delovi.month}.${delovi.year}.`;
+}
+
+function pomeriDatumId(datumId, brojDana) {
+    const poklapanje = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(datumId || ""));
+    if (!poklapanje) return datumIdBeograd();
+
+    const datum = new Date(Date.UTC(
+        Number(poklapanje[1]),
+        Number(poklapanje[2]) - 1,
+        Number(poklapanje[3])
+    ));
+    datum.setUTCDate(datum.getUTCDate() + brojDana);
+    return [
+        datum.getUTCFullYear(),
+        String(datum.getUTCMonth() + 1).padStart(2, "0"),
+        String(datum.getUTCDate()).padStart(2, "0")
+    ].join("-");
+}
+
+function napraviGenerator(seed) {
+    const hash = crypto.createHash("sha256").update(String(seed)).digest();
+    let stanje = hash.readUInt32LE(0) || 1;
+    return function sledeciBroj() {
+        stanje += 0x6D2B79F5;
+        let t = stanje;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+
+function promesajDeterministicki(niz, random) {
+    const kopija = [...niz];
+    for (let i = kopija.length - 1; i > 0; i--) {
+        const j = Math.floor(random() * (i + 1));
+        [kopija[i], kopija[j]] = [kopija[j], kopija[i]];
+    }
+    return kopija;
+}
+
+function napraviDnevneZadatke(datumId) {
+    const random = napraviGenerator(`zemljopis:dnevni:${datumId}`);
+    const kategorije = promesajDeterministicki(DNEVNI_KATEGORIJE, random).slice(0, 4);
+    const slova = promesajDeterministicki(svaSlova, random).slice(0, 4);
+
+    return kategorije.map((kategorija, index) => ({
+        kategorija: kategorija.id,
+        ikona: kategorija.ikona,
+        naziv: kategorija.naziv,
+        slovo: slova[index]
+    }));
+}
+
+function bonusZaDnevniNiz(brojDana) {
+    if (brojDana > 0 && brojDana % 14 === 0) return 300;
+    if (brojDana > 0 && brojDana % 7 === 0) return 150;
+    if (brojDana > 0 && brojDana % 3 === 0) return 50;
+    return 0;
+}
+
+function izracunajDnevniNiz(igrac, datumId) {
+    const prethodni = igrac.dnevniNiz && typeof igrac.dnevniNiz === "object"
+        ? igrac.dnevniNiz
+        : {};
+
+    if (prethodni.poslednjiDatum === datumId) {
+        const brojDana = Math.max(1, Number(prethodni.brojDana) || 1);
+        return { poslednjiDatum: datumId, brojDana, bonusDukata: bonusZaDnevniNiz(brojDana) };
+    }
+
+    const juce = pomeriDatumId(datumId, -1);
+    const prethodniBroj = Math.max(0, Number(prethodni.brojDana) || 0);
+    const brojDana = prethodni.poslednjiDatum === juce ? prethodniBroj + 1 : 1;
+    return { poslednjiDatum: datumId, brojDana, bonusDukata: bonusZaDnevniNiz(brojDana) };
+}
+
+function napraviDnevniOdgovor(stanje, dodatno = {}) {
+    return {
+        datumId: stanje.datumId,
+        datum: stanje.datum || datumLabelaBeograd(),
+        vremenskaZona: VREMENSKA_ZONA_IGRE,
+        zadaci: stanje.zadaci || napraviDnevneZadatke(stanje.datumId),
+        status: stanje.status || "dostupan",
+        zapoceto: Boolean(stanje.zapoceto),
+        odigrano: Boolean(stanje.odigrano),
+        pocetakIgreAt: stanje.pocetakIgreAt || null,
+        rokAt: stanje.rokAt || null,
+        introMs: DNEVNI_INTRO_MS,
+        trajanjeMs: DNEVNI_TRAJANJE_MS,
+        rezultat: stanje.rezultat || null,
+        serverVreme: Date.now(),
+        ...dodatno
+    };
+}
+
+function prenesiCloudDnevniAkoTreba(igrac, datumId, datumLabela, zadaci) {
+    const postojece = igrac.dnevniIzazov && typeof igrac.dnevniIzazov === "object"
+        ? igrac.dnevniIzazov
+        : {};
+    if (postojece.datumId === datumId) return false;
+
+    const cloudDnevni = igrac.cloudNapredak
+        && igrac.cloudNapredak.dnevniIzazov
+        && typeof igrac.cloudNapredak.dnevniIzazov === "object"
+        ? igrac.cloudNapredak.dnevniIzazov
+        : null;
+
+    if (!cloudDnevni || cloudDnevni.datumId !== datumId || !cloudDnevni.odigrano) {
+        return false;
+    }
+
+    igrac.dnevniIzazov = {
+        datumId,
+        datum: cloudDnevni.datum || datumLabela,
+        zadaci: Array.isArray(cloudDnevni.zadaci) ? cloudDnevni.zadaci : zadaci,
+        status: "odigrano",
+        zapoceto: true,
+        odigrano: true,
+        rezultat: {
+            tacniPojmovi: Math.max(0, Number(cloudDnevni.tacniPojmovi) || 0),
+            osvojenoDukata: Math.max(0, Number(cloudDnevni.osvojenoDukata) || 0),
+            dnevniNiz: Math.max(0, Number(cloudDnevni.dnevniNiz) || 0),
+            izvor: "cloud-migracija"
+        },
+        migriranoIzCloudNapretka: true
+    };
+    return true;
+}
+
+function osigurajDnevnoStanje(igrac, sada = new Date()) {
+    const datumId = datumIdBeograd(sada);
+    const datum = datumLabelaBeograd(sada);
+    const zadaci = napraviDnevneZadatke(datumId);
+    prenesiCloudDnevniAkoTreba(igrac, datumId, datum, zadaci);
+
+    const stanje = igrac.dnevniIzazov && typeof igrac.dnevniIzazov === "object"
+        ? igrac.dnevniIzazov
+        : {};
+
+    if (stanje.datumId !== datumId) {
+        return {
+            datumId,
+            datum,
+            vremenskaZona: VREMENSKA_ZONA_IGRE,
+            zadaci,
+            status: "dostupan",
+            zapoceto: false,
+            odigrano: false
+        };
+    }
+
+    return {
+        datumId,
+        datum: stanje.datum || datum,
+        vremenskaZona: VREMENSKA_ZONA_IGRE,
+        zadaci: Array.isArray(stanje.zadaci) && stanje.zadaci.length === 4 ? stanje.zadaci : zadaci,
+        status: stanje.status || (stanje.odigrano ? "odigrano" : "dostupan"),
+        zapoceto: Boolean(stanje.zapoceto),
+        odigrano: Boolean(stanje.odigrano),
+        pocetakIgreAt: stanje.pocetakIgreAt || null,
+        rokAt: stanje.rokAt || null,
+        rezultat: stanje.rezultat || null,
+        odgovori: stanje.odgovori || null
+    };
+}
+
+function ocistiDnevniOdgovor(vrednost) {
+    return String(vrednost || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .slice(0, 60);
+}
+
+function normalizujDnevneOdgovore(odgovori) {
+    const rezultat = {};
+    if (!odgovori || typeof odgovori !== "object") return rezultat;
+
+    Object.keys(odgovori).forEach(kljuc => {
+        if (/^[a-zA-Z0-9_-]+$/.test(kljuc)) {
+            rezultat[kljuc] = ocistiDnevniOdgovor(odgovori[kljuc]);
+        }
+    });
+    return rezultat;
+}
+
+function napraviCloudNapredakSaDnevnim(igrac, stanje, dukati, kvartalStatistika = null) {
+    const napredak = igrac.cloudNapredak && typeof igrac.cloudNapredak === "object"
+        ? { ...igrac.cloudNapredak }
+        : {};
+    const rezultat = stanje.rezultat || {};
+
+    napredak.dnevniIzazov = {
+        datum: stanje.datum,
+        datumId: stanje.datumId,
+        odigrano: Boolean(stanje.odigrano),
+        zadaci: stanje.zadaci,
+        tacniPojmovi: Math.max(0, Number(rezultat.tacniPojmovi) || 0),
+        osvojenoDukata: Math.max(0, Number(rezultat.osvojenoDukata) || 0),
+        dnevniNiz: Math.max(0, Number(rezultat.dnevniNiz) || 0)
+    };
+    napredak.riznica = {
+        ...(napredak.riznica && typeof napredak.riznica === "object" ? napredak.riznica : {}),
+        dukati: normalizujDukate(dukati)
+    };
+    if (kvartalStatistika) {
+        napredak.kvartal = {
+            sezonskiPojmovi: kvartalStatistika.sezonskiPojmovi || 0,
+            svaVremenaPojmovi: kvartalStatistika.svaVremenaPojmovi || 0
+        };
+    }
+
+    return napredak;
+}
+
+function upisiDnevniUCloudNapredak(igrac, stanje, kvartalStatistika = null) {
+    igrac.cloudNapredak = napraviCloudNapredakSaDnevnim(
+        igrac,
+        stanje,
+        igrac.dukati,
+        kvartalStatistika
+    );
+    igrac.markModified("cloudNapredak");
+}
+
+function napraviIstekliDnevniRezultat(stanje) {
+    return {
+        tacniPojmovi: 0,
+        osnovnaNagrada: 0,
+        bonusPerfektno: 0,
+        bonusDnevniNiz: 0,
+        osvojenoDukata: 0,
+        dnevniNiz: 0,
+        odgovori: {},
+        provera: (stanje.zadaci || []).map((zadatak, index) => ({
+            index,
+            kategorija: zadatak.kategorija,
+            odgovor: "",
+            tacno: false
+        })),
+        razlog: "isteklo_vreme"
+    };
+}
+
 async function pronadjiIgracaPoProfilKljucu(profilKljuc) {
     if (!profilKljucJeIspravan(profilKljuc)) return null;
     return Igrac.findOne({
@@ -649,6 +931,12 @@ function prijaviOnlineIgraca(socket, igrac) {
     osveziKvartalnePodatkeZaSocket(socket.id).catch(error => {
         console.error("Greška pri početnom učitavanju kvartalnih podataka:", error);
     });
+}
+
+async function ucitajPrijavljenogIgraca(socket) {
+    const prijavljeniIgrac = onlineIgraci[socket.id];
+    if (!prijavljeniIgrac) return null;
+    return Igrac.findById(prijavljeniIgrac.bazaId);
 }
 
 function pronadjiOnlineIgracaPoPlayerId(playerId) {
@@ -1224,6 +1512,54 @@ async function upisiPobeduOnlineMeca(playerId, partijaId) {
     return rezultat.modifiedCount > 0;
 }
 
+async function dodajKvartalnePojmoveZaIgraca(bazaId, brojPojmova, dogadjajId = "") {
+    brojPojmova = Number(brojPojmova);
+    if (!Number.isInteger(brojPojmova) || brojPojmova < 1 || brojPojmova > 7) {
+        return null;
+    }
+
+    const ciklus = await osigurajAktivniKvartal();
+    const filter = { _id: bazaId };
+    if (dogadjajId) {
+        filter.kvartalniObradjeniDogadjaji = { $ne: dogadjajId };
+    }
+
+    const azuriranje = {
+        $inc: {
+            sezonskiPojmovi: brojPojmova,
+            svaVremenaPojmovi: brojPojmova
+        },
+        $set: { sezonskiCiklus: ciklus }
+    };
+    if (dogadjajId) {
+        azuriranje.$push = {
+            kvartalniObradjeniDogadjaji: {
+                $each: [dogadjajId],
+                $slice: -300
+            }
+        };
+    }
+
+    let igrac = await Igrac.findOneAndUpdate(filter, azuriranje, {
+        returnDocument: 'after'
+    });
+    const duplikat = !igrac;
+    if (!igrac) {
+        igrac = await Igrac.findById(bazaId);
+    }
+    if (!igrac) return null;
+
+    return {
+        igrac,
+        duplikat,
+        statistika: {
+            ciklus,
+            sezonskiPojmovi: igrac.sezonskiPojmovi || 0,
+            svaVremenaPojmovi: igrac.svaVremenaPojmovi || 0
+        }
+    };
+}
+
 function zavrsiRunduUSobi(soba, razlog = "svi_odgovorili") {
     if (!soba || soba.rundaZakljucena) return;
 
@@ -1489,7 +1825,235 @@ io.on('connection', (socket) => {
     console.log(`🟢 Novi igrač se povezao: ${socket.id}`);
 
     socket.on('sinhronizujVreme', (callback = () => {}) => {
-        callback({ serverVreme: Date.now() });
+        callback({
+            serverVreme: Date.now(),
+            vremenskaZona: VREMENSKA_ZONA_IGRE,
+            datumId: datumIdBeograd()
+        });
+    });
+
+    socket.on('dnevniIzazovStanje', async (callback = () => {}) => {
+        try {
+            let igrac = await ucitajPrijavljenogIgraca(socket);
+            if (!igrac) {
+                return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN" });
+            }
+
+            const stanje = osigurajDnevnoStanje(igrac);
+            if (igrac.isModified("dnevniIzazov")) {
+                igrac.markModified("dnevniIzazov");
+                await igrac.save();
+            }
+
+            callback({ uspeh: true, ...napraviDnevniOdgovor(stanje) });
+        } catch (error) {
+            console.error("Greška pri čitanju dnevnog izazova:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA" });
+        }
+    });
+
+    socket.on('dnevniIzazovPokreni', async (callback = () => {}) => {
+        try {
+            const igrac = await ucitajPrijavljenogIgraca(socket);
+            if (!igrac) {
+                return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN" });
+            }
+
+            const sada = Date.now();
+            let stanje = osigurajDnevnoStanje(igrac, new Date(sada));
+
+            if (stanje.odigrano || stanje.status === "odigrano") {
+                return callback({
+                    uspeh: false,
+                    kod: "VEC_ODIGRANO",
+                    poruka: "Dnevni izazov možeš igrati samo jednom dnevno.",
+                    ...napraviDnevniOdgovor(stanje)
+                });
+            }
+
+            if (
+                stanje.zapoceto
+                && stanje.status === "u_toku"
+                && Number(stanje.rokAt) > sada
+            ) {
+                return callback({ uspeh: true, ...napraviDnevniOdgovor(stanje, { nastavak: true }) });
+            }
+
+            if (
+                stanje.zapoceto
+                && stanje.status === "u_toku"
+                && Number(stanje.rokAt) > 0
+                && Number(stanje.rokAt) <= sada
+            ) {
+                stanje.status = "odigrano";
+                stanje.odigrano = true;
+                stanje.zavrsenoAt = sada;
+                stanje.rezultat = napraviIstekliDnevniRezultat(stanje);
+                igrac.dnevniIzazov = stanje;
+                igrac.markModified("dnevniIzazov");
+                upisiDnevniUCloudNapredak(igrac, stanje);
+                await igrac.save();
+                return callback({
+                    uspeh: false,
+                    kod: "VEC_ODIGRANO",
+                    poruka: "Dnevni izazov za danas je već istekao.",
+                    ...napraviDnevniOdgovor(stanje)
+                });
+            }
+
+            const pocetakIgreAt = sada + DNEVNI_INTRO_MS;
+            stanje = {
+                datumId: stanje.datumId,
+                datum: stanje.datum,
+                vremenskaZona: VREMENSKA_ZONA_IGRE,
+                zadaci: stanje.zadaci,
+                status: "u_toku",
+                zapoceto: true,
+                odigrano: false,
+                zapocetoAt: sada,
+                pocetakIgreAt,
+                rokAt: pocetakIgreAt + DNEVNI_TRAJANJE_MS
+            };
+
+            igrac.dnevniIzazov = stanje;
+            igrac.markModified("dnevniIzazov");
+            upisiDnevniUCloudNapredak(igrac, stanje);
+            await igrac.save();
+
+            callback({ uspeh: true, ...napraviDnevniOdgovor(stanje) });
+        } catch (error) {
+            console.error("Greška pri pokretanju dnevnog izazova:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA" });
+        }
+    });
+
+    socket.on('dnevniIzazovZavrsi', async (podaci = {}, callback = () => {}) => {
+        try {
+            let igrac = await ucitajPrijavljenogIgraca(socket);
+            if (!igrac) {
+                return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN" });
+            }
+
+            let stanje = osigurajDnevnoStanje(igrac);
+            if (stanje.odigrano || stanje.status === "odigrano") {
+                return callback({ uspeh: true, duplikat: true, ...napraviDnevniOdgovor(stanje) });
+            }
+            if (!stanje.zapoceto || stanje.status !== "u_toku") {
+                return callback({ uspeh: false, kod: "DNEVNI_NIJE_POKRENUT" });
+            }
+
+            const sada = Date.now();
+            const rokAt = Number(stanje.rokAt) || 0;
+            const prekasno = rokAt > 0 && sada > rokAt + DNEVNI_GRACE_MS;
+            const odgovori = prekasno ? {} : normalizujDnevneOdgovore(podaci && podaci.odgovori);
+
+            let ukupnoTacnih = 0;
+            const provera = (stanje.zadaci || []).map((zadatak, index) => {
+                const odgovor = odgovori[zadatak.kategorija] || "";
+                const tacno = !prekasno && BazaPodataka.proveriPojam(zadatak.kategorija, odgovor, zadatak.slovo);
+                if (tacno) ukupnoTacnih++;
+                return {
+                    index,
+                    kategorija: zadatak.kategorija,
+                    odgovor,
+                    tacno
+                };
+            });
+
+            const osnovnaNagrada = ukupnoTacnih * 100;
+            const bonusPerfektno = ukupnoTacnih === (stanje.zadaci || []).length && ukupnoTacnih > 0 ? 200 : 0;
+            const dnevniNiz = ukupnoTacnih > 0
+                ? izracunajDnevniNiz(igrac, stanje.datumId)
+                : { poslednjiDatum: igrac.dnevniNiz?.poslednjiDatum || null, brojDana: Number(igrac.dnevniNiz?.brojDana) || 0, bonusDukata: 0 };
+            const osvojenoDukata = osnovnaNagrada + bonusPerfektno + dnevniNiz.bonusDukata;
+
+            stanje.status = "odigrano";
+            stanje.odigrano = true;
+            stanje.zavrsenoAt = sada;
+            stanje.odgovori = odgovori;
+            stanje.rezultat = {
+                tacniPojmovi: ukupnoTacnih,
+                osnovnaNagrada,
+                bonusPerfektno,
+                bonusDnevniNiz: dnevniNiz.bonusDukata,
+                osvojenoDukata,
+                dnevniNiz: dnevniNiz.brojDana,
+                odgovori,
+                provera,
+                razlog: prekasno ? "isteklo_vreme" : "predato"
+            };
+
+            const noviDukati = normalizujDukate((igrac.dukati || 0) + osvojenoDukata, osvojenoDukata);
+            const dnevniSet = {
+                dnevniIzazov: stanje,
+                cloudNapredak: napraviCloudNapredakSaDnevnim(igrac, stanje, noviDukati)
+            };
+            if (ukupnoTacnih > 0) {
+                dnevniSet.dnevniNiz = {
+                    poslednjiDatum: dnevniNiz.poslednjiDatum,
+                    brojDana: dnevniNiz.brojDana
+                };
+            }
+
+            const dnevniUpdate = { $set: dnevniSet };
+            if (osvojenoDukata > 0) {
+                dnevniUpdate.$inc = { dukati: osvojenoDukata };
+            }
+
+            let azuriranIgrac = await Igrac.findOneAndUpdate(
+                {
+                    _id: igrac._id,
+                    "dnevniIzazov.datumId": stanje.datumId,
+                    "dnevniIzazov.status": "u_toku",
+                    "dnevniIzazov.odigrano": { $ne: true }
+                },
+                dnevniUpdate,
+                { returnDocument: 'after' }
+            );
+
+            if (!azuriranIgrac) {
+                const osvezenIgrac = await Igrac.findById(igrac._id);
+                const zakljucanoStanje = osvezenIgrac ? osigurajDnevnoStanje(osvezenIgrac) : stanje;
+                return callback({
+                    uspeh: true,
+                    duplikat: true,
+                    ...napraviDnevniOdgovor(zakljucanoStanje, {
+                        dukati: osvezenIgrac ? normalizujDukate(osvezenIgrac.dukati) : normalizujDukate(igrac.dukati),
+                        kvartal: null
+                    })
+                });
+            }
+
+            igrac = azuriranIgrac;
+
+            let kvartalRezultat = null;
+            if (ukupnoTacnih > 0) {
+                kvartalRezultat = await dodajKvartalnePojmoveZaIgraca(
+                    igrac._id,
+                    ukupnoTacnih,
+                    `dnevni:${stanje.datumId}`
+                );
+                if (kvartalRezultat && kvartalRezultat.statistika) {
+                    await Igrac.updateOne(
+                        { _id: igrac._id },
+                        { $set: { "cloudNapredak.kvartal": {
+                            sezonskiPojmovi: kvartalRezultat.statistika.sezonskiPojmovi,
+                            svaVremenaPojmovi: kvartalRezultat.statistika.svaVremenaPojmovi
+                        } } }
+                    );
+                    socket.emit('osveziMojeKvartalnePodatke', kvartalRezultat.statistika);
+                }
+            }
+
+            const odgovor = napraviDnevniOdgovor(stanje, {
+                dukati: normalizujDukate(igrac.dukati),
+                kvartal: kvartalRezultat ? kvartalRezultat.statistika : null
+            });
+            callback({ uspeh: true, ...odgovor });
+        } catch (error) {
+            console.error("Greška pri završetku dnevnog izazova:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA" });
+        }
     });
 
     // --- REGISTRACIJA OBAVEZNOG PROFILA I REZERVACIJA NADIMKA ---
@@ -1582,6 +2146,42 @@ io.on('connection', (socket) => {
             callback({ uspeh: true, profil: podaciProfilaZaKlijenta(igrac) });
         } catch (error) {
             console.error("Greška pri prijavi profila:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA" });
+        }
+    });
+
+    socket.on('poveziProfilKljuc', async (podaci = {}, callback = () => {}) => {
+        const prijavljeniIgrac = onlineIgraci[socket.id];
+        const profilKljuc = podaci && podaci.profilKljuc;
+        if (!prijavljeniIgrac) {
+            return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN" });
+        }
+        if (!profilKljucJeIspravan(profilKljuc)) {
+            return callback({ uspeh: false, kod: "NEISPRAVAN_PROFIL" });
+        }
+
+        try {
+            const igrac = await Igrac.findById(prijavljeniIgrac.bazaId);
+            if (!igrac) {
+                return callback({ uspeh: false, kod: "PROFIL_NIJE_PRONADJEN" });
+            }
+
+            const vlasnikKljuca = await pronadjiIgracaPoProfilKljucu(profilKljuc);
+            if (vlasnikKljuca && String(vlasnikKljuca._id) !== String(igrac._id)) {
+                return callback({ uspeh: false, kod: "PROFIL_KLJUC_ZAUZET" });
+            }
+
+            if (!igrac.profilKljuc) {
+                igrac.profilKljuc = profilKljuc;
+            } else if (igrac.profilKljuc !== profilKljuc) {
+                dodajPovezaniProfilKljuc(igrac, profilKljuc);
+            }
+            igrac.poslednjaPrijava = new Date();
+            await igrac.save();
+            prijaviOnlineIgraca(socket, igrac);
+            callback({ uspeh: true, profil: podaciProfilaZaKlijenta(igrac) });
+        } catch (error) {
+            console.error("Greška pri povezivanju profil ključa:", error);
             callback({ uspeh: false, kod: "GRESKA_SERVERA" });
         }
     });

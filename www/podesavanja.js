@@ -7,6 +7,8 @@ const PodesavanjaManager = {
         profilTip: "lokalni",
         googleUid: null,
         profilKljuc: null,
+        androidProfilKljuc: null,
+        stabilniProfilKljucPovezan: false,
         playerId: null,
         profilZavrsen: false,
         zvuk: true,
@@ -20,6 +22,8 @@ const PodesavanjaManager = {
     aktivniAudio: 1,
     muzikaInterakcijaHandler: null,
     avatarPickerDokumentHandler: null,
+    androidProfilKljucPromise: null,
+    povezivanjeStabilnogKljuca: false,
     avatari: [
         { id: "atlas", naziv: "Atlas", tip: "kartograf", kosa: "#273244", koza: "#ffd1a6", kozaSenka: "#d88b61", odelo: "#1fbf75", detalj: "#f6c453", pozadina: "#0d3b32", pozadina2: "#38ef7d" },
         { id: "luna", naziv: "Luna", tip: "zvezdana", kosa: "#5630a4", koza: "#f4c6a4", kozaSenka: "#c9816a", odelo: "#4f8cff", detalj: "#ffd166", pozadina: "#18214d", pozadina2: "#8b5cf6" },
@@ -48,6 +52,8 @@ const PodesavanjaManager = {
             if (!this.avatari.some(a => a.id === this.postavke.avatar)) this.postavke.avatar = null;
             if (!this.postavke.profilTip) this.postavke.profilTip = "lokalni";
             if (typeof this.postavke.googleUid === 'undefined') this.postavke.googleUid = null;
+            if (typeof this.postavke.androidProfilKljuc === 'undefined') this.postavke.androidProfilKljuc = null;
+            if (typeof this.postavke.stabilniProfilKljucPovezan !== 'boolean') this.postavke.stabilniProfilKljucPovezan = false;
             if (typeof this.postavke.playerId === 'undefined') this.postavke.playerId = null;
             if (typeof this.postavke.profilZavrsen !== 'boolean') this.postavke.profilZavrsen = false;
             if (typeof this.postavke.zvuk !== 'boolean') this.postavke.zvuk = true;
@@ -90,6 +96,7 @@ const PodesavanjaManager = {
         if (typeof Game !== "undefined" && Game.socket && Game.socket.connected) {
             Game.prijaviSacuvanProfil();
         }
+        this.osigurajStabilniProfilKljuc();
     },
 
     osluskujPokretanjeMuzike: function() {
@@ -203,6 +210,107 @@ const PodesavanjaManager = {
         return `profil_${Date.now().toString(36)}_${nasumicniDeo}_${Math.random().toString(36).slice(2)}`;
     },
 
+    profilKljucIzAndroidId: function(androidId) {
+        const ociscen = String(androidId || "")
+            .trim()
+            .replace(/[^a-zA-Z0-9_-]/g, "")
+            .slice(0, 80);
+        if (ociscen.length < 8) return null;
+        return `android_${ociscen}`;
+    },
+
+    preuzmiAndroidProfilKljuc: async function() {
+        const plugin = window.Capacitor
+            && window.Capacitor.Plugins
+            && window.Capacitor.Plugins.DeviceIdentity;
+        if (!plugin || typeof plugin.getId !== "function") return null;
+
+        const odgovor = await plugin.getId();
+        return this.profilKljucIzAndroidId(odgovor && odgovor.id);
+    },
+
+    osigurajStabilniProfilKljuc: async function() {
+        if (this.androidProfilKljucPromise) return this.androidProfilKljucPromise;
+
+        this.androidProfilKljucPromise = (async () => {
+            try {
+                const stabilniKljuc = await this.preuzmiAndroidProfilKljuc();
+                if (!stabilniKljuc) return null;
+
+                const stariAndroidKljuc = this.postavke.androidProfilKljuc;
+                const stariProfilKljuc = this.postavke.profilKljuc;
+                const lokalniProfil = this.postavke.profilTip !== "google" && !this.postavke.googleUid;
+                const noviProfil = !this.postavke.profilZavrsen || !this.postavke.playerId;
+
+                this.postavke.androidProfilKljuc = stabilniKljuc;
+                if (lokalniProfil && noviProfil && this.postavke.profilKljuc !== stabilniKljuc) {
+                    this.postavke.profilKljuc = stabilniKljuc;
+                    this.postavke.stabilniProfilKljucPovezan = true;
+                } else if (this.postavke.profilKljuc === stabilniKljuc) {
+                    this.postavke.stabilniProfilKljucPovezan = true;
+                }
+
+                if (
+                    stariAndroidKljuc !== this.postavke.androidProfilKljuc
+                    || stariProfilKljuc !== this.postavke.profilKljuc
+                ) {
+                    this.snimiULokalnuMemoriju();
+                }
+
+                if (lokalniProfil && !noviProfil && this.postavke.profilKljuc !== stabilniKljuc) {
+                    this.poveziStabilniProfilKljuc();
+                }
+                return stabilniKljuc;
+            } catch (error) {
+                console.warn("Android stabilni profil ključ nije dostupan.", error);
+                return null;
+            } finally {
+                this.androidProfilKljucPromise = null;
+            }
+        })();
+
+        return this.androidProfilKljucPromise;
+    },
+
+    poveziStabilniProfilKljuc: function() {
+        const stabilniKljuc = this.postavke.androidProfilKljuc;
+        if (
+            this.povezivanjeStabilnogKljuca
+            || !stabilniKljuc
+            || this.postavke.profilKljuc === stabilniKljuc
+            || this.postavke.profilTip === "google"
+            || this.postavke.googleUid
+            || !this.profilKompletan()
+            || typeof Game === "undefined"
+            || !Game.socket
+            || !Game.socket.connected
+        ) {
+            return;
+        }
+
+        this.povezivanjeStabilnogKljuca = true;
+        Game.socket.timeout(12000).emit(
+            'poveziProfilKljuc',
+            { profilKljuc: stabilniKljuc },
+            (greska, odgovor) => {
+                this.povezivanjeStabilnogKljuca = false;
+                if (greska || !odgovor || !odgovor.uspeh) {
+                    console.warn("Stabilni profil ključ nije povezan.", odgovor || greska);
+                    return;
+                }
+
+                this.postavke.profilKljuc = stabilniKljuc;
+                this.postavke.stabilniProfilKljucPovezan = true;
+                if (odgovor.profil) {
+                    this.postavke.playerId = odgovor.profil.playerId || this.postavke.playerId;
+                    this.postavke.profilTip = odgovor.profil.googlePovezan ? "google" : "lokalni";
+                    this.postavke.googleUid = odgovor.profil.googleUid || null;
+                }
+                this.snimiULokalnuMemoriju();
+            }
+        );
+    },
+
     profilKompletan: function() {
         const nadimak = String(this.postavke.nadimak || "").trim();
         const avatarPostoji = this.avatari.some(avatar => avatar.id === this.postavke.avatar);
@@ -275,7 +383,7 @@ const PodesavanjaManager = {
         );
     },
 
-    registrujObavezniProfil: function() {
+    registrujObavezniProfil: async function() {
         const input = document.getElementById('profil-setup-nadimak');
         const dugme = document.getElementById('profil-setup-submit');
         const nadimak = input ? input.value.trim().replace(/\s+/g, " ") : "";
@@ -291,6 +399,8 @@ const PodesavanjaManager = {
             this.toggleSetupAvatarPicker();
             return;
         }
+
+        await this.osigurajStabilniProfilKljuc();
 
         if (dugme) {
             dugme.disabled = true;

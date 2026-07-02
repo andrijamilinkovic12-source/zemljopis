@@ -564,6 +564,9 @@ const Game = {
                     if (typeof PodesavanjaManager.azurirajProfilOpcije === "function") {
                         PodesavanjaManager.azurirajProfilOpcije();
                     }
+                    if (typeof PodesavanjaManager.poveziStabilniProfilKljuc === "function") {
+                        PodesavanjaManager.poveziStabilniProfilKljuc();
+                    }
                 }
             }
         );

@@ -182,8 +182,8 @@
         </div>
 
         <div class="icon-menu-row">
-            <button class="circle-btn" onclick="DnevniIzazovManager.otvoriEkran()" title="Dnevni izazov">
-                <i class="fa-solid fa-bolt"></i>
+            <button class="circle-btn daily-challenge-btn" onclick="DnevniIzazovManager.otvoriEkran()" title="Dnevni izazov" aria-label="Dnevni izazov">
+                <img class="daily-challenge-icon" src="assets/dnevni-izazov.svg" alt="" aria-hidden="true" decoding="async">
             </button>
             
             <button class="circle-btn" onclick="RiznicaManager.otvoriEkran()" title="Riznica">
@@ -454,7 +454,7 @@
 
     <div id="dnevni-izazov-screen" class="screen">
         <div class="menu-pattern">
-            <i class="fa-solid fa-bolt pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+            <img class="pattern-icon pattern-img pattern-accent-gold dnevni-pattern-icon" src="assets/dnevni-izazov.svg" alt="" aria-hidden="true" decoding="async" style="top: 13%; left: 50%; font-size: 6.4rem; transform: translateX(-50%); --pattern-opacity: 0.18;">
         </div>
         
         <h2 class="dnevni-title">Dnevni Izazov</h2>
@@ -697,6 +697,17 @@
             <div class="ad-preview-progress" aria-hidden="true">
                 <span id="ad-preview-progress-fill"></span>
             </div>
+        </div>
+    </div>
+
+    <div id="dnevni-intro-overlay" class="dnevni-intro-overlay" aria-hidden="true">
+        <div class="dnevni-intro-stage" role="status" aria-live="polite">
+            <div class="dnevni-intro-title">
+                <span class="dnevni-intro-word dnevni-intro-left">DNEVNI</span>
+                <img class="dnevni-intro-icon" src="assets/dnevni-izazov.svg" alt="" aria-hidden="true" decoding="async">
+                <span class="dnevni-intro-word dnevni-intro-right">IZAZOV</span>
+            </div>
+            <div class="dnevni-intro-line" aria-hidden="true"></div>
         </div>
     </div>
 

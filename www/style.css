@@ -63,7 +63,7 @@ body {
     }
 }
 
-@media (min-width: 700px) and (hover: hover) and (pointer: fine) {
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
     body {
         max-width: 480px;
         height: 90vh;
@@ -4335,4 +4335,370 @@ body[data-tema="svetla"] .stat-box span { color: #4a5568; }
     background: rgba(56, 239, 125, 0.2);
     border-color: #38ef7d;
     color: #38ef7d;
+}
+
+/* ========================================================
+   RESPONSIVE DEVICE LAYER
+   telefoni, 7" tableti, 10" tableti
+   ======================================================== */
+:root {
+    --screen-inline-padding: clamp(1rem, 4vw, 1.5rem);
+    --menu-content-max: 320px;
+    --panel-content-max: 360px;
+    --game-content-max: 390px;
+}
+
+#main-menu {
+    padding-inline: var(--screen-inline-padding);
+    padding-block: clamp(1.2rem, 3.8vh, 2rem);
+}
+
+.top-header-menu,
+.main-actions {
+    max-width: var(--menu-content-max);
+}
+
+.profile-setup-shell,
+.toplista-shell,
+.dnevni-izazov-inputs {
+    max-width: var(--panel-content-max);
+}
+
+#game-board {
+    align-items: center;
+}
+
+#game-board .game-header,
+#game-board .current-letter,
+#game-board .inputs-container {
+    width: 100%;
+    max-width: var(--game-content-max);
+}
+
+#game-board .game-header,
+#game-board .current-letter {
+    flex-shrink: 0;
+}
+
+#game-board .inputs-container {
+    min-height: 0;
+    margin-inline: auto;
+}
+
+@media (max-width: 340px), (max-height: 640px) {
+    :root {
+        --screen-inline-padding: 0.85rem;
+        --menu-content-max: 300px;
+        --panel-content-max: 320px;
+        --game-content-max: 340px;
+    }
+
+    #main-menu {
+        padding-block: clamp(0.75rem, 2.5vh, 1.2rem);
+    }
+
+    .status-bar {
+        gap: 0.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .status-pill {
+        padding: 0.32rem 0.48rem;
+        font-size: 0.66rem;
+    }
+
+    .top-header-menu {
+        max-width: 280px;
+        margin-bottom: 1rem;
+    }
+
+    .top-circle-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1rem;
+    }
+
+    .rank-btn {
+        width: 64px;
+        height: 64px;
+        font-size: 1.65rem;
+    }
+
+    .big-circle {
+        width: min(222px, 62vw, 31vh);
+        height: min(222px, 62vw, 31vh);
+    }
+
+    .sub-modes-row {
+        gap: 1.5rem;
+        margin-top: 0.55rem;
+    }
+
+    .sub-mode-btn {
+        width: 52px;
+        height: 52px;
+        font-size: 1.25rem;
+    }
+
+    .icon-menu-row {
+        gap: clamp(0.55rem, 3vw, 0.9rem);
+        margin-top: 0.65rem;
+    }
+
+    .circle-btn {
+        width: min(48px, 13vw);
+        height: min(48px, 13vw);
+        font-size: min(1.15rem, 4.5vw);
+    }
+
+    #main-menu .menu-pattern .pattern-icon:nth-child(5) {
+        left: 66% !important;
+        font-size: 5.15rem !important;
+    }
+
+    .game-header {
+        padding: 0.32rem 0.75rem;
+    }
+
+    .timer {
+        font-size: 1.15rem;
+    }
+
+    .current-letter span {
+        font-size: 1.25rem;
+    }
+
+    .inputs-container {
+        padding-inline: 0.7rem;
+        padding-bottom: min(68px, 11vh);
+    }
+
+    .input-group input {
+        padding: min(0.45rem, 0.9vh) 0.65rem;
+        font-size: min(0.82rem, 1.75vh);
+    }
+
+    .stats-panel {
+        padding: 0.3rem;
+    }
+}
+
+@media (min-width: 600px) and (max-width: 1099px), (min-width: 600px) and (hover: none) {
+    :root {
+        --screen-inline-padding: clamp(1.5rem, 5vw, 3rem);
+        --menu-content-max: 560px;
+        --panel-content-max: 500px;
+        --game-content-max: 780px;
+    }
+
+    #main-menu {
+        padding-block: clamp(1.5rem, 3.5vh, 3rem);
+    }
+
+    .status-bar {
+        max-width: 580px;
+        gap: clamp(0.65rem, 1.5vw, 1rem);
+        margin-bottom: clamp(1.1rem, 2.4vh, 2rem);
+    }
+
+    .status-pill {
+        padding: 0.5rem 0.9rem;
+        font-size: clamp(0.78rem, 1.4vw, 0.92rem);
+    }
+
+    .top-header-menu {
+        max-width: min(520px, 76vw);
+        margin-bottom: clamp(1.3rem, 3vh, 2.4rem);
+    }
+
+    .top-circle-btn {
+        width: clamp(56px, 8vw, 76px);
+        height: clamp(56px, 8vw, 76px);
+        font-size: clamp(1.15rem, 2vw, 1.6rem);
+    }
+
+    .rank-btn {
+        width: clamp(82px, 10vw, 104px);
+        height: clamp(82px, 10vw, 104px);
+        font-size: clamp(2rem, 3vw, 2.6rem);
+    }
+
+    .main-actions {
+        max-width: min(560px, 78vw);
+        margin-bottom: clamp(1rem, 2vh, 1.7rem);
+    }
+
+    .big-circle {
+        width: clamp(280px, 38vw, 360px);
+        height: clamp(280px, 38vw, 360px);
+    }
+
+    .sub-modes-row {
+        gap: clamp(3rem, 8vw, 5rem);
+    }
+
+    .sub-mode-btn {
+        width: clamp(68px, 8vw, 86px);
+        height: clamp(68px, 8vw, 86px);
+        font-size: clamp(1.55rem, 2.4vw, 2rem);
+    }
+
+    .sub-mode-label {
+        font-size: clamp(0.78rem, 1.2vw, 0.92rem);
+    }
+
+    .icon-menu-row {
+        gap: clamp(1.4rem, 4vw, 2.6rem);
+        margin-top: clamp(1rem, 2vh, 1.8rem);
+    }
+
+    .circle-btn {
+        width: clamp(64px, 7.5vw, 82px);
+        height: clamp(64px, 7.5vw, 82px);
+        font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+    }
+
+    .profile-setup-avatar {
+        width: clamp(116px, 13vw, 148px);
+        height: clamp(116px, 13vw, 148px);
+    }
+
+    .profile-setup-heading h1 {
+        font-size: clamp(1.9rem, 3vw, 2.35rem);
+    }
+
+    .modal-content {
+        max-width: min(460px, calc(100% - 48px));
+    }
+
+    #game-board .game-header,
+    #game-board .current-letter,
+    #game-board .inputs-container {
+        width: min(100%, var(--game-content-max));
+    }
+
+    #game-board .game-header {
+        padding: clamp(0.55rem, 1.2vh, 0.85rem) clamp(1rem, 2.5vw, 1.5rem);
+    }
+
+    .current-letter {
+        padding-block: clamp(0.35rem, 1vh, 0.75rem);
+    }
+
+    .current-letter span {
+        font-size: clamp(1.6rem, 3vw, 2.25rem);
+    }
+
+    #game-board .inputs-container {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-content: center;
+        justify-content: normal;
+        gap: clamp(0.55rem, 1.2vw, 0.85rem);
+        padding-inline: clamp(1rem, 3vw, 1.5rem);
+        padding-bottom: clamp(84px, 9vh, 110px);
+    }
+
+    #anti-cheat-status,
+    #live-stats-panel {
+        grid-column: 1 / -1;
+    }
+
+    .input-group label {
+        font-size: clamp(0.72rem, 1.2vw, 0.9rem);
+    }
+
+    .input-group input {
+        min-height: clamp(44px, 5vh, 54px);
+        font-size: clamp(0.95rem, 1.6vw, 1.08rem);
+    }
+
+    #game-board .action-footer {
+        left: 50%;
+        width: min(100%, var(--game-content-max));
+        transform: translateX(-50%);
+        padding-inline: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    .btn-finish {
+        min-height: clamp(50px, 5.8vh, 64px);
+        font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+    }
+
+    #custom-keyboard {
+        padding-inline: clamp(12px, 8vw, 140px);
+    }
+
+    .kb-key {
+        max-width: 48px;
+        height: clamp(42px, 5.2vh, 58px);
+        font-size: clamp(0.84rem, 1.45vw, 1.02rem);
+    }
+
+    .kb-special {
+        max-width: 76px;
+    }
+
+    .kb-space {
+        max-width: 240px;
+    }
+
+    .kb-enter {
+        max-width: 110px;
+    }
+}
+
+@media (min-width: 900px) and (max-height: 720px) {
+    #main-menu {
+        padding-block: clamp(0.65rem, 1.8vh, 1rem);
+    }
+
+    .status-bar,
+    .top-header-menu,
+    .main-actions {
+        margin-bottom: clamp(0.35rem, 1.1vh, 0.7rem);
+    }
+
+    .top-header-menu {
+        max-width: 460px;
+    }
+
+    .top-circle-btn {
+        width: 54px;
+        height: 54px;
+        font-size: 1.15rem;
+    }
+
+    .rank-btn {
+        width: 76px;
+        height: 76px;
+        font-size: 2rem;
+    }
+
+    .big-circle {
+        width: clamp(210px, 34vh, 240px);
+        height: clamp(210px, 34vh, 240px);
+    }
+
+    .sub-modes-row {
+        gap: 2.2rem;
+        margin-top: 0.45rem;
+    }
+
+    .sub-mode-btn {
+        width: 54px;
+        height: 54px;
+        font-size: 1.25rem;
+    }
+
+    .icon-menu-row {
+        gap: 1.2rem;
+        margin-top: 0.4rem;
+    }
+
+    .circle-btn {
+        width: 58px;
+        height: 58px;
+        font-size: 1.25rem;
+    }
 }

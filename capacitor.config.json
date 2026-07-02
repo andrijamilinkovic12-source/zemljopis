@@ -1,5 +1,9 @@
 {
   "appId": "com.zemljopis.app",
   "appName": "ZEMLJOPIS",
-  "webDir": "www"
+  "webDir": "www",
+  "server": {
+    "url": "https://zemljopis.onrender.com",
+    "cleartext": false
+  }
 }

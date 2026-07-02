@@ -6,10 +6,12 @@ const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const https = require('https');
+const path = require('path');
 const BazaPodataka = require('./www/bazapodataka.js');
 
 const app = express();
 const server = http.createServer(app);
+const WEB_ROOT = path.join(__dirname, 'www');
 
 const io = new Server(server, {
     cors: {
@@ -41,6 +43,19 @@ let googleJwksCache = {
     keys: null,
     expiresAt: 0
 };
+
+app.use(express.static(WEB_ROOT, {
+    etag: true,
+    lastModified: true,
+    maxAge: 0,
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('index.html')) {
+            res.setHeader('Cache-Control', 'no-store');
+        } else {
+            res.setHeader('Cache-Control', 'no-cache');
+        }
+    }
+}));
 
 function normalizujEfekatRunde(efekatId) {
     const vrednost = String(efekatId || 'ef_nista');
@@ -3743,6 +3758,12 @@ io.on('connection', (socket) => {
             callback({ uspeh: false, kod: "GRESKA_SERVERA" });
         }
     });
+});
+
+app.get(/^\/(?!socket\.io\/).*/, (req, res, next) => {
+    if (path.extname(req.path)) return next();
+    res.setHeader('Cache-Control', 'no-store');
+    res.sendFile(path.join(WEB_ROOT, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;

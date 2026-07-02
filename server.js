@@ -1896,10 +1896,19 @@ function smanjiPozivnuSobuIliZatvori(soba, tip, detalji = {}) {
 // ==========================================
 // 4. GLAVNA SOCKET.IO LOGIKA
 // ==========================================
+function vratiSocketCallback(...args) {
+    return args.find(arg => typeof arg === "function") || (() => {});
+}
+
+function vratiSocketPodatke(...args) {
+    return args.find(arg => arg && typeof arg === "object" && typeof arg !== "function") || {};
+}
+
 io.on('connection', (socket) => {
     console.log(`🟢 Novi igrač se povezao: ${socket.id}`);
 
-    socket.on('sinhronizujVreme', (callback = () => {}) => {
+    socket.on('sinhronizujVreme', (...args) => {
+        const callback = vratiSocketCallback(...args);
         callback({
             serverVreme: Date.now(),
             vremenskaZona: VREMENSKA_ZONA_IGRE,
@@ -1907,7 +1916,8 @@ io.on('connection', (socket) => {
         });
     });
 
-    socket.on('dnevniIzazovStanje', async (callback = () => {}) => {
+    socket.on('dnevniIzazovStanje', async (...args) => {
+        const callback = vratiSocketCallback(...args);
         try {
             let igrac = await ucitajPrijavljenogIgraca(socket);
             if (!igrac) {
@@ -1927,7 +1937,8 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('dnevniIzazovPokreni', async (callback = () => {}) => {
+    socket.on('dnevniIzazovPokreni', async (...args) => {
+        const callback = vratiSocketCallback(...args);
         try {
             const igrac = await ucitajPrijavljenogIgraca(socket);
             if (!igrac) {
@@ -2007,7 +2018,9 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('dnevniIzazovZavrsi', async (podaci = {}, callback = () => {}) => {
+    socket.on('dnevniIzazovZavrsi', async (...args) => {
+        const podaci = vratiSocketPodatke(...args);
+        const callback = vratiSocketCallback(...args);
         try {
             let igrac = await ucitajPrijavljenogIgraca(socket);
             if (!igrac) {
@@ -2139,7 +2152,9 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('dnevniIzazovDuplirajNagradu', async (podaci = {}, callback = () => {}) => {
+    socket.on('dnevniIzazovDuplirajNagradu', async (...args) => {
+        const podaci = vratiSocketPodatke(...args);
+        const callback = vratiSocketCallback(...args);
         try {
             let igrac = await ucitajPrijavljenogIgraca(socket);
             if (!igrac) {

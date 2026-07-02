@@ -290,6 +290,50 @@ body {
     cursor: default;
 }
 
+.profile-setup-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: min(0.65rem, 1.2vh) 0;
+    color: #81938a;
+    font-size: min(0.68rem, 1.35vh);
+    text-transform: uppercase;
+}
+
+.profile-setup-divider::before,
+.profile-setup-divider::after {
+    height: 1px;
+    flex: 1;
+    background: rgba(255, 255, 255, 0.12);
+    content: "";
+}
+
+.profile-setup-google {
+    width: 100%;
+    padding: min(0.72rem, 1.4vh) 0.85rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.65rem;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: min(0.78rem, 1.55vh);
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.profile-setup-google i {
+    color: #f5af19;
+    font-size: 1rem;
+}
+
+.profile-setup-google:disabled {
+    opacity: 0.58;
+    cursor: default;
+}
+
 .profile-setup-note {
     margin-top: min(0.85rem, 1.6vh);
     color: #81938a;
@@ -476,6 +520,85 @@ body[data-tema="svetla"] #profil-setup-nadimak {
 
 #podesavanja-screen {
     padding-top: 5.5vh;
+}
+
+/* --- TOP LISTA: isti unutrašnji safe-zone ritam kao Soba prijatelja --- */
+#toplista-screen {
+    min-height: 0;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+}
+
+.toplista-title {
+    z-index: 5;
+    margin-bottom: 1rem;
+    color: #38ef7d;
+    font-size: 1.6rem;
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(56, 239, 125, 0.3);
+}
+
+.toplista-shell {
+    z-index: 5;
+    width: 100%;
+    max-width: 360px;
+    min-height: 0;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.toplista-group-tabs {
+    display: flex;
+    flex-shrink: 0;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.toplista-group-tabs .menu-btn {
+    flex: 1;
+    margin: 0;
+    padding: 0.7rem;
+    font-size: 0.9rem;
+}
+
+.toplista-period-tabs {
+    display: grid;
+    flex-shrink: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+    margin-bottom: 0.8rem;
+}
+
+.toplista-period-tabs .menu-btn {
+    min-width: 0;
+    margin: 0;
+    padding: 0.55rem 0.25rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 0.72rem;
+}
+
+#toplista-sadrzaj {
+    min-height: 0;
+    padding: 0.5rem;
+    overflow-y: auto;
+    flex: 1;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    scrollbar-width: none;
+}
+
+#toplista-sadrzaj::-webkit-scrollbar {
+    display: none;
+}
+
+.toplista-back {
+    flex-shrink: 0;
+    margin: 0.8rem 0 0;
 }
 
 .settings-content::-webkit-scrollbar { display: none; }

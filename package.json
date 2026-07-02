@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node server.js",
     "test": "node scripts/test-dnevni-local.mjs",
-    "test:dnevni": "node scripts/test-dnevni-local.mjs"
+    "test:dnevni": "node scripts/test-dnevni-local.mjs",
+    "test:toplista": "node scripts/test-top-list-local.mjs"
   },
   "repository": {
     "type": "git",

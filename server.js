@@ -85,6 +85,8 @@ const IgracSchema = new mongoose.Schema({
     profilKljuc: { type: String, unique: true, sparse: true },
     povezaniProfilKljucevi: { type: [String], default: [] },
     googleUid: { type: String, unique: true, sparse: true },
+    spojenUPlayerId: { type: String, default: null },
+    spojeniPlayerIds: { type: [String], default: [] },
     avatar: { type: String, default: "atlas" },
     prijatelji: { type: [String], default: [] },
     zahteviPrijateljstva: {
@@ -107,10 +109,12 @@ const IgracSchema = new mongoose.Schema({
     onlineObradjeniMecevi: { type: [String], default: [] },
     onlineObradjenePobede: { type: [String], default: [] },
     // POLJA ZA TOP LISTU POENA
-    najboljiMecPoeni: { type: Number, default: 0 },
     nedeljniPoeni: { type: Number, default: 0 },
+    topListaNedeljniPeriod: { type: String, default: "" },
     mesecniPoeni: { type: Number, default: 0 },
+    topListaMesecniPeriod: { type: String, default: "" },
     svaVremenaPoeni: { type: Number, default: 0 },
+    topListaObradjeniMecevi: { type: [String], default: [] },
     cloudNapredak: { type: mongoose.Schema.Types.Mixed, default: {} },
     dnevniIzazov: { type: mongoose.Schema.Types.Mixed, default: {} },
     dnevniNiz: { type: mongoose.Schema.Types.Mixed, default: {} },
@@ -946,6 +950,91 @@ function spojiPrijatelje(postojeci, dolazni) {
     };
 }
 
+function spojiJedinstveneVrednosti(...liste) {
+    return [...new Set(liste.flatMap(lista => Array.isArray(lista) ? lista : []).filter(Boolean))];
+}
+
+function spojiServerskiNapredakProfila(ciljniIgrac, lokalniIgrac, datum = new Date()) {
+    if (!ciljniIgrac || !lokalniIgrac || !lokalniIgrac.playerId) return false;
+
+    const vecSpojen = (ciljniIgrac.spojeniPlayerIds || []).includes(lokalniIgrac.playerId);
+    if (vecSpojen) return false;
+
+    const period = oznakePeriodaTopListe(datum);
+    const poeniZaPeriod = (igrac, poljePerioda, poljePoena, aktivniPeriod) => (
+        igrac[poljePerioda] === aktivniPeriod ? Number(igrac[poljePoena]) || 0 : 0
+    );
+
+    ciljniIgrac.nedeljniPoeni =
+        poeniZaPeriod(ciljniIgrac, 'topListaNedeljniPeriod', 'nedeljniPoeni', period.nedeljni)
+        + poeniZaPeriod(lokalniIgrac, 'topListaNedeljniPeriod', 'nedeljniPoeni', period.nedeljni);
+    ciljniIgrac.topListaNedeljniPeriod = period.nedeljni;
+    ciljniIgrac.mesecniPoeni =
+        poeniZaPeriod(ciljniIgrac, 'topListaMesecniPeriod', 'mesecniPoeni', period.mesecni)
+        + poeniZaPeriod(lokalniIgrac, 'topListaMesecniPeriod', 'mesecniPoeni', period.mesecni);
+    ciljniIgrac.topListaMesecniPeriod = period.mesecni;
+    ciljniIgrac.svaVremenaPoeni = (Number(ciljniIgrac.svaVremenaPoeni) || 0)
+        + (Number(lokalniIgrac.svaVremenaPoeni) || 0);
+
+    ciljniIgrac.topListaObradjeniMecevi = spojiJedinstveneVrednosti(
+        ciljniIgrac.topListaObradjeniMecevi,
+        lokalniIgrac.topListaObradjeniMecevi
+    ).slice(-MAKSIMALNO_SACUVANIH_ONLINE_MECEVA);
+    ciljniIgrac.onlineObradjeniMecevi = spojiJedinstveneVrednosti(
+        ciljniIgrac.onlineObradjeniMecevi,
+        lokalniIgrac.onlineObradjeniMecevi
+    ).slice(-MAKSIMALNO_SACUVANIH_ONLINE_MECEVA);
+    ciljniIgrac.onlineObradjenePobede = spojiJedinstveneVrednosti(
+        ciljniIgrac.onlineObradjenePobede,
+        lokalniIgrac.onlineObradjenePobede
+    ).slice(-MAKSIMALNO_SACUVANIH_ONLINE_MECEVA);
+    ciljniIgrac.kvartalniObradjeniDogadjaji = spojiJedinstveneVrednosti(
+        ciljniIgrac.kvartalniObradjeniDogadjaji,
+        lokalniIgrac.kvartalniObradjeniDogadjaji
+    ).slice(-300);
+
+    ciljniIgrac.odigraniOnlineMecevi = (Number(ciljniIgrac.odigraniOnlineMecevi) || 0)
+        + (Number(lokalniIgrac.odigraniOnlineMecevi) || 0);
+    ciljniIgrac.onlinePobede = (Number(ciljniIgrac.onlinePobede) || 0)
+        + (Number(lokalniIgrac.onlinePobede) || 0);
+    ciljniIgrac.pobede = (Number(ciljniIgrac.pobede) || 0)
+        + (Number(lokalniIgrac.pobede) || 0);
+
+    ciljniIgrac.prijatelji = spojiJedinstveneVrednosti(
+        ciljniIgrac.prijatelji,
+        lokalniIgrac.prijatelji
+    ).filter(playerId => playerId !== ciljniIgrac.playerId && playerId !== lokalniIgrac.playerId);
+    ciljniIgrac.zahteviPrijateljstva = spojiListuPoPlayerId(
+        ciljniIgrac.zahteviPrijateljstva,
+        lokalniIgrac.zahteviPrijateljstva
+    ).filter(zahtev => zahtev.playerId !== ciljniIgrac.playerId && zahtev.playerId !== lokalniIgrac.playerId);
+    ciljniIgrac.spojeniPlayerIds = spojiJedinstveneVrednosti(
+        ciljniIgrac.spojeniPlayerIds,
+        [lokalniIgrac.playerId]
+    ).slice(-20);
+
+    return true;
+}
+
+async function preusmeriVezeSpojenogProfila(stariPlayerId, noviPlayerId, ciljniBazaId) {
+    if (!stariPlayerId || !noviPlayerId || stariPlayerId === noviPlayerId) return;
+
+    await Promise.all([
+        Igrac.updateMany(
+            { _id: { $ne: ciljniBazaId }, prijatelji: stariPlayerId },
+            {
+                $pull: { prijatelji: stariPlayerId },
+                $addToSet: { prijatelji: noviPlayerId }
+            }
+        ),
+        Igrac.updateMany(
+            { _id: { $ne: ciljniBazaId }, 'zahteviPrijateljstva.playerId': stariPlayerId },
+            { $set: { 'zahteviPrijateljstva.$[zahtev].playerId': noviPlayerId } },
+            { arrayFilters: [{ 'zahtev.playerId': stariPlayerId }] }
+        )
+    ]);
+}
+
 function spojiCloudNapredak(postojeci, dolazni) {
     const stari = objektIliPrazan(postojeci);
     const novi = objektIliPrazan(dolazni);
@@ -1267,9 +1356,12 @@ const KVARTALNI_NIVOI = [
 ];
 
 function kvartalniOpsegIgraca() {
-    if (!KVARTALNI_TEST_PROFIL_PREFIX) return {};
+    if (!KVARTALNI_TEST_PROFIL_PREFIX) return { spojenUPlayerId: null };
     const bezbedanPrefiks = KVARTALNI_TEST_PROFIL_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return { profilKljuc: { $regex: `^${bezbedanPrefiks}` } };
+    return {
+        spojenUPlayerId: null,
+        profilKljuc: { $regex: `^${bezbedanPrefiks}` }
+    };
 }
 
 async function osigurajAktivniKvartal() {
@@ -1494,6 +1586,190 @@ const MREZNA_REZERVA_NAKON_RUNDE_MS = 2500;
 const TRAJANJE_PRELAZA_DO_PREGLEDA_MS = 6000;
 const TRAJANJE_PREGLEDA_RUNDE_MS = 10000;
 const MAKSIMALNO_SACUVANIH_ONLINE_MECEVA = 300;
+const MAKSIMALNO_POENA_PO_MECU = 690;
+
+function lokalniDeloviDatuma(datum = new Date()) {
+    const delovi = new Intl.DateTimeFormat('en-CA', {
+        timeZone: VREMENSKA_ZONA_IGRE,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(datum);
+    const procitaj = tip => Number(delovi.find(deo => deo.type === tip)?.value);
+    return {
+        godina: procitaj('year'),
+        mesec: procitaj('month'),
+        dan: procitaj('day')
+    };
+}
+
+function oznakePeriodaTopListe(datum = new Date()) {
+    const { godina, mesec, dan } = lokalniDeloviDatuma(datum);
+    const lokalniDatum = new Date(Date.UTC(godina, mesec - 1, dan));
+    const danaOdPonedeljka = (lokalniDatum.getUTCDay() + 6) % 7;
+    lokalniDatum.setUTCDate(lokalniDatum.getUTCDate() - danaOdPonedeljka);
+
+    return {
+        nedeljni: lokalniDatum.toISOString().slice(0, 10),
+        mesecni: `${godina}-${String(mesec).padStart(2, '0')}`
+    };
+}
+
+async function upisiPoeneTopListe(onlineIgrac, soba, poeni) {
+    if (!onlineIgrac || !soba || !['javna', 'poziv'].includes(soba.tipSobe)) return false;
+
+    const potvrdjeniPoeni = Number(poeni);
+    if (
+        !Number.isInteger(potvrdjeniPoeni)
+        || potvrdjeniPoeni < 0
+        || potvrdjeniPoeni > MAKSIMALNO_POENA_PO_MECU
+    ) {
+        return false;
+    }
+
+    const period = oznakePeriodaTopListe();
+    const rezultat = await Igrac.updateOne(
+        {
+            _id: onlineIgrac.bazaId,
+            topListaObradjeniMecevi: { $ne: soba.partijaId }
+        },
+        [{
+            $set: {
+                nedeljniPoeni: {
+                    $add: [{
+                        $cond: [
+                            { $eq: ['$topListaNedeljniPeriod', period.nedeljni] },
+                            { $ifNull: ['$nedeljniPoeni', 0] },
+                            0
+                        ]
+                    }, potvrdjeniPoeni]
+                },
+                topListaNedeljniPeriod: period.nedeljni,
+                mesecniPoeni: {
+                    $add: [{
+                        $cond: [
+                            { $eq: ['$topListaMesecniPeriod', period.mesecni] },
+                            { $ifNull: ['$mesecniPoeni', 0] },
+                            0
+                        ]
+                    }, potvrdjeniPoeni]
+                },
+                topListaMesecniPeriod: period.mesecni,
+                svaVremenaPoeni: {
+                    $add: [{ $ifNull: ['$svaVremenaPoeni', 0] }, potvrdjeniPoeni]
+                },
+                topListaObradjeniMecevi: {
+                    $slice: [{
+                        $concatArrays: [
+                            { $ifNull: ['$topListaObradjeniMecevi', []] },
+                            [soba.partijaId]
+                        ]
+                    }, -MAKSIMALNO_SACUVANIH_ONLINE_MECEVA]
+                }
+            }
+        }]
+    );
+
+    return rezultat.modifiedCount > 0;
+}
+
+function raspodeliPoeneZaPojmove(tacniPojmovi = []) {
+    const frekvencije = new Map();
+    tacniPojmovi.forEach(stavka => {
+        frekvencije.set(stavka.pojam, (frekvencije.get(stavka.pojam) || 0) + 1);
+    });
+
+    return tacniPojmovi.map(stavka => ({
+        ...stavka,
+        poeni: frekvencije.get(stavka.pojam) >= 2
+            ? 5
+            : (tacniPojmovi.length === 1 ? 15 : 10)
+    }));
+}
+
+function obracunajServerskePoeneRunde(soba) {
+    if (!soba || !soba.zadatoSlovo) return {};
+
+    const aktivniPoSocketu = new Map(
+        (soba.igraci || []).map(igrac => [igrac.id, igrac])
+    );
+    const poeniRunde = {};
+    const tacniRunde = {};
+    aktivniPoSocketu.forEach(igrac => {
+        poeniRunde[igrac.playerId] = 0;
+        tacniRunde[igrac.playerId] = 0;
+    });
+
+    DNEVNI_KATEGORIJE.forEach(({ id: kategorija }) => {
+        const tacniPojmovi = [];
+        (soba.odgovoriOveRunde || []).forEach(odgovorIgraca => {
+            const igrac = aktivniPoSocketu.get(odgovorIgraca.idIgraca);
+            if (!igrac) return;
+
+            const odgovor = String(odgovorIgraca.odgovori?.[kategorija] || '').trim();
+            if (!odgovor || !BazaPodataka.proveriPojam(kategorija, odgovor, soba.zadatoSlovo)) return;
+
+            const pojam = BazaPodataka.standardizujPojam(kategorija, odgovor, soba.zadatoSlovo);
+            if (!pojam) return;
+            tacniPojmovi.push({ playerId: igrac.playerId, pojam });
+            tacniRunde[igrac.playerId]++;
+        });
+
+        raspodeliPoeneZaPojmove(tacniPojmovi).forEach(stavka => {
+            poeniRunde[stavka.playerId] += stavka.poeni;
+        });
+    });
+
+    Object.keys(tacniRunde).forEach(playerId => {
+        if (tacniRunde[playerId] === DNEVNI_KATEGORIJE.length) {
+            poeniRunde[playerId] += 10;
+        }
+    });
+
+    soba.serverPoeni = soba.serverPoeni || {};
+    Object.entries(poeniRunde).forEach(([playerId, poeni]) => {
+        soba.serverPoeni[playerId] = (Number(soba.serverPoeni[playerId]) || 0) + poeni;
+    });
+    return poeniRunde;
+}
+
+function odrediPobednikeMeca(soba) {
+    const zavrsili = (soba?.igraci || []).filter(igrac => igrac.playerId);
+    if (zavrsili.length === 0) return [];
+
+    const najboljiRezultat = Math.max(...zavrsili.map(igrac => (
+        Number(soba.serverPoeni?.[igrac.playerId]) || 0
+    )));
+    return zavrsili
+        .filter(igrac => (Number(soba.serverPoeni?.[igrac.playerId]) || 0) === najboljiRezultat)
+        .map(igrac => igrac.playerId);
+}
+
+async function upisiTopListuZavrseneSobe(soba) {
+    if (!soba || soba.status !== 'zavrsena' || !['javna', 'poziv'].includes(soba.tipSobe)) {
+        return [];
+    }
+    if (soba.topListaPromise) return soba.topListaPromise;
+
+    const zavrsiliMec = (soba.igraci || [])
+        .filter(igrac => igrac.bazaId && igrac.playerId)
+        .map(igrac => ({
+            bazaId: igrac.bazaId,
+            playerId: igrac.playerId,
+            poeni: Number(soba.serverPoeni?.[igrac.playerId]) || 0
+        }));
+
+    soba.topListaPromise = Promise.all(zavrsiliMec.map(igrac => (
+        upisiPoeneTopListe(igrac, soba, igrac.poeni)
+    )));
+
+    try {
+        return await soba.topListaPromise;
+    } catch (error) {
+        soba.topListaPromise = null;
+        throw error;
+    }
+}
 
 function ocistiTajmereSobe(soba) {
     if (!soba) return;
@@ -1534,8 +1810,13 @@ async function upisiOdigranOnlineMec(soba, pobednikPlayerIds = []) {
     if (!soba || !soba.partijaId || !Array.isArray(soba.ucesniciMeca)) return;
     if (soba.statistikaMecaPromise) return soba.statistikaMecaPromise;
 
+    const zavrsiliPlayerIds = new Set((soba.igraci || []).map(igrac => igrac.playerId).filter(Boolean));
     const ucesnici = [...new Set(
-        soba.ucesniciMeca.map(igrac => igrac.playerId).filter(Boolean)
+        soba.ucesniciMeca
+            .map(igrac => igrac.playerId)
+            .filter(playerId => playerId && (
+                soba.status !== 'zavrsena' || zavrsiliPlayerIds.has(playerId)
+            ))
     )];
     const pobednici = [...new Set(
         pobednikPlayerIds.filter(playerId => ucesnici.includes(playerId))
@@ -1680,10 +1961,16 @@ function zavrsiRunduUSobi(soba, razlog = "svi_odgovorili") {
         });
     });
 
+    obracunajServerskePoeneRunde(soba);
+
     if (soba.trenutnaRunda >= 6) {
         soba.status = 'zavrsena';
-        upisiOdigranOnlineMec(soba).catch(error => {
+        soba.pobednikPlayerIds = odrediPobednikeMeca(soba);
+        upisiOdigranOnlineMec(soba, soba.pobednikPlayerIds).catch(error => {
             console.error(`Greška pri upisu završenog online meča ${soba.partijaId}:`, error);
+        });
+        upisiTopListuZavrseneSobe(soba).catch(error => {
+            console.error(`Greška pri upisu poena završenog meča ${soba.partijaId}:`, error);
         });
         io.to(soba.id).emit('sviOdgovoriPrikupjeni', soba.odgovoriOveRunde, {
             serverVreme: Date.now(),
@@ -1755,6 +2042,7 @@ function zapocniRunduUSobi(soba, io, planiraniPocetakAt = null) {
     if (dostupnaSlova.length === 0) dostupnaSlova = svaSlova;
     
     const zadatoSlovo = dostupnaSlova[Math.floor(Math.random() * dostupnaSlova.length)];
+    soba.zadatoSlovo = zadatoSlovo;
     soba.iskoriscenaSlova.push(zadatoSlovo);
 
     const serverVreme = Date.now();
@@ -2462,6 +2750,17 @@ io.on('connection', (socket) => {
         if (!prijavljeniIgrac && !profilKljucJeIspravan(profilKljuc)) {
             return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN", poruka: "Prvo napravi lokalni profil." });
         }
+        const mecUToku = prijavljeniIgrac && Object.values(sobe).some(soba => (
+            soba.status === 'u_igri'
+            && soba.igraci.some(igrac => igrac.playerId === prijavljeniIgrac.playerId)
+        ));
+        if (mecUToku) {
+            return callback({
+                uspeh: false,
+                kod: "MEC_U_TOKU",
+                poruka: "Google nalog poveži nakon završetka trenutnog meča."
+            });
+        }
 
         try {
             const googleUid = await potvrdiGoogleIdentitet(podaci);
@@ -2482,8 +2781,11 @@ io.on('connection', (socket) => {
                 ? (googleIgrac.cloudNapredak || {})
                 : (lokalniIgrac.cloudNapredak || {});
             const spojeniNapredak = sanitizujCloudNapredak(spojiCloudNapredak(prethodniCloud, lokalniNapredak));
+            let spojeniLokalniPlayerId = null;
 
             if (googleIgrac && !istiProfil) {
+                spojeniLokalniPlayerId = lokalniIgrac.playerId;
+                spojiServerskiNapredakProfila(googleIgrac, lokalniIgrac);
                 if (profilKljucJeIspravan(lokalniIgrac.profilKljuc)) {
                     dodajPovezaniProfilKljuc(googleIgrac, lokalniIgrac.profilKljuc);
                     lokalniIgrac.profilKljuc = undefined;
@@ -2509,7 +2811,11 @@ io.on('connection', (socket) => {
                     Number(lokalniIgrac.svaVremenaPojmovi) || 0
                 );
 
+                // Prvo trajno sačuvaj cilj sa svim poenima; tek zatim arhiviraj lokalni profil.
+                // Ako drugi upis zakaže, ponovni pokušaj neće duplirati zbir zbog spojeniPlayerIds.
+                await googleIgrac.save();
                 lokalniIgrac.lokalnaMigracijaZavrsena = true;
+                lokalniIgrac.spojenUPlayerId = googleIgrac.playerId;
                 lokalniIgrac.poslednjaPrijava = new Date();
                 await lokalniIgrac.save();
             } else if (profilKljucJeIspravan(profilKljuc)) {
@@ -2524,6 +2830,14 @@ io.on('connection', (socket) => {
             ciljniIgrac.poslednjaPrijava = new Date();
             primeniNapredakNaBrojkeProfila(ciljniIgrac, spojeniNapredak);
             await ciljniIgrac.save();
+
+            if (spojeniLokalniPlayerId) {
+                await preusmeriVezeSpojenogProfila(
+                    spojeniLokalniPlayerId,
+                    ciljniIgrac.playerId,
+                    ciljniIgrac._id
+                );
+            }
 
             prijaviOnlineIgraca(socket, ciljniIgrac);
             callback({
@@ -2669,8 +2983,11 @@ io.on('connection', (socket) => {
         }
 
         try {
-            await upisiOdigranOnlineMec(zavrsenaSoba);
-            await upisiPobeduOnlineMeca(onlineIgrac.playerId, zavrsenaSoba.partijaId);
+            const pobednici = zavrsenaSoba.pobednikPlayerIds || odrediPobednikeMeca(zavrsenaSoba);
+            await upisiOdigranOnlineMec(zavrsenaSoba, pobednici);
+            if (!pobednici.includes(onlineIgrac.playerId)) {
+                return callback({ uspeh: false, kod: "IGRAC_NIJE_POBEDNIK" });
+            }
             callback({ uspeh: true });
         } catch (error) {
             console.error("Greška pri kompatibilnom upisu pobede:", error);
@@ -2678,37 +2995,54 @@ io.on('connection', (socket) => {
         }
     });
 
-    // --- UPIS POENA U TOP LISTU NA KRAJU MEČA ---
-    socket.on('upisiKrajnjiRezultat', async (poeni) => {
-        if (onlineIgraci[socket.id] && poeni > 0) {
-            try {
-                await Igrac.findOneAndUpdate(
-                    { _id: onlineIgraci[socket.id].bazaId },
-                    { 
-                        $inc: { nedeljniPoeni: poeni, mesecniPoeni: poeni, svaVremenaPoeni: poeni },
-                        $max: { najboljiMecPoeni: poeni } // Postavlja vrednost samo ako je nova veća od stare
-                    }
-                );
-            } catch (err) {
-                console.error("Greška pri upisu poena u Top Listu:", err);
-            }
-        }
-    });
-
-    // --- TRAŽENJE TOP LISTE IZ BAZE (Poeni umesto broja pojmova) ---
+    // --- TRAŽENJE GLOBALNE I PRIJATELJSKE TOP LISTE ---
     socket.on('traziTopListu', async () => {
         try {
-            const topNajboljiMec = await Igrac.find().sort({ najboljiMecPoeni: -1 }).limit(50).select('nadimak najboljiMecPoeni');
-            const topNedeljni = await Igrac.find().sort({ nedeljniPoeni: -1 }).limit(50).select('nadimak nedeljniPoeni');
-            const topMesecni = await Igrac.find().sort({ mesecniPoeni: -1 }).limit(50).select('nadimak mesecniPoeni');
-            const topSvaVremena = await Igrac.find().sort({ svaVremenaPoeni: -1 }).limit(50).select('nadimak svaVremenaPoeni');
-            
-            socket.emit('topListaOdgovor', { 
-                najboljiMec: topNajboljiMec, 
-                nedeljni: topNedeljni,
-                mesecni: topMesecni,
-                svaVremena: topSvaVremena
-            });
+            const onlineIgrac = onlineIgraci[socket.id];
+            if (!onlineIgrac) {
+                return socket.emit('topListaOdgovor', { globalno: {}, prijatelji: {} });
+            }
+
+            const period = oznakePeriodaTopListe();
+            const mojProfil = await Igrac.findById(onlineIgrac.bazaId)
+                .select('playerId prijatelji')
+                .lean();
+            const prijateljskiIds = [...new Set([
+                mojProfil?.playerId,
+                ...(mojProfil?.prijatelji || [])
+            ].filter(Boolean))];
+
+            const ucitajListu = (polje, dodatniFilter = {}) => Igrac.find({
+                ...dodatniFilter,
+                spojenUPlayerId: null,
+                [polje]: { $gt: 0 }
+            })
+                .sort({ [polje]: -1, nadimak: 1 })
+                .limit(50)
+                .select(`playerId nadimak ${polje}`)
+                .lean();
+
+            const ucitajGrupu = async filterIgraca => {
+                const [nedeljni, mesecni, svaVremena] = await Promise.all([
+                    ucitajListu('nedeljniPoeni', {
+                        ...filterIgraca,
+                        topListaNedeljniPeriod: period.nedeljni
+                    }),
+                    ucitajListu('mesecniPoeni', {
+                        ...filterIgraca,
+                        topListaMesecniPeriod: period.mesecni
+                    }),
+                    ucitajListu('svaVremenaPoeni', filterIgraca)
+                ]);
+                return { nedeljni, mesecni, svaVremena };
+            };
+
+            const [globalno, prijatelji] = await Promise.all([
+                ucitajGrupu({}),
+                ucitajGrupu({ playerId: { $in: prijateljskiIds } })
+            ]);
+
+            socket.emit('topListaOdgovor', { globalno, prijatelji });
         } catch (err) {
             console.error("Greška pri povlačenju top liste:", err);
         }
@@ -2912,8 +3246,12 @@ io.on('connection', (socket) => {
             if (igrac && !igrac.spremniOdgovori) {
                 igrac.spremniOdgovori = true;
                 const provereniEfekat = normalizujEfekatRunde(efekat || odgovori?.__efekat);
-                const ocisceniOdgovori = { ...(odgovori || {}) };
-                delete ocisceniOdgovori.__efekat;
+                const ocisceniOdgovori = {};
+                DNEVNI_KATEGORIJE.forEach(({ id: kategorija }) => {
+                    ocisceniOdgovori[kategorija] = typeof odgovori?.[kategorija] === 'string'
+                        ? odgovori[kategorija].trim().slice(0, 80)
+                        : '';
+                });
 
                 soba.odgovoriOveRunde.push({
                     idIgraca: socket.id,
@@ -2967,11 +3305,15 @@ io.on('connection', (socket) => {
         }
 
         try {
-            await upisiOdigranOnlineMec(soba);
-            if (Boolean(podaci.pobeda)) {
-                await upisiPobeduOnlineMeca(onlineIgrac.playerId, partijaId);
-            }
-            callback({ uspeh: true });
+            const pobednici = soba.pobednikPlayerIds || odrediPobednikeMeca(soba);
+            await upisiOdigranOnlineMec(soba, pobednici);
+            const rezultatiTopListe = await upisiTopListuZavrseneSobe(soba);
+            const poeniUpisani = rezultatiTopListe.some(Boolean);
+            callback({
+                uspeh: true,
+                poeniUpisani,
+                racunaSeZaTopListu: ['javna', 'poziv'].includes(soba.tipSobe)
+            });
         } catch (error) {
             console.error("Greška pri upisu ishoda online meča:", error);
             callback({ uspeh: false, kod: "GRESKA_SERVERA" });
@@ -3413,4 +3755,12 @@ module.exports.dnevniTestApi = {
     izracunajDnevniNiz,
     normalizujDnevneOdgovore,
     napraviIstekliDnevniRezultat
+};
+
+module.exports.topListaTestApi = {
+    oznakePeriodaTopListe,
+    MAKSIMALNO_POENA_PO_MECU,
+    raspodeliPoeneZaPojmove,
+    spojiServerskiNapredakProfila,
+    odrediPobednikeMeca
 };

@@ -121,6 +121,30 @@ const GoogleAuthManager = {
         });
     },
 
+    posaljiPrijavuServeru: function(identitet) {
+        return new Promise((resolve, reject) => {
+            if (!Game.socket || !Game.socket.connected) {
+                reject(new Error("Za Google prijavu potrebna je internet veza."));
+                return;
+            }
+
+            Game.socket.timeout(15000).emit(
+                "prijavaGoogleNaloga",
+                {
+                    ...identitet,
+                    profilKljuc: PodesavanjaManager.postavke.profilKljuc
+                },
+                (greska, odgovor) => {
+                    if (greska) {
+                        reject(new Error("Server se nije javio. Pokušaj ponovo."));
+                        return;
+                    }
+                    resolve(odgovor || { uspeh: false, poruka: "Google profil nije pronađen." });
+                }
+            );
+        });
+    },
+
     primeniProfil: function(odgovor, identitet) {
         const profil = odgovor && odgovor.profil;
         if (!profil || typeof PodesavanjaManager === "undefined") return;
@@ -184,6 +208,55 @@ const GoogleAuthManager = {
             this.povezivanjeUToku = false;
             if (typeof PodesavanjaManager !== "undefined") {
                 PodesavanjaManager.azurirajProfilOpcije();
+            }
+        }
+    },
+
+    prijaviPostojeciProfil: async function() {
+        if (this.povezivanjeUToku) return;
+        this.povezivanjeUToku = true;
+        const dugme = document.getElementById('profil-setup-google');
+        if (dugme) {
+            dugme.disabled = true;
+            dugme.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Prijavljivanje...</span>';
+        }
+
+        try {
+            if (typeof PodesavanjaManager !== 'undefined') {
+                await PodesavanjaManager.osigurajStabilniProfilKljuc();
+            }
+            const identitet = await this.dohvatiGoogleIdentitet();
+            const odgovor = await this.posaljiPrijavuServeru(identitet);
+            if (!odgovor.uspeh) {
+                const poruka = odgovor.kod === 'GOOGLE_PROFIL_NIJE_PRONADJEN'
+                    ? 'Ovaj Google nalog još nema Zemljopis profil. Napravi profil, pa ga zatim poveži sa Google nalogom u Podešavanjima.'
+                    : (odgovor.poruka || 'Google prijava nije uspela.');
+                throw new Error(poruka);
+            }
+
+            this.primeniProfil(odgovor, identitet);
+            if (typeof UIManager !== 'undefined') {
+                UIManager.prikaziObavestenje(
+                    'Profil je vraćen',
+                    'Nadimak, poeni i napredak uspešno su učitani sa Google naloga.',
+                    () => UIManager.prikaziEkran('main-menu'),
+                    'Nastavi'
+                );
+            }
+        } catch (error) {
+            if (typeof UIManager !== 'undefined') {
+                UIManager.prikaziObavestenje(
+                    'Google prijava',
+                    error && error.message ? error.message : 'Pokušaj ponovo malo kasnije.',
+                    null,
+                    'U redu'
+                );
+            }
+        } finally {
+            this.povezivanjeUToku = false;
+            if (dugme) {
+                dugme.disabled = false;
+                dugme.innerHTML = '<i class="fa-brands fa-google"></i><span>Prijavi se postojećim nalogom</span>';
             }
         }
     }

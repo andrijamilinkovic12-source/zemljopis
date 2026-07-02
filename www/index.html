@@ -68,9 +68,15 @@
                     <span>Napravi profil</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </button>
+
+                <div class="profile-setup-divider"><span>ili</span></div>
+                <button type="button" class="profile-setup-google" id="profil-setup-google" onclick="GoogleAuthManager.prijaviPostojeciProfil()">
+                    <i class="fa-brands fa-google"></i>
+                    <span>Prijavi se postojećim nalogom</span>
+                </button>
             </div>
 
-            <p class="profile-setup-note"><i class="fa-solid fa-lock"></i> Izabrani nadimak biće rezervisan samo za tvoj profil.</p>
+            <p class="profile-setup-note"><i class="fa-solid fa-lock"></i> Google nalog čuva profil i posle reinstalacije ili promene uređaja.</p>
         </div>
     </div>
 
@@ -343,26 +349,25 @@
             <i class="fa-solid fa-trophy pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
         </div>
         
-        <h2 style="color: #38ef7d; margin-bottom: 1rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Top Lista</h2>
+        <h2 class="toplista-title">Top Lista</h2>
         
-        <div style="z-index: 5; width: 100%; max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; height: 100%;">
+        <div class="toplista-shell">
             
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
-                <button class="menu-btn" id="tab-prijatelji" style="margin: 0; padding: 0.7rem; font-size: 0.9rem; flex: 1; transition: all 0.2s;" onclick="TopListaManager.promeniGrupu('prijatelji')">👥 Prijatelji</button>
-                <button class="menu-btn" id="tab-multiplayer" style="margin: 0; padding: 0.7rem; font-size: 0.9rem; flex: 1; transition: all 0.2s;" onclick="TopListaManager.promeniGrupu('multiplayer')">🌍 Globalno</button>
+            <div class="toplista-group-tabs">
+                <button class="menu-btn" id="tab-globalno" onclick="TopListaManager.promeniGrupu('globalno')">🌍 Globalno</button>
+                <button class="menu-btn" id="tab-prijatelji" onclick="TopListaManager.promeniGrupu('prijatelji')">👥 Prijatelji</button>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; margin-bottom: 1rem;">
-                <button class="menu-btn" id="subtab-najboljiMec" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="TopListaManager.promeniKategoriju('najboljiMec')">Najbolji meč</button>
-                <button class="menu-btn" id="subtab-nedeljni" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="TopListaManager.promeniKategoriju('nedeljni')">Nedeljno</button>
-                <button class="menu-btn" id="subtab-mesecni" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="TopListaManager.promeniKategoriju('mesecni')">Mesečno</button>
-                <button class="menu-btn" id="subtab-svaVremena" style="margin: 0; padding: 0.5rem; font-size: 0.75rem; border: 1px solid transparent; border-radius: 8px;" onclick="TopListaManager.promeniKategoriju('svaVremena')">Sva vremena</button>
+            <div class="toplista-period-tabs">
+                <button class="menu-btn" id="subtab-nedeljni" onclick="TopListaManager.promeniKategoriju('nedeljni')">Nedeljno</button>
+                <button class="menu-btn" id="subtab-mesecni" onclick="TopListaManager.promeniKategoriju('mesecni')">Mesečno</button>
+                <button class="menu-btn" id="subtab-svaVremena" onclick="TopListaManager.promeniKategoriju('svaVremena')">Sva vremena</button>
             </div>
 
-            <div id="toplista-sadrzaj" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 0.5rem; flex: 1; overflow-y: auto; margin-bottom: 1rem; scrollbar-width: none;">
+            <div id="toplista-sadrzaj">
             </div>
 
-            <button class="menu-btn btn-secondary" style="margin-top: auto; margin-bottom: 1rem;" onclick="UIManager.prikaziEkran('main-menu')">↩ Nazad</button>
+            <button class="menu-btn btn-secondary toplista-back" onclick="UIManager.prikaziEkran('main-menu')">↩ Nazad</button>
         </div>
     </div>
 

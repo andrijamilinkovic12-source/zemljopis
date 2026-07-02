@@ -531,34 +531,31 @@ const Game = {
         zakaziGrubo();
     },
 
-    prijaviSacuvanProfil: function() {
-        if (
-            !this.socket
-            || !this.socket.connected
-            || typeof PodesavanjaManager === 'undefined'
-            || !PodesavanjaManager.profilKompletan()
-        ) {
-            this.profilPrijavljen = false;
-            return;
-        }
-
+    prijaviProfilKljuc: function(profilKljuc, oporavakPosleReinstalacije = false) {
+        if (!this.socket || !this.socket.connected || !profilKljuc || this.prijavaProfilaUToku) return;
+        this.prijavaProfilaUToku = true;
         this.socket.timeout(10000).emit(
             'prijavaProfila',
-            { profilKljuc: PodesavanjaManager.postavke.profilKljuc },
+            { profilKljuc },
             (greska, odgovor) => {
+                this.prijavaProfilaUToku = false;
                 if (greska || !odgovor || !odgovor.uspeh) {
                     this.profilPrijavljen = false;
-                    console.warn("Profil nije potvrđen na serveru.", odgovor || greska);
+                    if (!oporavakPosleReinstalacije || (odgovor && odgovor.kod !== 'PROFIL_NIJE_PRONADJEN')) {
+                        console.warn("Profil nije potvrđen na serveru.", odgovor || greska);
+                    }
                     return;
                 }
 
                 this.profilPrijavljen = true;
                 if (odgovor.profil) {
+                    PodesavanjaManager.postavke.profilKljuc = profilKljuc;
                     PodesavanjaManager.postavke.nadimak = odgovor.profil.nadimak;
                     PodesavanjaManager.postavke.avatar = odgovor.profil.avatar;
                     PodesavanjaManager.postavke.playerId = odgovor.profil.playerId || PodesavanjaManager.postavke.playerId;
                     PodesavanjaManager.postavke.profilTip = odgovor.profil.googlePovezan ? "google" : "lokalni";
                     PodesavanjaManager.postavke.googleUid = odgovor.profil.googleUid || null;
+                    PodesavanjaManager.postavke.profilZavrsen = true;
                     PodesavanjaManager.snimiULokalnuMemoriju();
                     PodesavanjaManager.primeniPostavkeGlobalno();
                     if (typeof PodesavanjaManager.azurirajProfilOpcije === "function") {
@@ -567,9 +564,36 @@ const Game = {
                     if (typeof PodesavanjaManager.poveziStabilniProfilKljuc === "function") {
                         PodesavanjaManager.poveziStabilniProfilKljuc();
                     }
+                    if (oporavakPosleReinstalacije && typeof UIManager !== 'undefined') {
+                        UIManager.prikaziEkran('main-menu');
+                    }
                 }
             }
         );
+    },
+
+    prijaviSacuvanProfil: function() {
+        if (!this.socket || !this.socket.connected || typeof PodesavanjaManager === 'undefined') {
+            this.profilPrijavljen = false;
+            return;
+        }
+
+        if (PodesavanjaManager.profilKompletan()) {
+            this.prijaviProfilKljuc(PodesavanjaManager.postavke.profilKljuc, false);
+            return;
+        }
+
+        this.profilPrijavljen = false;
+        PodesavanjaManager.osigurajStabilniProfilKljuc().then(stabilniKljuc => {
+            if (
+                stabilniKljuc
+                && this.socket
+                && this.socket.connected
+                && !PodesavanjaManager.profilKompletan()
+            ) {
+                this.prijaviProfilKljuc(stabilniKljuc, true);
+            }
+        });
     },
 
     zapocniProveruTokenaZaSobu: function() {
@@ -1787,7 +1811,11 @@ const Game = {
             pokusaj++;
             this.socket.timeout(6000).emit(
                 'upisiIshodOnlineMeca',
-                { kodSobe, partijaId, pobeda: Boolean(pobeda) },
+                {
+                    kodSobe,
+                    partijaId,
+                    pobeda: Boolean(pobeda)
+                },
                 (greska, odgovor) => {
                     if (!greska && odgovor && odgovor.uspeh) return;
                     if (pokusaj < 3 && this.partijaId === partijaId) {
@@ -1800,16 +1828,7 @@ const Game = {
         posalji();
     },
 
-    posaljiKrajnjiRezultat: function() {
-        if (this.trenutniMod === 'multi' && this.ukupanScore > 0 && this.socket) {
-            this.socket.emit('upisiKrajnjiRezultat', this.ukupanScore);
-            this.ukupanScore = 0; 
-        }
-    },
-
     povratakUMeni: function() {
-        this.posaljiKrajnjiRezultat(); 
-        
         this.zaustaviTajmereRunde();
         if (this.antiCheatTimeout) {
             clearTimeout(this.antiCheatTimeout);

@@ -3,11 +3,11 @@
 const TopListaManager = {
     // Podaci su sada prazni jer ih čekamo sa servera
     podaci: {
-        prijatelji: { najboljiMec: [], nedeljni: [], mesecni: [], svaVremena: [] },
-        multiplayer: { najboljiMec: [], nedeljni: [], mesecni: [], svaVremena: [] }
+        globalno: { nedeljni: [], mesecni: [], svaVremena: [] },
+        prijatelji: { nedeljni: [], mesecni: [], svaVremena: [] }
     },
 
-    aktivnaGrupa: 'multiplayer', // Početni tab (Globalno)
+    aktivnaGrupa: 'globalno',
     aktivnaKategorija: 'svaVremena', // Početna kategorija
     listenerPostavljen: false,
 
@@ -21,24 +21,22 @@ const TopListaManager = {
 
         // --- TRAŽENJE NOVIH PODATAKA SA SERVERA ---
         if (typeof Game !== 'undefined' && Game.socket) {
-            Game.socket.emit('traziTopListu');
-
             // Postavljamo osluškivač samo jednom
             if (!this.listenerPostavljen) {
                 Game.socket.on('topListaOdgovor', (data) => {
                     
-                    // Jednostavna funkcija za formatiranje svih nizova
-                    const formatiraj = (niz, polje) => niz.map((igrac, index) => ({
+                    const formatiraj = (niz = [], polje) => niz.map((igrac, index) => ({
                         mesto: index + 1,
                         ime: igrac.nadimak,
                         poeni: igrac[polje]
                     }));
 
-                    // Upisujemo sveže podatke iz baze sa novim atributima
-                    this.podaci.multiplayer.najboljiMec = formatiraj(data.najboljiMec, 'najboljiMecPoeni');
-                    this.podaci.multiplayer.nedeljni = formatiraj(data.nedeljni, 'nedeljniPoeni');
-                    this.podaci.multiplayer.mesecni = formatiraj(data.mesecni, 'mesecniPoeni');
-                    this.podaci.multiplayer.svaVremena = formatiraj(data.svaVremena, 'svaVremenaPoeni');
+                    ['globalno', 'prijatelji'].forEach(grupa => {
+                        const izvor = data[grupa] || {};
+                        this.podaci[grupa].nedeljni = formatiraj(izvor.nedeljni, 'nedeljniPoeni');
+                        this.podaci[grupa].mesecni = formatiraj(izvor.mesecni, 'mesecniPoeni');
+                        this.podaci[grupa].svaVremena = formatiraj(izvor.svaVremena, 'svaVremenaPoeni');
+                    });
 
                     // Osvežavamo prikaz ako je korisnik na ovom ekranu
                     if(document.getElementById('toplista-screen').classList.contains('active')) {
@@ -47,9 +45,11 @@ const TopListaManager = {
                 });
                 this.listenerPostavljen = true;
             }
+
+            Game.socket.emit('traziTopListu');
         }
 
-        this.promeniGrupu('multiplayer');
+        this.promeniGrupu('globalno');
         this.promeniKategoriju('svaVremena');
     },
 
@@ -57,14 +57,14 @@ const TopListaManager = {
         this.aktivnaGrupa = novaGrupa;
         
         const tabPrijatelji = document.getElementById('tab-prijatelji');
-        const tabMulti = document.getElementById('tab-multiplayer');
+        const tabGlobalno = document.getElementById('tab-globalno');
 
-        if(tabPrijatelji && tabMulti) {
+        if(tabPrijatelji && tabGlobalno) {
             tabPrijatelji.style.background = (novaGrupa === 'prijatelji') ? 'rgba(56,239,125,0.3)' : 'rgba(255,255,255,0.08)';
             tabPrijatelji.style.color = (novaGrupa === 'prijatelji') ? '#38ef7d' : '#fff';
             
-            tabMulti.style.background = (novaGrupa === 'multiplayer') ? 'rgba(56,239,125,0.3)' : 'rgba(255,255,255,0.08)';
-            tabMulti.style.color = (novaGrupa === 'multiplayer') ? '#38ef7d' : '#fff';
+            tabGlobalno.style.background = (novaGrupa === 'globalno') ? 'rgba(56,239,125,0.3)' : 'rgba(255,255,255,0.08)';
+            tabGlobalno.style.color = (novaGrupa === 'globalno') ? '#38ef7d' : '#fff';
         }
 
         this.osveziPrikaz();
@@ -73,7 +73,7 @@ const TopListaManager = {
     promeniKategoriju: function(novaKat) {
         this.aktivnaKategorija = novaKat;
         
-        const kategorije = ['najboljiMec', 'nedeljni', 'mesecni', 'svaVremena'];
+        const kategorije = ['nedeljni', 'mesecni', 'svaVremena'];
         kategorije.forEach(kat => {
             const btn = document.getElementById('subtab-' + kat);
             if (btn) {
@@ -104,6 +104,13 @@ const TopListaManager = {
             return;
         }
 
+        const escapeHtml = vrednost => String(vrednost ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+
         let html = '';
         lista.forEach((igrac, index) => {
             let medalja = "";
@@ -122,7 +129,7 @@ const TopListaManager = {
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); background: ${bgRed}; border-radius: 8px;">
                     <div style="display: flex; gap: 0.8rem; align-items: center;">
                         <span style="font-size: 1.2rem;">${medalja}</span>
-                        <span style="color: ${bojaIme}; font-weight: ${fontIme}; font-size: 0.95rem;">${igrac.ime}</span>
+                        <span style="color: ${bojaIme}; font-weight: ${fontIme}; font-size: 0.95rem;">${escapeHtml(igrac.ime)}</span>
                     </div>
                     <span style="color: #f5af19; font-weight: 800; font-size: 0.95rem;">
                         ${igrac.poeni} <span style="font-size:0.7rem; color:#a0aec0; font-weight:600;">pts</span>

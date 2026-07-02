@@ -459,6 +459,12 @@ function datumLabelaBeograd(datum = new Date()) {
     return `${delovi.day}.${delovi.month}.${delovi.year}.`;
 }
 
+function datumLabelaIzId(datumId) {
+    const poklapanje = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(datumId || ""));
+    if (!poklapanje) return datumLabelaBeograd();
+    return `${poklapanje[3]}.${poklapanje[2]}.${poklapanje[1]}.`;
+}
+
 function pomeriDatumId(datumId, brojDana) {
     const poklapanje = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(datumId || ""));
     if (!poklapanje) return datumIdBeograd();
@@ -536,7 +542,7 @@ function izracunajDnevniNiz(igrac, datumId) {
 function napraviDnevniOdgovor(stanje, dodatno = {}) {
     return {
         datumId: stanje.datumId,
-        datum: stanje.datum || datumLabelaBeograd(),
+        datum: stanje.datum || datumLabelaIzId(stanje.datumId),
         vremenskaZona: VREMENSKA_ZONA_IGRE,
         zadaci: stanje.zadaci || napraviDnevneZadatke(stanje.datumId),
         status: stanje.status || "dostupan",
@@ -584,6 +590,58 @@ function prenesiCloudDnevniAkoTreba(igrac, datumId, datumLabela, zadaci) {
         migriranoIzCloudNapretka: true
     };
     return true;
+}
+
+function normalizujSnimljenoDnevnoStanje(stanje) {
+    if (!stanje || typeof stanje !== "object" || !stanje.datumId) return null;
+    const zadaci = Array.isArray(stanje.zadaci) && stanje.zadaci.length === 4
+        ? stanje.zadaci
+        : napraviDnevneZadatke(stanje.datumId);
+    return {
+        ...stanje,
+        datum: stanje.datum || datumLabelaIzId(stanje.datumId),
+        vremenskaZona: VREMENSKA_ZONA_IGRE,
+        zadaci,
+        status: stanje.status || (stanje.odigrano ? "odigrano" : "dostupan"),
+        zapoceto: Boolean(stanje.zapoceto),
+        odigrano: Boolean(stanje.odigrano),
+        pocetakIgreAt: stanje.pocetakIgreAt || null,
+        rokAt: stanje.rokAt || null,
+        rezultat: stanje.rezultat || null,
+        odgovori: stanje.odgovori || null
+    };
+}
+
+function vratiAktivniDnevniAkoTraje(igrac, sada = Date.now()) {
+    const stanje = normalizujSnimljenoDnevnoStanje(igrac.dnevniIzazov);
+    if (
+        stanje
+        && stanje.zapoceto
+        && stanje.status === "u_toku"
+        && !stanje.odigrano
+        && Number(stanje.rokAt) > sada
+    ) {
+        return stanje;
+    }
+    return null;
+}
+
+function vratiDnevnoStanjeZaZavrsetak(igrac, trazeniDatumId) {
+    const stanje = normalizujSnimljenoDnevnoStanje(igrac.dnevniIzazov);
+    if (
+        stanje
+        && trazeniDatumId
+        && stanje.datumId === trazeniDatumId
+        && (
+            stanje.zapoceto
+            || stanje.odigrano
+            || stanje.status === "u_toku"
+            || stanje.status === "odigrano"
+        )
+    ) {
+        return stanje;
+    }
+    return osigurajDnevnoStanje(igrac);
 }
 
 function osigurajDnevnoStanje(igrac, sada = new Date()) {
@@ -1860,6 +1918,11 @@ io.on('connection', (socket) => {
             }
 
             const sada = Date.now();
+            const aktivnoStanje = vratiAktivniDnevniAkoTraje(igrac, sada);
+            if (aktivnoStanje) {
+                return callback({ uspeh: true, ...napraviDnevniOdgovor(aktivnoStanje, { nastavak: true }) });
+            }
+
             let stanje = osigurajDnevnoStanje(igrac, new Date(sada));
 
             if (stanje.odigrano || stanje.status === "odigrano") {
@@ -1934,7 +1997,7 @@ io.on('connection', (socket) => {
                 return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN" });
             }
 
-            let stanje = osigurajDnevnoStanje(igrac);
+            let stanje = vratiDnevnoStanjeZaZavrsetak(igrac, podaci && podaci.datumId);
             if (stanje.odigrano || stanje.status === "odigrano") {
                 return callback({ uspeh: true, duplikat: true, ...napraviDnevniOdgovor(stanje) });
             }

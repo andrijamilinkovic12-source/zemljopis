@@ -584,6 +584,13 @@ function prenesiCloudDnevniAkoTreba(igrac, datumId, datumLabela, zadaci) {
         rezultat: {
             tacniPojmovi: Math.max(0, Number(cloudDnevni.tacniPojmovi) || 0),
             osvojenoDukata: Math.max(0, Number(cloudDnevni.osvojenoDukata) || 0),
+            x2Preuzet: Boolean(cloudDnevni.x2Preuzet),
+            x2BonusDukata: Math.max(0, Number(cloudDnevni.x2BonusDukata) || 0),
+            ukupnoDukata: Math.max(
+                0,
+                Number(cloudDnevni.ukupnoDukata)
+                || ((Number(cloudDnevni.osvojenoDukata) || 0) + (Number(cloudDnevni.x2BonusDukata) || 0))
+            ),
             dnevniNiz: Math.max(0, Number(cloudDnevni.dnevniNiz) || 0),
             izvor: "cloud-migracija"
         },
@@ -713,6 +720,13 @@ function napraviCloudNapredakSaDnevnim(igrac, stanje, dukati, kvartalStatistika 
         zadaci: stanje.zadaci,
         tacniPojmovi: Math.max(0, Number(rezultat.tacniPojmovi) || 0),
         osvojenoDukata: Math.max(0, Number(rezultat.osvojenoDukata) || 0),
+        x2Preuzet: Boolean(rezultat.x2Preuzet),
+        x2BonusDukata: Math.max(0, Number(rezultat.x2BonusDukata) || 0),
+        ukupnoDukata: Math.max(
+            0,
+            Number(rezultat.ukupnoDukata)
+            || ((Number(rezultat.osvojenoDukata) || 0) + (Number(rezultat.x2BonusDukata) || 0))
+        ),
         dnevniNiz: Math.max(0, Number(rezultat.dnevniNiz) || 0)
     };
     napredak.riznica = {
@@ -746,6 +760,9 @@ function napraviIstekliDnevniRezultat(stanje) {
         bonusPerfektno: 0,
         bonusDnevniNiz: 0,
         osvojenoDukata: 0,
+        x2Preuzet: false,
+        x2BonusDukata: 0,
+        ukupnoDukata: 0,
         dnevniNiz: 0,
         odgovori: {},
         provera: (stanje.zadaci || []).map((zadatak, index) => ({
@@ -2040,6 +2057,9 @@ io.on('connection', (socket) => {
                 bonusPerfektno,
                 bonusDnevniNiz: dnevniNiz.bonusDukata,
                 osvojenoDukata,
+                x2Preuzet: false,
+                x2BonusDukata: 0,
+                ukupnoDukata: osvojenoDukata,
                 dnevniNiz: dnevniNiz.brojDana,
                 odgovori,
                 provera,
@@ -2115,6 +2135,99 @@ io.on('connection', (socket) => {
             callback({ uspeh: true, ...odgovor });
         } catch (error) {
             console.error("Greška pri završetku dnevnog izazova:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA" });
+        }
+    });
+
+    socket.on('dnevniIzazovDuplirajNagradu', async (podaci = {}, callback = () => {}) => {
+        try {
+            let igrac = await ucitajPrijavljenogIgraca(socket);
+            if (!igrac) {
+                return callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN" });
+            }
+
+            const datumId = podaci && podaci.datumId;
+            if (!datumId) {
+                return callback({ uspeh: false, kod: "DNEVNI_DATUM_NEDOSTAJE" });
+            }
+
+            const stanje = vratiDnevnoStanjeZaZavrsetak(igrac, datumId);
+            if (stanje.datumId !== datumId || !stanje.odigrano || stanje.status !== "odigrano") {
+                return callback({ uspeh: false, kod: "DNEVNI_NIJE_ZAVRSEN" });
+            }
+
+            const rezultat = stanje.rezultat || {};
+            const osnovnaNagrada = Math.max(0, Number(rezultat.osvojenoDukata) || 0);
+            if (osnovnaNagrada < 1) {
+                return callback({ uspeh: false, kod: "NEMA_NAGRADE_ZA_X2" });
+            }
+
+            if (rezultat.x2Preuzet) {
+                return callback({
+                    uspeh: true,
+                    duplikat: true,
+                    ...napraviDnevniOdgovor(stanje, {
+                        dukati: normalizujDukate(igrac.dukati),
+                        x2BonusDukata: Math.max(0, Number(rezultat.x2BonusDukata) || 0)
+                    })
+                });
+            }
+
+            const x2BonusDukata = osnovnaNagrada;
+            const novoStanje = {
+                ...stanje,
+                rezultat: {
+                    ...rezultat,
+                    x2Preuzet: true,
+                    x2BonusDukata,
+                    ukupnoDukata: osnovnaNagrada + x2BonusDukata,
+                    x2PreuzetoAt: Date.now()
+                }
+            };
+            const noviDukati = normalizujDukate((igrac.dukati || 0) + x2BonusDukata, x2BonusDukata);
+
+            const azuriranIgrac = await Igrac.findOneAndUpdate(
+                {
+                    _id: igrac._id,
+                    "dnevniIzazov.datumId": datumId,
+                    "dnevniIzazov.odigrano": true,
+                    "dnevniIzazov.status": "odigrano",
+                    "dnevniIzazov.rezultat.x2Preuzet": { $ne: true }
+                },
+                {
+                    $set: {
+                        dnevniIzazov: novoStanje,
+                        cloudNapredak: napraviCloudNapredakSaDnevnim(igrac, novoStanje, noviDukati)
+                    },
+                    $inc: { dukati: x2BonusDukata }
+                },
+                { returnDocument: 'after' }
+            );
+
+            if (!azuriranIgrac) {
+                const osvezenIgrac = await Igrac.findById(igrac._id);
+                const osvezenoStanje = osvezenIgrac
+                    ? vratiDnevnoStanjeZaZavrsetak(osvezenIgrac, datumId)
+                    : stanje;
+                return callback({
+                    uspeh: Boolean(osvezenoStanje.rezultat && osvezenoStanje.rezultat.x2Preuzet),
+                    duplikat: Boolean(osvezenoStanje.rezultat && osvezenoStanje.rezultat.x2Preuzet),
+                    kod: osvezenoStanje.rezultat && osvezenoStanje.rezultat.x2Preuzet ? undefined : "DNEVNI_X2_NIJE_UPISAN",
+                    ...napraviDnevniOdgovor(osvezenoStanje, {
+                        dukati: osvezenIgrac ? normalizujDukate(osvezenIgrac.dukati) : normalizujDukate(igrac.dukati)
+                    })
+                });
+            }
+
+            callback({
+                uspeh: true,
+                ...napraviDnevniOdgovor(novoStanje, {
+                    dukati: normalizujDukate(azuriranIgrac.dukati),
+                    x2BonusDukata
+                })
+            });
+        } catch (error) {
+            console.error("Greška pri x2 dnevnoj nagradi:", error);
             callback({ uspeh: false, kod: "GRESKA_SERVERA" });
         }
     });

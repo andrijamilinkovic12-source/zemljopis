@@ -24,6 +24,8 @@ const DnevniIzazovManager = {
     rokAt: null,
     introTajmer: null,
     introTrajanjeMs: 5200,
+    x2PreuzimanjeUToku: false,
+    poslednjiRezultat: null,
 
     init: function() {
         this.ucitajLokalnoStanje();
@@ -413,6 +415,7 @@ const DnevniIzazovManager = {
 
             this.primeniServerStanje(odgovor);
             const rezultat = odgovor.rezultat || {};
+            this.poslednjiRezultat = rezultat;
             this.obojiPoljaPoServeru(rezultat.provera);
             this.azurirajLokalneNagrade(odgovor);
 
@@ -431,12 +434,18 @@ const DnevniIzazovManager = {
         }
     },
 
-    prikaziRezultat: function(rezultat) {
+    napraviRezultatPoruku: function(rezultat, statusTekst = "") {
         const ukupnoTacnih = Math.max(0, Number(rezultat.tacniPojmovi) || 0);
         const osvojenoDukata = Math.max(0, Number(rezultat.osvojenoDukata) || 0);
         const bonusPerfektno = Math.max(0, Number(rezultat.bonusPerfektno) || 0);
         const bonusDnevniNiz = Math.max(0, Number(rezultat.bonusDnevniNiz) || 0);
         const dnevniNiz = Math.max(0, Number(rezultat.dnevniNiz) || 0);
+        const x2Preuzet = Boolean(rezultat.x2Preuzet);
+        const x2BonusDukata = Math.max(0, Number(rezultat.x2BonusDukata) || 0);
+        const ukupnoDukata = Math.max(
+            osvojenoDukata + x2BonusDukata,
+            Number(rezultat.ukupnoDukata) || 0
+        );
 
         let poruka = `Pronašao/la si <b>${ukupnoTacnih}/4</b> tačnih pojmova.<br><br>`;
 
@@ -448,21 +457,131 @@ const DnevniIzazovManager = {
                 poruka += `Dnevni niz (${dnevniNiz} dana): <b style="color:#38ef7d;">+${bonusDnevniNiz}</b><br>`;
             }
             poruka += `Osvojena nagrada: <br><b style="color:#f5af19; font-size:1.5rem; text-shadow: 0 0 10px rgba(245,175,25,0.4);">+${osvojenoDukata} <i class="fa-solid fa-coins"></i></b>`;
+
+            if (x2Preuzet) {
+                poruka += `<span class="dnevni-result-total">x2 bonus: <b>+${x2BonusDukata}</b><br>Ukupno preuzeto: <b>${ukupnoDukata} <i class="fa-solid fa-coins"></i></b></span>`;
+            } else {
+                poruka += `
+                    <span class="dnevni-result-actions">
+                        <button type="button" id="dnevni-x2-btn" class="dnevni-result-x2-btn">
+                            <i class="fa-solid fa-clapperboard" aria-hidden="true"></i>
+                            <span>x2 nagrada</span>
+                        </button>
+                    </span>
+                `;
+            }
         } else {
             poruka += rezultat.razlog === "isteklo_vreme"
                 ? `Vreme je isteklo pre predaje odgovora. Vrati se sutra za novi izazov.`
                 : `Nažalost, nisi uspeo/la da osvojiš dukate. Više sreće sutra!`;
         }
 
+        poruka += `<span id="dnevni-x2-status" class="dnevni-result-status">${statusTekst || ""}</span>`;
+        return poruka;
+    },
+
+    poveziDnevniX2Dugme: function() {
+        const dugme = document.getElementById('dnevni-x2-btn');
+        if (!dugme) return;
+
+        dugme.disabled = this.x2PreuzimanjeUToku;
+        dugme.addEventListener('click', () => this.duplirajDnevnuNagradu());
+    },
+
+    postaviDnevniX2Status: function(tekst, zauzeto = false) {
+        const status = document.getElementById('dnevni-x2-status');
+        const dugme = document.getElementById('dnevni-x2-btn');
+        if (status) status.textContent = tekst || "";
+        if (dugme) dugme.disabled = Boolean(zauzeto);
+    },
+
+    osveziDnevniRezultatModal: function(rezultat, statusTekst = "") {
+        this.poslednjiRezultat = {
+            ...(this.poslednjiRezultat || {}),
+            ...(rezultat || {})
+        };
+
+        const porukaEl = document.getElementById('modal-message');
+        if (!porukaEl) return;
+
+        porukaEl.innerHTML = this.napraviRezultatPoruku(this.poslednjiRezultat, statusTekst);
+        this.poveziDnevniX2Dugme();
+    },
+
+    duplirajDnevnuNagradu: function() {
+        if (this.x2PreuzimanjeUToku) return;
+
+        const rezultat = this.poslednjiRezultat || (this.dnevniPodaci && this.dnevniPodaci.rezultat) || {};
+        const osvojenoDukata = Math.max(0, Number(rezultat.osvojenoDukata) || 0);
+        if (!this.dnevniPodaci || osvojenoDukata < 1 || rezultat.x2Preuzet) {
+            this.postaviDnevniX2Status("x2 nagrada nije dostupna za ovaj rezultat.", false);
+            return;
+        }
+
+        if (typeof TokeniManager === 'undefined' || typeof TokeniManager.prikaziReklamu !== 'function') {
+            this.postaviDnevniX2Status("Reward reklama trenutno nije spremna.", false);
+            return;
+        }
+
+        this.x2PreuzimanjeUToku = true;
+        this.postaviDnevniX2Status("Pripremam reward reklamu...", true);
+
+        const pokrenuto = TokeniManager.prikaziReklamu('rewarded', {
+            naslov: 'X2 DNEVNA NAGRADA',
+            opis: 'Odgledaj reklamu do kraja da dupliraš dnevnu nagradu.',
+            onUspeh: async () => {
+                try {
+                    this.postaviDnevniX2Status("Upisujem x2 nagradu na server...", true);
+                    const odgovor = await this.pozoviServer('dnevniIzazovDuplirajNagradu', {
+                        datumId: this.dnevniPodaci.datumId
+                    });
+
+                    if (!odgovor.uspeh) {
+                        throw new Error(odgovor.kod || 'DNEVNI_X2_NEUSPEO');
+                    }
+
+                    this.primeniServerStanje(odgovor);
+                    this.azurirajLokalneNagrade(odgovor);
+                    const noviRezultat = odgovor.rezultat || {
+                        ...rezultat,
+                        x2Preuzet: true,
+                        x2BonusDukata: odgovor.x2BonusDukata || osvojenoDukata,
+                        ukupnoDukata: osvojenoDukata + (odgovor.x2BonusDukata || osvojenoDukata)
+                    };
+                    const bonus = Math.max(0, Number(noviRezultat.x2BonusDukata) || 0);
+
+                    this.x2PreuzimanjeUToku = false;
+                    this.osveziDnevniRezultatModal(noviRezultat, `x2 nagrada preuzeta: +${bonus} dukata.`);
+                } catch (error) {
+                    this.x2PreuzimanjeUToku = false;
+                    this.postaviDnevniX2Status("Server nije upisao x2 nagradu. Pokušaj ponovo dok je rezultat otvoren.", false);
+                }
+            },
+            onNeuspeh: (poruka) => {
+                this.x2PreuzimanjeUToku = false;
+                this.postaviDnevniX2Status(poruka || "Reklama nije završena, x2 nije preuzet.", false);
+            }
+        });
+
+        if (!pokrenuto) {
+            this.x2PreuzimanjeUToku = false;
+            this.postaviDnevniX2Status("Reward reklama trenutno nije dostupna.", false);
+        }
+    },
+
+    prikaziRezultat: function(rezultat) {
+        this.poslednjiRezultat = rezultat || {};
+        this.x2PreuzimanjeUToku = false;
+
         UIManager.prikaziObavestenje(
             "Dnevni Izazov Završen!",
-            poruka,
+            this.napraviRezultatPoruku(this.poslednjiRezultat),
             () => {
                 UIManager.prikaziEkran('main-menu');
-                UIManager.zatvoriObavestenje();
             },
-            "Nazad u Meni"
+            "Preuzmi nagradu i izađi"
         );
+        this.poveziDnevniX2Dugme();
     }
 };
 

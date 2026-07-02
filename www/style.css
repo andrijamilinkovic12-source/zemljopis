@@ -1614,6 +1614,59 @@ body.keyboard-open .dnevni-input-group input {
 .modal-content h2 { color: #38ef7d; margin-bottom: 1rem; font-size: 1.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
 .modal-content p { color: #cbd5e0; margin-bottom: 2rem; font-size: 1.05rem; line-height: 1.5; }
 .modal-content .menu-btn { margin-bottom: 0; }
+.modal-content { max-height: calc(100% - 2rem); overflow-y: auto; scrollbar-width: none; }
+.modal-content::-webkit-scrollbar { display: none; }
+
+.dnevni-result-total {
+    display: block;
+    margin: 0.75rem auto 0;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid rgba(245, 175, 25, 0.28);
+    background: rgba(245, 175, 25, 0.09);
+    color: #fff7bf;
+    font-size: 0.95rem;
+    line-height: 1.35;
+}
+
+.dnevni-result-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.85rem;
+}
+
+.dnevni-result-x2-btn {
+    width: min(100%, 230px);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border: 1px solid rgba(255, 247, 191, 0.58);
+    border-radius: 10px;
+    background: linear-gradient(45deg, #f5af19, #38ef7d);
+    color: #06151a;
+    font-size: 0.95rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(245, 175, 25, 0.28);
+}
+
+.dnevni-result-x2-btn:disabled {
+    cursor: wait;
+    opacity: 0.65;
+    filter: grayscale(0.2);
+}
+
+.dnevni-result-status {
+    display: block;
+    min-height: 1.2rem;
+    margin-top: 0.55rem;
+    color: #fff7bf;
+    font-size: 0.84rem;
+    line-height: 1.3;
+}
 
 /* --- SPLASH / LOADING EKRAN (Slovo po slovo sa ikonicama) --- */
 #splash-screen { 
@@ -3674,6 +3727,23 @@ body[data-tema] #private-room-setup > div > div {
 
 body[data-tema] .modal-content {
     background: var(--theme-panel-strong);
+}
+
+body[data-tema] .dnevni-result-total {
+    background: rgba(var(--theme-accent-rgb), 0.1);
+    border-color: rgba(var(--theme-accent-rgb), 0.32);
+    color: var(--theme-text);
+}
+
+body[data-tema] .dnevni-result-x2-btn {
+    background: var(--theme-primary-gradient);
+    color: var(--theme-on-primary);
+    border-color: rgba(255, 255, 255, 0.42);
+    box-shadow: var(--theme-primary-shadow);
+}
+
+body[data-tema] .dnevni-result-status {
+    color: var(--theme-muted);
 }
 
 body[data-tema] .modal-content p,

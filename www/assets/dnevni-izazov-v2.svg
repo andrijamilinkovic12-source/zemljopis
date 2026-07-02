@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" aria-hidden="true">
+  <defs>
+    <linearGradient id="daily-v2-ring" x1="12" y1="9" x2="84" y2="88" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="0.42" stop-color="#38ef7d"/>
+      <stop offset="1" stop-color="#f5af19"/>
+    </linearGradient>
+    <linearGradient id="daily-v2-face" x1="24" y1="20" x2="73" y2="78" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#102a37"/>
+      <stop offset="1" stop-color="#06151a"/>
+    </linearGradient>
+    <linearGradient id="daily-v2-gold" x1="31" y1="25" x2="70" y2="73" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff7bf"/>
+      <stop offset="1" stop-color="#f5af19"/>
+    </linearGradient>
+    <filter id="daily-v2-glow" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="2.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <circle cx="48" cy="48" r="40" fill="#06151a" fill-opacity="0.9" stroke="url(#daily-v2-ring)" stroke-width="5" filter="url(#daily-v2-glow)"/>
+  <circle cx="48" cy="48" r="30" fill="url(#daily-v2-face)" stroke="#d9ffe8" stroke-width="2.2" opacity="0.95"/>
+
+  <g opacity="0.72" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" fill="none">
+    <path d="M22 48h52"/>
+    <path d="M48 22c-8 8-12 17-12 26s4 18 12 26c8-8 12-17 12-26S56 30 48 22Z"/>
+    <path d="M28 35c9 5 31 5 40 0M28 61c9-5 31-5 40 0"/>
+  </g>
+
+  <g filter="url(#daily-v2-glow)">
+    <path d="M51 17l6 22 20 7-19 8-7 20-8-20-22-8 22-7Z" fill="url(#daily-v2-gold)" stroke="#fff7bf" stroke-width="1.5" stroke-linejoin="round"/>
+    <circle cx="51" cy="47" r="5.2" fill="#06151a" stroke="#d9ffe8" stroke-width="2"/>
+  </g>
+
+  <g transform="translate(57 8)">
+    <rect x="0" y="5" width="27" height="28" rx="7" fill="#081d19" stroke="#38ef7d" stroke-width="2.8"/>
+    <path d="M6 3v7M21 3v7M4 14h19" fill="none" stroke="#fff7bf" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="13.5" cy="23" r="5.2" fill="#f5af19"/>
+    <path d="M13.5 20v3.2l2.4 1.4" fill="none" stroke="#06151a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g transform="translate(16 59)">
+    <path d="M0 10c5-10 15-12 23-7 5 3 6 9 2 13-4 4-12 3-17 1-4-2-7-1-10 2 0-3 0-6 2-9Z" fill="#38ef7d" opacity="0.88"/>
+    <path d="M25 15c5-2 11 0 13 6-5 5-12 7-19 4 0-5 2-8 6-10Z" fill="#38bdf8" opacity="0.82"/>
+  </g>
+</svg>

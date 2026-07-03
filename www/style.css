@@ -1342,6 +1342,29 @@ body[data-tema="svetla"] #postavke-nadimak {
 .bottom-half:active { background: rgba(245, 175, 25, 0.5); }
 .bottom-half i { color: #f5af19; text-shadow: 0 0 10px rgba(245,175,25,0.5); }
 
+.big-mode-icon {
+    width: min(3.2rem, 15vw);
+    height: min(3.2rem, 15vw);
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(56, 239, 125, 0.35));
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.top-half .big-mode-icon {
+    margin-bottom: 5px;
+}
+
+.bottom-half .big-mode-icon {
+    margin-top: 5px;
+    filter: drop-shadow(0 0 12px rgba(245, 175, 25, 0.34));
+}
+
+.circle-half:active .big-mode-icon {
+    transform: scale(0.92) rotate(-5deg);
+    filter: drop-shadow(0 0 16px rgba(245, 175, 25, 0.5));
+}
+
 .circle-divider {
     height: 2px;
     width: 100%;

@@ -531,18 +531,23 @@
     </div>
 
     <div id="game-board" class="screen">
-        <div class="game-header">
+        <div class="game-header" role="group" aria-label="Kontrolni panel runde">
             <div class="game-info-left">
                 <div id="mode-indicator" class="mode-badge badge-multi">MULTIPLAYER</div>
                 <span class="stat-value">Runda <span id="round-number">1</span>/6</span>
             </div>
-            <div class="timer" id="timer-display">02:00</div>
-            <button class="btn-close" onclick="Game.zatraziIzlazIzMeca()"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        
-        <div class="current-letter">
-            <span style="font-size: 0.85rem; font-weight: 600; color: #a0aec0; margin-bottom: 5px; text-shadow: none;">ZADATO SLOVO</span>
-            <span id="target-letter">A</span>
+
+            <div class="current-letter" aria-label="Zadato slovo">
+                <small class="game-control-label">Zadato slovo</small>
+                <span id="target-letter">A</span>
+            </div>
+
+            <div class="game-timer-wrap">
+                <small class="game-control-label">Vreme</small>
+                <div class="timer" id="timer-display" aria-live="polite">02:00</div>
+            </div>
+
+            <button class="btn-close" onclick="Game.zatraziIzlazIzMeca()" aria-label="Napusti meč"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
         </div>
 
         <div class="inputs-container">

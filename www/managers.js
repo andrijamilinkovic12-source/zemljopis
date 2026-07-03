@@ -615,8 +615,14 @@ const UIManager = {
     azurirajLiveStatistiku: function(trenutniSkor, mod, podaciProtivnika = []) {
         // Prikaz tvog skora.
         if (mod === 'solo') {
-            document.getElementById('my-player-score').innerText = trenutniSkor + ' pts';
+            const tacniOdgovori = Math.max(0, Number(trenutniSkor) || 0);
+            document.getElementById('my-player-name').innerText = 'Tačni odgovori';
+            document.getElementById('my-player-score').innerText = `${tacniOdgovori}/42`;
         } else {
+            const mojeIme = typeof PodesavanjaManager !== 'undefined'
+                ? PodesavanjaManager.postavke.nadimak || 'Gost'
+                : 'Gost';
+            document.getElementById('my-player-name').innerText = `👤 Ti (${mojeIme})`;
             document.getElementById('my-player-score').innerText = trenutniSkor;
         }
         

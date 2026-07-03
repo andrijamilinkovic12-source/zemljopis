@@ -60,8 +60,29 @@ const Game = {
                     clearTimeout(this.antiCheatTimeout);
                     this.antiCheatTimeout = null;
                 }
+                this.proveriIstekSoloRundePoRealnomVremenu();
             }
         });
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('focus', () => this.proveriIstekSoloRundePoRealnomVremenu());
+            window.addEventListener('pageshow', () => this.proveriIstekSoloRundePoRealnomVremenu());
+
+            const capacitorApp = window.Capacitor
+                && window.Capacitor.Plugins
+                && window.Capacitor.Plugins.App;
+            if (capacitorApp && typeof capacitorApp.addListener === 'function') {
+                try {
+                    capacitorApp.addListener('appStateChange', (stanje = {}) => {
+                        if (stanje.isActive !== false) {
+                            this.proveriIstekSoloRundePoRealnomVremenu();
+                        }
+                    });
+                } catch (error) {
+                    console.warn('Capacitor appStateChange listener nije dostupan:', error);
+                }
+            }
+        }
 
         // Uvod ostaje kao ulazni ekran dok korisnik ne izabere Google ili gosta.
         setTimeout(() => {
@@ -461,6 +482,33 @@ const Game = {
         this.tajmerPregledaRunde = null;
         this.rafPocetkaRunde = null;
         this.krajRundeAt = 0;
+    },
+
+    proveriIstekSoloRundePoRealnomVremenu: function() {
+        if (
+            !this.rundaUToku
+            || this.trenutniMod !== 'solo'
+            || !this.krajRundeAt
+        ) {
+            return false;
+        }
+
+        const sada = Date.now();
+        const preostalo = Math.max(0, Math.ceil((this.krajRundeAt - sada) / 1000));
+
+        if (preostalo !== this.preostaloVreme) {
+            this.preostaloVreme = preostalo;
+            UIManager.azurirajTajmer(this.preostaloVreme);
+        }
+
+        if (sada >= this.krajRundeAt) {
+            clearInterval(this.tajmerInterval);
+            this.tajmerInterval = null;
+            this.zavrsiRundu(true);
+            return true;
+        }
+
+        return false;
     },
 
     uskladiVremeIzDogadjaja: function(podaci = {}) {
@@ -1126,7 +1174,9 @@ const Game = {
             input.disabled = true;
         });
         
-        let prikazRezultata = this.ukupanScore;
+        let prikazRezultata = this.trenutniMod === 'solo'
+            ? this.ukupnoTacnihOdgovora
+            : this.ukupanScore;
         let arrayZaLiveStatistiku = Object.values(this.rezultatiProtivnika).map(p => ({ ime: p.ime, poeni: p.poeni }));
         UIManager.azurirajLiveStatistiku(prikazRezultata, this.trenutniMod, arrayZaLiveStatistiku.length > 0 ? arrayZaLiveStatistiku : this.brojIgracaUSobi);
         
@@ -1211,6 +1261,8 @@ const Game = {
 
         if (this.antiCheatTimeout) { clearTimeout(this.antiCheatTimeout); this.antiCheatTimeout = null; }
         clearInterval(this.tajmerInterval);
+        this.tajmerInterval = null;
+        this.krajRundeAt = 0;
         
         if (typeof KeyboardManager !== 'undefined') {
             KeyboardManager.hideKeyboard();
@@ -1223,7 +1275,7 @@ const Game = {
         if (this.trenutniMod === 'solo') {
             let tacnihOveRunde = 0; 
             let pregledIgraca = {
-                'ja': { ime: `👤 ${mojNadimak}`, ukupnoPoena: 0, odgovori: [], isMe: true }
+                'ja': { ime: `👤 ${mojNadimak}`, ukupnoPoena: 0, ukupnoTacnih: 0, odgovori: [], isMe: true }
             };
             
             inputs.forEach(input => {
@@ -1239,26 +1291,15 @@ const Game = {
                     kategorija: nazivKategorije,
                     odgovor: mojOdgovor || "-",
                     boja: isCorrect ? 'green' : 'red',
-                    poeni: isCorrect ? '+10' : '0'
+                    poeni: isCorrect ? 'TAČNO' : 'NETAČNO'
                 });
             });
 
-            const bonusPerfektneRunde = tacnihOveRunde === 7 ? 20 : 0;
-            const poeniOveRunde = (tacnihOveRunde * 10) + bonusPerfektneRunde;
-            pregledIgraca['ja'].ukupnoPoena = poeniOveRunde;
-
-            if (bonusPerfektneRunde > 0) {
-                pregledIgraca['ja'].odgovori.push({
-                    kategorija: "Bonus",
-                    odgovor: "Perfektna runda",
-                    boja: 'green',
-                    poeni: `+${bonusPerfektneRunde}`
-                });
-            }
+            pregledIgraca['ja'].ukupnoPoena = tacnihOveRunde;
+            pregledIgraca['ja'].ukupnoTacnih = tacnihOveRunde;
 
             this.ukupnoTacnihOdgovora += tacnihOveRunde;
-            this.ukupanScore += poeniOveRunde;
-            UIManager.azurirajLiveStatistiku(this.ukupanScore, this.trenutniMod, []);
+            UIManager.azurirajLiveStatistiku(this.ukupnoTacnihOdgovora, this.trenutniMod, []);
             
             if (typeof TrofejiManager !== 'undefined') {
                 TrofejiManager.azurirajNapredak('pojmovi', tacnihOveRunde);
@@ -1498,7 +1539,12 @@ const Game = {
         
         const carousel = document.getElementById('summary-carousel');
         const leaderboardContainer = document.getElementById('round-leaderboard-container');
+        const swipeHint = document.getElementById('summary-swipe-hint');
         carousel.innerHTML = '';
+        carousel.classList.toggle('solo-summary-carousel', this.trenutniMod === 'solo');
+        if (swipeHint) {
+            swipeHint.style.display = this.trenutniMod === 'solo' ? 'none' : 'block';
+        }
 
         let sviIgraci = Object.values(pregledIgraca);
         sviIgraci.sort((a, b) => (a.isMe === b.isMe) ? 0 : a.isMe ? -1 : 1);
@@ -1542,17 +1588,34 @@ const Game = {
         }
 
         sviIgraci.forEach(igrac => {
+            if (this.trenutniMod === 'solo') {
+                carousel.innerHTML += `
+                    <div class="summary-card solo-summary-card">
+                        <h3>SOLO RUNDA ${this.trenutnaRunda}</h3>
+                        <div class="solo-round-result" role="status" aria-live="polite">
+                            <span>${tacnihOveRunde}/7</span>
+                            <small>tačnih odgovora u ovoj rundi</small>
+                        </div>
+                        <p class="solo-round-total">Ukupno: <b>${this.ukupnoTacnihOdgovora}/42</b></p>
+                    </div>
+                `;
+                return;
+            }
+
             let listHtml = '';
             igrac.odgovori.forEach(odg => {
                 let colorHex = '#ff416c'; 
                 if (odg.boja === 'green') colorHex = '#38ef7d'; 
                 else if (odg.boja === 'yellow') colorHex = '#f5af19'; 
 
+                const statusBadge = this.trenutniMod === 'solo'
+                    ? (odg.boja === 'green' ? 'TAČNO' : 'NETAČNO')
+                    : odg.poeni;
                 listHtml += `
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: min(0.35rem, 0.7vh) 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
                         <span style="font-size: min(0.65rem, 1.3vh); color: #a0aec0; width: 30%; text-transform: uppercase;">${odg.kategorija}</span>
                         <span style="font-size: min(0.85rem, 1.7vh); font-weight: 800; color: ${colorHex}; flex: 1; text-align: left; padding-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">${odg.odgovor}</span>
-                        <span style="font-size: min(0.75rem, 1.5vh); font-weight: 800; color: ${colorHex}; background: rgba(0,0,0,0.3); padding: min(0.15rem, 0.3vh) min(0.3rem, 0.6vw); border-radius: 6px;">${odg.poeni}</span>
+                        <span style="font-size: min(0.72rem, 1.45vh); font-weight: 800; color: ${colorHex}; background: rgba(0,0,0,0.3); padding: min(0.15rem, 0.3vh) min(0.3rem, 0.6vw); border-radius: 6px;">${statusBadge}</span>
                     </div>
                 `;
             });
@@ -1561,7 +1624,7 @@ const Game = {
                 <div class="summary-card">
                     <h3>${igrac.ime}</h3>
                     <p style="text-align: center; color: #38ef7d; font-weight: 800; font-size: min(0.9rem, 1.8vh); margin-bottom: min(0.3rem, 0.6vh); padding-bottom: min(0.3rem, 0.6vh); border-bottom: 1px solid rgba(56,239,125,0.2);">
-                        ${this.trenutniMod === 'solo' ? `Pronađeno: ${tacnihOveRunde}/7 | +${igrac.ukupnoPoena} pts` : `Osvojeno: +${igrac.ukupnoPoena} pts`}
+                        ${this.trenutniMod === 'solo' ? `Tačno u rundi: ${tacnihOveRunde}/7` : `Osvojeno: +${igrac.ukupnoPoena} pts`}
                     </p>
                     <div style="flex: 1; overflow-y: auto; scrollbar-width: none;">
                         ${listHtml}
@@ -1716,7 +1779,7 @@ const Game = {
         } else {
             UIManager.prikaziObavestenje(
                 "Kraj treninga!", 
-                `Svaka čast, <b>${mojNadimak}</b>! Završio/la si svih 6 rundi.<br><br>Tačni pojmovi: <b style="color:#38ef7d; font-size:1.2rem;">${this.ukupnoTacnihOdgovora} / 42</b><br>Poeni: <b style="color:#f5af19; font-size:1.2rem;">${this.ukupanScore}</b>`,
+                `Svaka čast, <b>${mojNadimak}</b>! Završio/la si svih 6 rundi.<br><br>Tačni odgovori: <b style="color:#38ef7d; font-size:1.2rem;">${this.ukupnoTacnihOdgovora} / 42</b>`,
                 () => this.povratakUMeni(),
                 "Završi" 
             );
@@ -1724,25 +1787,42 @@ const Game = {
     },
 
     pokreniTajmer: function(sekunde) {
+        sekunde = Math.max(0, Math.floor(Number(sekunde) || 0));
+        this.krajRundeAt = Date.now() + (sekunde * 1000);
         this.preostaloVreme = sekunde;
         clearInterval(this.tajmerInterval);
         UIManager.azurirajTajmer(this.preostaloVreme);
 
-        this.tajmerInterval = setInterval(() => {
-            this.preostaloVreme--;
-            UIManager.azurirajTajmer(this.preostaloVreme);
+        const osvezi = () => {
+            if (!this.rundaUToku) return;
 
-            if (this.preostaloVreme <= 0) {
-                this.zavrsiRundu(true); 
+            const sada = Date.now();
+            const preostalo = Math.max(0, Math.ceil((this.krajRundeAt - sada) / 1000));
+
+            if (preostalo !== this.preostaloVreme) {
+                this.preostaloVreme = preostalo;
+                UIManager.azurirajTajmer(this.preostaloVreme);
             }
-        }, 1000);
+
+            if (sada >= this.krajRundeAt) {
+                clearInterval(this.tajmerInterval);
+                this.tajmerInterval = null;
+                this.zavrsiRundu(true);
+            }
+        };
+
+        osvezi();
+        if (this.rundaUToku) {
+            this.tajmerInterval = setInterval(osvezi, 250);
+        }
     },
 
     pokreniTajmerDoServerskogRoka: function(krajRundeAt) {
         clearInterval(this.tajmerInterval);
+        this.krajRundeAt = Number(krajRundeAt) || 0;
 
         const osvezi = () => {
-            const preostalo = Math.max(0, Math.ceil((krajRundeAt - this.serverSada()) / 1000));
+            const preostalo = Math.max(0, Math.ceil((this.krajRundeAt - this.serverSada()) / 1000));
             if (preostalo !== this.preostaloVreme) {
                 this.preostaloVreme = preostalo;
                 UIManager.azurirajTajmer(this.preostaloVreme);
@@ -1941,7 +2021,7 @@ const Game = {
         if (this.trenutniMod === 'solo') {
             UIManager.prikaziPotvrdu(
                 "Napusti igru?",
-                "Da li si siguran da želiš da napustiš solo partiju?<br><br>Tvoj trenutni rezultat iz ove partije neće biti sačuvan.",
+                "Da li si siguran da želiš da napustiš solo partiju?<br><br>Nezavršena runda neće biti upisana. Već završene runde ostaju sačuvane u kvartalnom nivou.",
                 () => this.povratakUMeni(),
                 "Napusti igru",
                 "Ostani"

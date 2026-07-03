@@ -1608,20 +1608,27 @@ body[data-tema="svetla"] #postavke-nadimak {
 /* --- TABLA ZA IGRU --- */
 .game-header {
     position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) 36px;
+    display: flex;
+    justify-content: center;
     align-items: center;
-    gap: clamp(0.4rem, 2vw, 1rem);
-    min-height: 64px;
-    padding: 0.5rem clamp(0.65rem, 3vw, 1rem);
-    background: linear-gradient(135deg, rgba(7, 18, 14, 0.92), rgba(5, 12, 10, 0.78));
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    gap: clamp(0.45rem, 2vw, 1rem);
+    min-height: 68px;
+    padding: 0.58rem clamp(0.72rem, 3vw, 1.05rem);
+    background: linear-gradient(135deg, rgba(7, 18, 14, 0.96), rgba(5, 12, 10, 0.82));
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-top: 0;
-    border-radius: 0 0 16px 16px;
-    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.22), inset 0 1px rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(14px);
+    border-radius: 0 0 18px 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28), inset 0 1px rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
 }
-.game-info-left { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; }
+#game-board .game-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-areas: "meta letter timer";
+    justify-content: normal;
+    padding-right: clamp(3rem, 11vw, 3.6rem);
+}
+.game-info-left { grid-area: meta; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; }
 .mode-badge { font-size: 0.6rem; padding: 0.2rem 0.4rem; border-radius: 6px; text-transform: uppercase; font-weight: 800; display: inline-block; width: max-content; }
 .badge-multi { background: #11998e; color: white; } 
 .badge-solo { background: #f5af19; color: black; }
@@ -1638,6 +1645,7 @@ body[data-tema="svetla"] #postavke-nadimak {
     white-space: nowrap;
 }
 .game-timer-wrap {
+    grid-area: timer;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -1667,8 +1675,19 @@ body[data-tema="svetla"] #postavke-nadimak {
     background: #ff416c;
     color: #fff !important;
 }
+.game-header > .btn-close {
+    position: absolute;
+    right: clamp(0.55rem, 2.5vw, 0.85rem);
+    top: 50%;
+    transform: translateY(-50%);
+}
+.game-header > .btn-close:active {
+    transform: translateY(-50%) scale(0.85);
+}
 
 .current-letter {
+    grid-area: letter;
+    justify-self: center;
     min-width: clamp(66px, 21vw, 92px);
     padding: 0.34rem clamp(0.55rem, 3vw, 0.9rem);
     display: flex;
@@ -1683,6 +1702,10 @@ body[data-tema="svetla"] #postavke-nadimak {
 }
 .current-letter span { font-size: clamp(1.35rem, 6vw, 1.75rem); font-weight: 900; color: #38ef7d; text-shadow: 0 0 10px rgba(56, 239, 125, 0.3); line-height: 0.9; }
 
+#game-board.solo-mode-active .game-header {
+    background: linear-gradient(135deg, rgba(22, 15, 4, 0.96), rgba(10, 12, 16, 0.86));
+    border-color: rgba(245, 175, 25, 0.24);
+}
 .solo-mode-active .current-letter span { color: #f5af19; text-shadow: 0 0 10px rgba(245, 175, 25, 0.3); }
 .solo-mode-active .input-group input:focus { border-color: #f5af19; }
 
@@ -2344,16 +2367,84 @@ body.keyboard-open .dnevni-input-group input {
     }
 }
 
-/* --- SMANJEN PANEL ZA STATISTIKU U IGRI --- */
-.stats-panel { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(56, 239, 125, 0.15); border-radius: 12px; padding: clamp(0.3rem, 1vh, 0.5rem); margin-top: auto; margin-bottom: 0.2rem; }
-.stats-header { font-size: 0.7rem; color: #38ef7d; text-transform: uppercase; font-weight: 800; margin-bottom: 0.3rem; text-align: center; letter-spacing: 1px; }
+/* --- PANEL ZA STATISTIKU U IGRI --- */
+.stats-panel {
+    background: linear-gradient(145deg, rgba(5, 13, 11, 0.82), rgba(9, 19, 23, 0.72));
+    border: 1px solid rgba(56, 239, 125, 0.18);
+    border-radius: 14px;
+    padding: clamp(0.42rem, 1.1vh, 0.62rem);
+    margin-top: auto;
+    margin-bottom: 0.2rem;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22), inset 0 1px rgba(255, 255, 255, 0.04);
+}
+.stats-header {
+    font-size: 0.72rem;
+    color: #38ef7d;
+    text-transform: uppercase;
+    font-weight: 900;
+    margin-bottom: 0.38rem;
+    text-align: center;
+    letter-spacing: 1.2px;
+}
 
-.current-player { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0.6rem; background: rgba(56, 239, 125, 0.1); border: 1px solid rgba(56, 239, 125, 0.3); border-radius: 8px; margin-bottom: 0.3rem; font-size: 0.8rem; color: #fff; font-weight: 600; }
-.current-player .player-score { background: #38ef7d; color: #000; padding: 0.1rem 0.5rem; border-radius: 6px; font-weight: 800; }
+.current-player {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.42rem 0.68rem;
+    background: rgba(56, 239, 125, 0.11);
+    border: 1px solid rgba(56, 239, 125, 0.32);
+    border-radius: 10px;
+    margin-bottom: 0.3rem;
+    font-size: 0.8rem;
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+}
+.current-player .player-score {
+    min-width: 4.4rem;
+    text-align: center;
+    background: #38ef7d;
+    color: #000;
+    padding: 0.16rem 0.55rem;
+    border-radius: 8px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+}
+.solo-mode-active .stats-panel {
+    border-color: rgba(245, 175, 25, 0.26);
+    background: linear-gradient(145deg, rgba(24, 17, 7, 0.84), rgba(8, 12, 16, 0.74));
+}
+.solo-mode-active .stats-header { color: #f5af19; }
+.solo-mode-active .current-player {
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.25rem;
+    background: rgba(245, 175, 25, 0.1);
+    border-color: rgba(245, 175, 25, 0.32);
+}
+.solo-mode-active .current-player .player-name {
+    color: #f7d38a;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.solo-mode-active .current-player .player-score {
+    min-width: 6.8rem;
+    background: linear-gradient(45deg, #f5af19, #ffe08a);
+    color: #111827;
+    font-size: 1rem;
+}
 
 #opponents-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.3rem; }
 .opponent-player { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.05); padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; color: #a0aec0; }
 .opponent-player .player-score { background: rgba(255, 255, 255, 0.1); color: #38ef7d; padding: 0.1rem 0.3rem; border-radius: 4px; font-weight: 800; }
+#game-board.solo-mode-active #live-stats-panel {
+    order: -1;
+    margin-top: 0;
+    margin-bottom: clamp(0.35rem, 1vh, 0.6rem);
+}
 
 /* ========================================================
    TEME - GLOBALNA PROMENA BOJA I STILOVA
@@ -3834,6 +3925,51 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     margin-bottom: min(0.5rem, 1vh); /* Dinamička margina */
 }
 .summary-carousel::-webkit-scrollbar { display: none; }
+.summary-swipe-hint {
+    text-align: center;
+    font-size: min(0.75rem, 1.5vh);
+    color: #a0aec0;
+    margin: min(0.4rem, 0.8vh) 0;
+}
+.solo-summary-carousel {
+    overflow-x: hidden;
+    scroll-snap-type: none;
+    justify-content: center;
+}
+.solo-summary-carousel .summary-card {
+    min-width: min(100%, 420px);
+}
+.solo-summary-card {
+    justify-content: center;
+    align-items: center;
+    min-height: min(280px, 48vh);
+    text-align: center;
+    border-color: rgba(245, 175, 25, 0.24);
+    background: linear-gradient(145deg, rgba(22, 15, 4, 0.82), rgba(8, 12, 16, 0.78));
+}
+.solo-round-result {
+    display: grid;
+    gap: 0.35rem;
+    place-items: center;
+    margin: min(1rem, 2vh) 0;
+}
+.solo-round-result span {
+    font-size: clamp(2.5rem, 14vw, 4rem);
+    font-weight: 950;
+    line-height: 0.95;
+    color: #f5af19;
+    text-shadow: 0 0 18px rgba(245, 175, 25, 0.28);
+}
+.solo-round-result small,
+.solo-round-total {
+    color: #d8dde6;
+    font-size: min(0.9rem, 1.8vh);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+.solo-round-total b {
+    color: #38ef7d;
+}
 
 .summary-card {
     min-width: 100%;
@@ -3854,6 +3990,14 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     font-size: min(1.15rem, 2.3vh);
     text-transform: uppercase;
     letter-spacing: 1px;
+}
+.summary-card.solo-summary-card {
+    justify-content: center;
+    align-items: center;
+    min-height: min(280px, 48vh);
+    text-align: center;
+    border-color: rgba(245, 175, 25, 0.24);
+    background: linear-gradient(145deg, rgba(22, 15, 4, 0.82), rgba(8, 12, 16, 0.78));
 }
 
 /* ========================================================
@@ -4666,6 +4810,35 @@ body[data-tema] .current-player {
     color: var(--theme-text);
 }
 
+body[data-tema] .solo-mode-active .game-header {
+    background: linear-gradient(135deg, rgba(22, 15, 4, 0.96), rgba(10, 12, 16, 0.86));
+    border-color: rgba(var(--theme-accent-rgb), 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px rgba(255, 255, 255, 0.05);
+}
+
+body[data-tema] .solo-mode-active .stats-panel {
+    background: linear-gradient(145deg, rgba(24, 17, 7, 0.84), rgba(8, 12, 16, 0.74));
+    border-color: rgba(var(--theme-accent-rgb), 0.3);
+}
+
+body[data-tema] .solo-mode-active .stats-header,
+body[data-tema] .solo-mode-active .current-player .player-name {
+    color: var(--theme-accent);
+}
+
+body[data-tema] .solo-mode-active .current-player {
+    background: rgba(var(--theme-accent-rgb), 0.11);
+    border-color: rgba(var(--theme-accent-rgb), 0.34);
+    color: var(--theme-text);
+}
+
+body[data-tema] .solo-mode-active .current-player .player-score {
+    background: linear-gradient(45deg, var(--theme-accent), var(--theme-secondary));
+    color: var(--theme-on-primary);
+    border-color: rgba(255, 255, 255, 0.38);
+    box-shadow: 0 8px 18px rgba(var(--theme-accent-rgb), 0.24);
+}
+
 body[data-tema] .opponent-player,
 body[data-tema] .stat-box,
 body[data-tema] .profile-choice,
@@ -5192,11 +5365,12 @@ body[data-tema="svetla"] .stat-box span { color: #4a5568; }
         font-size: 5.15rem !important;
     }
 
-    .game-header {
-        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) 32px;
+    #game-board .game-header {
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
         gap: 0.32rem;
-        min-height: 56px;
-        padding: 0.32rem 0.5rem;
+        min-height: 58px;
+        padding: 0.34rem 0.5rem;
+        padding-right: 2.65rem;
     }
 
     .btn-close {
@@ -5320,6 +5494,7 @@ body[data-tema="svetla"] .stat-box span { color: #4a5568; }
 
     #game-board .game-header {
         padding: clamp(0.55rem, 1.2vh, 0.85rem) clamp(1rem, 2.5vw, 1.5rem);
+        padding-right: clamp(3.4rem, 4vw, 4rem);
     }
 
     .current-letter {

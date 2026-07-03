@@ -1463,11 +1463,12 @@ const PodesavanjaManager = {
         const tekst = `
             <div style="text-align: left; font-size: 0.9rem; line-height: 1.6;">
                 <b style="color:#38ef7d;">1. CILJ IGRE:</b> Upiši po jedan tačan pojam za svaku kategoriju koji počinje zadatim slovom.<br><br>
-                <b style="color:#38ef7d;">2. BODOVANJE (Multiplayer):</b><br>
+                <b style="color:#38ef7d;">2. SOLO MOD:</b> U solo treningu skupljaš samo tačne odgovore. Poeni se ne računaju.<br><br>
+                <b style="color:#38ef7d;">3. BODOVANJE (Multiplayer):</b><br>
                 <span style="color:#38ef7d; font-weight:800;">20 pts</span> - Tvoj pojam je jedinstven i tačan.<br>
                 <span style="color:#f5af19; font-weight:800;">10 pts</span> - Tvoj pojam je tačan, ali su i drugi upisali tačne (ali različite) pojmove.<br>
                 <span style="color:#a0aec0; font-weight:800;">5 pts</span> - Upišeš potpuno isti pojam kao i tvoj protivnik.<br><br>
-                <b style="color:#38ef7d;">3. RUNDA:</b> Traje tačno 2 minuta (120 sekundi).
+                <b style="color:#38ef7d;">4. RUNDA:</b> Traje tačno 2 minuta (120 sekundi).
             </div>
         `;
         UIManager.prikaziObavestenje("📖 Pravila Igre", tekst, null, "Razumem");

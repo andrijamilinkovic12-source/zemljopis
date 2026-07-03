@@ -1747,17 +1747,21 @@ body[data-tema="svetla"] #postavke-nadimak {
 
 #game-board.solo-mode-active .current-letter {
     min-width: clamp(80px, 23vw, 108px);
+    justify-content: center;
+    gap: clamp(0.16rem, 0.45vh, 0.26rem);
     border-left: 1px solid rgba(245, 175, 25, 0.22);
     border-right: 1px solid rgba(245, 175, 25, 0.22);
 }
 
 #game-board.solo-mode-active .current-letter .game-control-label {
     color: rgba(255, 232, 165, 0.82);
+    line-height: 1.05;
 }
 
 #game-board.solo-mode-active .current-letter span {
     color: #f5af19;
     font-size: clamp(1.85rem, 8vw, 2.55rem);
+    line-height: 1.08;
     text-shadow: 0 0 14px rgba(245, 175, 25, 0.38);
 }
 
@@ -4082,6 +4086,134 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     background: linear-gradient(145deg, rgba(22, 15, 4, 0.82), rgba(8, 12, 16, 0.78));
 }
 
+.summary-card.solo-summary-detailed {
+    justify-content: flex-start;
+    align-items: stretch;
+    min-height: min(330px, 58vh);
+    text-align: left;
+    gap: min(0.55rem, 1.1vh);
+}
+
+.solo-summary-detailed h3 {
+    margin-bottom: 0;
+    color: #f5af19;
+}
+
+.solo-summary-count {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.55rem;
+    margin: 0;
+    padding: 0.55rem 0.7rem;
+    border-radius: 12px;
+    border: 1px solid rgba(245, 175, 25, 0.2);
+    background: rgba(245, 175, 25, 0.08);
+    color: #d7dee9;
+    font-size: min(0.82rem, 1.65vh);
+    font-weight: 800;
+}
+
+.solo-summary-count span {
+    color: #a0aec0;
+}
+
+.solo-summary-count b {
+    color: #f5af19;
+}
+
+.solo-answer-review {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: min(0.28rem, 0.55vh);
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.solo-answer-review::-webkit-scrollbar {
+    display: none;
+}
+
+.solo-answer-row {
+    display: grid;
+    grid-template-columns: minmax(74px, 0.9fr) minmax(0, 1.2fr) auto;
+    align-items: center;
+    gap: 0.45rem;
+    padding: min(0.34rem, 0.7vh) 0.55rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.solo-answer-row.is-correct {
+    border-color: rgba(56, 239, 125, 0.28);
+    background: rgba(56, 239, 125, 0.08);
+}
+
+.solo-answer-row.is-wrong {
+    border-color: rgba(255, 65, 108, 0.26);
+    background: rgba(255, 65, 108, 0.075);
+}
+
+.solo-answer-category {
+    color: #a0aec0;
+    font-size: min(0.66rem, 1.3vh);
+    font-weight: 800;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.solo-answer-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #fff;
+    font-size: min(0.86rem, 1.7vh);
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.solo-answer-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.28rem;
+    font-size: min(0.68rem, 1.35vh);
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.solo-answer-row.is-correct .solo-answer-status,
+.solo-answer-row.is-correct .solo-answer-value {
+    color: #38ef7d;
+}
+
+.solo-answer-row.is-wrong .solo-answer-status,
+.solo-answer-row.is-wrong .solo-answer-value {
+    color: #ff416c;
+}
+
+@media (max-width: 340px), (max-height: 640px) {
+    .solo-answer-row {
+        grid-template-columns: minmax(62px, 0.8fr) minmax(0, 1fr) auto;
+        gap: 0.32rem;
+        padding: min(0.28rem, 0.58vh) 0.42rem;
+    }
+
+    .solo-answer-status {
+        font-size: min(0.62rem, 1.25vh);
+    }
+
+    .solo-answer-status-text {
+        display: none;
+    }
+}
+
 /* ========================================================
    CUSTOM TASTATURA - OPTIMIZOVANA ZA SRPSKI RASPODRED
    ======================================================== */
@@ -4983,17 +5115,21 @@ body[data-tema] .solo-mode-active .current-player .player-score {
 
 #game-board.control-panel-compact .current-letter {
     min-width: clamp(80px, 23vw, 108px);
+    justify-content: center;
+    gap: clamp(0.16rem, 0.45vh, 0.26rem);
     border-left: 1px solid rgba(var(--game-mode-accent-rgb), 0.22);
     border-right: 1px solid rgba(var(--game-mode-accent-rgb), 0.22);
 }
 
 #game-board.control-panel-compact .current-letter .game-control-label {
     color: rgba(255, 255, 255, 0.78);
+    line-height: 1.05;
 }
 
 #game-board.control-panel-compact .current-letter span {
     color: var(--game-mode-accent);
     font-size: clamp(1.85rem, 8vw, 2.55rem);
+    line-height: 1.08;
     text-shadow: 0 0 14px rgba(var(--game-mode-accent-rgb), 0.38);
 }
 

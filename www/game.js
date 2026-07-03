@@ -1624,14 +1624,31 @@ const Game = {
 
         sviIgraci.forEach(igrac => {
             if (this.trenutniMod === 'solo') {
-                carousel.innerHTML += `
-                    <div class="summary-card solo-summary-card">
-                        <h3>SOLO RUNDA ${this.trenutnaRunda}</h3>
-                        <div class="solo-round-result" role="status" aria-live="polite">
-                            <span>${tacnihOveRunde}/7</span>
-                            <small>tačnih odgovora u ovoj rundi</small>
+                let soloListaHtml = '';
+                igrac.odgovori.forEach(odg => {
+                    const tacno = odg.boja === 'green';
+                    soloListaHtml += `
+                        <div class="solo-answer-row ${tacno ? 'is-correct' : 'is-wrong'}">
+                            <span class="solo-answer-category">${odg.kategorija}</span>
+                            <span class="solo-answer-value">${odg.odgovor}</span>
+                            <span class="solo-answer-status" aria-label="${tacno ? 'Tačno' : 'Netačno'}">
+                                <i class="fa-solid ${tacno ? 'fa-check' : 'fa-xmark'}" aria-hidden="true"></i>
+                                <span class="solo-answer-status-text">${tacno ? 'TAČNO' : 'NETAČNO'}</span>
+                            </span>
                         </div>
-                        <p class="solo-round-total">Ukupno: <b>${this.ukupnoTacnihOdgovora}/42</b></p>
+                    `;
+                });
+
+                carousel.innerHTML += `
+                    <div class="summary-card solo-summary-card solo-summary-detailed">
+                        <h3>SOLO RUNDA ${this.trenutnaRunda}</h3>
+                        <p class="solo-summary-count" role="status" aria-live="polite">
+                            Tačno u rundi: <b>${tacnihOveRunde}/7</b>
+                            <span>Ukupno: <b>${this.ukupnoTacnihOdgovora}/42</b></span>
+                        </p>
+                        <div class="solo-answer-review">
+                            ${soloListaHtml}
+                        </div>
                     </div>
                 `;
                 return;
@@ -1706,7 +1723,7 @@ const Game = {
             osveziServerskoOdbrojavanje();
             this.tajmerPregledaRunde = setInterval(osveziServerskoOdbrojavanje, 200);
         } else {
-            let preostalo = this.trenutniMod === 'solo' ? 5 : 10;
+            let preostalo = this.trenutniMod === 'solo' ? 3 : 10;
             btnNext.innerText = `Sačekaj (${preostalo}s)`;
 
             this.tajmerPregledaRunde = setInterval(() => {

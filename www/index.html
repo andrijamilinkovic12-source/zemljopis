@@ -42,9 +42,11 @@
             </div>
         </div>
         <nav class="login-legal-links splash-legal-links" aria-label="Pravni linkovi">
-            <a href="#" onclick="ZemljopisLegal.prikazi('uslovi'); return false;">Uslovi</a>
-            <a href="#" onclick="ZemljopisLegal.prikazi('privacy'); return false;">Privacy Policy</a>
-            <a href="#" onclick="ZemljopisLegal.prikazi('terms'); return false;">Terms</a>
+            <p class="login-legal-copy">Nastavkom prihvatate naše</p>
+            <div class="login-legal-link-row">
+                <a href="#" onclick="ZemljopisLegal.prikazi('uslovi'); return false;">Uslovi Korišćenja</a>
+                <a href="#" onclick="ZemljopisLegal.prikazi('privacy'); return false;">Politika Privatnosti</a>
+            </div>
         </nav>
     </div>
 
@@ -91,9 +93,11 @@
             </div>
         </div>
         <nav class="login-legal-links" aria-label="Pravni linkovi">
-            <a href="#" onclick="ZemljopisLegal.prikazi('uslovi'); return false;">Uslovi</a>
-            <a href="#" onclick="ZemljopisLegal.prikazi('privacy'); return false;">Privacy Policy</a>
-            <a href="#" onclick="ZemljopisLegal.prikazi('terms'); return false;">Terms</a>
+            <p class="login-legal-copy">Nastavkom prihvatate naše</p>
+            <div class="login-legal-link-row">
+                <a href="#" onclick="ZemljopisLegal.prikazi('uslovi'); return false;">Uslovi Korišćenja</a>
+                <a href="#" onclick="ZemljopisLegal.prikazi('privacy'); return false;">Politika Privatnosti</a>
+            </div>
         </nav>
     </div>
 
@@ -803,16 +807,12 @@
         window.ZemljopisLegal = {
             tekstovi: {
                 uslovi: {
-                    naslov: 'Uslovi',
+                    naslov: 'Uslovi Korišćenja',
                     tekst: 'Uslovi korišćenja biće povezani sa zvaničnom stranicom čim dokument bude spreman.'
                 },
                 privacy: {
-                    naslov: 'Privacy Policy',
-                    tekst: 'Privacy Policy će biti otvoren iz aplikacije čim dodamo zvanični link za Play Console.'
-                },
-                terms: {
-                    naslov: 'Terms',
-                    tekst: 'Terms stranica će biti povezana sa zvaničnim dokumentom za korisnike.'
+                    naslov: 'Politika Privatnosti',
+                    tekst: 'Politika privatnosti će biti otvorena iz aplikacije čim dodamo zvanični link za Play Console.'
                 }
             },
             prikazi(tip) {

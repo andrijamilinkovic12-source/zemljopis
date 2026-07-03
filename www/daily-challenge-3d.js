@@ -39,23 +39,50 @@
         camera.updateProjectionMatrix();
     }
 
-    function teksturaIzSvg(THREE) {
-        return new Promise((resolve, reject) => {
-            const loader = new THREE.TextureLoader();
-            loader.load(
-                SVG_SRC,
-                texture => {
-                    if ('colorSpace' in texture && THREE.SRGBColorSpace) {
-                        texture.colorSpace = THREE.SRGBColorSpace;
-                    }
-                    texture.anisotropy = 4;
-                    texture.needsUpdate = true;
-                    resolve(texture);
-                },
-                undefined,
-                reject
-            );
-        });
+    async function teksturaIzSvg(THREE) {
+        const odgovor = await fetch(SVG_SRC, { cache: 'force-cache' });
+        if (!odgovor.ok) {
+            throw new Error('SVG_TEXTURE_FETCH_FAILED');
+        }
+
+        let svgTekst = await odgovor.text();
+        if (!/\swidth=/.test(svgTekst)) {
+            svgTekst = svgTekst.replace('<svg ', '<svg width="96" height="96" ');
+        }
+
+        const blob = new Blob([svgTekst], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        try {
+            const slika = await new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = url;
+            });
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                throw new Error('CANVAS_2D_NOT_AVAILABLE');
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(slika, 0, 0, canvas.width, canvas.height);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            if ('colorSpace' in texture && THREE.SRGBColorSpace) {
+                texture.colorSpace = THREE.SRGBColorSpace;
+            }
+            texture.anisotropy = 4;
+            texture.needsUpdate = true;
+            return texture;
+        } finally {
+            URL.revokeObjectURL(url);
+        }
     }
 
     async function napraviDaily3D(button, THREE) {
@@ -200,62 +227,49 @@
         sparkle.scale.set(0.78, 0.78, 0.78);
         group.add(sparkle);
 
+        let pressed = false;
+        let hovered = false;
+
+        function renderuj() {
+            const hoverTilt = hovered ? 0.1 : 0;
+            const pressScale = pressed ? 0.9 : 1;
+
+            group.rotation.x = -0.16;
+            group.rotation.y = 0.24 + hoverTilt;
+            group.rotation.z = pressed ? -0.04 : 0;
+            group.position.y = 0;
+            group.scale.setScalar(pressScale);
+            sparkle.rotation.z = hovered ? 0.28 : 0;
+            sparkle.material.opacity = hovered ? 0.95 : 0.78;
+
+            renderer.render(scene, camera);
+        }
+
         podesiRendererVelicinu(renderer, mount, camera);
 
         const resizeObserver = 'ResizeObserver' in window
-            ? new ResizeObserver(() => podesiRendererVelicinu(renderer, mount, camera))
+            ? new ResizeObserver(() => {
+                podesiRendererVelicinu(renderer, mount, camera);
+                renderuj();
+            })
             : null;
         if (resizeObserver) resizeObserver.observe(button);
-        else window.addEventListener('resize', () => podesiRendererVelicinu(renderer, mount, camera));
+        else window.addEventListener('resize', () => {
+            podesiRendererVelicinu(renderer, mount, camera);
+            renderuj();
+        });
+
+        const osveziInterakciju = () => window.requestAnimationFrame(renderuj);
+
+        button.addEventListener('pointerenter', () => { hovered = true; osveziInterakciju(); });
+        button.addEventListener('pointerleave', () => { hovered = false; pressed = false; osveziInterakciju(); });
+        button.addEventListener('pointerdown', () => { pressed = true; osveziInterakciju(); });
+        button.addEventListener('pointerup', () => { pressed = false; osveziInterakciju(); });
+        button.addEventListener('pointercancel', () => { pressed = false; osveziInterakciju(); });
 
         button.dataset.threeDailyReady = '1';
         button.classList.add('three-daily-ready');
-
-        let pressed = false;
-        let hovered = false;
-        const smanjenoKretanje = window.matchMedia
-            && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        button.addEventListener('pointerenter', () => { hovered = true; });
-        button.addEventListener('pointerleave', () => { hovered = false; pressed = false; });
-        button.addEventListener('pointerdown', () => { pressed = true; });
-        button.addEventListener('pointerup', () => { pressed = false; });
-        button.addEventListener('pointercancel', () => { pressed = false; });
-
-        const clock = new THREE.Clock();
-
-        function renderuj() {
-            const vreme = clock.getElapsedTime();
-            const hoverTilt = hovered ? 0.1 : 0;
-            const pressScale = pressed ? 0.9 : 1;
-            const idle = smanjenoKretanje ? 0 : Math.sin(vreme * 1.75);
-
-            group.rotation.x = -0.18 + (idle * 0.055);
-            group.rotation.y = 0.26 + hoverTilt + (smanjenoKretanje ? 0 : Math.sin(vreme * 1.2) * 0.13);
-            group.rotation.z = smanjenoKretanje ? 0 : Math.sin(vreme * 0.9) * 0.035;
-            group.position.y = smanjenoKretanje ? 0 : Math.sin(vreme * 1.45) * 0.035;
-            group.scale.setScalar(pressScale);
-            rim.rotation.z += smanjenoKretanje ? 0 : 0.006;
-            innerRim.rotation.z -= smanjenoKretanje ? 0 : 0.004;
-            sparkle.rotation.z = vreme * 1.7;
-            sparkle.material.opacity = smanjenoKretanje ? 0.86 : 0.65 + ((Math.sin(vreme * 3.4) + 1) * 0.17);
-
-            renderer.render(scene, camera);
-
-            if (!document.hidden) {
-                window.requestAnimationFrame(renderuj);
-            }
-        }
-
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                clock.getDelta();
-                window.requestAnimationFrame(renderuj);
-            }
-        });
-
-        renderer.render(scene, camera);
-        if (!smanjenoKretanje) window.requestAnimationFrame(renderuj);
+        renderuj();
     }
 
     function init() {

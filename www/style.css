@@ -923,11 +923,14 @@ body[data-tema="svetla"] #profil-setup-nadimak {
 }
 
 .settings-back-button {
+    width: 100%;
+    max-width: none;
     margin: 0;
-    padding: min(0.8rem, 1.6vh);
+    padding: min(0.55rem, 1vh) 0.45rem;
     flex-shrink: 0;
+    border-radius: 8px;
     background: rgba(255,255,255,0.1);
-    font-size: min(0.9rem, 2vh);
+    font-size: min(0.78rem, 1.45vh);
 }
 
 .settings-panel {

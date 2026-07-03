@@ -215,10 +215,15 @@ const GoogleAuthManager = {
     prijaviPostojeciProfil: async function() {
         if (this.povezivanjeUToku) return;
         this.povezivanjeUToku = true;
-        const dugme = document.getElementById('profil-setup-google');
-        if (dugme) {
-            dugme.disabled = true;
-            dugme.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Prijavljivanje...</span>';
+        const dugmad = Array.from(document.querySelectorAll('.login-google-action'));
+        const postaviDugmad = (zakljucano, html) => {
+            dugmad.forEach(dugme => {
+                dugme.disabled = zakljucano;
+                dugme.innerHTML = html;
+            });
+        };
+        if (dugmad.length) {
+            postaviDugmad(true, '<i class="fa-solid fa-spinner fa-spin"></i><span>Prijavljivanje...</span>');
         }
 
         try {
@@ -254,9 +259,8 @@ const GoogleAuthManager = {
             }
         } finally {
             this.povezivanjeUToku = false;
-            if (dugme) {
-                dugme.disabled = false;
-                dugme.innerHTML = '<i class="fa-brands fa-google"></i><span>Prijavi se preko Google</span>';
+            if (dugmad.length) {
+                postaviDugmad(false, '<i class="fa-brands fa-google"></i><span>Prijavi se preko Google</span>');
             }
         }
     }

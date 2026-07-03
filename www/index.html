@@ -29,7 +29,23 @@
                 <p data-intro-quote-text>„Zemlja je ono što nam je svima zajedničko.”</p>
                 <span data-intro-quote-author>Wendell Berry</span>
             </div>
+            <div class="login-actions splash-actions">
+                <button type="button" class="profile-setup-google login-google-action" id="splash-login-google" onclick="GoogleAuthManager.prijaviPostojeciProfil()">
+                    <i class="fa-brands fa-google"></i>
+                    <span>Prijavi se preko Google</span>
+                </button>
+                <button type="button" class="profile-setup-guest login-guest-action" id="splash-login-guest" onclick="PodesavanjaManager.prijaviSeKaoGost()">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Igraj kao gost</span>
+                </button>
+                <p class="profile-setup-hint" id="splash-setup-poruka" aria-live="polite"></p>
+            </div>
         </div>
+        <nav class="login-legal-links splash-legal-links" aria-label="Pravni linkovi">
+            <a href="#" onclick="ZemljopisLegal.prikazi('uslovi'); return false;">Uslovi</a>
+            <a href="#" onclick="ZemljopisLegal.prikazi('privacy'); return false;">Privacy Policy</a>
+            <a href="#" onclick="ZemljopisLegal.prikazi('terms'); return false;">Terms</a>
+        </nav>
     </div>
 
     <div id="profil-setup-screen" class="screen">
@@ -50,11 +66,11 @@
             </div>
 
             <div class="login-actions">
-                <button type="button" class="profile-setup-google" id="profil-setup-google" onclick="GoogleAuthManager.prijaviPostojeciProfil()">
+                <button type="button" class="profile-setup-google login-google-action" id="profil-setup-google" onclick="GoogleAuthManager.prijaviPostojeciProfil()">
                     <i class="fa-brands fa-google"></i>
                     <span>Prijavi se preko Google</span>
                 </button>
-                <button type="button" class="profile-setup-guest" id="profil-setup-guest" onclick="PodesavanjaManager.prijaviSeKaoGost()">
+                <button type="button" class="profile-setup-guest login-guest-action" id="profil-setup-guest" onclick="PodesavanjaManager.prijaviSeKaoGost()">
                     <i class="fa-solid fa-user"></i>
                     <span>Igraj kao gost</span>
                 </button>

@@ -341,11 +341,13 @@ const PodesavanjaManager = {
     },
 
     postaviSetupPoruku: function(poruka, tip = "") {
-        const element = document.getElementById('profil-setup-poruka');
-        if (!element) return;
-        element.textContent = poruka;
-        element.classList.remove('error', 'success');
-        if (tip) element.classList.add(tip);
+        const elementi = document.querySelectorAll('#profil-setup-poruka, #splash-setup-poruka');
+        if (!elementi.length) return;
+        elementi.forEach(element => {
+            element.textContent = poruka;
+            element.classList.remove('error', 'success');
+            if (tip) element.classList.add(tip);
+        });
     },
 
     posaljiProfilServeru: function(nadimak, avatar, callback) {
@@ -452,21 +454,23 @@ const PodesavanjaManager = {
     },
 
     prijaviSeKaoGost: async function() {
-        const dugme = document.getElementById('profil-setup-guest');
-        const googleDugme = document.getElementById('profil-setup-google');
+        const dugmad = Array.from(document.querySelectorAll('.login-guest-action'));
+        const googleDugmad = Array.from(document.querySelectorAll('.login-google-action'));
         const avatar = this.avatari.some(a => a.id === this.postavke.avatar) ? this.postavke.avatar : "atlas";
         let pokusaji = 0;
 
         await this.osigurajStabilniProfilKljuc();
 
         const postaviDugmad = (zakljucano) => {
-            if (dugme) {
+            dugmad.forEach(dugme => {
                 dugme.disabled = zakljucano;
                 dugme.innerHTML = zakljucano
                     ? '<i class="fa-solid fa-spinner fa-spin"></i><span>Ulazak...</span>'
                     : '<i class="fa-solid fa-user"></i><span>Igraj kao gost</span>';
-            }
-            if (googleDugme) googleDugme.disabled = zakljucano;
+            });
+            googleDugmad.forEach(dugme => {
+                dugme.disabled = zakljucano;
+            });
         };
 
         const sacuvajGostProfil = (odgovor, nadimak) => {

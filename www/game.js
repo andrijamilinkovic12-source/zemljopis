@@ -66,6 +66,14 @@ const Game = {
         // Kratak uvod sa logom i citatom pre ulaska u profil ili glavni meni.
         setTimeout(() => {
             const splashScreen = document.getElementById('splash-screen');
+            const profilSpreman = typeof PodesavanjaManager !== 'undefined' && PodesavanjaManager.profilKompletan();
+
+            if (!profilSpreman) {
+                if (splashScreen) splashScreen.classList.add('login-ready');
+                if (typeof PodesavanjaManager !== 'undefined') PodesavanjaManager.postaviSetupPoruku("");
+                return;
+            }
+
             if (splashScreen) splashScreen.classList.add('leaving');
 
             setTimeout(() => {
@@ -86,15 +94,13 @@ const Game = {
                     }, 850);
                 }
 
-                if (typeof PodesavanjaManager !== 'undefined' && PodesavanjaManager.profilKompletan()) {
+                if (typeof UIManager !== 'undefined') {
                     UIManager.prikaziEkran('main-menu');
-                } else if (typeof PodesavanjaManager !== 'undefined') {
-                    PodesavanjaManager.prikaziObavezniProfil();
                 }
 
                 if (splashScreen) splashScreen.classList.remove('leaving');
             }, 520);
-        }, 3300);
+        }, 4800);
     },
 
     poveziSeNaServer: function() {

@@ -63,7 +63,7 @@ const Game = {
             }
         });
 
-        // Sačekaj kratko nakon pune trake, pa pusti mekši izlaz iz splash ekrana.
+        // Kratak uvod sa logom i citatom pre ulaska u profil ili glavni meni.
         setTimeout(() => {
             const splashScreen = document.getElementById('splash-screen');
             if (splashScreen) splashScreen.classList.add('leaving');
@@ -93,8 +93,8 @@ const Game = {
                 }
 
                 if (splashScreen) splashScreen.classList.remove('leaving');
-            }, 650);
-        }, 4300); 
+            }, 520);
+        }, 3300);
     },
 
     poveziSeNaServer: function() {

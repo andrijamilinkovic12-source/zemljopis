@@ -333,7 +333,7 @@ const PodesavanjaManager = {
         this.renderujAvatare();
         this.azurirajAvatarPreview();
         this.zatvoriSetupAvatarPicker();
-        this.postaviSetupPoruku("Nadimak može imati 2-20 slova ili brojeva.");
+        this.postaviSetupPoruku("");
 
         if (typeof UIManager !== "undefined") {
             UIManager.prikaziEkran('profil-setup-screen', true);
@@ -444,6 +444,81 @@ const PodesavanjaManager = {
             if (typeof Game !== "undefined") Game.profilPrijavljen = true;
             setTimeout(() => UIManager.prikaziEkran('main-menu'), 250);
         });
+    },
+
+    generisiGostNadimak: function() {
+        const broj = Math.floor(10000 + Math.random() * 90000);
+        return `Gost${broj}`;
+    },
+
+    prijaviSeKaoGost: async function() {
+        const dugme = document.getElementById('profil-setup-guest');
+        const googleDugme = document.getElementById('profil-setup-google');
+        const avatar = this.avatari.some(a => a.id === this.postavke.avatar) ? this.postavke.avatar : "atlas";
+        let pokusaji = 0;
+
+        await this.osigurajStabilniProfilKljuc();
+
+        const postaviDugmad = (zakljucano) => {
+            if (dugme) {
+                dugme.disabled = zakljucano;
+                dugme.innerHTML = zakljucano
+                    ? '<i class="fa-solid fa-spinner fa-spin"></i><span>Ulazak...</span>'
+                    : '<i class="fa-solid fa-user"></i><span>Kao gost</span>';
+            }
+            if (googleDugme) googleDugme.disabled = zakljucano;
+        };
+
+        const sacuvajGostProfil = (odgovor, nadimak) => {
+            this.postavke.nadimak = odgovor.profil && odgovor.profil.nadimak
+                ? odgovor.profil.nadimak
+                : nadimak;
+            this.postavke.avatar = odgovor.profil && odgovor.profil.avatar
+                ? odgovor.profil.avatar
+                : avatar;
+            this.postavke.playerId = odgovor.profil && odgovor.profil.playerId
+                ? odgovor.profil.playerId
+                : this.postavke.playerId;
+            this.postavke.profilTip = "lokalni";
+            this.postavke.googleUid = null;
+            this.postavke.profilZavrsen = true;
+            this.snimiULokalnuMemoriju();
+            this.primeniPostavkeGlobalno();
+            this.postaviSetupPoruku("Dobrodošli u igru.", "success");
+
+            if (typeof Game !== "undefined") Game.profilPrijavljen = true;
+            setTimeout(() => {
+                if (typeof UIManager !== "undefined") UIManager.prikaziEkran('main-menu');
+            }, 220);
+        };
+
+        const pokusajRegistracije = () => {
+            pokusaji += 1;
+            const nadimak = this.generisiGostNadimak();
+            this.postaviSetupPoruku("Pripremamo gost profil...");
+
+            this.posaljiProfilServeru(nadimak, avatar, (odgovor) => {
+                if (odgovor && odgovor.uspeh) {
+                    postaviDugmad(false);
+                    sacuvajGostProfil(odgovor, nadimak);
+                    return;
+                }
+
+                if (odgovor && odgovor.kod === "NADIMAK_ZAUZET" && pokusaji < 5) {
+                    pokusajRegistracije();
+                    return;
+                }
+
+                postaviDugmad(false);
+                this.postaviSetupPoruku(
+                    (odgovor && odgovor.poruka) || "Gost prijava trenutno nije moguća. Proveri internet i pokušaj ponovo.",
+                    "error"
+                );
+            });
+        };
+
+        postaviDugmad(true);
+        pokusajRegistracije();
     },
 
     otvoriEkran: function() {

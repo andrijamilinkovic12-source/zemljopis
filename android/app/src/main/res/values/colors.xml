@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#11998E</color>
+    <color name="colorPrimaryDark">#020803</color>
+    <color name="colorAccent">#38EF7D</color>
+    <color name="zemljopis_background">#020803</color>
+    <color name="zemljopis_surface">#06120A</color>
+</resources>

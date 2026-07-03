@@ -256,7 +256,7 @@ const GoogleAuthManager = {
             this.povezivanjeUToku = false;
             if (dugme) {
                 dugme.disabled = false;
-                dugme.innerHTML = '<i class="fa-brands fa-google"></i><span>Prijavi se postojećim nalogom</span>';
+                dugme.innerHTML = '<i class="fa-brands fa-google"></i><span>Prijavi se preko Google</span>';
             }
         }
     }

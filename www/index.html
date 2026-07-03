@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#020803">
     <title>ZEMLJOPIS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -11,6 +12,9 @@
 
     <div id="splash-screen" class="screen active">
         <div class="splash-content">
+            <div class="splash-brand-mark" aria-hidden="true">
+                <img class="splash-brand-logo" src="assets/menu-pattern-earth-europe.svg" alt="" decoding="async">
+            </div>
             <div class="splash-logo">
                 <span style="--i:1">Z</span>
                 <span style="--i:2" class="icon-letter svg-letter"><img class="splash-letter-svg" src="assets/zemljopis-e.svg" alt=""></span>
@@ -21,63 +25,47 @@
                 <span style="--i:7">I</span>
                 <span style="--i:8">S</span>
             </div>
-            <div class="loading-container">
-                <div class="loading-bar"></div>
+            <div class="intro-quote splash-quote" aria-live="polite">
+                <p data-intro-quote-text>„Zemlja je ono što nam je svima zajedničko.”</p>
+                <span data-intro-quote-author>Wendell Berry</span>
             </div>
-            <div class="loading-text">Učitavanje...</div>
         </div>
     </div>
 
     <div id="profil-setup-screen" class="screen">
         <div class="profile-setup-pattern" aria-hidden="true"></div>
-        <div class="profile-setup-shell">
-            <div class="profile-setup-heading">
-                <span class="profile-setup-kicker">Dobro došao u Zemljopis</span>
-                <h1>Kreiraj svoj profil</h1>
-                <p>Izaberi avatar i jedinstven nadimak da otključaš igru.</p>
+        <div class="profile-setup-shell login-shell">
+            <div class="login-brand-mark" aria-hidden="true">
+                <img src="assets/menu-pattern-earth-europe.svg" alt="" decoding="async">
             </div>
 
-            <div class="profile-setup-card">
-                <span class="settings-label">Tvoj avatar</span>
-                <button type="button" class="profile-setup-avatar" id="profil-setup-avatar-preview" onclick="PodesavanjaManager.toggleSetupAvatarPicker(event)" title="Izaberi avatar">
-                    <span class="profile-setup-avatar-empty" id="profil-setup-avatar-empty">
-                        <i class="fa-solid fa-user-plus"></i>
-                    </span>
-                    <span class="avatar-portrait" id="profil-setup-avatar-figura"></span>
-                    <span class="profile-setup-avatar-action"><i class="fa-solid fa-pen"></i></span>
-                </button>
+            <div class="intro-quote login-quote" aria-live="polite">
+                <p data-intro-quote-text>„Zemlja je ono što nam je svima zajedničko.”</p>
+                <span data-intro-quote-author>Wendell Berry</span>
+            </div>
 
-                <div class="profile-setup-picker" id="profil-setup-avatar-picker" aria-hidden="true">
-                    <div class="profile-setup-picker-head">
-                        <strong>Izaberi lika</strong>
-                        <button type="button" onclick="PodesavanjaManager.zatvoriSetupAvatarPicker()" title="Zatvori">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-                    <div class="avatar-grid profile-setup-avatar-grid" id="profil-setup-avatar-lista" aria-label="Izbor avatara"></div>
-                </div>
+            <div class="profile-setup-heading login-heading">
+                <span class="profile-setup-kicker">Dobrodošli</span>
+                <h1>ZEMLJOPIS</h1>
+            </div>
 
-                <label class="settings-label" for="profil-setup-nadimak">Jedinstven nadimak</label>
-                <div class="profile-setup-name-row">
-                    <i class="fa-solid fa-at"></i>
-                    <input id="profil-setup-nadimak" type="text" maxlength="20" autocomplete="off" placeholder="Unesi nadimak">
-                </div>
-                <p class="profile-setup-hint" id="profil-setup-poruka">Nadimak može imati 2-20 slova ili brojeva.</p>
-
-                <button type="button" class="profile-setup-submit" id="profil-setup-submit" onclick="PodesavanjaManager.registrujObavezniProfil()">
-                    <span>Napravi profil</span>
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
-
-                <div class="profile-setup-divider"><span>ili</span></div>
+            <div class="login-actions">
                 <button type="button" class="profile-setup-google" id="profil-setup-google" onclick="GoogleAuthManager.prijaviPostojeciProfil()">
                     <i class="fa-brands fa-google"></i>
-                    <span>Prijavi se postojećim nalogom</span>
+                    <span>Prijavi se preko Google</span>
                 </button>
+                <button type="button" class="profile-setup-guest" id="profil-setup-guest" onclick="PodesavanjaManager.prijaviSeKaoGost()">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Kao gost</span>
+                </button>
+                <p class="profile-setup-hint" id="profil-setup-poruka" aria-live="polite"></p>
             </div>
-
-            <p class="profile-setup-note"><i class="fa-solid fa-lock"></i> Google nalog čuva profil i posle reinstalacije ili promene uređaja.</p>
         </div>
+        <nav class="login-legal-links" aria-label="Pravni linkovi">
+            <a href="#" onclick="ZemljopisLegal.prikazi('uslovi'); return false;">Uslovi</a>
+            <a href="#" onclick="ZemljopisLegal.prikazi('privacy'); return false;">Privacy Policy</a>
+            <a href="#" onclick="ZemljopisLegal.prikazi('terms'); return false;">Terms</a>
+        </nav>
     </div>
 
     <div id="main-menu" class="screen">
@@ -739,6 +727,65 @@
     <script src="managers.js"></script>
     <script src="globalchat.js"></script>
     <script src="sinhronizacija.js"></script>
+    <script>
+        window.ZemljopisIntroQuotes = [
+            { text: 'Zemlja je ono što nam je svima zajedničko.', author: 'Wendell Berry' },
+            { text: 'Priroda nije mesto koje posećujemo. Ona je dom.', author: 'Gary Snyder' },
+            { text: 'Poezija Zemlje nikada nije mrtva.', author: 'John Keats' },
+            { text: 'U svakoj šetnji prirodom dobijamo više nego što tražimo.', author: 'John Muir' },
+            { text: 'Čuvajmo bledu plavu tačku, jedini dom koji poznajemo.', author: 'Carl Sagan' },
+            { text: 'Krenuli smo da istražimo Mesec, a otkrili smo Zemlju.', author: 'William Anders' },
+            { text: 'Zemlja je mala, plava i predivno sama u svemiru.', author: 'Neil Armstrong' }
+        ];
+
+        window.ZemljopisIntro = {
+            izaberiCitat() {
+                const citati = window.ZemljopisIntroQuotes || [];
+                if (!citati.length) return;
+                const prethodni = Number(localStorage.getItem('zemljopis-poslednji-citat'));
+                let indeks = Math.floor(Math.random() * citati.length);
+                if (citati.length > 1 && indeks === prethodni) indeks = (indeks + 1) % citati.length;
+                localStorage.setItem('zemljopis-poslednji-citat', String(indeks));
+
+                const citat = citati[indeks];
+                document.querySelectorAll('[data-intro-quote-text]').forEach(element => {
+                    element.textContent = `„${citat.text}”`;
+                });
+                document.querySelectorAll('[data-intro-quote-author]').forEach(element => {
+                    element.textContent = citat.author;
+                });
+            }
+        };
+
+        window.ZemljopisLegal = {
+            tekstovi: {
+                uslovi: {
+                    naslov: 'Uslovi',
+                    tekst: 'Uslovi korišćenja biće povezani sa zvaničnom stranicom čim dokument bude spreman.'
+                },
+                privacy: {
+                    naslov: 'Privacy Policy',
+                    tekst: 'Privacy Policy će biti otvoren iz aplikacije čim dodamo zvanični link za Play Console.'
+                },
+                terms: {
+                    naslov: 'Terms',
+                    tekst: 'Terms stranica će biti povezana sa zvaničnim dokumentom za korisnike.'
+                }
+            },
+            prikazi(tip) {
+                const sadrzaj = this.tekstovi[tip] || this.tekstovi.uslovi;
+                if (typeof UIManager !== 'undefined' && UIManager.prikaziObavestenje) {
+                    UIManager.prikaziObavestenje(sadrzaj.naslov, sadrzaj.tekst, null, 'U redu');
+                }
+            }
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => window.ZemljopisIntro.izaberiCitat());
+        } else {
+            window.ZemljopisIntro.izaberiCitat();
+        }
+    </script>
     <script src="game.js"></script>
 
     <script>

@@ -131,17 +131,18 @@
         </div>
 
         <div class="top-header-menu">
-            <button class="top-circle-btn" onclick="GlobalChatManager.proveriIPrikazi()" title="Global Chat">
-                <i class="fa-solid fa-comments"></i>
+            <button class="top-circle-btn" onclick="GlobalChatManager.proveriIPrikazi()" title="Global Chat" aria-label="Global Chat">
+                <img class="top-menu-icon" src="assets/menu-global-chat.svg" alt="" aria-hidden="true" decoding="async">
             </button>
 
-            <button class="top-circle-btn rank-btn" onclick="KvartalniNivoManager.otvoriEkran()" title="Kvartalni Nivo">
+            <button class="top-circle-btn rank-btn" onclick="KvartalniNivoManager.otvoriEkran()" title="Kvartalni Nivo" aria-label="Kvartalni Nivo">
+                <img class="rank-icon-bg" src="assets/menu-kvartalni-nivo.svg" alt="" aria-hidden="true" decoding="async">
                 <span>1</span>
                 <div class="rank-label">NIVO</div>
             </button>
 
-            <button class="top-circle-btn" onclick="TrofejiManager.otvoriEkran()" title="Trofeji">
-                <i class="fa-solid fa-medal"></i>
+            <button class="top-circle-btn" onclick="TrofejiManager.otvoriEkran()" title="Trofeji" aria-label="Soba trofeja">
+                <img class="top-menu-icon" src="assets/menu-soba-trofeja.svg" alt="" aria-hidden="true" decoding="async">
             </button>
         </div>
 
@@ -235,7 +236,7 @@
 
     <div id="kvartalni-nivo-screen" class="screen">
         <div class="menu-pattern">
-            <i class="fa-solid fa-crown pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+            <img class="pattern-icon pattern-img screen-pattern-icon" src="assets/menu-kvartalni-nivo.svg" alt="" aria-hidden="true" decoding="async" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);">
         </div>
         
         <h2 style="color: #f5af19; margin-bottom: 1.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(245, 175, 25, 0.3); text-align: center;">Kvartalni Nivo</h2>
@@ -326,7 +327,7 @@
 
     <div id="trofeji-main-screen" class="screen">
         <div class="menu-pattern">
-            <i class="fa-solid fa-medal pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+            <img class="pattern-icon pattern-img screen-pattern-icon" src="assets/menu-soba-trofeja.svg" alt="" aria-hidden="true" decoding="async" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);">
         </div>
         
         <h2 style="color: #f5af19; margin-bottom: 1.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(245, 175, 25, 0.3); text-align: center;">Soba Trofeja</h2>
@@ -605,11 +606,11 @@
 
     <div id="global-chat-screen" class="screen">
         <div class="menu-pattern">
-            <i class="fa-solid fa-comments pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+            <img class="pattern-icon pattern-img screen-pattern-icon" src="assets/menu-global-chat.svg" alt="" aria-hidden="true" decoding="async" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);">
         </div>
         
         <div class="game-header" style="justify-content: center; position: relative; z-index: 10;">
-            <span style="font-size: 1.2rem; font-weight: 800; color: #38bdf8;"><i class="fa-solid fa-earth-europe"></i> GLOBAL CHAT</span>
+            <span style="font-size: 1.2rem; font-weight: 800; color: #38bdf8; display: inline-flex; align-items: center; gap: 0.45rem;"><img class="chat-title-icon" src="assets/menu-global-chat.svg" alt="" aria-hidden="true" decoding="async"> GLOBAL CHAT</span>
             <button class="btn-close" style="position: absolute; right: 1rem; z-index: 20;" onclick="UIManager.prikaziEkran('main-menu')"><i class="fa-solid fa-xmark"></i></button>
         </div>
         

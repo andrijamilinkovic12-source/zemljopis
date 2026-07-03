@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" aria-hidden="true">
+  <defs>
+    <linearGradient id="chat-ring" x1="13" y1="8" x2="83" y2="89" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset=".48" stop-color="#38ef7d"/>
+      <stop offset="1" stop-color="#f5af19"/>
+    </linearGradient>
+    <radialGradient id="chat-face" cx="39%" cy="30%" r="70%">
+      <stop offset="0" stop-color="#123b42"/>
+      <stop offset=".58" stop-color="#092127"/>
+      <stop offset="1" stop-color="#041014"/>
+    </radialGradient>
+    <linearGradient id="chat-cyan" x1="20" y1="18" x2="75" y2="78" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7dd3fc"/>
+      <stop offset=".5" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#11998e"/>
+    </linearGradient>
+    <linearGradient id="chat-green" x1="23" y1="24" x2="72" y2="78" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d9ffe8"/>
+      <stop offset=".48" stop-color="#38ef7d"/>
+      <stop offset="1" stop-color="#11998e"/>
+    </linearGradient>
+    <linearGradient id="chat-gold" x1="31" y1="22" x2="72" y2="78" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff7bf"/>
+      <stop offset=".42" stop-color="#ffe08a"/>
+      <stop offset="1" stop-color="#f5af19"/>
+    </linearGradient>
+    <filter id="chat-shadow" x="-28%" y="-28%" width="156%" height="156%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3.2" flood-color="#000000" flood-opacity=".42"/>
+    </filter>
+    <filter id="chat-glow" x="-42%" y="-42%" width="184%" height="184%">
+      <feGaussianBlur stdDeviation="2.6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <circle cx="48" cy="48" r="43" fill="#06151a" opacity=".92"/>
+  <circle cx="48" cy="48" r="40.5" fill="none" stroke="url(#chat-ring)" stroke-width="5.5" filter="url(#chat-glow)"/>
+  <circle cx="48" cy="48" r="33.5" fill="url(#chat-face)" stroke="#d9ffe8" stroke-opacity=".55" stroke-width="2"/>
+
+  <g opacity=".52" fill="none" stroke="#7dd3fc" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M18.5 48h59"/>
+    <path d="M48 16c-8.8 9.1-13.2 19.8-13.2 32S39.2 70.9 48 80"/>
+    <path d="M48 16c8.8 9.1 13.2 19.8 13.2 32S56.8 70.9 48 80"/>
+    <path d="M24 34.4c10.8 5 37.2 5 48 0"/>
+    <path d="M24 61.6c10.8-5 37.2-5 48 0"/>
+  </g>
+
+  <g filter="url(#chat-shadow)">
+    <path d="M22 33.5c0-8 6.7-14.5 16.2-14.5h18.6C66.3 19 73 25.5 73 33.5v4.8c0 8-6.7 14.5-16.2 14.5H43.5L29.8 62v-9.3C25 50.5 22 45.4 22 38.3v-4.8Z" fill="url(#chat-cyan)" stroke="#d9ffe8" stroke-opacity=".78" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M38 54.5c0-6.4 5.5-11.6 13.3-11.6h12.5c7.8 0 13.2 5.2 13.2 11.6v3.8c0 6.4-5.4 11.6-13.2 11.6h-7.6L44 78.5v-9.1c-3.7-2-6-5.9-6-11.1v-3.8Z" fill="url(#chat-green)" stroke="#d9ffe8" stroke-opacity=".78" stroke-width="2.4" stroke-linejoin="round"/>
+  </g>
+
+  <g filter="url(#chat-glow)">
+    <circle cx="35.5" cy="36.5" r="3" fill="#06151a" opacity=".72"/>
+    <circle cx="47.5" cy="36.5" r="3" fill="#06151a" opacity=".72"/>
+    <circle cx="59.5" cy="36.5" r="3" fill="#06151a" opacity=".72"/>
+    <path d="M54 56.5h12M54 63h8" stroke="#06151a" stroke-opacity=".46" stroke-width="3" stroke-linecap="round"/>
+    <path d="M73 20.5c4.5 3.4 7.5 7.8 9 13.2M78 15.5c5.8 4.2 9.5 9.8 11 16.8" fill="none" stroke="url(#chat-gold)" stroke-width="2.6" stroke-linecap="round"/>
+  </g>
+</svg>

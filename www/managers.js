@@ -466,25 +466,33 @@ const UIManager = {
         }, 360);
     },
 
-    podesiTabluZaIgru: function(mod, slovo) {
+    podesiTabluZaIgru: function(mod, slovo, tipOnlineModa = '') {
         const gameBoard = document.getElementById('game-board');
         const modeIndicator = document.getElementById('mode-indicator');
         const liveStatsPanel = document.getElementById('live-stats-panel'); 
         const antiCheatStatus = document.getElementById('anti-cheat-status'); 
         const statsHeader = document.querySelector('.stats-header'); // Selektovanje naslova panela
-        
+
+        gameBoard.classList.remove('solo-mode-active', 'multi-mode-active', 'friends-mode-active');
+        gameBoard.classList.add('control-panel-compact');
+
         if (mod === 'solo') {
             gameBoard.classList.add('solo-mode-active');
             modeIndicator.textContent = 'SOLO';
             modeIndicator.className = 'mode-badge badge-solo';
+            modeIndicator.title = 'Solo';
+            modeIndicator.setAttribute('aria-label', 'Solo mod');
             if (liveStatsPanel) liveStatsPanel.style.display = 'block'; 
             if (antiCheatStatus) antiCheatStatus.style.display = 'none'; 
             // Dinamički menjamo naslov za Solo
             if (statsHeader) statsHeader.innerHTML = '<i class="fa-solid fa-check-double"></i> TAČNI ODGOVORI'; 
         } else {
-            gameBoard.classList.remove('solo-mode-active');
-            modeIndicator.textContent = 'MULTIPLAYER';
-            modeIndicator.className = 'mode-badge badge-multi';
+            const jeSobaPrijatelja = tipOnlineModa === 'prijatelji';
+            gameBoard.classList.add(jeSobaPrijatelja ? 'friends-mode-active' : 'multi-mode-active');
+            modeIndicator.textContent = jeSobaPrijatelja ? 'PRIJAT.' : 'MULTI';
+            modeIndicator.className = jeSobaPrijatelja ? 'mode-badge badge-friends' : 'mode-badge badge-multi';
+            modeIndicator.title = jeSobaPrijatelja ? 'Prijatelji' : 'Multiplayer';
+            modeIndicator.setAttribute('aria-label', jeSobaPrijatelja ? 'Prijatelji mod' : 'Multiplayer mod');
             if (liveStatsPanel) liveStatsPanel.style.display = 'none'; 
             if (antiCheatStatus) antiCheatStatus.style.display = 'block'; 
             // Vraćamo naslov za Multiplayer

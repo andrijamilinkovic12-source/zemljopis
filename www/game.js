@@ -11,6 +11,7 @@ const Game = {
 
     // === LOKALNE VARIJABLE ===
     trenutniMod: '',
+    tipOnlineModa: '',
     zadatoSlovo: '',
     tajmerInterval: null,
     preostaloVreme: 120, 
@@ -648,6 +649,25 @@ const Game = {
             : "";
     },
 
+    postaviTipOnlineModa: function(podaci = {}) {
+        if (this.trenutniMod === 'solo') {
+            this.tipOnlineModa = '';
+            return;
+        }
+
+        if (podaci.tipSobe === 'javna' || podaci.javna === true) {
+            this.tipOnlineModa = 'multi';
+            return;
+        }
+
+        if (podaci.tipSobe === 'poziv' || podaci.tipSobe === 'kod' || podaci.javna === false) {
+            this.tipOnlineModa = 'prijatelji';
+            return;
+        }
+
+        if (!this.tipOnlineModa) this.tipOnlineModa = 'multi';
+    },
+
     odbijPozivUSobu: function() {
         const poziv = this.aktivniPozivSobe;
         this.aktivniPozivSobe = null;
@@ -885,6 +905,7 @@ const Game = {
         }
 
         this.brojIgracaUSobi = brojIgraca;
+        this.tipOnlineModa = 'multi';
         let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
 
         UIManager.prikaziObavestenje(
@@ -908,6 +929,7 @@ const Game = {
                 }
             } else {
                 this.odustajanjeOdSobeNaCekanju = false;
+                this.tipOnlineModa = '';
             }
         });
     },
@@ -932,6 +954,7 @@ const Game = {
         }
 
         this.brojIgracaUSobi = brojIgraca;
+        this.tipOnlineModa = 'prijatelji';
         this.jeHost = true;
 
         UIManager.prikaziObavestenje("Kreiranje...", "Pravim sobu na serveru...", null, "...");
@@ -945,6 +968,10 @@ const Game = {
                     null, 
                     "Čekam ostale..." 
                 );
+            } else {
+                this.tipOnlineModa = '';
+                this.jeHost = false;
+                UIManager.prikaziObavestenje("Greška", odgovor.poruka || "Sobu trenutno nije moguće kreirati.", null, "U redu");
             }
         });
     },
@@ -971,6 +998,7 @@ const Game = {
         }
 
         this.jeHost = false;
+        this.tipOnlineModa = 'prijatelji';
         let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
 
         UIManager.prikaziObavestenje("Povezivanje...", "Proveravam kod na serveru...", null, "...");
@@ -986,6 +1014,7 @@ const Game = {
                 );
                 if (input) input.value = ''; 
             } else {
+                this.tipOnlineModa = '';
                 UIManager.prikaziObavestenje("Greška", odgovor.poruka, null, "Pokušaj ponovo");
             }
         });
@@ -1005,6 +1034,7 @@ const Game = {
         }
 
         this.jeHost = false;
+        this.tipOnlineModa = 'prijatelji';
         let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
 
         UIManager.prikaziObavestenje("Povezivanje...", "Ulazim u sobu tvog prijatelja...", null, "...");
@@ -1019,6 +1049,7 @@ const Game = {
                     "Čekam..." 
                 );
             } else {
+                this.tipOnlineModa = '';
                 UIManager.prikaziObavestenje("Greška", odgovor.poruka, null, "Zatvori");
             }
         });
@@ -1061,6 +1092,7 @@ const Game = {
         let brojIgraca = pozvani.length + 1;
 
         this.brojIgracaUSobi = brojIgraca;
+        this.tipOnlineModa = 'prijatelji';
         this.jeHost = true;
 
         UIManager.prikaziObavestenje("Kreiranje...", "Pravim sobu i šaljem pozivnice prijateljima...", null, "...");
@@ -1090,6 +1122,7 @@ const Game = {
             } else {
                 this.trenutnaSoba = null;
                 this.jeHost = false;
+                this.tipOnlineModa = '';
                 UIManager.prikaziObavestenje(
                     "Poziv nije poslat",
                     odgovor.poruka || "Nijedan pozvani prijatelj trenutno nije dostupan.",
@@ -1117,6 +1150,7 @@ const Game = {
         }
 
         this.trenutniMod = mod;
+        this.postaviTipOnlineModa(podaciRunde);
         this.partijaId = podaciRunde.partijaId
             || `partija_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
         this.ishodOnlineMecaPoslat = false;
@@ -1145,6 +1179,7 @@ const Game = {
         const onlineRunda = this.trenutniMod === 'multi' && zadatoSlovoSaServera;
         if (onlineRunda) {
             this.uskladiVremeIzDogadjaja(podaciRunde);
+            this.postaviTipOnlineModa(podaciRunde);
             if (podaciRunde.partijaId) this.partijaId = podaciRunde.partijaId;
         }
 
@@ -1168,7 +1203,7 @@ const Game = {
         this.krajRundeAt = onlineRunda ? Number(podaciRunde.krajRundeAt) || 0 : 0;
 
         UIManager.pripremiPolja();
-        UIManager.podesiTabluZaIgru(this.trenutniMod, this.zadatoSlovo);
+        UIManager.podesiTabluZaIgru(this.trenutniMod, this.zadatoSlovo, this.tipOnlineModa);
         UIManager.azurirajRundu(this.trenutnaRunda); 
         document.querySelectorAll('#game-board .game-input').forEach(input => {
             input.disabled = true;

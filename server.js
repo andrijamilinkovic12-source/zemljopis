@@ -2089,6 +2089,8 @@ function zapocniRunduUSobi(soba, io, planiraniPocetakAt = null) {
         runda: soba.trenutnaRunda,
         rundaId: soba.rundaId,
         partijaId: soba.partijaId,
+        javna: Boolean(soba.javna),
+        tipSobe: soba.tipSobe,
         serverVreme,
         pocetakRundeAt: soba.pocetakRundeAt,
         krajRundeAt: soba.krajRundeAt

@@ -4921,6 +4921,104 @@ body[data-tema] .solo-mode-active .current-player .player-score {
     box-shadow: 0 8px 18px rgba(var(--theme-accent-rgb), 0.24);
 }
 
+#game-board.control-panel-compact {
+    --game-mode-accent: var(--theme-primary, #38ef7d);
+    --game-mode-accent-rgb: var(--theme-primary-rgb, 56, 239, 125);
+    --game-mode-label: #b9fbe4;
+}
+
+#game-board.control-panel-compact.solo-mode-active,
+#game-board.control-panel-compact.friends-mode-active {
+    --game-mode-accent: var(--theme-accent, #f5af19);
+    --game-mode-accent-rgb: var(--theme-accent-rgb, 245, 175, 25);
+    --game-mode-label: #ffe08a;
+}
+
+#game-board.control-panel-compact .game-header {
+    background:
+        linear-gradient(135deg, rgba(7, 18, 14, 0.96), rgba(10, 12, 16, 0.9)),
+        radial-gradient(circle at 50% 0%, rgba(var(--game-mode-accent-rgb), 0.12), transparent 54%);
+    border-color: rgba(var(--game-mode-accent-rgb), 0.24);
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 0;
+    min-height: clamp(66px, 9vh, 78px);
+    padding: clamp(0.5rem, 1.25vh, 0.64rem) clamp(2.72rem, 9vw, 3.25rem);
+    border-radius: 0 0 22px 22px;
+    overflow: hidden;
+}
+
+#game-board.control-panel-compact .game-info-left,
+#game-board.control-panel-compact .current-letter,
+#game-board.control-panel-compact .game-timer-wrap {
+    min-height: clamp(44px, 6.8vh, 54px);
+    padding: 0 clamp(0.45rem, 2vw, 0.68rem);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+#game-board.control-panel-compact .game-info-left {
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#game-board.control-panel-compact .mode-badge {
+    max-width: 100%;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+    border: 0;
+    color: var(--game-mode-label);
+    font-size: clamp(0.52rem, 2vw, 0.62rem);
+    letter-spacing: 0.12em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#game-board.control-panel-compact .stat-value {
+    color: #fff;
+    font-size: clamp(0.68rem, 2.8vw, 0.88rem);
+}
+
+#game-board.control-panel-compact .current-letter {
+    min-width: clamp(80px, 23vw, 108px);
+    border-left: 1px solid rgba(var(--game-mode-accent-rgb), 0.22);
+    border-right: 1px solid rgba(var(--game-mode-accent-rgb), 0.22);
+}
+
+#game-board.control-panel-compact .current-letter .game-control-label {
+    color: rgba(255, 255, 255, 0.78);
+}
+
+#game-board.control-panel-compact .current-letter span {
+    color: var(--game-mode-accent);
+    font-size: clamp(1.85rem, 8vw, 2.55rem);
+    text-shadow: 0 0 14px rgba(var(--game-mode-accent-rgb), 0.38);
+}
+
+#game-board.control-panel-compact .game-timer-wrap {
+    justify-content: center;
+    align-items: flex-end;
+}
+
+#game-board.control-panel-compact .timer {
+    font-size: clamp(1rem, 4.4vw, 1.28rem);
+}
+
+#game-board.control-panel-compact .game-header > .btn-close {
+    width: clamp(32px, 8.8vw, 36px);
+    height: clamp(32px, 8.8vw, 36px);
+    right: clamp(0.48rem, 2.2vw, 0.72rem);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 65, 108, 0.34);
+    background: rgba(255, 65, 108, 0.12);
+}
+
+#game-board.control-panel-compact .input-group input:focus {
+    border-color: var(--game-mode-accent);
+}
+
 body[data-tema] .opponent-player,
 body[data-tema] .stat-box,
 body[data-tema] .profile-choice,

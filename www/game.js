@@ -538,9 +538,6 @@ const Game = {
                     if (typeof PodesavanjaManager.poveziStabilniProfilKljuc === "function") {
                         PodesavanjaManager.poveziStabilniProfilKljuc();
                     }
-                    if (oporavakPosleReinstalacije && typeof UIManager !== 'undefined') {
-                        UIManager.prikaziEkran('main-menu');
-                    }
                 }
             }
         );

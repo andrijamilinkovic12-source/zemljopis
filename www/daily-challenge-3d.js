@@ -1,13 +1,31 @@
 (function(window, document) {
     const THREE_CDN = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
+    const THREE_LOCAL_MODULE = './vendor/three.module.js';
     const SVG_SRC = 'assets/dnevni-izazov-v2.svg';
+    const PNG_TEXTURE_SRC = 'assets/dnevni-izazov-v2-tex.png';
     const SCRIPT_ID = 'zemljopis-three-runtime';
+    let threePromise = null;
 
-    function ucitajThree() {
-        if (window.THREE) {
-            return Promise.resolve(window.THREE);
-        }
+    function ucitajLokalniThree() {
+        return new Promise((resolve, reject) => {
+            let importer;
+            try {
+                importer = new Function('src', 'return import(src);');
+            } catch (error) {
+                reject(error);
+                return;
+            }
 
+            importer(THREE_LOCAL_MODULE)
+                .then(THREE => {
+                    window.THREE = THREE;
+                    resolve(THREE);
+                })
+                .catch(reject);
+        });
+    }
+
+    function ucitajThreeSaCdn() {
         const postojeci = document.getElementById(SCRIPT_ID);
         if (postojeci) {
             return new Promise((resolve, reject) => {
@@ -30,6 +48,18 @@
         });
     }
 
+    function ucitajThree() {
+        if (window.THREE) {
+            return Promise.resolve(window.THREE);
+        }
+
+        if (!threePromise) {
+            threePromise = ucitajLokalniThree().catch(() => ucitajThreeSaCdn());
+        }
+
+        return threePromise;
+    }
+
     function podesiRendererVelicinu(renderer, mount, camera) {
         const rect = mount.getBoundingClientRect();
         const velicina = Math.max(48, Math.ceil(Math.min(rect.width || 60, rect.height || 60)));
@@ -39,7 +69,28 @@
         camera.updateProjectionMatrix();
     }
 
-    async function teksturaIzSvg(THREE) {
+    function podesiTeksturu(texture, THREE) {
+        if ('colorSpace' in texture && THREE.SRGBColorSpace) {
+            texture.colorSpace = THREE.SRGBColorSpace;
+        }
+        texture.anisotropy = 4;
+        texture.needsUpdate = true;
+        return texture;
+    }
+
+    function teksturaIzPng(THREE) {
+        return new Promise((resolve, reject) => {
+            const loader = new THREE.TextureLoader();
+            loader.load(
+                PNG_TEXTURE_SRC,
+                texture => resolve(podesiTeksturu(texture, THREE)),
+                undefined,
+                reject
+            );
+        });
+    }
+
+    async function teksturaIzSvgFallback(THREE) {
         const odgovor = await fetch(SVG_SRC, { cache: 'force-cache' });
         if (!odgovor.ok) {
             throw new Error('SVG_TEXTURE_FETCH_FAILED');
@@ -74,14 +125,17 @@
             ctx.drawImage(slika, 0, 0, canvas.width, canvas.height);
 
             const texture = new THREE.CanvasTexture(canvas);
-            if ('colorSpace' in texture && THREE.SRGBColorSpace) {
-                texture.colorSpace = THREE.SRGBColorSpace;
-            }
-            texture.anisotropy = 4;
-            texture.needsUpdate = true;
-            return texture;
+            return podesiTeksturu(texture, THREE);
         } finally {
             URL.revokeObjectURL(url);
+        }
+    }
+
+    async function teksturaIkone(THREE) {
+        try {
+            return await teksturaIzPng(THREE);
+        } catch (error) {
+            return teksturaIzSvgFallback(THREE);
         }
     }
 
@@ -185,7 +239,7 @@
 
         let texture;
         try {
-            texture = await teksturaIzSvg(THREE);
+            texture = await teksturaIkone(THREE);
         } catch (error) {
             renderer.dispose();
             mount.remove();
@@ -194,13 +248,14 @@
         }
 
         const face = new THREE.Mesh(
-            new THREE.CircleGeometry(0.82, 112),
+            new THREE.PlaneGeometry(1.78, 1.78),
             new THREE.MeshBasicMaterial({
                 map: texture,
-                transparent: true
+                transparent: true,
+                depthWrite: false
             })
         );
-        face.position.z = 0.19;
+        face.position.z = 0.22;
         group.add(face);
 
         const sparkleShape = new THREE.Shape();

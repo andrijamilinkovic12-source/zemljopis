@@ -549,8 +549,49 @@ const PodesavanjaManager = {
         
         UIManager.prikaziEkran('podesavanja-screen');
 
-        const sadrzajPodesavanja = document.querySelector('#podesavanja-screen .settings-content');
-        if (sadrzajPodesavanja) sadrzajPodesavanja.scrollTop = 0;
+        this.poveziStranicePodesavanja();
+        requestAnimationFrame(() => this.idiNaStranicuPodesavanja(0, false));
+    },
+
+    poveziStranicePodesavanja: function() {
+        const sadrzaj = document.querySelector('#podesavanja-screen .settings-content');
+        if (!sadrzaj || sadrzaj.dataset.settingsPagerReady) return;
+
+        let zakazanoAzuriranje = false;
+        sadrzaj.addEventListener('scroll', () => {
+            if (zakazanoAzuriranje) return;
+            zakazanoAzuriranje = true;
+            requestAnimationFrame(() => {
+                zakazanoAzuriranje = false;
+                const stranica = sadrzaj.clientWidth
+                    ? Math.round(sadrzaj.scrollLeft / sadrzaj.clientWidth)
+                    : 0;
+                this.azurirajIndikatorStranicePodesavanja(stranica);
+            });
+        }, { passive: true });
+
+        sadrzaj.dataset.settingsPagerReady = "1";
+    },
+
+    idiNaStranicuPodesavanja: function(stranica, animiraj = true) {
+        const sadrzaj = document.querySelector('#podesavanja-screen .settings-content');
+        if (!sadrzaj) return;
+
+        const ciljnaStranica = Math.max(0, Math.min(1, Number(stranica) || 0));
+        sadrzaj.scrollTo({
+            left: ciljnaStranica * sadrzaj.clientWidth,
+            top: 0,
+            behavior: animiraj ? 'smooth' : 'auto'
+        });
+        this.azurirajIndikatorStranicePodesavanja(ciljnaStranica);
+    },
+
+    azurirajIndikatorStranicePodesavanja: function(stranica) {
+        document.querySelectorAll('[data-settings-page-dot]').forEach((dugme, indeks) => {
+            const aktivno = indeks === stranica;
+            dugme.classList.toggle('active', aktivno);
+            dugme.setAttribute('aria-selected', aktivno ? 'true' : 'false');
+        });
     },
 
     sacuvajNadimak: function() {

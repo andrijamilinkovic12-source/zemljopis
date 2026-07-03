@@ -397,9 +397,16 @@
             <i class="fa-solid fa-gear pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
         </div>
         
-        <h2 style="color: #38ef7d; margin-bottom: min(0.55rem, 1vh); z-index: 5; font-size: min(1.45rem, 3.3vh); text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Podešavanja</h2>
+        <h2 style="color: #38ef7d; margin-bottom: min(0.35rem, 0.65vh); z-index: 5; font-size: min(1.45rem, 3.3vh); text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Podešavanja</h2>
+
+        <div class="settings-pager" role="tablist" aria-label="Stranice podešavanja">
+            <button type="button" class="settings-page-dot active" data-settings-page-dot="0" role="tab" aria-label="Profil" aria-selected="true" onclick="PodesavanjaManager.idiNaStranicuPodesavanja(0)"></button>
+            <button type="button" class="settings-page-dot" data-settings-page-dot="1" role="tab" aria-label="Sistem" aria-selected="false" onclick="PodesavanjaManager.idiNaStranicuPodesavanja(1)"></button>
+        </div>
         
-        <div class="settings-content" style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; gap: min(0.45rem, 0.9vh); padding: 0 1rem; overflow: visible; min-height: 0; flex: 1; padding-bottom: min(0.45rem, 0.8vh); scrollbar-width: none;">
+        <div class="settings-content" aria-label="Podešavanja, prevuci ulevo ili udesno" tabindex="0">
+
+            <section class="settings-page settings-page-profile" aria-label="Profil">
 
             <div class="settings-panel">
                 <label class="settings-label"><i class="fa-solid fa-id-card"></i> Način igranja</label>
@@ -453,7 +460,11 @@
                 </div>
             </div>
 
-            <div class="settings-panel" style="display: flex; flex-direction: column; gap: min(0.5rem, 1vh);">
+            <p class="settings-swipe-hint"><i class="fa-solid fa-arrow-left-long"></i> Prevuci ulevo za sistem</p>
+            </section>
+
+            <section class="settings-page settings-page-system" aria-label="Sistem">
+            <div class="settings-panel settings-system-panel" style="display: flex; flex-direction: column; gap: min(0.5rem, 1vh);">
                 <label class="settings-label" style="margin-bottom: 2px;"><i class="fa-solid fa-sliders"></i> Sistem</label>
                 
                 <button class="menu-btn" id="btn-zvuk" style="margin-bottom: 0; border: 1px solid transparent; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: min(0.6rem, 1.2vh);" onclick="PodesavanjaManager.toggleZvuk()">
@@ -477,7 +488,7 @@
                 </div>
             </div>
 
-            <div style="display: flex; gap: 0.5rem; margin-top: auto;">
+            <div class="settings-secondary-actions">
                 <button class="menu-btn btn-secondary" style="flex: 1; margin-bottom: 0; font-size: min(0.85rem, 1.8vh); padding: min(0.7rem, 1.4vh);" onclick="PodesavanjaManager.prikaziPravila()">
                     <i class="fa-solid fa-book"></i> Pravila
                 </button>
@@ -486,9 +497,10 @@
                 </button>
             </div>
 
-            <button class="menu-btn" style="background: rgba(255,255,255,0.1); margin-top: 0; margin-bottom: 0; padding: min(0.8rem, 1.6vh); font-size: min(0.9rem, 2vh);" onclick="UIManager.prikaziEkran('main-menu')">
+            <button class="menu-btn settings-back-button" onclick="UIManager.prikaziEkran('main-menu')">
                 <i class="fa-solid fa-arrow-left"></i> Nazad u Meni
             </button>
+            </section>
         </div>
     </div>
 

@@ -475,7 +475,7 @@ const UIManager = {
         
         if (mod === 'solo') {
             gameBoard.classList.add('solo-mode-active');
-            modeIndicator.textContent = 'SOLO TRENING';
+            modeIndicator.textContent = 'SOLO';
             modeIndicator.className = 'mode-badge badge-solo';
             if (liveStatsPanel) liveStatsPanel.style.display = 'block'; 
             if (antiCheatStatus) antiCheatStatus.style.display = 'none'; 

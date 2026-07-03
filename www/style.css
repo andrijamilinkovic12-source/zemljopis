@@ -1705,8 +1705,81 @@ body[data-tema="svetla"] #postavke-nadimak {
 #game-board.solo-mode-active .game-header {
     background: linear-gradient(135deg, rgba(22, 15, 4, 0.96), rgba(10, 12, 16, 0.86));
     border-color: rgba(245, 175, 25, 0.24);
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: clamp(0.35rem, 1.7vw, 0.58rem);
+    min-height: clamp(70px, 10vh, 82px);
+    padding: clamp(0.45rem, 1.2vh, 0.62rem) clamp(3rem, 10vw, 3.4rem) clamp(0.45rem, 1.2vh, 0.62rem) clamp(0.55rem, 2.3vw, 0.8rem);
+    border-radius: 0 0 22px 22px;
 }
-.solo-mode-active .current-letter span { color: #f5af19; text-shadow: 0 0 10px rgba(245, 175, 25, 0.3); }
+
+#game-board.solo-mode-active .game-info-left,
+#game-board.solo-mode-active .current-letter,
+#game-board.solo-mode-active .game-timer-wrap {
+    min-height: clamp(48px, 7.4vh, 58px);
+    padding: clamp(0.36rem, 1vh, 0.5rem) clamp(0.42rem, 2vw, 0.65rem);
+    border: 1px solid rgba(245, 175, 25, 0.24);
+    border-radius: 16px;
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025)),
+        rgba(8, 12, 16, 0.62);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.06), 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+#game-board.solo-mode-active .game-info-left {
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#game-board.solo-mode-active .mode-badge.badge-solo {
+    padding: 0.18rem 0.42rem;
+    background: rgba(245, 175, 25, 0.16);
+    border: 1px solid rgba(245, 175, 25, 0.34);
+    color: #ffe08a;
+    font-size: clamp(0.52rem, 2vw, 0.62rem);
+    letter-spacing: 0.08em;
+}
+
+#game-board.solo-mode-active .stat-value {
+    color: #fff;
+    font-size: clamp(0.68rem, 2.8vw, 0.88rem);
+}
+
+#game-board.solo-mode-active .current-letter {
+    min-width: clamp(78px, 22vw, 106px);
+    border-color: rgba(245, 175, 25, 0.42);
+    background:
+        radial-gradient(circle at 50% 18%, rgba(245, 175, 25, 0.28), transparent 58%),
+        linear-gradient(145deg, rgba(245, 175, 25, 0.16), rgba(8, 12, 16, 0.68));
+}
+
+#game-board.solo-mode-active .current-letter .game-control-label {
+    color: rgba(255, 232, 165, 0.82);
+}
+
+#game-board.solo-mode-active .current-letter span {
+    color: #f5af19;
+    font-size: clamp(1.85rem, 8vw, 2.55rem);
+    text-shadow: 0 0 14px rgba(245, 175, 25, 0.38);
+}
+
+#game-board.solo-mode-active .game-timer-wrap {
+    justify-content: center;
+    align-items: flex-end;
+}
+
+#game-board.solo-mode-active .timer {
+    font-size: clamp(1rem, 4.4vw, 1.28rem);
+}
+
+#game-board.solo-mode-active .game-header > .btn-close {
+    width: clamp(32px, 8.8vw, 36px);
+    height: clamp(32px, 8.8vw, 36px);
+    right: clamp(0.48rem, 2.2vw, 0.72rem);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 65, 108, 0.34);
+    background: rgba(255, 65, 108, 0.12);
+}
+
 .solo-mode-active .input-group input:focus { border-color: #f5af19; }
 
 .inputs-container { 
@@ -2418,32 +2491,42 @@ body.keyboard-open .dnevni-input-group input {
 }
 .solo-mode-active .stats-header { color: #f5af19; }
 .solo-mode-active .current-player {
-    justify-content: center;
-    flex-direction: column;
-    gap: 0.25rem;
+    justify-content: space-between;
+    flex-direction: row;
+    gap: 0.55rem;
+    padding: 0.34rem 0.56rem;
+    margin-bottom: 0;
     background: rgba(245, 175, 25, 0.1);
     border-color: rgba(245, 175, 25, 0.32);
 }
 .solo-mode-active .current-player .player-name {
     color: #f7d38a;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 .solo-mode-active .current-player .player-score {
-    min-width: 6.8rem;
+    min-width: 4.65rem;
     background: linear-gradient(45deg, #f5af19, #ffe08a);
     color: #111827;
-    font-size: 1rem;
+    font-size: 0.88rem;
+    padding: 0.12rem 0.42rem;
 }
 
 #opponents-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.3rem; }
 .opponent-player { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.05); padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; color: #a0aec0; }
 .opponent-player .player-score { background: rgba(255, 255, 255, 0.1); color: #38ef7d; padding: 0.1rem 0.3rem; border-radius: 4px; font-weight: 800; }
 #game-board.solo-mode-active #live-stats-panel {
-    order: -1;
-    margin-top: 0;
-    margin-bottom: clamp(0.35rem, 1vh, 0.6rem);
+    order: initial;
+    margin-top: clamp(0.35rem, 1vh, 0.55rem);
+    margin-bottom: 0.15rem;
+    padding: clamp(0.26rem, 0.8vh, 0.38rem);
+    border-radius: 11px;
+}
+
+#game-board.solo-mode-active #live-stats-panel .stats-header {
+    display: none;
 }
 
 /* ========================================================

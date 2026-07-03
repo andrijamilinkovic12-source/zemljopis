@@ -464,7 +464,7 @@ const PodesavanjaManager = {
                 dugme.disabled = zakljucano;
                 dugme.innerHTML = zakljucano
                     ? '<i class="fa-solid fa-spinner fa-spin"></i><span>Ulazak...</span>'
-                    : '<i class="fa-solid fa-user"></i><span>Kao gost</span>';
+                    : '<i class="fa-solid fa-user"></i><span>Igraj kao gost</span>';
             }
             if (googleDugme) googleDugme.disabled = zakljucano;
         };

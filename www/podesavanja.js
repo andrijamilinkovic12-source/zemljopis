@@ -333,7 +333,7 @@ const PodesavanjaManager = {
         this.renderujAvatare();
         this.azurirajAvatarPreview();
         this.zatvoriSetupAvatarPicker();
-        this.postaviSetupPoruku("");
+        this.postaviSetupPoruku("Izaberi avatar i ime da uđeš kao gost.");
 
         if (typeof UIManager !== "undefined") {
             UIManager.prikaziEkran('profil-setup-screen', true);
@@ -413,7 +413,7 @@ const PodesavanjaManager = {
         this.posaljiProfilServeru(nadimak, avatar, (odgovor) => {
             if (dugme) {
                 dugme.disabled = false;
-                dugme.innerHTML = '<span>Napravi profil</span><i class="fa-solid fa-arrow-right"></i>';
+                dugme.innerHTML = '<span>Uđi kao gost</span><i class="fa-solid fa-arrow-right"></i>';
             }
 
             if (!odgovor.uspeh) {
@@ -453,76 +453,14 @@ const PodesavanjaManager = {
         return `Gost${broj}`;
     },
 
-    prijaviSeKaoGost: async function() {
-        const dugmad = Array.from(document.querySelectorAll('.login-guest-action'));
-        const googleDugmad = Array.from(document.querySelectorAll('.login-google-action'));
-        const avatar = this.avatari.some(a => a.id === this.postavke.avatar) ? this.postavke.avatar : "atlas";
-        let pokusaji = 0;
-
-        await this.osigurajStabilniProfilKljuc();
-
-        const postaviDugmad = (zakljucano) => {
-            dugmad.forEach(dugme => {
-                dugme.disabled = zakljucano;
-                dugme.innerHTML = zakljucano
-                    ? '<i class="fa-solid fa-spinner fa-spin"></i><span>Ulazak...</span>'
-                    : '<i class="fa-solid fa-user"></i><span>Igraj kao gost</span>';
-            });
-            googleDugmad.forEach(dugme => {
-                dugme.disabled = zakljucano;
-            });
-        };
-
-        const sacuvajGostProfil = (odgovor, nadimak) => {
-            this.postavke.nadimak = odgovor.profil && odgovor.profil.nadimak
-                ? odgovor.profil.nadimak
-                : nadimak;
-            this.postavke.avatar = odgovor.profil && odgovor.profil.avatar
-                ? odgovor.profil.avatar
-                : avatar;
-            this.postavke.playerId = odgovor.profil && odgovor.profil.playerId
-                ? odgovor.profil.playerId
-                : this.postavke.playerId;
-            this.postavke.profilTip = "lokalni";
-            this.postavke.googleUid = null;
-            this.postavke.profilZavrsen = true;
-            this.snimiULokalnuMemoriju();
-            this.primeniPostavkeGlobalno();
-            this.postaviSetupPoruku("Dobrodošli u igru.", "success");
-
+    prijaviSeKaoGost: function() {
+        if (this.profilKompletan()) {
             if (typeof Game !== "undefined") Game.profilPrijavljen = true;
-            setTimeout(() => {
-                if (typeof UIManager !== "undefined") UIManager.prikaziEkran('main-menu');
-            }, 220);
-        };
+            if (typeof UIManager !== "undefined") UIManager.prikaziEkran('main-menu');
+            return;
+        }
 
-        const pokusajRegistracije = () => {
-            pokusaji += 1;
-            const nadimak = this.generisiGostNadimak();
-            this.postaviSetupPoruku("Pripremamo gost profil...");
-
-            this.posaljiProfilServeru(nadimak, avatar, (odgovor) => {
-                if (odgovor && odgovor.uspeh) {
-                    postaviDugmad(false);
-                    sacuvajGostProfil(odgovor, nadimak);
-                    return;
-                }
-
-                if (odgovor && odgovor.kod === "NADIMAK_ZAUZET" && pokusaji < 5) {
-                    pokusajRegistracije();
-                    return;
-                }
-
-                postaviDugmad(false);
-                this.postaviSetupPoruku(
-                    (odgovor && odgovor.poruka) || "Gost prijava trenutno nije moguća. Proveri internet i pokušaj ponovo.",
-                    "error"
-                );
-            });
-        };
-
-        postaviDugmad(true);
-        pokusajRegistracije();
+        this.prikaziObavezniProfil();
     },
 
     otvoriEkran: function() {
@@ -644,6 +582,39 @@ const PodesavanjaManager = {
         this.izaberiProfilTip("google");
     },
 
+    odjaviProfil: function() {
+        const izvrsiOdjavu = () => {
+            this.postavke.nadimak = "";
+            this.postavke.avatar = null;
+            this.postavke.profilTip = "lokalni";
+            this.postavke.googleUid = null;
+            this.postavke.playerId = null;
+            this.postavke.profilZavrsen = false;
+            this.snimiULokalnuMemoriju();
+            this.primeniPostavkeGlobalno();
+            this.azurirajProfilOpcije();
+            this.azurirajAvatarPreview();
+
+            if (typeof Game !== "undefined") Game.profilPrijavljen = false;
+            const splash = document.getElementById('splash-screen');
+            if (splash) splash.classList.add('login-ready');
+            this.postaviSetupPoruku("");
+            if (typeof UIManager !== "undefined") UIManager.prikaziEkran('splash-screen', true);
+        };
+
+        if (typeof UIManager !== "undefined" && UIManager.prikaziObavestenje) {
+            UIManager.prikaziObavestenje(
+                "Odjava",
+                "Bićeš vraćen na uvodni ekran. Za ponovni ulazak izaberi Google ili Igraj kao gost.",
+                izvrsiOdjavu,
+                "Odjavi se"
+            );
+            return;
+        }
+
+        izvrsiOdjavu();
+    },
+
     izaberiAvatar: function(id) {
         if (!this.avatari.some(a => a.id === id)) return;
 
@@ -760,15 +731,24 @@ const PodesavanjaManager = {
         const google = document.getElementById('profil-opcija-google');
         const lokalniStatus = document.getElementById('profil-lokalni-status');
         const googleStatus = document.getElementById('profil-google-status');
+        const profilInfoTip = document.getElementById('profil-info-tip');
+        const profilInfoOpis = document.getElementById('profil-info-opis');
+        const profilGoogleInfo = document.getElementById('profil-google-info');
+        const odjavaDugme = document.getElementById('profil-odjava-dugme');
         const googlePovezan = this.postavke.profilTip === "google" && Boolean(this.postavke.googleUid);
         const povezivanjeUToku = typeof GoogleAuthManager !== "undefined" && GoogleAuthManager.povezivanjeUToku;
+        const profilSpreman = this.profilKompletan();
 
         if (lokalni) lokalni.classList.toggle('active', this.postavke.profilTip === "lokalni");
         if (google) {
             google.classList.toggle('active', googlePovezan || povezivanjeUToku);
             google.disabled = Boolean(povezivanjeUToku);
         }
-        if (lokalniStatus) lokalniStatus.innerText = this.postavke.pismo === "cirilica" ? "АКТИВНО" : "AKTIVNO";
+        if (lokalniStatus) {
+            lokalniStatus.innerText = profilSpreman
+                ? (this.postavke.pismo === "cirilica" ? "АКТИВНО" : "AKTIVNO")
+                : (this.postavke.pismo === "cirilica" ? "НИЈЕ СПРЕМНО" : "NIJE SPREMNO");
+        }
         if (googleStatus) {
             googleStatus.classList.toggle('soon', !googlePovezan);
             if (povezivanjeUToku) {
@@ -776,8 +756,34 @@ const PodesavanjaManager = {
             } else if (googlePovezan) {
                 googleStatus.innerText = this.postavke.pismo === "cirilica" ? "ПОВЕЗАНО" : "POVEZANO";
             } else {
-                googleStatus.innerText = this.postavke.pismo === "cirilica" ? "ПРИЈАВИ СЕ" : "PRIJAVI SE";
+                googleStatus.innerText = this.postavke.pismo === "cirilica" ? "УСКОРО" : "USKORO";
             }
+        }
+        if (profilInfoTip) {
+            if (googlePovezan) {
+                profilInfoTip.innerText = this.postavke.pismo === "cirilica" ? "Google профил" : "Google profil";
+            } else if (profilSpreman) {
+                profilInfoTip.innerText = this.postavke.pismo === "cirilica" ? "Гост профил" : "Gost profil";
+            } else {
+                profilInfoTip.innerText = this.postavke.pismo === "cirilica" ? "Профил није направљен" : "Profil nije napravljen";
+            }
+        }
+        if (profilInfoOpis) {
+            if (googlePovezan) {
+                profilInfoOpis.innerText = "Google profil čuva napredak preko naloga.";
+            } else if (profilSpreman) {
+                profilInfoOpis.innerText = `${this.postavke.nadimak} igra kao gost. Ime, avatar i lokalni napredak ostaju na ovom uređaju.`;
+            } else {
+                profilInfoOpis.innerText = "Za ulazak kao gost izaberi ime i avatar na uvodnom ekranu.";
+            }
+        }
+        if (profilGoogleInfo) {
+            profilGoogleInfo.innerText = googlePovezan
+                ? "Google nalog je povezan."
+                : "Google prijava je u pripremi. Za sada koristi Igraj kao gost.";
+        }
+        if (odjavaDugme) {
+            odjavaDugme.disabled = !profilSpreman;
         }
     },
 

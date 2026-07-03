@@ -63,43 +63,11 @@ const Game = {
             }
         });
 
-        // Kratak uvod sa logom i citatom pre ulaska u profil ili glavni meni.
+        // Uvod ostaje kao ulazni ekran dok korisnik ne izabere Google ili gosta.
         setTimeout(() => {
             const splashScreen = document.getElementById('splash-screen');
-            const profilSpreman = typeof PodesavanjaManager !== 'undefined' && PodesavanjaManager.profilKompletan();
-
-            if (!profilSpreman) {
-                if (splashScreen) splashScreen.classList.add('login-ready');
-                if (typeof PodesavanjaManager !== 'undefined') PodesavanjaManager.postaviSetupPoruku("");
-                return;
-            }
-
-            if (splashScreen) splashScreen.classList.add('leaving');
-
-            setTimeout(() => {
-                const mainMenu = document.getElementById('main-menu');
-                if (mainMenu) {
-                    mainMenu.classList.add('soft-enter');
-                    const ukloniSoftEnter = () => mainMenu.classList.remove('soft-enter');
-                    const zavrsiSoftEnter = (event) => {
-                        if (event.target !== mainMenu) return;
-                        mainMenu.removeEventListener('animationend', zavrsiSoftEnter);
-                        ukloniSoftEnter();
-                    };
-
-                    mainMenu.addEventListener('animationend', zavrsiSoftEnter);
-                    setTimeout(() => {
-                        mainMenu.removeEventListener('animationend', zavrsiSoftEnter);
-                        ukloniSoftEnter();
-                    }, 850);
-                }
-
-                if (typeof UIManager !== 'undefined') {
-                    UIManager.prikaziEkran('main-menu');
-                }
-
-                if (splashScreen) splashScreen.classList.remove('leaving');
-            }, 520);
+            if (splashScreen) splashScreen.classList.add('login-ready');
+            if (typeof PodesavanjaManager !== 'undefined') PodesavanjaManager.postaviSetupPoruku("");
         }, 4800);
     },
 

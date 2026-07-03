@@ -50,31 +50,44 @@
 
     <div id="profil-setup-screen" class="screen">
         <div class="profile-setup-pattern" aria-hidden="true"></div>
-        <div class="profile-setup-shell login-shell">
-            <div class="login-brand-mark" aria-hidden="true">
-                <img src="assets/menu-pattern-earth-europe.svg" alt="" decoding="async">
+        <div class="profile-setup-shell">
+            <div class="profile-setup-heading">
+                <span class="profile-setup-kicker">Igraj kao gost</span>
+                <h1>Izaberi ime i avatar</h1>
+                <p>Gost profil koristi ime i avatar koje izabereš na ovom uređaju.</p>
             </div>
 
-            <div class="profile-setup-heading login-heading">
-                <span class="profile-setup-kicker">Dobrodošli</span>
-                <h1>ZEMLJOPIS</h1>
-            </div>
-
-            <div class="intro-quote login-quote" aria-live="polite">
-                <p data-intro-quote-text>„Zemlja je ono što nam je svima zajedničko.”</p>
-                <span data-intro-quote-author>Wendell Berry</span>
-            </div>
-
-            <div class="login-actions">
-                <button type="button" class="profile-setup-google login-google-action" id="profil-setup-google" onclick="GoogleAuthManager.prijaviPostojeciProfil()">
-                    <i class="fa-brands fa-google"></i>
-                    <span>Prijavi se preko Google</span>
+            <div class="profile-setup-card">
+                <span class="settings-label">Tvoj avatar</span>
+                <button type="button" class="profile-setup-avatar" id="profil-setup-avatar-preview" onclick="PodesavanjaManager.toggleSetupAvatarPicker(event)" title="Izaberi avatar">
+                    <span class="profile-setup-avatar-empty" id="profil-setup-avatar-empty">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </span>
+                    <span class="avatar-portrait" id="profil-setup-avatar-figura"></span>
+                    <span class="profile-setup-avatar-action"><i class="fa-solid fa-pen"></i></span>
                 </button>
-                <button type="button" class="profile-setup-guest login-guest-action" id="profil-setup-guest" onclick="PodesavanjaManager.prijaviSeKaoGost()">
-                    <i class="fa-solid fa-user"></i>
-                    <span>Igraj kao gost</span>
+
+                <div class="profile-setup-picker" id="profil-setup-avatar-picker" aria-hidden="true">
+                    <div class="profile-setup-picker-head">
+                        <strong>Izaberi lika</strong>
+                        <button type="button" onclick="PodesavanjaManager.zatvoriSetupAvatarPicker()" title="Zatvori">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="avatar-grid profile-setup-avatar-grid" id="profil-setup-avatar-lista" aria-label="Izbor avatara"></div>
+                </div>
+
+                <label class="settings-label" for="profil-setup-nadimak">Ime u igri</label>
+                <div class="profile-setup-name-row">
+                    <i class="fa-solid fa-at"></i>
+                    <input id="profil-setup-nadimak" type="text" maxlength="20" autocomplete="off" placeholder="Unesi ime">
+                </div>
+                <p class="profile-setup-hint" id="profil-setup-poruka" aria-live="polite">Ime može imati 2-20 slova ili brojeva.</p>
+
+                <button type="button" class="profile-setup-submit" id="profil-setup-submit" onclick="PodesavanjaManager.registrujObavezniProfil()">
+                    <span>Uđi kao gost</span>
+                    <i class="fa-solid fa-arrow-right"></i>
                 </button>
-                <p class="profile-setup-hint" id="profil-setup-poruka" aria-live="polite"></p>
             </div>
         </div>
         <nav class="login-legal-links" aria-label="Pravni linkovi">
@@ -390,8 +403,8 @@
                     <button class="profile-choice active" id="profil-opcija-lokalni" onclick="PodesavanjaManager.izaberiProfilTip('lokalni')">
                         <span class="profile-choice-icon"><i class="fa-solid fa-user-pen"></i></span>
                         <span class="profile-choice-copy">
-                            <b>Ime i avatar</b>
-                            <small>Lokalni profil</small>
+                            <b>Igraj kao gost</b>
+                            <small>Ime i avatar na ovom uređaju</small>
                         </span>
                         <span class="profile-choice-status" id="profil-lokalni-status">AKTIVNO</span>
                     </button>
@@ -399,10 +412,24 @@
                         <span class="profile-choice-icon"><i class="fa-brands fa-google"></i></span>
                         <span class="profile-choice-copy">
                             <b>Google nalog</b>
-                                <small>Prijavi se</small>
+                            <small>Prijava i cloud profil</small>
                         </span>
-                        <span class="profile-choice-status soon" id="profil-google-status">PRIJAVI SE</span>
+                        <span class="profile-choice-status soon" id="profil-google-status">USKORO</span>
                     </button>
+                </div>
+                <div class="profile-info-panel">
+                    <div class="profile-info-row">
+                        <span>
+                            <small>Trenutno</small>
+                            <b id="profil-info-tip">Gost profil</b>
+                        </span>
+                        <button type="button" class="profile-logout-btn" id="profil-odjava-dugme" onclick="PodesavanjaManager.odjaviProfil()">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Odjavi se</span>
+                        </button>
+                    </div>
+                    <p id="profil-info-opis">Gost profil čuva ime, avatar i napredak na ovom uređaju.</p>
+                    <p id="profil-google-info">Google prijava je u pripremi.</p>
                 </div>
             </div>
             

@@ -2,6 +2,18 @@
 
 const GoogleAuthManager = {
     povezivanjeUToku: false,
+    googlePrijavaAktivna: false,
+
+    prikaziGoogleUPripremi: function() {
+        const poruka = "Google prijava je u pripremi. Za sada uđi kao gost i izaberi ime i avatar.";
+        if (typeof PodesavanjaManager !== "undefined") {
+            PodesavanjaManager.postaviSetupPoruku(poruka);
+            PodesavanjaManager.azurirajProfilOpcije();
+        }
+        if (typeof UIManager !== "undefined") {
+            UIManager.prikaziObavestenje("Google prijava", poruka, null, "U redu");
+        }
+    },
 
     normalizujOdgovor: function(odgovor) {
         if (!odgovor || typeof odgovor !== "object") return null;
@@ -168,6 +180,10 @@ const GoogleAuthManager = {
     },
 
     poveziTrenutniProfil: async function() {
+        if (!this.googlePrijavaAktivna) {
+            this.prikaziGoogleUPripremi();
+            return;
+        }
         if (this.povezivanjeUToku) return;
         if (typeof PodesavanjaManager === "undefined" || !PodesavanjaManager.zahtevajProfil()) return;
 
@@ -213,6 +229,10 @@ const GoogleAuthManager = {
     },
 
     prijaviPostojeciProfil: async function() {
+        if (!this.googlePrijavaAktivna) {
+            this.prikaziGoogleUPripremi();
+            return;
+        }
         if (this.povezivanjeUToku) return;
         this.povezivanjeUToku = true;
         const dugmad = Array.from(document.querySelectorAll('.login-google-action'));

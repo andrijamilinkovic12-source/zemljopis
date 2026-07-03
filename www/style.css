@@ -883,6 +883,70 @@ body[data-tema="svetla"] #profil-setup-nadimak {
     border-color: rgba(245, 175, 25, 0.35);
 }
 
+.profile-info-panel {
+    margin-top: 0.42rem;
+    padding: 0.52rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.profile-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.55rem;
+}
+
+.profile-info-row span {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.08rem;
+}
+
+.profile-info-row small {
+    color: #8fa69a;
+    font-size: 0.56rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.profile-info-row b {
+    color: #ffffff;
+    font-size: 0.78rem;
+    line-height: 1.15;
+}
+
+.profile-info-panel p {
+    margin-top: 0.38rem;
+    color: #a0aec0;
+    font-size: 0.62rem;
+    line-height: 1.35;
+}
+
+.profile-logout-btn {
+    min-height: 34px;
+    border: 1px solid rgba(255, 113, 142, 0.35);
+    border-radius: 8px;
+    background: rgba(255, 65, 108, 0.12);
+    color: #ffb4c4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0 0.55rem;
+    font-size: 0.66rem;
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.profile-logout-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
 .settings-profile-row {
     display: flex;
     align-items: stretch;

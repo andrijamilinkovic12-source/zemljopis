@@ -8,20 +8,18 @@ const KeyboardManager = {
     latinLayout: [
         ['LJ', 'NJ', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P', 'Š'],
         ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Č', 'Ć'],
-        ['{lang}', 'DŽ', 'C', 'V', 'B', 'N', 'M', 'Đ', 'Ž', '{backspace}'],
+        ['DŽ', 'C', 'V', 'B', 'N', 'M', 'Đ', 'Ž', '{backspace}'],
         ['{space}', '{enter}']
     ],
     cyrillicLayout: [
         ['Љ', 'Њ', 'Е', 'Р', 'Т', 'З', 'У', 'И', 'О', 'П', 'Ш'],
         ['А', 'С', 'Д', 'Ф', 'Г', 'Х', 'Ј', 'К', 'Л', 'Ч', 'Ћ'],
-        ['{lang}', 'Џ', 'Ц', 'В', 'Б', 'Н', 'М', 'Ђ', 'Ж', '{backspace}'],
+        ['Џ', 'Ц', 'В', 'Б', 'Н', 'М', 'Ђ', 'Ж', '{backspace}'],
         ['{space}', '{enter}']
     ],
 
     init: function() {
-        if (typeof PodesavanjaManager !== 'undefined') {
-            this.pismo = PodesavanjaManager.postavke.pismo;
-        }
+        this.sinhronizujPismo();
         this.renderKeyboard();
         this.bindInputs();
 
@@ -59,6 +57,12 @@ const KeyboardManager = {
                 input.setAttribute('data-kb-bound', 'true');
             }
         });
+    },
+
+    sinhronizujPismo: function() {
+        if (typeof PodesavanjaManager !== 'undefined' && PodesavanjaManager.postavke.pismo) {
+            this.pismo = PodesavanjaManager.postavke.pismo;
+        }
     },
 
     getInputScope: function(input) {
@@ -127,6 +131,7 @@ const KeyboardManager = {
     renderKeyboard: function() {
         const container = document.getElementById('custom-keyboard');
         container.innerHTML = '';
+        this.sinhronizujPismo();
         
         const layout = this.pismo === 'cirilica' ? this.cyrillicLayout : this.latinLayout;
 
@@ -138,11 +143,7 @@ const KeyboardManager = {
                 const keyEl = document.createElement('button');
                 keyEl.className = 'kb-key';
                 
-                if (key === '{lang}') {
-                    keyEl.classList.add('kb-special');
-                    keyEl.innerText = this.pismo === 'cirilica' ? 'ABC' : 'АБВ';
-                    keyEl.onclick = () => this.togglePismo();
-                } else if (key === '{space}') {
+                if (key === '{space}') {
                     keyEl.classList.add('kb-special', 'kb-space');
                     keyEl.innerHTML = '<i class="fa-solid fa-arrows-left-right"></i>';
                     keyEl.onclick = () => this.handleKeyPress(' ');
@@ -199,8 +200,9 @@ const KeyboardManager = {
     },
 
     togglePismo: function() {
-        this.pismo = this.pismo === 'latinica' ? 'cirilica' : 'latinica';
-        this.renderKeyboard();
+        if (typeof PodesavanjaManager !== 'undefined' && typeof PodesavanjaManager.togglePismo === 'function') {
+            PodesavanjaManager.togglePismo();
+        }
     },
 
     showKeyboard: function() {

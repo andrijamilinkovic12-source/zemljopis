@@ -475,15 +475,23 @@ const UIManager = {
 
     prikaziObavestenje: function(naslov, poruka, akcijaNakonKlika, tekstDugmeta = "U redu") {
         const modal = document.getElementById('custom-modal');
+        const naslovEl = document.getElementById('modal-title');
+        const porukaEl = document.getElementById('modal-message');
         
-        document.getElementById('modal-title').innerHTML = naslov; 
-        document.getElementById('modal-message').innerHTML = poruka;
+        naslovEl.innerHTML = naslov;
+        porukaEl.innerHTML = poruka;
 
         const btn = document.getElementById('modal-btn');
         
         const novoDugme = btn.cloneNode(true);
         novoDugme.innerText = tekstDugmeta; 
         btn.parentNode.replaceChild(novoDugme, btn);
+
+        if (typeof PodesavanjaManager !== 'undefined') {
+            PodesavanjaManager.primeniPismoNaElement(naslovEl);
+            PodesavanjaManager.primeniPismoNaElement(porukaEl);
+            PodesavanjaManager.primeniPismoNaElement(novoDugme);
+        }
 
         novoDugme.addEventListener('click', () => {
             this.zatvoriObavestenje();
@@ -503,8 +511,11 @@ const UIManager = {
         const modal = document.getElementById('confirm-modal');
         if (!modal) return;
 
-        document.getElementById('confirm-title').innerHTML = naslov;
-        document.getElementById('confirm-message').innerHTML = poruka;
+        const naslovEl = document.getElementById('confirm-title');
+        const porukaEl = document.getElementById('confirm-message');
+
+        naslovEl.innerHTML = naslov;
+        porukaEl.innerHTML = poruka;
 
         const btnPotvrdi = document.getElementById('btn-confirm-yes');
         const btnOdustani = document.getElementById('btn-confirm-no');
@@ -517,6 +528,13 @@ const UIManager = {
         const novoDugmeOdustani = btnOdustani.cloneNode(true);
         novoDugmeOdustani.innerText = tekstOdustani;
         btnOdustani.parentNode.replaceChild(novoDugmeOdustani, btnOdustani);
+
+        if (typeof PodesavanjaManager !== 'undefined') {
+            PodesavanjaManager.primeniPismoNaElement(naslovEl);
+            PodesavanjaManager.primeniPismoNaElement(porukaEl);
+            PodesavanjaManager.primeniPismoNaElement(novoDugmePotvrdi);
+            PodesavanjaManager.primeniPismoNaElement(novoDugmeOdustani);
+        }
 
         // Akcija za DA
         novoDugmePotvrdi.addEventListener('click', () => {

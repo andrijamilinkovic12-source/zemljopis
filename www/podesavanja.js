@@ -24,6 +24,7 @@ const PodesavanjaManager = {
     avatarPickerDokumentHandler: null,
     androidProfilKljucPromise: null,
     povezivanjeStabilnogKljuca: false,
+    cirilicaObserver: null,
     avatari: [
         { id: "atlas", naziv: "Atlas", tip: "kartograf", kosa: "#273244", koza: "#ffd1a6", kozaSenka: "#d88b61", odelo: "#1fbf75", detalj: "#f6c453", pozadina: "#0d3b32", pozadina2: "#38ef7d" },
         { id: "luna", naziv: "Luna", tip: "zvezdana", kosa: "#5630a4", koza: "#f4c6a4", kozaSenka: "#c9816a", odelo: "#4f8cff", detalj: "#ffd166", pozadina: "#18214d", pozadina2: "#8b5cf6" },
@@ -806,27 +807,25 @@ const PodesavanjaManager = {
             google.disabled = Boolean(povezivanjeUToku);
         }
         if (lokalniStatus) {
-            lokalniStatus.innerText = profilSpreman
-                ? (this.postavke.pismo === "cirilica" ? "АКТИВНО" : "AKTIVNO")
-                : (this.postavke.pismo === "cirilica" ? "НИЈЕ СПРЕМНО" : "NIJE SPREMNO");
+            lokalniStatus.innerText = this.formatirajTekst(profilSpreman ? "AKTIVNO" : "NIJE SPREMNO");
         }
         if (googleStatus) {
             googleStatus.classList.toggle('soon', !googlePovezan);
             if (povezivanjeUToku) {
-                googleStatus.innerText = this.postavke.pismo === "cirilica" ? "ПОВЕЗУЈЕ" : "POVEZUJE";
+                googleStatus.innerText = this.formatirajTekst("POVEZUJE");
             } else if (googlePovezan) {
-                googleStatus.innerText = this.postavke.pismo === "cirilica" ? "ПОВЕЗАНО" : "POVEZANO";
+                googleStatus.innerText = this.formatirajTekst("POVEZANO");
             } else {
-                googleStatus.innerText = this.postavke.pismo === "cirilica" ? "УСКОРО" : "USKORO";
+                googleStatus.innerText = this.formatirajTekst("USKORO");
             }
         }
         if (profilInfoTip) {
             if (googlePovezan) {
-                profilInfoTip.innerText = this.postavke.pismo === "cirilica" ? "Google профил" : "Google profil";
+                profilInfoTip.innerText = this.formatirajTekst("Google profil");
             } else if (profilSpreman) {
-                profilInfoTip.innerText = this.postavke.pismo === "cirilica" ? "Гост профил" : "Gost profil";
+                profilInfoTip.innerText = this.formatirajTekst("Gost profil");
             } else {
-                profilInfoTip.innerText = this.postavke.pismo === "cirilica" ? "Профил није направљен" : "Profil nije napravljen";
+                profilInfoTip.innerText = this.formatirajTekst("Profil nije napravljen");
             }
         }
         if (profilInfoOpis) {
@@ -1195,13 +1194,13 @@ const PodesavanjaManager = {
 
         if (btn && statusTekst && ikona) {
             if (this.postavke.zvuk) {
-                statusTekst.innerText = this.postavke.pismo === "cirilica" ? "УКЉ" : "UKLJ";
+                statusTekst.innerText = this.formatirajTekst("UKLJ");
                 statusTekst.style.color = boje.primary;
                 btn.style.borderColor = `rgba(${boje.primaryRgb}, 0.42)`;
                 btn.style.background = `rgba(${boje.primaryRgb}, 0.1)`;
                 ikona.className = "fa-solid fa-volume-high";
             } else {
-                statusTekst.innerText = this.postavke.pismo === "cirilica" ? "ИСКЉ" : "ISKLJ";
+                statusTekst.innerText = this.formatirajTekst("ISKLJ");
                 statusTekst.style.color = boje.danger;
                 btn.style.borderColor = `rgba(${boje.dangerRgb}, 0.42)`;
                 btn.style.background = `rgba(${boje.dangerRgb}, 0.1)`;
@@ -1214,9 +1213,9 @@ const PodesavanjaManager = {
         this.postavke.pismo = this.postavke.pismo === "latinica" ? "cirilica" : "latinica";
         this.snimiULokalnuMemoriju();
         
-        let poruka = this.postavke.pismo === "cirilica" 
-            ? "Апликација ће се поново учитати како би се применила Ћирилица." 
-            : "Aplikacija će se ponovo učitati kako bi se primenila Latinica.";
+        let poruka = this.formatirajTekst(
+            `Aplikacija će se ponovo učitati kako bi se primenila ${this.postavke.pismo === "cirilica" ? "ćirilica" : "latinica"}.`
+        );
             
         UIManager.prikaziObavestenje("Pismo promenjeno", poruka, () => location.reload(), "U redu");
     },
@@ -1225,56 +1224,92 @@ const PodesavanjaManager = {
         const statusTekst = document.getElementById('pismo-status');
         const boje = this.tematskeBoje();
         if (statusTekst) {
-            statusTekst.innerText = this.postavke.pismo === "cirilica" ? "ЋИРИЛИЦА" : "LATINICA";
+            statusTekst.innerText = this.formatirajTekst(this.postavke.pismo === "cirilica" ? "ĆIRILICA" : "LATINICA");
             statusTekst.style.color = this.postavke.pismo === "cirilica" ? boje.primary : boje.muted;
+        }
+    },
+
+    cirilicnaMapa: {
+        "nj":"њ", "Nj":"Њ", "NJ":"Њ", "lj":"љ", "Lj":"Љ", "LJ":"Љ", "dž":"џ", "Dž":"Џ", "DŽ":"Џ",
+        "a":"а", "b":"б", "v":"в", "g":"г", "d":"д", "đ":"ђ", "e":"е", "ž":"ж", "z":"з", "i":"и",
+        "j":"ј", "k":"к", "l":"л", "m":"м", "n":"н", "o":"о", "p":"п", "r":"р", "s":"с", "t":"т",
+        "ć":"ћ", "u":"у", "f":"ф", "h":"х", "c":"ц", "č":"ч", "š":"ш", "q":"к", "w":"в", "x":"кс", "y":"и",
+        "A":"А", "B":"Б", "V":"В", "G":"Г", "D":"Д", "Đ":"Ђ", "E":"Е", "Ž":"Ж", "Z":"З", "I":"И",
+        "J":"Ј", "K":"К", "L":"Л", "M":"М", "N":"Н", "O":"О", "P":"П", "R":"Р", "S":"С", "T":"Т",
+        "Ć":"Ћ", "U":"У", "F":"Ф", "H":"Х", "C":"Ц", "Č":"Ч", "Š":"Ш", "Q":"К", "W":"В", "X":"КС", "Y":"И"
+    },
+
+    cirilicniRegex: /nj|Nj|NJ|lj|Lj|LJ|dž|Dž|DŽ|[a-zđžćčšA-ZĐŽĆČŠ]/g,
+
+    presloviUCirilicu: function(tekst) {
+        let vrednost = tekst === null || typeof tekst === 'undefined' ? "" : String(tekst);
+        vrednost = vrednost.replace(/MULTIPLAYER/g, "МУЛТИПЛЕЈЕР");
+        vrednost = vrednost.replace(/Multiplayer/g, "Мултиплејер");
+        return vrednost.replace(this.cirilicniRegex, m => this.cirilicnaMapa[m] || m);
+    },
+
+    formatirajTekst: function(tekst) {
+        const vrednost = tekst === null || typeof tekst === 'undefined' ? "" : String(tekst);
+        return this.postavke.pismo === "cirilica" ? this.presloviUCirilicu(vrednost) : vrednost;
+    },
+
+    primeniPismoNaElement: function(element) {
+        if (this.postavke.pismo === "cirilica" && element) {
+            this.primeniCirilicu(element);
         }
     },
 
     // Glavni engine za prevod na ćirilicu
     primeniCirilicu: function(element) {
-        const mapa = {
-            "nj":"њ", "Nj":"Њ", "NJ":"Њ", "lj":"љ", "Lj":"Љ", "LJ":"Љ", "dž":"џ", "Dž":"Џ", "DŽ":"Џ",
-            "a":"а", "b":"б", "v":"в", "g":"г", "d":"д", "đ":"ђ", "e":"е", "ž":"ж", "z":"з", "i":"и", 
-            "j":"ј", "k":"к", "l":"л", "m":"м", "n":"н", "o":"о", "p":"п", "r":"р", "s":"с", "t":"т", 
-            "ć":"ћ", "u":"у", "f":"ф", "h":"х", "c":"ц", "č":"ч", "š":"ш",
-            "A":"А", "B":"Б", "V":"В", "G":"Г", "D":"Д", "Đ":"Ђ", "E":"Е", "Ž":"Ж", "Z":"З", "I":"И", 
-            "J":"Ј", "K":"К", "L":"Л", "M":"М", "N":"Н", "O":"О", "P":"П", "R":"Р", "S":"С", "T":"Т", 
-            "Ć":"Ћ", "U":"У", "F":"Ф", "H":"Х", "C":"Ц", "Č":"Ч", "Š":"Ш"
-        };
-        const regex = /nj|Nj|NJ|lj|Lj|LJ|dž|Dž|DŽ|[a-zđžćčšA-ZĐŽĆČŠ]/g;
+        if (!element) return;
 
-        function obradi(cvor) {
+        const obradi = (cvor) => {
             if (cvor.nodeType === 3) {
-                // NOVO: Specifične engleske reči prevodimo ručno u bloku pre pojedinačnih slova
-                let tekst = cvor.nodeValue;
-                tekst = tekst.replace(/MULTIPLAYER/g, "МУЛТИПЛЕЈЕР");
-                tekst = tekst.replace(/Multiplayer/g, "Мултиплејер");
-
-                // Zatim prevodimo ostatak teksta slovo po slovo
-                cvor.nodeValue = tekst.replace(regex, m => mapa[m] || m);
-            } else if (cvor.nodeType === 1) {
-                if (cvor.tagName !== "SCRIPT" && cvor.tagName !== "STYLE" && cvor.id !== "room-code-input") {
-                    if (cvor.hasAttribute("placeholder")) {
-                        let placeholderText = cvor.getAttribute("placeholder");
-                        placeholderText = placeholderText.replace(/MULTIPLAYER/g, "МУЛТИПЛЕЈЕР");
-                        placeholderText = placeholderText.replace(/Multiplayer/g, "Мултиплејер");
-
-                        cvor.setAttribute("placeholder", placeholderText.replace(regex, m => mapa[m] || m));
-                    }
-                    cvor.childNodes.forEach(obradi);
+                const prevedeno = this.presloviUCirilicu(cvor.nodeValue);
+                if (cvor.nodeValue !== prevedeno) {
+                    cvor.nodeValue = prevedeno;
                 }
+            } else if (cvor.nodeType === 1) {
+                if (cvor.tagName === "SCRIPT" || cvor.tagName === "STYLE" || cvor.id === "room-code-input") return;
+
+                ["placeholder", "title", "aria-label"].forEach(atribut => {
+                    if (!cvor.hasAttribute(atribut)) return;
+                    const trenutnaVrednost = cvor.getAttribute(atribut);
+                    const prevedenaVrednost = this.presloviUCirilicu(trenutnaVrednost);
+                    if (trenutnaVrednost !== prevedenaVrednost) {
+                        cvor.setAttribute(atribut, prevedenaVrednost);
+                    }
+                });
+
+                cvor.childNodes.forEach(obradi);
             }
-        }
+        };
+
         obradi(element);
     },
 
     pokreniCirilicaPosmatraca: function() {
+        if (this.cirilicaObserver) return;
+
         const observer = new MutationObserver((mutations) => {
             mutations.forEach(m => {
-                m.addedNodes.forEach(node => this.primeniCirilicu(node));
+                if (m.type === "childList") {
+                    m.addedNodes.forEach(node => this.primeniCirilicu(node));
+                } else if (m.type === "characterData") {
+                    this.primeniCirilicu(m.target);
+                } else if (m.type === "attributes") {
+                    this.primeniCirilicu(m.target);
+                }
             });
         });
-        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+            attributes: true,
+            attributeFilter: ["placeholder", "title", "aria-label"]
+        });
+        this.cirilicaObserver = observer;
     },
 
     promeniTemu: function(novaTema) {

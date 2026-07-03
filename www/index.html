@@ -192,15 +192,15 @@
 
             <div class="sub-modes-row">
                 <div class="sub-mode-wrapper" onclick="Game.pokreniIgru('solo')">
-                    <button class="sub-mode-btn solo-btn">
-                        <i class="fa-solid fa-user"></i>
+                    <button class="sub-mode-btn solo-btn" aria-label="Solo">
+                        <img class="sub-mode-icon" src="assets/mode-solo.svg" alt="" aria-hidden="true" decoding="async">
                     </button>
                     <span class="sub-mode-label">SOLO</span>
                 </div>
 
                 <div class="sub-mode-wrapper" onclick="UIManager.prikaziObavestenje('Turniri', 'Epski turniri sa vrednim nagradama stižu uskoro! Spremi se.', null, 'Zatvori')">
-                    <button class="sub-mode-btn tournament-btn">
-                        <i class="fa-solid fa-crown"></i>
+                    <button class="sub-mode-btn tournament-btn" aria-label="Turnir">
+                        <img class="sub-mode-icon" src="assets/mode-turnir.svg" alt="" aria-hidden="true" decoding="async">
                     </button>
                     <span class="sub-mode-label">TURNIR</span>
                 </div>

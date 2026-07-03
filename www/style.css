@@ -585,6 +585,23 @@ body[data-tema="svetla"] #profil-setup-nadimak {
 
 .status-pill:active { transform: scale(0.95); }
 
+.status-icon {
+    width: 1.65em;
+    height: 1.65em;
+    flex: 0 0 auto;
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 0 7px rgba(56, 239, 125, 0.28));
+}
+
+.ducats-pill .status-icon {
+    filter: drop-shadow(0 0 7px rgba(245, 175, 25, 0.34));
+}
+
+.online-pill .status-icon {
+    filter: drop-shadow(0 0 7px rgba(56, 189, 248, 0.34));
+}
+
 .ducats-pill { color: #f5af19; border-color: rgba(245, 175, 25, 0.3); }
 .tokens-pill { color: #38ef7d; border-color: rgba(56, 239, 125, 0.3); }
 .online-pill { color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); }

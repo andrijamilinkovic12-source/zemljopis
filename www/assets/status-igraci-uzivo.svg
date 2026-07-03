@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true">
+  <defs>
+    <linearGradient id="online-ring" x1="12" y1="9" x2="53" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset=".52" stop-color="#38ef7d"/>
+      <stop offset="1" stop-color="#f5af19"/>
+    </linearGradient>
+    <linearGradient id="online-cyan" x1="16" y1="16" x2="51" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7dd3fc"/>
+      <stop offset=".5" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#11998e"/>
+    </linearGradient>
+    <linearGradient id="online-green" x1="22" y1="18" x2="49" y2="53" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d9ffe8"/>
+      <stop offset=".5" stop-color="#38ef7d"/>
+      <stop offset="1" stop-color="#11998e"/>
+    </linearGradient>
+    <linearGradient id="online-gold" x1="31" y1="15" x2="50" y2="47" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff7bf"/>
+      <stop offset="1" stop-color="#f5af19"/>
+    </linearGradient>
+    <filter id="online-glow" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="1.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <circle cx="32" cy="32" r="28" fill="#06151a" opacity=".86"/>
+  <circle cx="32" cy="32" r="25" fill="none" stroke="url(#online-ring)" stroke-width="3.2" opacity=".9"/>
+  <g opacity=".45" fill="none" stroke="#7dd3fc" stroke-width="1.7" stroke-linecap="round">
+    <path d="M12 32h40"/>
+    <path d="M32 12c-5.8 6.2-8.7 12.9-8.7 20S26.2 45.8 32 52"/>
+    <path d="M32 12c5.8 6.2 8.7 12.9 8.7 20S37.8 45.8 32 52"/>
+  </g>
+  <g filter="url(#online-glow)">
+    <circle cx="32" cy="27" r="8" fill="url(#online-gold)" stroke="#fff7bf" stroke-width="1.8"/>
+    <path d="M19.5 49c2.5-8.6 7.8-13 12.5-13s10 4.4 12.5 13" fill="none" stroke="url(#online-gold)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="20.5" cy="31" r="5.8" fill="url(#online-cyan)" stroke="#d9ffe8" stroke-width="1.5"/>
+    <path d="M12.5 49c1.6-5.5 4.8-8.2 8-8.2 2.1 0 4.2 1.1 5.8 3.3" fill="none" stroke="url(#online-cyan)" stroke-width="4.8" stroke-linecap="round"/>
+    <circle cx="47.5" cy="31" r="5.8" fill="url(#online-green)" stroke="#d9ffe8" stroke-width="1.5"/>
+    <path d="M51.7 44.1c1.6-2.2 3.6-3.3 5.8-3.3 3.2 0 6.4 2.7 8 8.2" transform="translate(-10 0)" fill="none" stroke="url(#online-green)" stroke-width="4.8" stroke-linecap="round"/>
+    <circle cx="50.5" cy="17" r="4.2" fill="#38ef7d" stroke="#d9ffe8" stroke-width="1.2"/>
+  </g>
+</svg>

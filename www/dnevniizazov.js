@@ -36,6 +36,41 @@ const DnevniIzazovManager = {
         return tekst === null || typeof tekst === 'undefined' ? "" : String(tekst);
     },
 
+    escapeHtml: function(tekst) {
+        if (typeof CategoryIcons !== 'undefined' && typeof CategoryIcons.escapeHtml === 'function') {
+            return CategoryIcons.escapeHtml(tekst);
+        }
+        return String(tekst === null || typeof tekst === 'undefined' ? "" : tekst)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    },
+
+    nazivKategorije: function(zadatak) {
+        const id = zadatak ? (zadatak.kategorija || zadatak.id) : "";
+        const fallback = zadatak && zadatak.naziv ? zadatak.naziv : id;
+        if (typeof CategoryIcons !== 'undefined' && typeof CategoryIcons.naziv === 'function') {
+            return CategoryIcons.naziv(id, fallback);
+        }
+        return fallback;
+    },
+
+    renderujKategoriju: function(zadatak, labelClass = 'category-label') {
+        const id = zadatak ? (zadatak.kategorija || zadatak.id) : "";
+        const naziv = this.nazivKategorije(zadatak);
+        if (typeof CategoryIcons !== 'undefined' && typeof CategoryIcons.labelHtml === 'function') {
+            return CategoryIcons.labelHtml(id, naziv, {
+                labelClass,
+                fallbackIcon: zadatak && zadatak.ikona ? zadatak.ikona : ''
+            });
+        }
+
+        const ikona = zadatak && zadatak.ikona ? `${this.escapeHtml(zadatak.ikona)} ` : "";
+        return `<span class="${this.escapeHtml(labelClass)}">${ikona}<span class="category-label-text">${this.escapeHtml(this.formatirajTekst(naziv))}</span></span>`;
+    },
+
     primeniPismoNaElement: function(element) {
         if (typeof PodesavanjaManager !== 'undefined' && typeof PodesavanjaManager.primeniPismoNaElement === 'function') {
             PodesavanjaManager.primeniPismoNaElement(element);
@@ -243,13 +278,16 @@ const DnevniIzazovManager = {
 
         let html = '';
         this.dnevniPodaci.zadaci.forEach((zadatak, index) => {
+            const nazivZadatka = this.nazivKategorije(zadatak);
+            const kategorijaHtml = this.renderujKategoriju(zadatak, 'category-label category-label--daily');
+            const slovo = this.escapeHtml(zadatak.slovo);
             html += `
             <div class="input-group dnevni-input-group">
                 <label>
-                    <span class="dnevni-zadatak-naziv">${zadatak.ikona} ${zadatak.naziv}</span>
-                    <span class="dnevni-zadatak-slovo">Slovo: ${zadatak.slovo}</span>
+                    <span class="dnevni-zadatak-naziv">${kategorijaHtml}</span>
+                    <span class="dnevni-zadatak-slovo">Slovo: ${slovo}</span>
                 </label>
-                <input type="text" id="dnevni-input-${index}" class="game-input" data-kategorija="${zadatak.kategorija}" placeholder="${zadatak.naziv} na ${zadatak.slovo}..." autocomplete="off" autocorrect="off" spellcheck="false">
+                <input type="text" id="dnevni-input-${index}" class="game-input" data-kategorija="${this.escapeHtml(zadatak.kategorija)}" placeholder="${this.escapeHtml(nazivZadatka)} na ${slovo}..." autocomplete="off" autocorrect="off" spellcheck="false">
             </div>
             `;
         });
@@ -321,8 +359,8 @@ const DnevniIzazovManager = {
 
         el.innerHTML = `
             <span class="dnevni-aktivni-redni">ZADATAK ${index + 1}/${zadaci.length}</span>
-            <span class="dnevni-aktivni-pojam">${zadatak.ikona} ${zadatak.naziv}</span>
-            <span class="dnevni-aktivni-slovo">Slovo: ${zadatak.slovo}</span>
+            <span class="dnevni-aktivni-pojam">${this.renderujKategoriju(zadatak, 'category-label category-label--daily-active')}</span>
+            <span class="dnevni-aktivni-slovo">Slovo: ${this.escapeHtml(zadatak.slovo)}</span>
         `;
         this.primeniPismoNaElement(el);
 

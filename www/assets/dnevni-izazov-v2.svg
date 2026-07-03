@@ -1,20 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" aria-hidden="true">
   <defs>
-    <linearGradient id="daily-v2-ring" x1="12" y1="9" x2="84" y2="88" gradientUnits="userSpaceOnUse">
+    <linearGradient id="daily-v2-ring" x1="13" y1="8" x2="83" y2="89" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#38bdf8"/>
-      <stop offset="0.42" stop-color="#38ef7d"/>
+      <stop offset=".48" stop-color="#38ef7d"/>
       <stop offset="1" stop-color="#f5af19"/>
     </linearGradient>
-    <linearGradient id="daily-v2-face" x1="24" y1="20" x2="73" y2="78" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#102a37"/>
+    <radialGradient id="daily-v2-face" cx="39%" cy="30%" r="70%">
+      <stop offset="0" stop-color="#123b42"/>
+      <stop offset=".58" stop-color="#092127"/>
+      <stop offset="1" stop-color="#041014"/>
+    </radialGradient>
+    <linearGradient id="daily-v2-water" x1="23" y1="19" x2="72" y2="77" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7dd3fc"/>
+      <stop offset=".5" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#11998e"/>
+    </linearGradient>
+    <linearGradient id="daily-v2-land" x1="25" y1="28" x2="67" y2="70" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d9ffe8"/>
+      <stop offset=".48" stop-color="#38ef7d"/>
+      <stop offset="1" stop-color="#11998e"/>
+    </linearGradient>
+    <linearGradient id="daily-v2-gold" x1="30" y1="20" x2="66" y2="76" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff7bf"/>
+      <stop offset=".42" stop-color="#ffe08a"/>
+      <stop offset="1" stop-color="#f5af19"/>
+    </linearGradient>
+    <linearGradient id="daily-v2-calendar" x1="61" y1="9" x2="88" y2="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#103a35"/>
       <stop offset="1" stop-color="#06151a"/>
     </linearGradient>
-    <linearGradient id="daily-v2-gold" x1="31" y1="25" x2="70" y2="73" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#fff7bf"/>
-      <stop offset="1" stop-color="#f5af19"/>
-    </linearGradient>
-    <filter id="daily-v2-glow" x="-35%" y="-35%" width="170%" height="170%">
-      <feGaussianBlur stdDeviation="2.8" result="blur"/>
+    <filter id="daily-v2-shadow" x="-28%" y="-28%" width="156%" height="156%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3.2" flood-color="#000000" flood-opacity=".42"/>
+    </filter>
+    <filter id="daily-v2-glow" x="-42%" y="-42%" width="184%" height="184%">
+      <feGaussianBlur stdDeviation="2.6" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -22,29 +41,35 @@
     </filter>
   </defs>
 
-  <circle cx="48" cy="48" r="40" fill="#06151a" fill-opacity="0.9" stroke="url(#daily-v2-ring)" stroke-width="5" filter="url(#daily-v2-glow)"/>
-  <circle cx="48" cy="48" r="30" fill="url(#daily-v2-face)" stroke="#d9ffe8" stroke-width="2.2" opacity="0.95"/>
+  <circle cx="48" cy="48" r="43" fill="#06151a" opacity=".92"/>
+  <circle cx="48" cy="48" r="40.5" fill="none" stroke="url(#daily-v2-ring)" stroke-width="5.5" filter="url(#daily-v2-glow)"/>
+  <circle cx="48" cy="48" r="33.5" fill="url(#daily-v2-face)" stroke="#d9ffe8" stroke-opacity=".55" stroke-width="2"/>
 
-  <g opacity="0.72" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" fill="none">
-    <path d="M22 48h52"/>
-    <path d="M48 22c-8 8-12 17-12 26s4 18 12 26c8-8 12-17 12-26S56 30 48 22Z"/>
-    <path d="M28 35c9 5 31 5 40 0M28 61c9-5 31-5 40 0"/>
+  <g opacity=".7" fill="none" stroke="#7dd3fc" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M17.5 48h61"/>
+    <path d="M48 15.5c-9.5 8.7-14.3 19.6-14.3 32.5S38.5 71.8 48 80.5"/>
+    <path d="M48 15.5c9.5 8.7 14.3 19.6 14.3 32.5S57.5 71.8 48 80.5"/>
+    <path d="M24 33.8c10.8 5.3 37.2 5.3 48 0"/>
+    <path d="M24 62.2c10.8-5.3 37.2-5.3 48 0"/>
+  </g>
+
+  <g filter="url(#daily-v2-shadow)">
+    <path d="M27.5 37.8c4.9-6.6 13.2-8.4 20.4-4.5 4.4 2.4 5.3 8.2 1.8 11.8-3.8 3.9-11.3 3-16.2.9-4.1-1.7-8.4-.8-12.9 2.7.6-4.6 2.8-8.3 6.9-10.9Z" fill="url(#daily-v2-land)" opacity=".95"/>
+    <path d="M56.8 56.2c5.7-2.1 12.6.4 15.1 6.1-5.3 6.8-14.6 8.8-22.6 4.7.3-5.4 2.8-9.1 7.5-10.8Z" fill="url(#daily-v2-water)" opacity=".9"/>
   </g>
 
   <g filter="url(#daily-v2-glow)">
-    <path d="M51 17l6 22 20 7-19 8-7 20-8-20-22-8 22-7Z" fill="url(#daily-v2-gold)" stroke="#fff7bf" stroke-width="1.5" stroke-linejoin="round"/>
-    <circle cx="51" cy="47" r="5.2" fill="#06151a" stroke="#d9ffe8" stroke-width="2"/>
+    <path d="M49.8 20.5 57 42.6l22.1 7.2-21.5 8.5-7.8 20.9-8.7-20.8-24.5-8.6 24.6-7.4 8.6-21.9Z" fill="url(#daily-v2-gold)" stroke="#fff7bf" stroke-width="1.7" stroke-linejoin="round"/>
+    <circle cx="49.8" cy="49.8" r="5.6" fill="#06151a" stroke="#d9ffe8" stroke-width="2.1"/>
+    <circle cx="49.8" cy="49.8" r="2" fill="#38ef7d"/>
   </g>
 
-  <g transform="translate(57 8)">
-    <rect x="0" y="5" width="27" height="28" rx="7" fill="#081d19" stroke="#38ef7d" stroke-width="2.8"/>
-    <path d="M6 3v7M21 3v7M4 14h19" fill="none" stroke="#fff7bf" stroke-width="2.2" stroke-linecap="round"/>
-    <circle cx="13.5" cy="23" r="5.2" fill="#f5af19"/>
-    <path d="M13.5 20v3.2l2.4 1.4" fill="none" stroke="#06151a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="translate(61 8)" filter="url(#daily-v2-shadow)">
+    <rect x="0" y="6" width="28" height="29" rx="7" fill="url(#daily-v2-calendar)" stroke="#38ef7d" stroke-width="2.7"/>
+    <path d="M7 3v8M21 3v8M5 15h18" fill="none" stroke="#fff7bf" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="14" cy="25" r="6.2" fill="#f5af19"/>
+    <path d="m10.8 25 2.1 2.2 4.5-5" fill="none" stroke="#06151a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 
-  <g transform="translate(16 59)">
-    <path d="M0 10c5-10 15-12 23-7 5 3 6 9 2 13-4 4-12 3-17 1-4-2-7-1-10 2 0-3 0-6 2-9Z" fill="#38ef7d" opacity="0.88"/>
-    <path d="M25 15c5-2 11 0 13 6-5 5-12 7-19 4 0-5 2-8 6-10Z" fill="#38bdf8" opacity="0.82"/>
-  </g>
+  <path d="M18 76c8.2 5.7 18.4 8.3 30 8.3 11.8 0 22-2.8 30.2-8.6" fill="none" stroke="#d9ffe8" stroke-opacity=".2" stroke-width="3" stroke-linecap="round"/>
 </svg>

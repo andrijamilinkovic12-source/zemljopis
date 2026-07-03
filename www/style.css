@@ -1284,8 +1284,24 @@ body[data-tema="svetla"] #postavke-nadimak {
     transition: transform 0.2s ease, filter 0.2s ease;
 }
 
+.menu-action-icon {
+    width: 72%;
+    height: 72%;
+    display: block;
+    object-fit: contain;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 0 10px rgba(56, 239, 125, 0.32));
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
 .daily-challenge-btn:active .daily-challenge-icon {
     transform: scale(0.92) rotate(-6deg);
+    filter: drop-shadow(0 0 14px rgba(245, 175, 25, 0.48));
+}
+
+.circle-btn:active .menu-action-icon {
+    transform: scale(0.92) rotate(-5deg);
     filter: drop-shadow(0 0 14px rgba(245, 175, 25, 0.48));
 }
 
@@ -1553,6 +1569,10 @@ body[data-tema="svetla"] #postavke-nadimak {
     object-fit: contain;
 }
 
+.screen-pattern-icon {
+    filter: drop-shadow(0 0 18px rgba(56, 239, 125, 0.22));
+}
+
 .pattern-icon:nth-child(even) { animation-delay: 2s; }
 
 #main-menu .pattern-icon {
@@ -1808,6 +1828,44 @@ body[data-tema="svetla"] #postavke-nadimak {
     text-transform: uppercase; 
 }
 
+.category-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38em;
+    max-width: 100%;
+    min-width: 0;
+    vertical-align: middle;
+}
+
+.category-icon {
+    width: 1.38em;
+    height: 1.38em;
+    flex: 0 0 auto;
+    display: inline-block;
+    object-fit: contain;
+    filter: drop-shadow(0 0 7px rgba(56, 239, 125, 0.22));
+}
+
+.category-label-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.category-label--input .category-icon {
+    width: 1.45em;
+    height: 1.45em;
+}
+
+.category-icon--emoji {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    filter: none;
+    line-height: 1;
+}
+
 .input-group input { 
     width: 100%; 
     padding: min(0.6rem, 1.2vh) 0.8rem; 
@@ -1898,6 +1956,8 @@ body[data-tema="svetla"] #postavke-nadimak {
 
 .dnevni-aktivni-pojam {
     flex: 1 1 115px;
+    display: flex;
+    align-items: center;
     color: #fff;
     font-size: min(0.95rem, 2vh);
     font-weight: 800;
@@ -1964,12 +2024,25 @@ body[data-tema="svetla"] #postavke-nadimak {
 }
 
 .dnevni-zadatak-naziv {
+    display: flex;
+    align-items: center;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: min(0.88rem, 1.8vh);
     color: #fff;
+}
+
+.dnevni-zadatak-naziv .category-label,
+.dnevni-aktivni-pojam .category-label {
+    width: 100%;
+}
+
+.category-label--daily .category-icon,
+.category-label--daily-active .category-icon {
+    width: 1.55em;
+    height: 1.55em;
 }
 
 .dnevni-zadatak-slovo {
@@ -4164,6 +4237,22 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.solo-answer-category .category-label,
+.round-answer-category .category-label {
+    width: 100%;
+}
+
+.category-label--summary,
+.category-label--round {
+    gap: 0.32em;
+}
+
+.category-label--summary .category-icon,
+.category-label--round .category-icon {
+    width: 1.45em;
+    height: 1.45em;
 }
 
 .solo-answer-value {

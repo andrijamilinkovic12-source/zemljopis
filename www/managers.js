@@ -489,7 +489,7 @@ const UIManager = {
         } else {
             const jeSobaPrijatelja = tipOnlineModa === 'prijatelji';
             gameBoard.classList.add(jeSobaPrijatelja ? 'friends-mode-active' : 'multi-mode-active');
-            modeIndicator.textContent = jeSobaPrijatelja ? 'PRIJAT.' : 'MULTI';
+            modeIndicator.textContent = jeSobaPrijatelja ? 'PRIJATELJI' : 'MULTI';
             modeIndicator.className = jeSobaPrijatelja ? 'mode-badge badge-friends' : 'mode-badge badge-multi';
             modeIndicator.title = jeSobaPrijatelja ? 'Prijatelji' : 'Multiplayer';
             modeIndicator.setAttribute('aria-label', jeSobaPrijatelja ? 'Prijatelji mod' : 'Multiplayer mod');

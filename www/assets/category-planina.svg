@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
+  <defs>
+    <linearGradient id="mountain-main" x1="10" y1="17" x2="53" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#11998e"/>
+    </linearGradient>
+    <linearGradient id="mountain-gold" x1="38" y1="7" x2="56" y2="25" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe08a"/>
+      <stop offset="1" stop-color="#f5af19"/>
+    </linearGradient>
+  </defs>
+  <circle cx="48" cy="16" r="7" fill="url(#mountain-gold)" opacity=".94"/>
+  <path d="M7 55 24.5 22.5c1.1-2 4-2 5.1 0L39 40l5.5-9.8c1.1-2 4-2 5.1.1L58 55H7Z" fill="url(#mountain-main)" stroke="#d9ffe8" stroke-opacity=".62" stroke-linejoin="round" stroke-width="2.6"/>
+  <path d="M25.8 24.4 18.5 38l6.1-2.5 4.6 4.6 4.7-3-5.6-12.7c-.5-1.1-1.9-1.1-2.5 0ZM46.8 32.2 41.5 42l4.4-1.6 3.5 3.3 2.8-1.8-3.2-9.7c-.4-1.1-1.7-1.1-2.2 0Z" fill="#f7fbff" opacity=".95"/>
+  <path d="M12 55c5.2-5.4 12.4-8.2 21.5-8.4 7.7-.2 13.5 2.6 17.5 8.4" fill="none" stroke="#06362f" stroke-opacity=".34" stroke-width="3" stroke-linecap="round"/>
+</svg>

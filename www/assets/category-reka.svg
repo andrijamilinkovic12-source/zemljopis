@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
+  <defs>
+    <linearGradient id="river-water" x1="42" y1="6" x2="17" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7dd3fc"/>
+      <stop offset=".52" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <linearGradient id="river-bank" x1="13" y1="8" x2="54" y2="55" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#38ef7d"/>
+      <stop offset="1" stop-color="#11998e"/>
+    </linearGradient>
+  </defs>
+  <path d="M13 55c9-6 14.8-11.6 17.5-16.7 3.8-7.2-7.4-10.4-1.6-18.3 2.7-3.6 7.7-7 15.1-10" fill="none" stroke="#05313f" stroke-opacity=".55" stroke-width="18" stroke-linecap="round"/>
+  <path d="M13 55c9-6 14.8-11.6 17.5-16.7 3.8-7.2-7.4-10.4-1.6-18.3 2.7-3.6 7.7-7 15.1-10" fill="none" stroke="url(#river-water)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M9 18c7.5-4.8 13.5-6.3 18-4.6M36 51c5.8-4.2 12.1-6 18.9-5.4" fill="none" stroke="url(#river-bank)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M18 36c-3.5 1.6-6.6 3.8-9.2 6.5M42 25c4.2-2.7 8.6-4.1 13.2-4.1" fill="none" stroke="#d9ffe8" stroke-opacity=".62" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="48" cy="12" r="4" fill="#ffe08a" opacity=".92"/>
+</svg>

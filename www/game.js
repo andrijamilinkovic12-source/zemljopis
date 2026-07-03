@@ -44,6 +44,40 @@ const Game = {
     aktivniPozivSobe: null,
     proveraTokenaInterval: null,
 
+    escapeHtml: function(tekst) {
+        if (typeof CategoryIcons !== 'undefined' && typeof CategoryIcons.escapeHtml === 'function') {
+            return CategoryIcons.escapeHtml(tekst);
+        }
+        return String(tekst === null || typeof tekst === 'undefined' ? "" : tekst)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    },
+
+    formatirajTekst: function(tekst) {
+        if (typeof PodesavanjaManager !== 'undefined' && typeof PodesavanjaManager.formatirajTekst === 'function') {
+            return PodesavanjaManager.formatirajTekst(tekst);
+        }
+        return tekst === null || typeof tekst === 'undefined' ? "" : String(tekst);
+    },
+
+    nazivKategorije: function(kategorija, fallback) {
+        if (typeof CategoryIcons !== 'undefined' && typeof CategoryIcons.naziv === 'function') {
+            return CategoryIcons.naziv(kategorija, fallback);
+        }
+        return fallback || kategorija || "";
+    },
+
+    renderujKategoriju: function(kategorija, naziv, labelClass = 'category-label') {
+        if (typeof CategoryIcons !== 'undefined' && typeof CategoryIcons.labelHtml === 'function') {
+            return CategoryIcons.labelHtml(kategorija, naziv, { labelClass });
+        }
+
+        return `<span class="${this.escapeHtml(labelClass)}"><span class="category-label-text">${this.escapeHtml(this.formatirajTekst(naziv || kategorija || ""))}</span></span>`;
+    },
+
     init: function() {
         this.podesiTastaturu();
         this.poveziSeNaServer();
@@ -1315,7 +1349,7 @@ const Game = {
             
             inputs.forEach(input => {
                 const kategorija = input.getAttribute('data-kategorija');
-                const nazivKategorije = input.previousElementSibling.innerText; 
+                const nazivKategorije = this.nazivKategorije(kategorija, input.previousElementSibling.textContent.trim());
                 const mojOdgovor = input.value.trim();
                 const isCorrect = BazaPodataka.proveriPojam(kategorija, mojOdgovor, this.zadatoSlovo);
                 
@@ -1323,6 +1357,7 @@ const Game = {
 
                 if (isCorrect) tacnihOveRunde++;
                 pregledIgraca['ja'].odgovori.push({
+                    kategorijaId: kategorija,
                     kategorija: nazivKategorije,
                     odgovor: mojOdgovor || "-",
                     boja: isCorrect ? 'green' : 'red',
@@ -1425,7 +1460,7 @@ const Game = {
         
         inputs.forEach(input => {
             const kategorija = input.getAttribute('data-kategorija');
-            const nazivKategorije = input.previousElementSibling.innerText; 
+            const nazivKategorije = this.nazivKategorije(kategorija, input.previousElementSibling.textContent.trim());
             
             let odgovoriZaKategoriju = [];
 
@@ -1457,6 +1492,7 @@ const Game = {
                 scoreOveRunde[unos.id] += unos.poeni;
 
                 pregledIgraca[unos.id].odgovori.push({
+                    kategorijaId: kategorija,
                     kategorija: nazivKategorije,
                     odgovor: unos.odgovor || "-",
                     boja: statusBoja,
@@ -1469,6 +1505,7 @@ const Game = {
             if (tacniOveRunde[socketId] === 7) {
                 scoreOveRunde[socketId] += 10;
                 pregledIgraca[socketId].odgovori.push({
+                    kategorijaId: 'bonus',
                     kategorija: "Bonus",
                     odgovor: "Perfektna runda",
                     boja: 'green',
@@ -1627,9 +1664,10 @@ const Game = {
                 let soloListaHtml = '';
                 igrac.odgovori.forEach(odg => {
                     const tacno = odg.boja === 'green';
+                    const kategorijaHtml = this.renderujKategoriju(odg.kategorijaId, odg.kategorija, 'category-label category-label--summary');
                     soloListaHtml += `
                         <div class="solo-answer-row ${tacno ? 'is-correct' : 'is-wrong'}">
-                            <span class="solo-answer-category">${odg.kategorija}</span>
+                            <span class="solo-answer-category">${kategorijaHtml}</span>
                             <span class="solo-answer-value">${odg.odgovor}</span>
                             <span class="solo-answer-status" aria-label="${tacno ? 'Tačno' : 'Netačno'}">
                                 <i class="fa-solid ${tacno ? 'fa-check' : 'fa-xmark'}" aria-hidden="true"></i>
@@ -1663,9 +1701,10 @@ const Game = {
                 const statusBadge = this.trenutniMod === 'solo'
                     ? (odg.boja === 'green' ? 'TAČNO' : 'NETAČNO')
                     : odg.poeni;
+                const kategorijaHtml = this.renderujKategoriju(odg.kategorijaId, odg.kategorija, 'category-label category-label--round');
                 listHtml += `
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: min(0.35rem, 0.7vh) 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <span style="font-size: min(0.65rem, 1.3vh); color: #a0aec0; width: 30%; text-transform: uppercase;">${odg.kategorija}</span>
+                        <span class="round-answer-category" style="font-size: min(0.65rem, 1.3vh); color: #a0aec0; width: 30%; text-transform: uppercase;">${kategorijaHtml}</span>
                         <span style="font-size: min(0.85rem, 1.7vh); font-weight: 800; color: ${colorHex}; flex: 1; text-align: left; padding-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">${odg.odgovor}</span>
                         <span style="font-size: min(0.72rem, 1.45vh); font-weight: 800; color: ${colorHex}; background: rgba(0,0,0,0.3); padding: min(0.15rem, 0.3vh) min(0.3rem, 0.6vw); border-radius: 6px;">${statusBadge}</span>
                     </div>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
+  <defs>
+    <linearGradient id="animal-pad" x1="14" y1="8" x2="50" y2="55" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe08a"/>
+      <stop offset=".52" stop-color="#f5af19"/>
+      <stop offset="1" stop-color="#c47a09"/>
+    </linearGradient>
+    <linearGradient id="animal-edge" x1="16" y1="12" x2="49" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d9ffe8"/>
+      <stop offset="1" stop-color="#38ef7d"/>
+    </linearGradient>
+  </defs>
+  <path d="M21.4 34.8c2.9-4.9 4.3-9.2 10.6-9.2s7.7 4.3 10.6 9.2c1.9 3.2 6.2 6 5.2 11.1-1.1 5.8-6.3 8.7-11.5 6.8-2.5-.9-5.2-.9-7.8 0-5.2 1.9-10.4-1-11.5-6.8-1-5.1 2.5-7.8 4.4-11.1Z" fill="url(#animal-pad)" stroke="url(#animal-edge)" stroke-width="2.8" stroke-linejoin="round"/>
+  <ellipse cx="17" cy="23.5" rx="5.6" ry="8" transform="rotate(-20 17 23.5)" fill="url(#animal-pad)" stroke="#d9ffe8" stroke-opacity=".68" stroke-width="2.4"/>
+  <ellipse cx="28" cy="15.5" rx="5.4" ry="8" transform="rotate(-5 28 15.5)" fill="url(#animal-pad)" stroke="#d9ffe8" stroke-opacity=".68" stroke-width="2.4"/>
+  <ellipse cx="39" cy="15.5" rx="5.4" ry="8" transform="rotate(5 39 15.5)" fill="url(#animal-pad)" stroke="#d9ffe8" stroke-opacity=".68" stroke-width="2.4"/>
+  <ellipse cx="49" cy="24" rx="5.6" ry="8" transform="rotate(20 49 24)" fill="url(#animal-pad)" stroke="#d9ffe8" stroke-opacity=".68" stroke-width="2.4"/>
+  <path d="M25 43.5c3.9-2.4 8.3-2.4 13.2 0" fill="none" stroke="#6b3b05" stroke-opacity=".35" stroke-width="2.3" stroke-linecap="round"/>
+</svg>

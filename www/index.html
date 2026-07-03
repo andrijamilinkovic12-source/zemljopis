@@ -12,8 +12,9 @@
 
     <div id="splash-screen" class="screen active">
         <div class="splash-content">
-            <div class="splash-brand-mark" aria-hidden="true">
-                <img class="splash-brand-logo" src="assets/menu-pattern-earth-europe.svg" alt="" decoding="async">
+            <div class="splash-brand-mark splash-brand-mark-3d" aria-hidden="true">
+                <canvas id="splash-logo-canvas" class="splash-logo-canvas"></canvas>
+                <img class="splash-brand-logo splash-brand-fallback" src="assets/zemljopis-game-icon.png" alt="" decoding="async">
             </div>
             <div class="splash-logo">
                 <span style="--i:1">Z</span>
@@ -854,6 +855,7 @@
             window.ZemljopisIntro.izaberiCitat();
         }
     </script>
+    <script type="module" src="splash-logo-3d.js"></script>
     <script src="game.js"></script>
 
     <script>

@@ -2412,6 +2412,84 @@ body.keyboard-open .dnevni-input-group input {
     animation: splashMarkIn 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
+.splash-brand-mark-3d {
+    --splash-logo-glow: rgba(var(--theme-primary-rgb, 56, 239, 125), 0.32);
+    width: clamp(106px, 27vw, 154px);
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+    position: relative;
+    isolation: isolate;
+}
+
+.splash-brand-mark-3d::before,
+.splash-brand-mark-3d::after {
+    content: "";
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.splash-brand-mark-3d::before {
+    background:
+        radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.26), transparent 24%),
+        radial-gradient(circle, rgba(var(--theme-primary-rgb, 56, 239, 125), 0.16), transparent 62%);
+    filter: blur(8px);
+    transform: scale(1.18);
+    opacity: 0.9;
+}
+
+.splash-brand-mark-3d::after {
+    border: 1px solid rgba(255, 247, 191, 0.28);
+    box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.42),
+        0 0 34px var(--splash-logo-glow),
+        inset 0 0 22px rgba(255, 247, 191, 0.1);
+    transform: scale(0.92);
+}
+
+.splash-logo-canvas {
+    position: absolute;
+    inset: -17%;
+    z-index: 2;
+    width: 134%;
+    height: 134%;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.splash-brand-fallback {
+    position: relative;
+    z-index: 1;
+    width: 96%;
+    height: 96%;
+    border-radius: 50%;
+    object-fit: cover;
+    opacity: 1;
+    transform: translateZ(0);
+    filter:
+        drop-shadow(0 15px 24px rgba(0, 0, 0, 0.36))
+        drop-shadow(0 0 18px rgba(var(--theme-primary-rgb, 56, 239, 125), 0.25));
+    transition: opacity 0.25s ease, transform 0.35s ease;
+}
+
+.splash-brand-mark-3d.is-ready .splash-logo-canvas {
+    opacity: 1;
+}
+
+.splash-brand-mark-3d.is-ready .splash-brand-fallback {
+    opacity: 0;
+    transform: scale(0.92);
+}
+
+.splash-brand-mark-3d.is-fallback .splash-brand-fallback {
+    animation: splashFallbackFloat 3.6s ease-in-out infinite;
+}
+
 .splash-logo { 
     font-size: clamp(1.85rem, 7.2vw, 2.65rem); 
     font-weight: 800; 
@@ -2533,6 +2611,29 @@ body.keyboard-open .dnevni-input-group input {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@keyframes splashFallbackFloat {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-4px) rotate(1deg); }
+}
+
+@media (max-width: 340px), (max-height: 620px) {
+    .splash-brand-mark-3d {
+        width: clamp(88px, 23vw, 118px);
+        margin-bottom: clamp(0.75rem, 2vh, 1rem);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .splash-brand-mark-3d.is-fallback .splash-brand-fallback {
+        animation: none;
+    }
+
+    .splash-logo-canvas,
+    .splash-brand-fallback {
+        transition-duration: 0.01ms;
     }
 }
 

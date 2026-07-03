@@ -12,14 +12,32 @@ const RiznicaManager = {
             { id: 'tema_neon', naziv: 'Neon Cyber', cena: 1000, kupljeno: false, opremljeno: false, ikona: 'fa-bolt' },
             { id: 'tema_zlatna', naziv: 'Kraljevsko Zlato', cena: 2500, kupljeno: false, opremljeno: false, ikona: 'fa-crown' },
             { id: 'tema_okean', naziv: 'Plavi Okean', cena: 800, kupljeno: false, opremljeno: false, ikona: 'fa-water' },
-            { id: 'tema_aurora', naziv: 'Aurora Prime', cena: 0, kupljeno: true, opremljeno: false, ikona: 'fa-star' }
+            { id: 'tema_aurora', naziv: 'Aurora Prime', cena: 0, kupljeno: true, opremljeno: false, ikona: 'fa-star' },
+            { id: 'tema_pustinja', naziv: 'Pustinjski zalazak', cena: 900, kupljeno: false, opremljeno: false, ikona: 'fa-sun' },
+            { id: 'tema_sakura', naziv: 'Sakura san', cena: 1100, kupljeno: false, opremljeno: false, ikona: 'fa-seedling' },
+            { id: 'tema_noir', naziv: 'Mono Noir', cena: 1400, kupljeno: false, opremljeno: false, ikona: 'fa-circle-half-stroke' },
+            { id: 'tema_tropi', naziv: 'Tropski ritam', cena: 1200, kupljeno: false, opremljeno: false, ikona: 'fa-umbrella-beach' }
         ],
         efekti: [
             { id: 'ef_nista', naziv: 'Bez efekta', cena: 0, kupljeno: true, opremljeno: true, ikona: 'fa-ban' },
             { id: 'ef_konfete', naziv: 'Konfete pobede', cena: 300, kupljeno: false, opremljeno: false, ikona: 'fa-wand-magic-sparkles' },
-            { id: 'ef_vatromet', naziv: 'Vatromet', cena: 800, kupljeno: false, opremljeno: false, ikona: 'fa-fire' }
+            { id: 'ef_vatromet', naziv: 'Vatromet', cena: 800, kupljeno: false, opremljeno: false, ikona: 'fa-fire' },
+            { id: 'ef_zvezdana_prasina', naziv: 'Zvezdana prašina', cena: 600, kupljeno: false, opremljeno: false, ikona: 'fa-star' },
+            { id: 'ef_snezna_mecava', naziv: 'Snežna mećava', cena: 750, kupljeno: false, opremljeno: false, ikona: 'fa-snowflake' },
+            { id: 'ef_munje', naziv: 'Električne munje', cena: 1000, kupljeno: false, opremljeno: false, ikona: 'fa-bolt' }
         ],
-        vauceri: [] 
+        tastature: [
+            { id: 'tastatura_izvorna', naziv: 'Izvorna', cena: 0, kupljeno: true, opremljeno: true, skin: 'izvorna', boje: ['#12351f', '#38ef7d', '#11998e'] },
+            { id: 'tastatura_zalazak', naziv: 'Zalazak', cena: 450, kupljeno: false, opremljeno: false, skin: 'zalazak', boje: ['#32182f', '#ff8a5c', '#ff3d81'] },
+            { id: 'tastatura_led', naziv: 'Polarni led', cena: 700, kupljeno: false, opremljeno: false, skin: 'led', boje: ['#071d2d', '#7de3ff', '#2797d8'] },
+            { id: 'tastatura_svemir', naziv: 'Duboki svemir', cena: 950, kupljeno: false, opremljeno: false, skin: 'svemir', boje: ['#110b2e', '#b77cff', '#5c3bdb'] },
+            { id: 'tastatura_kraljevska', naziv: 'Kraljevska', cena: 1200, kupljeno: false, opremljeno: false, skin: 'kraljevska', boje: ['#211804', '#ffd76a', '#b7791f'] },
+            { id: 'tastatura_mahovina', naziv: 'Šumska mahovina', cena: 550, kupljeno: false, opremljeno: false, skin: 'mahovina', boje: ['#101f15', '#8fd46b', '#3d7d45'] },
+            { id: 'tastatura_lava', naziv: 'Živa lava', cena: 850, kupljeno: false, opremljeno: false, skin: 'lava', boje: ['#260a08', '#ff7849', '#d92b18'] },
+            { id: 'tastatura_arkada', naziv: 'Retro arkada', cena: 1000, kupljeno: false, opremljeno: false, skin: 'arkada', boje: ['#071737', '#33e6ff', '#ffcc33'] },
+            { id: 'tastatura_sakura', naziv: 'Sakura', cena: 750, kupljeno: false, opremljeno: false, skin: 'sakura', boje: ['#321b2a', '#ffb4d2', '#db5f98'] },
+            { id: 'tastatura_monohrom', naziv: 'Monohrom', cena: 650, kupljeno: false, opremljeno: false, skin: 'monohrom', boje: ['#111315', '#f2f2f2', '#70757c'] }
+        ]
     },
 
     init: function() {
@@ -29,7 +47,7 @@ const RiznicaManager = {
             this.dukati = parsirano.dukati !== undefined ? parsirano.dukati : this.dukati;
             
             if (parsirano.podaci) {
-                ['teme', 'efekti'].forEach(kat => {
+                ['teme', 'efekti', 'tastature'].forEach(kat => {
                     if (parsirano.podaci[kat]) {
                         parsirano.podaci[kat].forEach(sacuvanaStavka => {
                             let orgStavka = this.podaci[kat].find(s => s.id === sacuvanaStavka.id);
@@ -41,6 +59,8 @@ const RiznicaManager = {
                 });
             }
         }
+
+        this.primeniSkinTastature();
     },
 
     normalizujDukate: function(vrednost, podrazumevano = this.dukati) {
@@ -90,6 +110,15 @@ const RiznicaManager = {
         return efekat ? efekat.id : 'ef_nista';
     },
 
+    vratiOpremljenuTastaturu: function() {
+        return this.podaci.tastature.find(tastatura => tastatura.opremljeno) || this.podaci.tastature[0];
+    },
+
+    primeniSkinTastature: function() {
+        const tastatura = this.vratiOpremljenuTastaturu();
+        document.body.setAttribute('data-tastatura', tastatura ? tastatura.skin : 'izvorna');
+    },
+
     otvoriEkran: function() {
         UIManager.prikaziEkran('riznica-screen');
         this.azurirajPrikazDukata();
@@ -106,7 +135,7 @@ const RiznicaManager = {
     promeniKategoriju: function(novaKategorija) {
         this.aktivnaKategorija = novaKategorija;
 
-        const tabovi = ['teme', 'efekti', 'vauceri'];
+        const tabovi = ['teme', 'efekti', 'tastature'];
         tabovi.forEach(tab => {
             const btn = document.getElementById('tab-' + tab);
             if (btn) {
@@ -132,46 +161,72 @@ const RiznicaManager = {
 
         if (this.aktivnaKategorija === 'teme' || this.aktivnaKategorija === 'efekti') {
             html = this.generisiHTMLTrgovine(this.aktivnaKategorija);
-        } else if (this.aktivnaKategorija === 'vauceri') {
-            html = `
-                <div style="text-align:center; padding: 2rem 1rem; color: #a0aec0;">
-                    <i class="fa-solid fa-ticket" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                    <h3>Vaučeri stižu uskoro!</h3>
-                    <p style="font-size: 0.85rem; margin-top: 0.5rem;">Ovde ćeš moći da uneseš promo kodove za specijalne nagrade i dukate.</p>
-                </div>
-            `;
+        } else if (this.aktivnaKategorija === 'tastature') {
+            html = this.generisiHTMLTastatura();
         }
         kontejner.innerHTML = html;
     },
 
     generisiHTMLTrgovine: function(kategorija) {
-        let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">';
+        let html = '<div class="riznica-grid">';
         
         this.podaci[kategorija].forEach(artikal => {
             let statusHtml = '';
             const otkljucano = this.jeOtkljucano(artikal);
-            let okvirBoja = artikal.opremljeno ? '#38ef7d' : 'rgba(255,255,255,0.1)';
-            let bgBoja = artikal.opremljeno ? 'rgba(56,239,125,0.1)' : 'rgba(0,0,0,0.4)';
 
             if (!otkljucano) {
-                statusHtml = `<button class="menu-btn" style="margin: 0; padding: 0.5rem; font-size: 0.8rem; width: 100%; background: rgba(245,175,25,0.2); color: #f5af19; border: 1px solid #f5af19;" onclick="RiznicaManager.kupiPredmet('${kategorija}', '${artikal.id}')"><i class="fa-solid fa-coins"></i> ${artikal.cena}</button>`;
+                statusHtml = `<button class="menu-btn riznica-akcija riznica-kupi" onclick="RiznicaManager.kupiPredmet('${kategorija}', '${artikal.id}')"><i class="fa-solid fa-coins"></i> ${artikal.cena}</button>`;
             } else if (artikal.opremljeno) {
-                statusHtml = `<div style="text-align: center; color: #38ef7d; font-size: 0.8rem; font-weight: 800; padding: 0.5rem;"><i class="fa-solid fa-circle-check"></i> Opremljeno</div>`;
+                statusHtml = '<div class="riznica-opremljeno"><i class="fa-solid fa-circle-check"></i> Opremljeno</div>';
             } else {
-                statusHtml = `<button class="menu-btn" style="margin: 0; padding: 0.5rem; font-size: 0.8rem; width: 100%;" onclick="RiznicaManager.opremiPredmet('${kategorija}', '${artikal.id}')">Opremi</button>`;
+                statusHtml = `<button class="menu-btn riznica-akcija" onclick="RiznicaManager.opremiPredmet('${kategorija}', '${artikal.id}')">Opremi</button>`;
             }
 
             html += `
-                <div style="background: ${bgBoja}; border: 1px solid ${okvirBoja}; border-radius: 12px; padding: 1rem 0.5rem; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+                <div class="riznica-kartica${artikal.opremljeno ? ' opremljena' : ''}${!otkljucano ? ' zakljucana' : ''}">
                     <div>
-                        <i class="fa-solid ${artikal.ikona}" style="font-size: 2rem; color: ${otkljucano ? '#fff' : '#a0aec0'}; margin-bottom: 0.8rem;"></i>
-                        <h4 style="color: #fff; font-size: 0.85rem; margin-bottom: 1rem;">${artikal.naziv}</h4>
+                        <i class="fa-solid ${artikal.ikona} riznica-artikal-ikona"></i>
+                        <h4 class="riznica-artikal-naziv">${artikal.naziv}</h4>
                     </div>
                     ${statusHtml}
                 </div>
             `;
         });
         
+        html += '</div>';
+        return html;
+    },
+
+    generisiHTMLTastatura: function() {
+        let html = '<div class="tastature-grid">';
+
+        this.podaci.tastature.forEach(artikal => {
+            const otkljucano = this.jeOtkljucano(artikal);
+            let statusHtml = '';
+
+            if (!otkljucano) {
+                statusHtml = `<button class="menu-btn tastatura-akcija kupi" onclick="RiznicaManager.kupiPredmet('tastature', '${artikal.id}')"><i class="fa-solid fa-coins"></i> ${artikal.cena}</button>`;
+            } else if (artikal.opremljeno) {
+                statusHtml = '<div class="tastatura-opremljena"><i class="fa-solid fa-circle-check"></i> Opremljeno</div>';
+            } else {
+                statusHtml = `<button class="menu-btn tastatura-akcija" onclick="RiznicaManager.opremiPredmet('tastature', '${artikal.id}')">Opremi</button>`;
+            }
+
+            const boje = artikal.boje;
+            html += `
+                <div class="tastatura-kartica${artikal.opremljeno ? ' opremljena' : ''}">
+                    <div class="tastatura-preview" style="--kb-preview-bg:${boje[0]}; --kb-preview-key:${boje[1]}; --kb-preview-enter:${boje[2]};">
+                        <div class="tastatura-preview-red"><span>Q</span><span>W</span><span>E</span><span>R</span><span>T</span><span>Š</span></div>
+                        <div class="tastatura-preview-red uvucen"><span>A</span><span>S</span><span>D</span><span>F</span><span>G</span></div>
+                        <div class="tastatura-preview-red donji"><span></span><span></span><span class="enter">OK</span></div>
+                    </div>
+                    <div class="tastatura-kartica-dno">
+                        <h4>${artikal.naziv}</h4>
+                        ${statusHtml}
+                    </div>
+                </div>`;
+        });
+
         html += '</div>';
         return html;
     },
@@ -208,6 +263,10 @@ const RiznicaManager = {
             PodesavanjaManager.snimiULokalnuMemoriju();
             PodesavanjaManager.azurirajDugmadTeme();
             document.body.setAttribute('data-tema', imeTeme);
+        }
+
+        if (kategorija === 'tastature') {
+            this.primeniSkinTastature();
         }
         
         this.snimiStanje();

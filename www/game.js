@@ -1608,7 +1608,7 @@ const Game = {
             osveziServerskoOdbrojavanje();
             this.tajmerPregledaRunde = setInterval(osveziServerskoOdbrojavanje, 200);
         } else {
-            let preostalo = 10;
+            let preostalo = this.trenutniMod === 'solo' ? 5 : 10;
             btnNext.innerText = `Sačekaj (${preostalo}s)`;
 
             this.tajmerPregledaRunde = setInterval(() => {

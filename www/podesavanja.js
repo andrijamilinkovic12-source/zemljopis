@@ -1398,8 +1398,19 @@ const PodesavanjaManager = {
     },
 
     azurirajDugmadTeme: function() {
-        const naziviTema = { 'tamna': 'Tamna', 'svetla': 'Svetla', 'neon': 'Neon', 'okean': 'Okean', 'zlatna': 'Zlatna', 'aurora': 'Aurora' };
-        const teme = ['tamna', 'svetla', 'neon', 'okean', 'zlatna', 'aurora'];
+        const naziviTema = {
+            'tamna': 'Tamna',
+            'svetla': 'Svetla',
+            'neon': 'Neon',
+            'okean': 'Okean',
+            'zlatna': 'Zlatna',
+            'aurora': 'Aurora',
+            'pustinja': 'Pustinja',
+            'sakura': 'Sakura',
+            'noir': 'Noir',
+            'tropi': 'Tropi'
+        };
+        const teme = ['tamna', 'svetla', 'neon', 'okean', 'zlatna', 'aurora', 'pustinja', 'sakura', 'noir', 'tropi'];
         const boje = this.tematskeBoje();
         
         teme.forEach(tema => {

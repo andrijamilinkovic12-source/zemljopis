@@ -121,6 +121,21 @@ const UIManager = {
                 klasa: 'winner-effect-fireworks',
                 naziv: 'VATROMET',
                 ikona: 'fa-fire'
+            },
+            ef_zvezdana_prasina: {
+                klasa: 'winner-effect-stardust',
+                naziv: 'ZVEZDANA PRAŠINA',
+                ikona: 'fa-star'
+            },
+            ef_snezna_mecava: {
+                klasa: 'winner-effect-snowstorm',
+                naziv: 'SNEŽNA MEĆAVA',
+                ikona: 'fa-snowflake'
+            },
+            ef_munje: {
+                klasa: 'winner-effect-lightning',
+                naziv: 'ELEKTRIČNE MUNJE',
+                ikona: 'fa-bolt'
             }
         };
 
@@ -140,11 +155,14 @@ const UIManager = {
             animacija.className = 'round-winner-animation';
             animacija.setAttribute('aria-hidden', 'true');
 
-            const brojCestica = pobednik.efekat === 'ef_konfete'
-                ? (mnogoPobednika ? 12 : 22)
-                : pobednik.efekat === 'ef_vatromet'
-                    ? (mnogoPobednika ? 16 : 24)
-                    : 0;
+            const brojCesticaPoEfektu = {
+                ef_konfete: mnogoPobednika ? 12 : 22,
+                ef_vatromet: mnogoPobednika ? 16 : 24,
+                ef_zvezdana_prasina: mnogoPobednika ? 12 : 20,
+                ef_snezna_mecava: mnogoPobednika ? 10 : 18,
+                ef_munje: mnogoPobednika ? 6 : 10
+            };
+            const brojCestica = brojCesticaPoEfektu[pobednik.efekat] || 0;
 
             for (let i = 0; i < brojCestica; i++) {
                 const cestica = document.createElement('span');
@@ -154,9 +172,26 @@ const UIManager = {
                     cestica.style.setProperty('--particle-delay', `${-((i * 0.13) % 1.8)}s`);
                     cestica.style.setProperty('--particle-drift', `${((i % 5) - 2) * 16}px`);
                     cestica.style.setProperty('--particle-rotation', `${(i * 47) % 180}deg`);
-                } else {
+                } else if (pobednik.efekat === 'ef_vatromet') {
                     cestica.style.setProperty('--spark-angle', `${i * 15}deg`);
                     cestica.style.setProperty('--particle-delay', `${-((i % 4) * 0.18)}s`);
+                } else if (pobednik.efekat === 'ef_zvezdana_prasina') {
+                    cestica.style.setProperty('--particle-x', `${7 + ((i * 29) % 86)}%`);
+                    cestica.style.setProperty('--particle-y', `${8 + ((i * 37) % 78)}%`);
+                    cestica.style.setProperty('--particle-size', `${3 + (i % 4)}px`);
+                    cestica.style.setProperty('--particle-delay', `${-((i * 0.17) % 1.6)}s`);
+                } else if (pobednik.efekat === 'ef_snezna_mecava') {
+                    cestica.textContent = '❄';
+                    cestica.style.setProperty('--particle-x', `${4 + ((i * 23) % 92)}%`);
+                    cestica.style.setProperty('--particle-delay', `${-((i * 0.19) % 2.2)}s`);
+                    cestica.style.setProperty('--particle-drift', `${((i % 7) - 3) * 10}px`);
+                    cestica.style.setProperty('--particle-duration', `${1.8 + (i % 4) * 0.28}s`);
+                } else if (pobednik.efekat === 'ef_munje') {
+                    cestica.style.setProperty('--particle-x', `${12 + ((i * 31) % 76)}%`);
+                    cestica.style.setProperty('--particle-y', `${8 + ((i * 27) % 72)}%`);
+                    cestica.style.setProperty('--bolt-rotation', `${-42 + (i % 5) * 19}deg`);
+                    cestica.style.setProperty('--bolt-length', `${22 + (i % 4) * 9}px`);
+                    cestica.style.setProperty('--particle-delay', `${-((i * 0.13) % 1.1)}s`);
                 }
 
                 animacija.appendChild(cestica);
@@ -224,7 +259,10 @@ const UIManager = {
         const podaciEfekata = {
             ef_nista: { klasa: 'winner-effect-none', naziv: 'BEZ EFEKTA', ikona: 'fa-ban' },
             ef_konfete: { klasa: 'winner-effect-confetti', naziv: 'KONFETE POBEDE', ikona: 'fa-wand-magic-sparkles' },
-            ef_vatromet: { klasa: 'winner-effect-fireworks', naziv: 'VATROMET', ikona: 'fa-fire' }
+            ef_vatromet: { klasa: 'winner-effect-fireworks', naziv: 'VATROMET', ikona: 'fa-fire' },
+            ef_zvezdana_prasina: { klasa: 'winner-effect-stardust', naziv: 'ZVEZDANA PRAŠINA', ikona: 'fa-star' },
+            ef_snezna_mecava: { klasa: 'winner-effect-snowstorm', naziv: 'SNEŽNA MEĆAVA', ikona: 'fa-snowflake' },
+            ef_munje: { klasa: 'winner-effect-lightning', naziv: 'ELEKTRIČNE MUNJE', ikona: 'fa-bolt' }
         };
 
         const napraviCestice = (kontejner, efekatId, brojCestica) => {
@@ -239,6 +277,23 @@ const UIManager = {
                 } else if (efekatId === 'ef_vatromet') {
                     cestica.style.setProperty('--spark-angle', `${i * (360 / brojCestica)}deg`);
                     cestica.style.setProperty('--particle-delay', `${-((i % 4) * 0.18)}s`);
+                } else if (efekatId === 'ef_zvezdana_prasina') {
+                    cestica.style.setProperty('--particle-x', `${7 + ((i * 29) % 86)}%`);
+                    cestica.style.setProperty('--particle-y', `${8 + ((i * 37) % 78)}%`);
+                    cestica.style.setProperty('--particle-size', `${3 + (i % 4)}px`);
+                    cestica.style.setProperty('--particle-delay', `${-((i * 0.17) % 1.6)}s`);
+                } else if (efekatId === 'ef_snezna_mecava') {
+                    cestica.textContent = '❄';
+                    cestica.style.setProperty('--particle-x', `${4 + ((i * 23) % 92)}%`);
+                    cestica.style.setProperty('--particle-delay', `${-((i * 0.19) % 2.2)}s`);
+                    cestica.style.setProperty('--particle-drift', `${((i % 7) - 3) * 8}px`);
+                    cestica.style.setProperty('--particle-duration', `${1.8 + (i % 4) * 0.28}s`);
+                } else if (efekatId === 'ef_munje') {
+                    cestica.style.setProperty('--particle-x', `${12 + ((i * 31) % 76)}%`);
+                    cestica.style.setProperty('--particle-y', `${8 + ((i * 27) % 72)}%`);
+                    cestica.style.setProperty('--bolt-rotation', `${-42 + (i % 5) * 19}deg`);
+                    cestica.style.setProperty('--bolt-length', `${20 + (i % 4) * 8}px`);
+                    cestica.style.setProperty('--particle-delay', `${-((i * 0.13) % 1.1)}s`);
                 }
 
                 kontejner.appendChild(cestica);
@@ -264,7 +319,14 @@ const UIManager = {
             const animacija = document.createElement('div');
             animacija.className = 'round-winner-animation';
             animacija.setAttribute('aria-hidden', 'true');
-            napraviCestice(animacija, efekatId, efekatId === 'ef_konfete' ? 14 : efekatId === 'ef_vatromet' ? 16 : 0);
+            const brojCesticaPoEfektu = {
+                ef_konfete: 14,
+                ef_vatromet: 16,
+                ef_zvezdana_prasina: 14,
+                ef_snezna_mecava: 12,
+                ef_munje: 7
+            };
+            napraviCestice(animacija, efekatId, brojCesticaPoEfektu[efekatId] || 0);
 
             const oznakaMesta = document.createElement('div');
             oznakaMesta.className = `final-ranking-place place-${Math.min(mesto, 4)}`;

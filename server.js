@@ -20,7 +20,14 @@ const io = new Server(server, {
     }
 });
 
-const DOZVOLJENI_EFEKTI_RUNDE = new Set(['ef_nista', 'ef_konfete', 'ef_vatromet']);
+const DOZVOLJENI_EFEKTI_RUNDE = new Set([
+    'ef_nista',
+    'ef_konfete',
+    'ef_vatromet',
+    'ef_zvezdana_prasina',
+    'ef_snezna_mecava',
+    'ef_munje'
+]);
 const VREMENSKA_ZONA_IGRE = "Europe/Belgrade";
 const DNEVNI_TRAJANJE_MS = 60 * 1000;
 const DNEVNI_INTRO_MS = 5200;
@@ -879,7 +886,7 @@ function spojiRiznicu(postojeca, dolazna) {
     const noviPodaci = objektIliPrazan(nova.podaci);
     const podaci = { ...stariPodaci, ...noviPodaci };
 
-    ["teme", "efekti", "vauceri"].forEach(kategorija => {
+    ["teme", "efekti", "tastature", "vauceri"].forEach(kategorija => {
         if (Array.isArray(stariPodaci[kategorija]) || Array.isArray(noviPodaci[kategorija])) {
             podaci[kategorija] = spojiArtiklePoId(stariPodaci[kategorija], noviPodaci[kategorija]);
         }

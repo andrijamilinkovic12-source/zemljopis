@@ -690,7 +690,7 @@ body[data-tema="svetla"] #profil-setup-nadimak {
 
 #podesavanja-screen {
     padding-top: 5.5vh;
-    padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+    padding-bottom: 0;
 }
 
 /* --- TOP LISTA: isti unutrašnji safe-zone ritam kao Soba prijatelja --- */
@@ -847,14 +847,21 @@ body[data-tema="svetla"] #profil-setup-nadimak {
     color: #38ef7d;
 }
 
-.settings-page-system {
-    padding-bottom: max(0.45rem, env(safe-area-inset-bottom, 0px));
-}
-
 .settings-secondary-actions {
     display: flex;
     gap: 0.5rem;
-    margin-top: auto;
+}
+
+.settings-footer {
+    z-index: 5;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    padding: min(0.45rem, 0.8vh) 1rem 4px;
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: column;
+    gap: min(0.45rem, 0.8vh);
 }
 
 .settings-back-button {

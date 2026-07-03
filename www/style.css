@@ -751,10 +751,9 @@ body[data-tema="svetla"] #profil-setup-nadimak {
     padding-bottom: 0;
 }
 
-/* --- TOP LISTA: isti unutrašnji safe-zone ritam kao Soba prijatelja --- */
 #toplista-screen {
     min-height: 0;
-    padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+    padding-bottom: 0;
 }
 
 .toplista-title {
@@ -1665,6 +1664,10 @@ body[data-tema="svetla"] #postavke-nadimak {
     width: 1em;
     height: 1em;
     object-fit: contain;
+}
+
+.category-bg-icon {
+    display: none !important;
 }
 
 .screen-pattern-icon {

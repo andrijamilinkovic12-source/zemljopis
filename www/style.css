@@ -1365,6 +1365,7 @@ body[data-tema="svetla"] #postavke-nadimak {
 .daily-challenge-btn.three-daily-ready .daily-challenge-three {
     opacity: 1;
     transform: scale(1);
+    animation: dailyThreeFloat 2.8s ease-in-out infinite;
 }
 
 .daily-challenge-btn.three-daily-ready .daily-challenge-icon {
@@ -1389,6 +1390,23 @@ body[data-tema="svetla"] #postavke-nadimak {
 
 .daily-challenge-btn:active .daily-challenge-three {
     transform: scale(0.92) rotate(-4deg);
+}
+
+@keyframes dailyThreeFloat {
+    0%, 100% {
+        translate: 0 0;
+        filter: drop-shadow(0 0 8px rgba(56, 239, 125, 0.24));
+    }
+    50% {
+        translate: 0 -4px;
+        filter: drop-shadow(0 7px 13px rgba(245, 175, 25, 0.34));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .daily-challenge-btn.three-daily-ready .daily-challenge-three {
+        animation: none;
+    }
 }
 
 .circle-btn:active .menu-action-icon {

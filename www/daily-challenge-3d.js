@@ -229,20 +229,42 @@
 
         let pressed = false;
         let hovered = false;
+        const smanjenoKretanje = window.matchMedia
+            && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const clock = new THREE.Clock();
+        let animacijaId = null;
 
         function renderuj() {
+            const vreme = clock.getElapsedTime();
             const hoverTilt = hovered ? 0.1 : 0;
             const pressScale = pressed ? 0.9 : 1;
+            const idleY = smanjenoKretanje ? 0 : Math.sin(vreme * 1.65);
+            const idleSide = smanjenoKretanje ? 0 : Math.sin(vreme * 1.05);
+            const pulse = smanjenoKretanje ? 1 : 1 + (Math.sin(vreme * 1.35) * 0.018);
 
-            group.rotation.x = -0.16;
-            group.rotation.y = 0.24 + hoverTilt;
-            group.rotation.z = pressed ? -0.04 : 0;
-            group.position.y = 0;
-            group.scale.setScalar(pressScale);
-            sparkle.rotation.z = hovered ? 0.28 : 0;
-            sparkle.material.opacity = hovered ? 0.95 : 0.78;
+            group.rotation.x = -0.16 + (idleY * 0.045);
+            group.rotation.y = 0.24 + hoverTilt + (idleSide * 0.08);
+            group.rotation.z = (pressed ? -0.04 : 0) + (idleSide * 0.025);
+            group.position.y = idleY * 0.075;
+            group.scale.setScalar(pressScale * pulse);
+            rim.rotation.z += smanjenoKretanje ? 0 : 0.0035;
+            innerRim.rotation.z -= smanjenoKretanje ? 0 : 0.0025;
+            sparkle.rotation.z = hovered ? 0.28 : vreme * 1.1;
+            sparkle.material.opacity = hovered ? 0.95 : 0.72 + ((Math.sin(vreme * 2.6) + 1) * 0.11);
 
             renderer.render(scene, camera);
+
+            if (!document.hidden && !smanjenoKretanje) {
+                animacijaId = window.requestAnimationFrame(renderuj);
+            } else {
+                animacijaId = null;
+            }
+        }
+
+        function pokreniAnimaciju() {
+            if (animacijaId !== null || smanjenoKretanje) return;
+            clock.getDelta();
+            animacijaId = window.requestAnimationFrame(renderuj);
         }
 
         podesiRendererVelicinu(renderer, mount, camera);
@@ -259,17 +281,24 @@
             renderuj();
         });
 
-        const osveziInterakciju = () => window.requestAnimationFrame(renderuj);
+        const osveziInterakciju = () => {
+            if (smanjenoKretanje) window.requestAnimationFrame(renderuj);
+            else pokreniAnimaciju();
+        };
 
         button.addEventListener('pointerenter', () => { hovered = true; osveziInterakciju(); });
         button.addEventListener('pointerleave', () => { hovered = false; pressed = false; osveziInterakciju(); });
         button.addEventListener('pointerdown', () => { pressed = true; osveziInterakciju(); });
         button.addEventListener('pointerup', () => { pressed = false; osveziInterakciju(); });
         button.addEventListener('pointercancel', () => { pressed = false; osveziInterakciju(); });
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) pokreniAnimaciju();
+        });
 
         button.dataset.threeDailyReady = '1';
         button.classList.add('three-daily-ready');
         renderuj();
+        pokreniAnimaciju();
     }
 
     function init() {

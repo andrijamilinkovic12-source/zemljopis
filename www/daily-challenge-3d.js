@@ -86,6 +86,20 @@
             planeSize: 2.44,
             showFrame: false,
             showSparkle: false
+        },
+        {
+            selector: '.tournament-btn',
+            datasetKey: 'threeTournamentReady',
+            iconSelector: '.tournament-mode-icon',
+            mountClass: 'daily-challenge-three tournament-three',
+            canvasClass: 'daily-challenge-three-canvas tournament-three-canvas',
+            readyClass: 'three-tournament-ready',
+            textureSrc: 'assets/mode-turnir-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/mode-turnir.svg',
+            planeSize: 2.44,
+            showFrame: false,
+            showSparkle: false
         }
     ];
     let threePromise = null;

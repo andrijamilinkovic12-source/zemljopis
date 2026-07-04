@@ -1412,6 +1412,11 @@ body[data-tema="svetla"] #postavke-nadimak {
     transform: scale(1);
 }
 
+.tournament-btn.three-tournament-ready .tournament-three {
+    opacity: 1;
+    transform: scale(1);
+}
+
 .daily-challenge-btn.three-daily-ready .daily-challenge-icon {
     opacity: 0;
 }
@@ -1433,6 +1438,10 @@ body[data-tema="svetla"] #postavke-nadimak {
 }
 
 .solo-btn.three-solo-ready .solo-mode-icon {
+    opacity: 0;
+}
+
+.tournament-btn.three-tournament-ready .tournament-mode-icon {
     opacity: 0;
 }
 
@@ -1494,6 +1503,11 @@ body[data-tema="svetla"] #postavke-nadimak {
 
 .solo-btn:active .solo-three,
 .sub-mode-wrapper:active .solo-three {
+    transform: scale(0.98);
+}
+
+.tournament-btn:active .tournament-three,
+.sub-mode-wrapper:active .tournament-three {
     transform: scale(0.98);
 }
 
@@ -1707,12 +1721,14 @@ body[data-tema="svetla"] #postavke-nadimak {
     transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.sub-mode-icon.solo-mode-icon {
+.sub-mode-icon.solo-mode-icon,
+.sub-mode-icon.tournament-mode-icon {
     width: 100%;
     height: 100%;
 }
 
-.solo-three {
+.solo-three,
+.tournament-three {
     inset: -5px;
 }
 

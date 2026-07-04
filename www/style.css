@@ -1417,6 +1417,12 @@ body[data-tema="svetla"] #postavke-nadimak {
     transform: scale(1);
 }
 
+.multiplayer-icon-slot.three-multiplayer-ready .multiplayer-mode-three,
+.invite-friends-icon-slot.three-invite-friends-ready .invite-friends-mode-three {
+    opacity: 1;
+    transform: scale(1);
+}
+
 .daily-challenge-btn.three-daily-ready .daily-challenge-icon {
     opacity: 0;
 }
@@ -1442,6 +1448,11 @@ body[data-tema="svetla"] #postavke-nadimak {
 }
 
 .tournament-btn.three-tournament-ready .tournament-mode-icon {
+    opacity: 0;
+}
+
+.multiplayer-icon-slot.three-multiplayer-ready .multiplayer-mode-icon,
+.invite-friends-icon-slot.three-invite-friends-ready .invite-friends-mode-icon {
     opacity: 0;
 }
 
@@ -1562,13 +1573,48 @@ body[data-tema="svetla"] #postavke-nadimak {
     transition: transform 0.2s ease, filter 0.2s ease;
 }
 
+.big-mode-icon-slot {
+    width: min(3.8rem, 18vw, 8vh);
+    height: min(3.8rem, 18vw, 8vh);
+    display: block;
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.big-mode-icon-slot .big-mode-icon {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+.big-mode-icon-slot .daily-challenge-three {
+    inset: -3px;
+}
+
 .top-half .big-mode-icon {
+    margin-bottom: 5px;
+}
+
+.top-half .big-mode-icon-slot {
     margin-bottom: 5px;
 }
 
 .bottom-half .big-mode-icon {
     margin-top: 5px;
     filter: drop-shadow(0 0 12px rgba(245, 175, 25, 0.34));
+}
+
+.bottom-half .big-mode-icon-slot {
+    margin-top: 5px;
+}
+
+.big-mode-icon-slot .big-mode-icon {
+    margin: 0;
+}
+
+.circle-half:active .multiplayer-mode-three,
+.circle-half:active .invite-friends-mode-three {
+    transform: scale(0.96);
 }
 
 .circle-half:active .big-mode-icon {

@@ -100,6 +100,34 @@
             planeSize: 2.44,
             showFrame: false,
             showSparkle: false
+        },
+        {
+            selector: '.multiplayer-icon-slot',
+            datasetKey: 'threeMultiplayerReady',
+            iconSelector: '.multiplayer-mode-icon',
+            mountClass: 'daily-challenge-three multiplayer-mode-three',
+            canvasClass: 'daily-challenge-three-canvas multiplayer-mode-three-canvas',
+            readyClass: 'three-multiplayer-ready',
+            textureSrc: 'assets/mode-multiplayer-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/mode-multiplayer.svg',
+            planeSize: 2.56,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.invite-friends-icon-slot',
+            datasetKey: 'threeInviteFriendsReady',
+            iconSelector: '.invite-friends-mode-icon',
+            mountClass: 'daily-challenge-three invite-friends-mode-three',
+            canvasClass: 'daily-challenge-three-canvas invite-friends-mode-three-canvas',
+            readyClass: 'three-invite-friends-ready',
+            textureSrc: 'assets/mode-pozovi-prijatelje-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/mode-pozovi-prijatelje.svg',
+            planeSize: 2.56,
+            showFrame: false,
+            showSparkle: false
         }
     ];
     let threePromise = null;

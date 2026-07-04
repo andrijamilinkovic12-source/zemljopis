@@ -16,7 +16,8 @@ const RiznicaManager = {
             { id: 'tema_pustinja', naziv: 'Pustinjski zalazak', cena: 900, kupljeno: false, opremljeno: false, ikona: 'fa-sun' },
             { id: 'tema_sakura', naziv: 'Sakura san', cena: 1100, kupljeno: false, opremljeno: false, ikona: 'fa-seedling' },
             { id: 'tema_noir', naziv: 'Mono Noir', cena: 1400, kupljeno: false, opremljeno: false, ikona: 'fa-circle-half-stroke' },
-            { id: 'tema_tropi', naziv: 'Tropski ritam', cena: 1200, kupljeno: false, opremljeno: false, ikona: 'fa-umbrella-beach' }
+            { id: 'tema_tropi', naziv: 'Tropski ritam', cena: 1200, kupljeno: false, opremljeno: false, ikona: 'fa-umbrella-beach' },
+            { id: 'tema_glina', naziv: 'Clay Berry', cena: 0, kupljeno: true, opremljeno: false, ikona: 'fa-shapes' }
         ],
         efekti: [
             { id: 'ef_nista', naziv: 'Bez efekta', cena: 0, kupljeno: true, opremljeno: true, ikona: 'fa-ban' },

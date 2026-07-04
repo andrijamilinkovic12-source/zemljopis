@@ -1408,9 +1408,10 @@ const PodesavanjaManager = {
             'pustinja': 'Pustinja',
             'sakura': 'Sakura',
             'noir': 'Noir',
-            'tropi': 'Tropi'
+            'tropi': 'Tropi',
+            'glina': 'Glina'
         };
-        const teme = ['tamna', 'svetla', 'neon', 'okean', 'zlatna', 'aurora', 'pustinja', 'sakura', 'noir', 'tropi'];
+        const teme = ['tamna', 'svetla', 'neon', 'okean', 'zlatna', 'aurora', 'pustinja', 'sakura', 'noir', 'tropi', 'glina'];
         const boje = this.tematskeBoje();
         
         teme.forEach(tema => {

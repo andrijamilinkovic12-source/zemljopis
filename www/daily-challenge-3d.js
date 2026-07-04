@@ -153,7 +153,7 @@
             textureSrc: 'assets/kvartalni-nivo-clay-3d.png',
             fallbackPngSrc: null,
             fallbackSvgSrc: 'assets/menu-kvartalni-nivo.svg',
-            planeSize: 2.48,
+            planeSize: 2.56,
             showFrame: false,
             showSparkle: false
         },

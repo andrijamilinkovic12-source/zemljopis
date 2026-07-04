@@ -1,10 +1,33 @@
 (function(window, document) {
     const THREE_CDN = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
     const THREE_LOCAL_MODULE = './vendor/three.module.js';
-    const SVG_SRC = 'assets/dnevni-izazov-v2.svg';
-    const PNG_TEXTURE_SRC = 'assets/daily-challenge-premium-3d.png';
-    const FALLBACK_PNG_TEXTURE_SRC = 'assets/dnevni-izazov-v2-tex.png';
     const SCRIPT_ID = 'zemljopis-three-runtime';
+    const PREMIUM_ICON_CONFIGS = [
+        {
+            selector: '.daily-challenge-btn',
+            datasetKey: 'threeDailyReady',
+            iconSelector: '.daily-challenge-icon',
+            mountClass: 'daily-challenge-three',
+            canvasClass: 'daily-challenge-three-canvas',
+            readyClass: 'three-daily-ready',
+            textureSrc: 'assets/daily-challenge-premium-3d.png',
+            fallbackPngSrc: 'assets/dnevni-izazov-v2-tex.png',
+            fallbackSvgSrc: 'assets/dnevni-izazov-v2.svg',
+            planeSize: 2.28
+        },
+        {
+            selector: '.treasury-btn',
+            datasetKey: 'threeTreasuryReady',
+            iconSelector: '.treasury-icon',
+            mountClass: 'daily-challenge-three treasury-three',
+            canvasClass: 'daily-challenge-three-canvas treasury-three-canvas',
+            readyClass: 'three-treasury-ready',
+            textureSrc: 'assets/riznica-premium-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/menu-riznica.svg',
+            planeSize: 2.28
+        }
+    ];
     let threePromise = null;
 
     function ucitajLokalniThree() {
@@ -79,7 +102,7 @@
         return texture;
     }
 
-    function teksturaIzPng(THREE, src = PNG_TEXTURE_SRC) {
+    function teksturaIzPng(THREE, src) {
         return new Promise((resolve, reject) => {
             const loader = new THREE.TextureLoader();
             loader.load(
@@ -91,8 +114,8 @@
         });
     }
 
-    async function teksturaIzSvgFallback(THREE) {
-        const odgovor = await fetch(SVG_SRC, { cache: 'force-cache' });
+    async function teksturaIzSvgFallback(THREE, src) {
+        const odgovor = await fetch(src, { cache: 'force-cache' });
         if (!odgovor.ok) {
             throw new Error('SVG_TEXTURE_FETCH_FAILED');
         }
@@ -132,24 +155,27 @@
         }
     }
 
-    async function teksturaIkone(THREE) {
+    async function teksturaIkone(THREE, config) {
         try {
-            return await teksturaIzPng(THREE);
+            return await teksturaIzPng(THREE, config.textureSrc);
         } catch (error) {
-            try {
-                return await teksturaIzPng(THREE, FALLBACK_PNG_TEXTURE_SRC);
-            } catch (fallbackError) {
-                return teksturaIzSvgFallback(THREE);
+            if (config.fallbackPngSrc) {
+                try {
+                    return await teksturaIzPng(THREE, config.fallbackPngSrc);
+                } catch (fallbackError) {
+                    return teksturaIzSvgFallback(THREE, config.fallbackSvgSrc);
+                }
             }
+            return teksturaIzSvgFallback(THREE, config.fallbackSvgSrc);
         }
     }
 
-    async function napraviDaily3D(button, THREE) {
-        if (!button || button.dataset.threeDailyReady === '1') return;
+    async function napraviPremiumIcon3D(button, THREE, config) {
+        if (!button || button.dataset[config.datasetKey] === '1') return;
 
-        const fallbackIkona = button.querySelector('.daily-challenge-icon');
+        const fallbackIkona = button.querySelector(config.iconSelector);
         const mount = document.createElement('span');
-        mount.className = 'daily-challenge-three';
+        mount.className = config.mountClass;
         mount.setAttribute('aria-hidden', 'true');
         button.appendChild(mount);
 
@@ -165,7 +191,7 @@
             return;
         }
 
-        renderer.domElement.className = 'daily-challenge-three-canvas';
+        renderer.domElement.className = config.canvasClass;
         renderer.domElement.setAttribute('aria-hidden', 'true');
         mount.appendChild(renderer.domElement);
 
@@ -244,7 +270,7 @@
 
         let texture;
         try {
-            texture = await teksturaIkone(THREE);
+            texture = await teksturaIkone(THREE, config);
         } catch (error) {
             renderer.dispose();
             mount.remove();
@@ -253,7 +279,7 @@
         }
 
         const face = new THREE.Mesh(
-            new THREE.PlaneGeometry(2.28, 2.28),
+            new THREE.PlaneGeometry(config.planeSize, config.planeSize),
             new THREE.MeshBasicMaterial({
                 map: texture,
                 transparent: true,
@@ -335,19 +361,22 @@
         button.addEventListener('pointerup', () => { pressed = false; zakaziRender(); });
         button.addEventListener('pointercancel', () => { pressed = false; zakaziRender(); });
 
-        button.dataset.threeDailyReady = '1';
-        button.classList.add('three-daily-ready');
+        button.dataset[config.datasetKey] = '1';
+        button.classList.add(config.readyClass);
         renderuj();
     }
 
     function init() {
-        const button = document.querySelector('.daily-challenge-btn');
-        if (!button) return;
-
         ucitajThree()
-            .then(THREE => napraviDaily3D(button, THREE))
+            .then(THREE => Promise.all(PREMIUM_ICON_CONFIGS.map(config => {
+                    const button = document.querySelector(config.selector);
+                    return button ? napraviPremiumIcon3D(button, THREE, config) : Promise.resolve();
+                })))
             .catch(() => {
-                button.classList.remove('three-daily-ready');
+                PREMIUM_ICON_CONFIGS.forEach(config => {
+                    const button = document.querySelector(config.selector);
+                    if (button) button.classList.remove(config.readyClass);
+                });
             });
     }
 

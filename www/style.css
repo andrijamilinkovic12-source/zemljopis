@@ -560,38 +560,73 @@ body[data-tema="svetla"] #profil-setup-nadimak {
    ========================================= */
 .status-bar {
     width: 100%;
+    max-width: clamp(300px, 92vw, 390px);
+    margin-inline: auto;
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 0.5rem;
     z-index: 99;
     margin-bottom: 1.5rem; 
 }
 
 .status-pill {
+    position: relative;
+    isolation: isolate;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: clamp(38px, 9.8vw, 46px);
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    justify-content: center;
+    gap: clamp(0.08rem, 0.9vw, 0.24rem);
     background: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 0.4rem 0.7rem;
-    border-radius: 20px;
+    padding: 0.32rem clamp(0.42rem, 2vw, 0.72rem);
+    border-radius: 999px;
     font-size: 0.75rem;
     font-weight: 800;
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     cursor: pointer;
     transition: transform 0.2s;
+    overflow: visible;
 }
 
 .status-pill:active { transform: scale(0.95); }
 
+.status-icon-slot {
+    position: relative;
+    width: clamp(40px, 11.5vw, 52px);
+    height: clamp(40px, 11.5vw, 52px);
+    flex: 0 0 clamp(40px, 11.5vw, 52px);
+    display: grid;
+    place-items: center;
+    margin-block: -0.42rem;
+    margin-left: -0.26rem;
+    pointer-events: none;
+    overflow: visible;
+}
+
 .status-icon {
-    width: 1.65em;
-    height: 1.65em;
+    position: relative;
+    z-index: 1;
+    width: 112%;
+    height: 112%;
     flex: 0 0 auto;
     display: block;
     object-fit: contain;
     filter: drop-shadow(0 0 7px rgba(56, 239, 125, 0.28));
+    transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+}
+
+.status-value {
+    position: relative;
+    z-index: 3;
+    min-width: 2.1em;
+    text-align: center;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
 }
 
 .ducats-pill .status-icon {
@@ -1450,6 +1485,13 @@ body[data-tema="svetla"] #postavke-nadimak {
     transform: scale(1);
 }
 
+.ducats-status-icon-slot.three-status-ducats-ready .ducats-status-three,
+.tokens-status-icon-slot.three-status-tokens-ready .tokens-status-three,
+.online-status-icon-slot.three-status-online-ready .online-status-three {
+    opacity: 1;
+    transform: scale(1);
+}
+
 .daily-challenge-btn.three-daily-ready .daily-challenge-icon {
     opacity: 0;
 }
@@ -1487,6 +1529,16 @@ body[data-tema="svetla"] #postavke-nadimak {
 .quarterly-level-btn.three-quarterly-level-ready .quarterly-level-icon,
 .trophy-room-btn.three-trophy-room-ready .trophy-room-icon {
     opacity: 0;
+}
+
+.ducats-status-icon-slot.three-status-ducats-ready .ducats-status-icon,
+.tokens-status-icon-slot.three-status-tokens-ready .tokens-status-icon,
+.online-status-icon-slot.three-status-online-ready .online-status-icon {
+    opacity: 0;
+}
+
+.status-icon-three {
+    inset: -6px;
 }
 
 .global-chat-three,

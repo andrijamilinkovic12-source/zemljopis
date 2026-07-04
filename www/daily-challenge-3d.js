@@ -170,6 +170,48 @@
             planeSize: 2.48,
             showFrame: false,
             showSparkle: false
+        },
+        {
+            selector: '.ducats-status-icon-slot',
+            datasetKey: 'threeStatusDucatsReady',
+            iconSelector: '.ducats-status-icon',
+            mountClass: 'daily-challenge-three status-icon-three ducats-status-three',
+            canvasClass: 'daily-challenge-three-canvas status-icon-three-canvas ducats-status-three-canvas',
+            readyClass: 'three-status-ducats-ready',
+            textureSrc: 'assets/status-dukati-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/status-dukati.svg',
+            planeSize: 2.66,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.tokens-status-icon-slot',
+            datasetKey: 'threeStatusTokensReady',
+            iconSelector: '.tokens-status-icon',
+            mountClass: 'daily-challenge-three status-icon-three tokens-status-three',
+            canvasClass: 'daily-challenge-three-canvas status-icon-three-canvas tokens-status-three-canvas',
+            readyClass: 'three-status-tokens-ready',
+            textureSrc: 'assets/status-tokeni-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/status-tokeni.svg',
+            planeSize: 2.66,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.online-status-icon-slot',
+            datasetKey: 'threeStatusOnlineReady',
+            iconSelector: '.online-status-icon',
+            mountClass: 'daily-challenge-three status-icon-three online-status-three',
+            canvasClass: 'daily-challenge-three-canvas status-icon-three-canvas online-status-three-canvas',
+            readyClass: 'three-status-online-ready',
+            textureSrc: 'assets/status-igraci-uzivo-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/status-igraci-uzivo.svg',
+            planeSize: 2.66,
+            showFrame: false,
+            showSparkle: false
         }
     ];
     let threePromise = null;

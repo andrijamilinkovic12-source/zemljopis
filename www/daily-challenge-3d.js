@@ -2,7 +2,8 @@
     const THREE_CDN = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
     const THREE_LOCAL_MODULE = './vendor/three.module.js';
     const SVG_SRC = 'assets/dnevni-izazov-v2.svg';
-    const PNG_TEXTURE_SRC = 'assets/dnevni-izazov-v2-tex.png';
+    const PNG_TEXTURE_SRC = 'assets/daily-challenge-premium-3d.png';
+    const FALLBACK_PNG_TEXTURE_SRC = 'assets/dnevni-izazov-v2-tex.png';
     const SCRIPT_ID = 'zemljopis-three-runtime';
     let threePromise = null;
 
@@ -78,11 +79,11 @@
         return texture;
     }
 
-    function teksturaIzPng(THREE) {
+    function teksturaIzPng(THREE, src = PNG_TEXTURE_SRC) {
         return new Promise((resolve, reject) => {
             const loader = new THREE.TextureLoader();
             loader.load(
-                PNG_TEXTURE_SRC,
+                src,
                 texture => resolve(podesiTeksturu(texture, THREE)),
                 undefined,
                 reject
@@ -135,7 +136,11 @@
         try {
             return await teksturaIzPng(THREE);
         } catch (error) {
-            return teksturaIzSvgFallback(THREE);
+            try {
+                return await teksturaIzPng(THREE, FALLBACK_PNG_TEXTURE_SRC);
+            } catch (fallbackError) {
+                return teksturaIzSvgFallback(THREE);
+            }
         }
     }
 
@@ -248,14 +253,14 @@
         }
 
         const face = new THREE.Mesh(
-            new THREE.PlaneGeometry(1.78, 1.78),
+            new THREE.PlaneGeometry(2.06, 2.06),
             new THREE.MeshBasicMaterial({
                 map: texture,
                 transparent: true,
                 depthWrite: false
             })
         );
-        face.position.z = 0.22;
+        face.position.z = 0.24;
         group.add(face);
 
         const sparkleShape = new THREE.Shape();

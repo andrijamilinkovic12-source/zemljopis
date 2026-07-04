@@ -651,6 +651,18 @@ body[data-tema="svetla"] #profil-setup-nadimak {
     transition: transform 0.2s ease, filter 0.2s ease;
 }
 
+.global-chat-btn,
+.trophy-room-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.top-menu-icon.global-chat-icon,
+.top-menu-icon.trophy-room-icon {
+    width: 100%;
+    height: 100%;
+}
+
 .top-circle-btn:active .top-menu-icon {
     transform: scale(0.92) rotate(-5deg);
     filter: drop-shadow(0 0 14px rgba(245, 175, 25, 0.48));
@@ -1423,6 +1435,13 @@ body[data-tema="svetla"] #postavke-nadimak {
     transform: scale(1);
 }
 
+.global-chat-btn.three-global-chat-ready .global-chat-three,
+.quarterly-level-btn.three-quarterly-level-ready .quarterly-level-three,
+.trophy-room-btn.three-trophy-room-ready .trophy-room-three {
+    opacity: 1;
+    transform: scale(1);
+}
+
 .daily-challenge-btn.three-daily-ready .daily-challenge-icon {
     opacity: 0;
 }
@@ -1454,6 +1473,22 @@ body[data-tema="svetla"] #postavke-nadimak {
 .multiplayer-icon-slot.three-multiplayer-ready .multiplayer-mode-icon,
 .invite-friends-icon-slot.three-invite-friends-ready .invite-friends-mode-icon {
     opacity: 0;
+}
+
+.global-chat-btn.three-global-chat-ready .global-chat-icon,
+.quarterly-level-btn.three-quarterly-level-ready .quarterly-level-icon,
+.trophy-room-btn.three-trophy-room-ready .trophy-room-icon {
+    opacity: 0;
+}
+
+.global-chat-three,
+.trophy-room-three {
+    inset: -2px;
+}
+
+.quarterly-level-three {
+    inset: 1px;
+    z-index: 1;
 }
 
 .menu-action-icon {

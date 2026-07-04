@@ -128,6 +128,48 @@
             planeSize: 2.56,
             showFrame: false,
             showSparkle: false
+        },
+        {
+            selector: '.global-chat-btn',
+            datasetKey: 'threeGlobalChatReady',
+            iconSelector: '.global-chat-icon',
+            mountClass: 'daily-challenge-three global-chat-three',
+            canvasClass: 'daily-challenge-three-canvas global-chat-three-canvas',
+            readyClass: 'three-global-chat-ready',
+            textureSrc: 'assets/global-chat-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/menu-global-chat.svg',
+            planeSize: 2.48,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.quarterly-level-btn',
+            datasetKey: 'threeQuarterlyLevelReady',
+            iconSelector: '.quarterly-level-icon',
+            mountClass: 'daily-challenge-three quarterly-level-three',
+            canvasClass: 'daily-challenge-three-canvas quarterly-level-three-canvas',
+            readyClass: 'three-quarterly-level-ready',
+            textureSrc: 'assets/kvartalni-nivo-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/menu-kvartalni-nivo.svg',
+            planeSize: 2.48,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.trophy-room-btn',
+            datasetKey: 'threeTrophyRoomReady',
+            iconSelector: '.trophy-room-icon',
+            mountClass: 'daily-challenge-three trophy-room-three',
+            canvasClass: 'daily-challenge-three-canvas trophy-room-three-canvas',
+            readyClass: 'three-trophy-room-ready',
+            textureSrc: 'assets/soba-trofeja-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/menu-soba-trofeja.svg',
+            planeSize: 2.48,
+            showFrame: false,
+            showSparkle: false
         }
     ];
     let threePromise = null;

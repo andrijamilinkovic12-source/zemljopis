@@ -2,7 +2,7 @@
     const THREE_CDN = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
     const THREE_LOCAL_MODULE = './vendor/three.module.js';
     const SCRIPT_ID = 'zemljopis-three-runtime';
-    const PREMIUM_ICON_CONFIGS = [
+    const THREE_ICON_CONFIGS = [
         {
             selector: '.daily-challenge-btn',
             datasetKey: 'threeDailyReady',
@@ -24,12 +24,12 @@
             mountClass: 'daily-challenge-three treasury-three',
             canvasClass: 'daily-challenge-three-canvas treasury-three-canvas',
             readyClass: 'three-treasury-ready',
-            textureSrc: 'assets/riznica-premium-3d.png',
+            textureSrc: 'assets/riznica-clay-3d.png',
             fallbackPngSrc: null,
             fallbackSvgSrc: 'assets/menu-riznica.svg',
-            planeSize: 2.28,
-            showFrame: true,
-            showSparkle: true
+            planeSize: 2.3,
+            showFrame: false,
+            showSparkle: false
         }
     ];
     let threePromise = null;
@@ -384,12 +384,12 @@
 
     function init() {
         ucitajThree()
-            .then(THREE => Promise.all(PREMIUM_ICON_CONFIGS.map(config => {
+            .then(THREE => Promise.all(THREE_ICON_CONFIGS.map(config => {
                     const button = document.querySelector(config.selector);
                     return button ? napraviPremiumIcon3D(button, THREE, config) : Promise.resolve();
                 })))
             .catch(() => {
-                PREMIUM_ICON_CONFIGS.forEach(config => {
+                THREE_ICON_CONFIGS.forEach(config => {
                     const button = document.querySelector(config.selector);
                     if (button) button.classList.remove(config.readyClass);
                 });

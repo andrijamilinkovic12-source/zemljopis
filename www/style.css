@@ -1329,6 +1329,21 @@ body[data-tema="svetla"] #postavke-nadimak {
     overflow: hidden;
 }
 
+.leaderboard-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.friend-room-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.settings-btn {
+    position: relative;
+    overflow: hidden;
+}
+
 .daily-challenge-btn::before {
     content: "";
     position: absolute;
@@ -1377,11 +1392,38 @@ body[data-tema="svetla"] #postavke-nadimak {
     transform: scale(1);
 }
 
+.leaderboard-btn.three-leaderboard-ready .leaderboard-three {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.friend-room-btn.three-friend-room-ready .friend-room-three {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.settings-btn.three-settings-ready .settings-three {
+    opacity: 1;
+    transform: scale(1);
+}
+
 .daily-challenge-btn.three-daily-ready .daily-challenge-icon {
     opacity: 0;
 }
 
 .treasury-btn.three-treasury-ready .treasury-icon {
+    opacity: 0;
+}
+
+.leaderboard-btn.three-leaderboard-ready .leaderboard-icon {
+    opacity: 0;
+}
+
+.friend-room-btn.three-friend-room-ready .friend-room-icon {
+    opacity: 0;
+}
+
+.settings-btn.three-settings-ready .settings-icon {
     opacity: 0;
 }
 
@@ -1401,6 +1443,21 @@ body[data-tema="svetla"] #postavke-nadimak {
     height: 100%;
 }
 
+.menu-action-icon.leaderboard-icon {
+    width: 100%;
+    height: 100%;
+}
+
+.menu-action-icon.friend-room-icon {
+    width: 100%;
+    height: 100%;
+}
+
+.menu-action-icon.settings-icon {
+    width: 100%;
+    height: 100%;
+}
+
 .daily-challenge-btn:active .daily-challenge-icon {
     transform: scale(0.92) rotate(-6deg);
     filter: drop-shadow(0 0 14px rgba(245, 175, 25, 0.48));
@@ -1411,6 +1468,18 @@ body[data-tema="svetla"] #postavke-nadimak {
 }
 
 .treasury-btn:active .treasury-three {
+    transform: scale(0.96);
+}
+
+.leaderboard-btn:active .leaderboard-three {
+    transform: scale(0.96);
+}
+
+.friend-room-btn:active .friend-room-three {
+    transform: scale(0.96);
+}
+
+.settings-btn:active .settings-three {
     transform: scale(0.96);
 }
 

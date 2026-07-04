@@ -13,7 +13,7 @@
             textureSrc: 'assets/daily-challenge-clay-3d.png',
             fallbackPngSrc: null,
             fallbackSvgSrc: 'assets/dnevni-izazov-v2.svg',
-            planeSize: 2.3,
+            planeSize: 2.4,
             showFrame: false,
             showSparkle: false
         },
@@ -27,7 +27,49 @@
             textureSrc: 'assets/riznica-clay-3d.png',
             fallbackPngSrc: null,
             fallbackSvgSrc: 'assets/menu-riznica.svg',
-            planeSize: 2.3,
+            planeSize: 2.4,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.leaderboard-btn',
+            datasetKey: 'threeLeaderboardReady',
+            iconSelector: '.leaderboard-icon',
+            mountClass: 'daily-challenge-three leaderboard-three',
+            canvasClass: 'daily-challenge-three-canvas leaderboard-three-canvas',
+            readyClass: 'three-leaderboard-ready',
+            textureSrc: 'assets/top-lista-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/menu-top-lista.svg',
+            planeSize: 2.4,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.friend-room-btn',
+            datasetKey: 'threeFriendRoomReady',
+            iconSelector: '.friend-room-icon',
+            mountClass: 'daily-challenge-three friend-room-three',
+            canvasClass: 'daily-challenge-three-canvas friend-room-three-canvas',
+            readyClass: 'three-friend-room-ready',
+            textureSrc: 'assets/soba-prijatelja-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/menu-soba-prijatelja.svg',
+            planeSize: 2.4,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.settings-btn',
+            datasetKey: 'threeSettingsReady',
+            iconSelector: '.settings-icon',
+            mountClass: 'daily-challenge-three settings-three',
+            canvasClass: 'daily-challenge-three-canvas settings-three-canvas',
+            readyClass: 'three-settings-ready',
+            textureSrc: 'assets/podesavanja-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/menu-podesavanja.svg',
+            planeSize: 2.4,
             showFrame: false,
             showSparkle: false
         }
@@ -174,7 +216,7 @@
         }
     }
 
-    async function napraviPremiumIcon3D(button, THREE, config) {
+    async function napraviThreeIcon(button, THREE, config) {
         if (!button || button.dataset[config.datasetKey] === '1') return;
 
         const fallbackIkona = button.querySelector(config.iconSelector);
@@ -386,7 +428,7 @@
         ucitajThree()
             .then(THREE => Promise.all(THREE_ICON_CONFIGS.map(config => {
                     const button = document.querySelector(config.selector);
-                    return button ? napraviPremiumIcon3D(button, THREE, config) : Promise.resolve();
+                    return button ? napraviThreeIcon(button, THREE, config) : Promise.resolve();
                 })))
             .catch(() => {
                 THREE_ICON_CONFIGS.forEach(config => {

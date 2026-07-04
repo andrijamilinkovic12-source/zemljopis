@@ -10,10 +10,12 @@
             mountClass: 'daily-challenge-three',
             canvasClass: 'daily-challenge-three-canvas',
             readyClass: 'three-daily-ready',
-            textureSrc: 'assets/daily-challenge-premium-3d.png',
-            fallbackPngSrc: 'assets/dnevni-izazov-v2-tex.png',
+            textureSrc: 'assets/daily-challenge-clay-3d.png',
+            fallbackPngSrc: null,
             fallbackSvgSrc: 'assets/dnevni-izazov-v2.svg',
-            planeSize: 2.28
+            planeSize: 2.3,
+            showFrame: false,
+            showSparkle: false
         },
         {
             selector: '.treasury-btn',
@@ -25,7 +27,9 @@
             textureSrc: 'assets/riznica-premium-3d.png',
             fallbackPngSrc: null,
             fallbackSvgSrc: 'assets/menu-riznica.svg',
-            planeSize: 2.28
+            planeSize: 2.28,
+            showFrame: true,
+            showSparkle: true
         }
     ];
     let threePromise = null;
@@ -216,57 +220,62 @@
         const group = new THREE.Group();
         scene.add(group);
 
-        const base = new THREE.Mesh(
-            new THREE.CylinderGeometry(1, 1, 0.24, 96, 1, false),
-            new THREE.MeshStandardMaterial({
-                color: 0x08252a,
-                metalness: 0.45,
-                roughness: 0.34,
-                emissive: 0x062018,
-                emissiveIntensity: 0.28
-            })
-        );
-        base.rotation.x = Math.PI / 2;
-        group.add(base);
+        let rim = null;
+        let innerRim = null;
 
-        const backGlow = new THREE.Mesh(
-            new THREE.CircleGeometry(1.08, 96),
-            new THREE.MeshBasicMaterial({
-                color: 0x38ef7d,
-                transparent: true,
-                opacity: 0.14,
-                depthWrite: false
-            })
-        );
-        backGlow.position.z = -0.02;
-        backGlow.scale.set(1.08, 1.08, 1);
-        group.add(backGlow);
+        if (config.showFrame !== false) {
+            const base = new THREE.Mesh(
+                new THREE.CylinderGeometry(1, 1, 0.24, 96, 1, false),
+                new THREE.MeshStandardMaterial({
+                    color: 0x08252a,
+                    metalness: 0.45,
+                    roughness: 0.34,
+                    emissive: 0x062018,
+                    emissiveIntensity: 0.28
+                })
+            );
+            base.rotation.x = Math.PI / 2;
+            group.add(base);
 
-        const rim = new THREE.Mesh(
-            new THREE.TorusGeometry(1.03, 0.055, 18, 112),
-            new THREE.MeshStandardMaterial({
-                color: 0xf5af19,
-                metalness: 0.75,
-                roughness: 0.22,
-                emissive: 0x5a3200,
-                emissiveIntensity: 0.42
-            })
-        );
-        rim.position.z = 0.15;
-        group.add(rim);
+            const backGlow = new THREE.Mesh(
+                new THREE.CircleGeometry(1.08, 96),
+                new THREE.MeshBasicMaterial({
+                    color: 0x38ef7d,
+                    transparent: true,
+                    opacity: 0.14,
+                    depthWrite: false
+                })
+            );
+            backGlow.position.z = -0.02;
+            backGlow.scale.set(1.08, 1.08, 1);
+            group.add(backGlow);
 
-        const innerRim = new THREE.Mesh(
-            new THREE.TorusGeometry(0.84, 0.026, 14, 96),
-            new THREE.MeshStandardMaterial({
-                color: 0x38bdf8,
-                metalness: 0.48,
-                roughness: 0.28,
-                emissive: 0x07374a,
-                emissiveIntensity: 0.45
-            })
-        );
-        innerRim.position.z = 0.17;
-        group.add(innerRim);
+            rim = new THREE.Mesh(
+                new THREE.TorusGeometry(1.03, 0.055, 18, 112),
+                new THREE.MeshStandardMaterial({
+                    color: 0xf5af19,
+                    metalness: 0.75,
+                    roughness: 0.22,
+                    emissive: 0x5a3200,
+                    emissiveIntensity: 0.42
+                })
+            );
+            rim.position.z = 0.15;
+            group.add(rim);
+
+            innerRim = new THREE.Mesh(
+                new THREE.TorusGeometry(0.84, 0.026, 14, 96),
+                new THREE.MeshStandardMaterial({
+                    color: 0x38bdf8,
+                    metalness: 0.48,
+                    roughness: 0.28,
+                    emissive: 0x07374a,
+                    emissiveIntensity: 0.45
+                })
+            );
+            innerRim.position.z = 0.17;
+            group.add(innerRim);
+        }
 
         let texture;
         try {
@@ -289,29 +298,33 @@
         face.position.z = 0.24;
         group.add(face);
 
-        const sparkleShape = new THREE.Shape();
-        sparkleShape.moveTo(0, 0.16);
-        sparkleShape.lineTo(0.045, 0.045);
-        sparkleShape.lineTo(0.16, 0);
-        sparkleShape.lineTo(0.045, -0.045);
-        sparkleShape.lineTo(0, -0.16);
-        sparkleShape.lineTo(-0.045, -0.045);
-        sparkleShape.lineTo(-0.16, 0);
-        sparkleShape.lineTo(-0.045, 0.045);
-        sparkleShape.closePath();
+        let sparkle = null;
 
-        const sparkle = new THREE.Mesh(
-            new THREE.ShapeGeometry(sparkleShape),
-            new THREE.MeshBasicMaterial({
-                color: 0xfff7bf,
-                transparent: true,
-                opacity: 0.95,
-                depthWrite: false
-            })
-        );
-        sparkle.position.set(0.62, 0.55, 0.25);
-        sparkle.scale.set(0.78, 0.78, 0.78);
-        group.add(sparkle);
+        if (config.showSparkle !== false) {
+            const sparkleShape = new THREE.Shape();
+            sparkleShape.moveTo(0, 0.16);
+            sparkleShape.lineTo(0.045, 0.045);
+            sparkleShape.lineTo(0.16, 0);
+            sparkleShape.lineTo(0.045, -0.045);
+            sparkleShape.lineTo(0, -0.16);
+            sparkleShape.lineTo(-0.045, -0.045);
+            sparkleShape.lineTo(-0.16, 0);
+            sparkleShape.lineTo(-0.045, 0.045);
+            sparkleShape.closePath();
+
+            sparkle = new THREE.Mesh(
+                new THREE.ShapeGeometry(sparkleShape),
+                new THREE.MeshBasicMaterial({
+                    color: 0xfff7bf,
+                    transparent: true,
+                    opacity: 0.95,
+                    depthWrite: false
+                })
+            );
+            sparkle.position.set(0.62, 0.55, 0.25);
+            sparkle.scale.set(0.78, 0.78, 0.78);
+            group.add(sparkle);
+        }
 
         let pressed = false;
         let hovered = false;
@@ -319,16 +332,19 @@
 
         function renderuj() {
             const pressScale = pressed ? 0.94 : 1;
+            const imaFrame = config.showFrame !== false;
 
-            group.rotation.x = -0.14;
-            group.rotation.y = 0.18;
+            group.rotation.x = imaFrame ? -0.14 : 0;
+            group.rotation.y = imaFrame ? 0.18 : 0;
             group.rotation.z = pressed ? -0.025 : 0;
             group.position.y = 0;
             group.scale.setScalar(pressScale);
-            rim.rotation.z = 0;
-            innerRim.rotation.z = 0;
-            sparkle.rotation.z = hovered ? 0.28 : 0.1;
-            sparkle.material.opacity = hovered ? 0.92 : 0.78;
+            if (rim) rim.rotation.z = 0;
+            if (innerRim) innerRim.rotation.z = 0;
+            if (sparkle) {
+                sparkle.rotation.z = hovered ? 0.28 : 0.1;
+                sparkle.material.opacity = hovered ? 0.92 : 0.78;
+            }
 
             renderer.render(scene, camera);
         }

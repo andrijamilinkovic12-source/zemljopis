@@ -2282,12 +2282,26 @@ body[data-tema="glina"] #main-menu .menu-pattern::after {
 }
 
 .category-icon {
-    width: 1.38em;
-    height: 1.38em;
+    position: relative;
+    width: 1.62em;
+    height: 1.36em;
     flex: 0 0 auto;
-    display: inline-block;
+    display: inline-grid;
+    place-items: center;
+    margin-block: -0.08em;
+    overflow: visible;
+    filter: none;
+}
+
+.category-icon-img {
+    position: relative;
+    z-index: 1;
+    width: 1.58em;
+    height: 1.58em;
+    display: block;
     object-fit: contain;
     filter: drop-shadow(0 0 7px rgba(56, 239, 125, 0.22));
+    transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
 }
 
 .category-label-text {
@@ -2298,8 +2312,35 @@ body[data-tema="glina"] #main-menu .menu-pattern::after {
 }
 
 .category-label--input .category-icon {
-    width: 1.45em;
+    width: 1.78em;
     height: 1.45em;
+}
+
+.category-icon-three {
+    position: absolute;
+    inset: -0.2em -0.3em;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.category-icon-three-canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+.category-icon.three-category-ready .category-icon-three {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.category-icon.three-category-ready .category-icon-img {
+    opacity: 0;
 }
 
 .category-icon--emoji {
@@ -2485,8 +2526,8 @@ body[data-tema="glina"] #main-menu .menu-pattern::after {
 
 .category-label--daily .category-icon,
 .category-label--daily-active .category-icon {
-    width: 1.55em;
-    height: 1.55em;
+    width: 1.88em;
+    height: 1.52em;
 }
 
 .dnevni-zadatak-slovo {
@@ -4803,8 +4844,8 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 
 .category-label--summary .category-icon,
 .category-label--round .category-icon {
-    width: 1.45em;
-    height: 1.45em;
+    width: 1.72em;
+    height: 1.42em;
 }
 
 .solo-answer-value {

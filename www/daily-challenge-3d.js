@@ -212,9 +212,109 @@
             planeSize: 2.66,
             showFrame: false,
             showSparkle: false
+        },
+        {
+            selector: '.category-icon--drzava',
+            datasetKey: 'threeCategoryDrzavaReady',
+            iconSelector: '.category-icon-img',
+            mountClass: 'category-icon-three category-drzava-three',
+            canvasClass: 'category-icon-three-canvas category-drzava-three-canvas',
+            readyClass: 'three-category-ready',
+            textureSrc: 'assets/category-drzava-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/category-drzava.svg',
+            planeSize: 2.86,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.category-icon--grad',
+            datasetKey: 'threeCategoryGradReady',
+            iconSelector: '.category-icon-img',
+            mountClass: 'category-icon-three category-grad-three',
+            canvasClass: 'category-icon-three-canvas category-grad-three-canvas',
+            readyClass: 'three-category-ready',
+            textureSrc: 'assets/category-grad-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/category-grad.svg',
+            planeSize: 2.86,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.category-icon--reka',
+            datasetKey: 'threeCategoryRekaReady',
+            iconSelector: '.category-icon-img',
+            mountClass: 'category-icon-three category-reka-three',
+            canvasClass: 'category-icon-three-canvas category-reka-three-canvas',
+            readyClass: 'three-category-ready',
+            textureSrc: 'assets/category-reka-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/category-reka.svg',
+            planeSize: 2.86,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.category-icon--planina',
+            datasetKey: 'threeCategoryPlaninaReady',
+            iconSelector: '.category-icon-img',
+            mountClass: 'category-icon-three category-planina-three',
+            canvasClass: 'category-icon-three-canvas category-planina-three-canvas',
+            readyClass: 'three-category-ready',
+            textureSrc: 'assets/category-planina-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/category-planina.svg',
+            planeSize: 2.86,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.category-icon--biljka',
+            datasetKey: 'threeCategoryBiljkaReady',
+            iconSelector: '.category-icon-img',
+            mountClass: 'category-icon-three category-biljka-three',
+            canvasClass: 'category-icon-three-canvas category-biljka-three-canvas',
+            readyClass: 'three-category-ready',
+            textureSrc: 'assets/category-biljka-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/category-biljka.svg',
+            planeSize: 2.86,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.category-icon--zivotinja',
+            datasetKey: 'threeCategoryZivotinjaReady',
+            iconSelector: '.category-icon-img',
+            mountClass: 'category-icon-three category-zivotinja-three',
+            canvasClass: 'category-icon-three-canvas category-zivotinja-three-canvas',
+            readyClass: 'three-category-ready',
+            textureSrc: 'assets/category-zivotinja-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/category-zivotinja.svg',
+            planeSize: 2.86,
+            showFrame: false,
+            showSparkle: false
+        },
+        {
+            selector: '.category-icon--predmet',
+            datasetKey: 'threeCategoryPredmetReady',
+            iconSelector: '.category-icon-img',
+            mountClass: 'category-icon-three category-predmet-three',
+            canvasClass: 'category-icon-three-canvas category-predmet-three-canvas',
+            readyClass: 'three-category-ready',
+            textureSrc: 'assets/category-predmet-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/category-predmet.svg',
+            planeSize: 2.86,
+            showFrame: false,
+            showSparkle: false
         }
     ];
     let threePromise = null;
+    let initScheduled = false;
+    let dynamicObserver = null;
 
     function ucitajLokalniThree() {
         return new Promise((resolve, reject) => {
@@ -357,7 +457,8 @@
     }
 
     async function napraviThreeIcon(button, THREE, config) {
-        if (!button || button.dataset[config.datasetKey] === '1') return;
+        if (!button || button.dataset[config.datasetKey]) return;
+        button.dataset[config.datasetKey] = 'pending';
 
         const fallbackIkona = button.querySelector(config.iconSelector);
         const mount = document.createElement('span');
@@ -374,6 +475,7 @@
                 powerPreference: 'high-performance'
             });
         } catch (error) {
+            delete button.dataset[config.datasetKey];
             mount.remove();
             return;
         }
@@ -465,6 +567,7 @@
             texture = await teksturaIkone(THREE, config);
         } catch (error) {
             renderer.dispose();
+            delete button.dataset[config.datasetKey];
             mount.remove();
             if (fallbackIkona) fallbackIkona.style.opacity = '';
             return;
@@ -567,6 +670,7 @@
         const statickiKontekst = statickiCanvas.getContext('2d');
         if (!statickiKontekst) {
             oslobodiThreeResurse();
+            delete button.dataset[config.datasetKey];
             mount.remove();
             if (fallbackIkona) fallbackIkona.style.opacity = '';
             return;
@@ -586,25 +690,88 @@
         button.classList.add(config.readyClass);
     }
 
-    function init() {
-        ucitajThree()
+    function nadjiCiljeve(root, selector) {
+        const scope = root && typeof root.querySelectorAll === 'function'
+            ? root
+            : document;
+        const elementi = [];
+
+        if (scope.nodeType === 1 && typeof scope.matches === 'function' && scope.matches(selector)) {
+            elementi.push(scope);
+        }
+
+        scope.querySelectorAll(selector).forEach(element => {
+            if (!elementi.includes(element)) elementi.push(element);
+        });
+
+        return elementi;
+    }
+
+    function init(root = document) {
+        return ucitajThree()
             .then(async THREE => {
                 for (const config of THREE_ICON_CONFIGS) {
-                    const button = document.querySelector(config.selector);
-                    if (button) await napraviThreeIcon(button, THREE, config);
+                    const targets = nadjiCiljeve(root, config.selector);
+                    for (const target of targets) {
+                        await napraviThreeIcon(target, THREE, config);
+                    }
                 }
             })
             .catch(() => {
                 THREE_ICON_CONFIGS.forEach(config => {
-                    const button = document.querySelector(config.selector);
-                    if (button) button.classList.remove(config.readyClass);
+                    nadjiCiljeve(root, config.selector).forEach(target => {
+                        target.classList.remove(config.readyClass);
+                    });
                 });
             });
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
+    function sadrziThreeCilj(node) {
+        if (!node || node.nodeType !== 1) return false;
+        return THREE_ICON_CONFIGS.some(config => (
+            (typeof node.matches === 'function' && node.matches(config.selector))
+            || (typeof node.querySelector === 'function' && node.querySelector(config.selector))
+        ));
+    }
+
+    function zakaziInit() {
+        if (initScheduled) return;
+        initScheduled = true;
+        requestAnimationFrame(() => {
+            initScheduled = false;
+            init();
+        });
+    }
+
+    function pokreniDynamicObserver() {
+        if (dynamicObserver || typeof MutationObserver === 'undefined' || !document.body) return;
+
+        dynamicObserver = new MutationObserver(mutations => {
+            const imaNoveIkone = mutations.some(mutation => (
+                Array.from(mutation.addedNodes).some(sadrziThreeCilj)
+            ));
+
+            if (imaNoveIkone) zakaziInit();
+        });
+
+        dynamicObserver.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    function start() {
         init();
+        pokreniDynamicObserver();
+    }
+
+    window.ZemljopisThreeIcons = {
+        init
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start);
+    } else {
+        start();
     }
 })(window, document);

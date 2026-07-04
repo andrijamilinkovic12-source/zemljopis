@@ -1,12 +1,40 @@
 (function(window) {
     const kategorije = {
-        drzava: { naziv: 'Država', src: 'assets/category-drzava.svg' },
-        grad: { naziv: 'Grad', src: 'assets/category-grad.svg' },
-        reka: { naziv: 'Reka', src: 'assets/category-reka.svg' },
-        planina: { naziv: 'Planina', src: 'assets/category-planina.svg' },
-        biljka: { naziv: 'Biljka', src: 'assets/category-biljka.svg' },
-        zivotinja: { naziv: 'Životinja', src: 'assets/category-zivotinja.svg' },
-        predmet: { naziv: 'Predmet', src: 'assets/category-predmet.svg' }
+        drzava: {
+            naziv: 'Država',
+            src: 'assets/category-drzava-clay-3d.png',
+            fallbackSrc: 'assets/category-drzava.svg'
+        },
+        grad: {
+            naziv: 'Grad',
+            src: 'assets/category-grad-clay-3d.png',
+            fallbackSrc: 'assets/category-grad.svg'
+        },
+        reka: {
+            naziv: 'Reka',
+            src: 'assets/category-reka-clay-3d.png',
+            fallbackSrc: 'assets/category-reka.svg'
+        },
+        planina: {
+            naziv: 'Planina',
+            src: 'assets/category-planina-clay-3d.png',
+            fallbackSrc: 'assets/category-planina.svg'
+        },
+        biljka: {
+            naziv: 'Biljka',
+            src: 'assets/category-biljka-clay-3d.png',
+            fallbackSrc: 'assets/category-biljka.svg'
+        },
+        zivotinja: {
+            naziv: 'Životinja',
+            src: 'assets/category-zivotinja-clay-3d.png',
+            fallbackSrc: 'assets/category-zivotinja.svg'
+        },
+        predmet: {
+            naziv: 'Predmet',
+            src: 'assets/category-predmet-clay-3d.png',
+            fallbackSrc: 'assets/category-predmet.svg'
+        }
     };
 
     function escapeHtml(vrednost) {
@@ -41,11 +69,17 @@
         const kategorija = podaci(id);
         if (!kategorija) return '';
 
-        const klasa = ['category-icon', opcije.iconClass || '']
+        const safeId = String(id || '').toLowerCase();
+        const klasa = [
+                'category-icon',
+                'category-icon-slot',
+                `category-icon--${safeId}`,
+                opcije.iconClass || ''
+            ]
             .filter(Boolean)
             .join(' ');
 
-        return `<img class="${escapeHtml(klasa)}" src="${escapeHtml(kategorija.src)}" alt="" aria-hidden="true" decoding="async">`;
+        return `<span class="${escapeHtml(klasa)}" data-category-id="${escapeHtml(safeId)}"><img class="category-icon-img" src="${escapeHtml(kategorija.src)}" alt="" aria-hidden="true" decoding="async"></span>`;
     }
 
     function labelHtml(id, fallback, opcije = {}) {

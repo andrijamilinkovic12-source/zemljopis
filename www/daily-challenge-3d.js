@@ -286,6 +286,7 @@
             renderer = new THREE.WebGLRenderer({
                 alpha: true,
                 antialias: true,
+                preserveDrawingBuffer: true,
                 powerPreference: 'high-performance'
             });
         } catch (error) {
@@ -424,68 +425,91 @@
             group.add(sparkle);
         }
 
-        let pressed = false;
-        let hovered = false;
-        let renderFrameId = null;
-
-        function renderuj() {
-            const pressScale = pressed ? 0.94 : 1;
+        function renderujJednom() {
             const imaFrame = config.showFrame !== false;
 
             group.rotation.x = imaFrame ? -0.14 : 0;
             group.rotation.y = imaFrame ? 0.18 : 0;
-            group.rotation.z = pressed ? -0.025 : 0;
+            group.rotation.z = 0;
             group.position.y = 0;
-            group.scale.setScalar(pressScale);
+            group.scale.setScalar(1);
             if (rim) rim.rotation.z = 0;
             if (innerRim) innerRim.rotation.z = 0;
             if (sparkle) {
-                sparkle.rotation.z = hovered ? 0.28 : 0.1;
-                sparkle.material.opacity = hovered ? 0.92 : 0.78;
+                sparkle.rotation.z = 0.1;
+                sparkle.material.opacity = 0.78;
             }
 
             renderer.render(scene, camera);
         }
 
-        function zakaziRender() {
-            if (renderFrameId !== null) return;
-            renderFrameId = window.requestAnimationFrame(() => {
-                renderFrameId = null;
-                renderuj();
+        function oslobodiThreeResurse() {
+            group.traverse(objekat => {
+                if (objekat.geometry) objekat.geometry.dispose();
+
+                const materijali = Array.isArray(objekat.material)
+                    ? objekat.material
+                    : objekat.material
+                        ? [objekat.material]
+                        : [];
+
+                materijali.forEach(materijal => {
+                    Object.keys(materijal).forEach(kljuc => {
+                        const vrednost = materijal[kljuc];
+                        if (vrednost && vrednost.isTexture) vrednost.dispose();
+                    });
+                    materijal.dispose();
+                });
             });
+
+            renderer.dispose();
+            if (typeof renderer.forceContextLoss === 'function') {
+                renderer.forceContextLoss();
+            }
         }
 
         podesiRendererVelicinu(renderer, mount, camera);
+        renderujJednom();
 
-        const resizeObserver = 'ResizeObserver' in window
-            ? new ResizeObserver(() => {
-                podesiRendererVelicinu(renderer, mount, camera);
-                renderuj();
-            })
-            : null;
-        if (resizeObserver) resizeObserver.observe(button);
-        else window.addEventListener('resize', () => {
-            podesiRendererVelicinu(renderer, mount, camera);
-            renderuj();
-        });
+        const gl = renderer.getContext();
+        if (gl && typeof gl.finish === 'function') gl.finish();
 
-        button.addEventListener('pointerenter', () => { hovered = true; zakaziRender(); });
-        button.addEventListener('pointerleave', () => { hovered = false; pressed = false; zakaziRender(); });
-        button.addEventListener('pointerdown', () => { pressed = true; zakaziRender(); });
-        button.addEventListener('pointerup', () => { pressed = false; zakaziRender(); });
-        button.addEventListener('pointercancel', () => { pressed = false; zakaziRender(); });
+        const statickiCanvas = document.createElement('canvas');
+        statickiCanvas.className = config.canvasClass;
+        statickiCanvas.setAttribute('aria-hidden', 'true');
+        statickiCanvas.width = renderer.domElement.width;
+        statickiCanvas.height = renderer.domElement.height;
+
+        const statickiKontekst = statickiCanvas.getContext('2d');
+        if (!statickiKontekst) {
+            oslobodiThreeResurse();
+            mount.remove();
+            if (fallbackIkona) fallbackIkona.style.opacity = '';
+            return;
+        }
+
+        statickiKontekst.drawImage(
+            renderer.domElement,
+            0,
+            0,
+            statickiCanvas.width,
+            statickiCanvas.height
+        );
+        mount.replaceChildren(statickiCanvas);
+        oslobodiThreeResurse();
 
         button.dataset[config.datasetKey] = '1';
         button.classList.add(config.readyClass);
-        renderuj();
     }
 
     function init() {
         ucitajThree()
-            .then(THREE => Promise.all(THREE_ICON_CONFIGS.map(config => {
+            .then(async THREE => {
+                for (const config of THREE_ICON_CONFIGS) {
                     const button = document.querySelector(config.selector);
-                    return button ? napraviThreeIcon(button, THREE, config) : Promise.resolve();
-                })))
+                    if (button) await napraviThreeIcon(button, THREE, config);
+                }
+            })
             .catch(() => {
                 THREE_ICON_CONFIGS.forEach(config => {
                     const button = document.querySelector(config.selector);

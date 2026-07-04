@@ -1407,6 +1407,11 @@ body[data-tema="svetla"] #postavke-nadimak {
     transform: scale(1);
 }
 
+.solo-btn.three-solo-ready .solo-three {
+    opacity: 1;
+    transform: scale(1);
+}
+
 .daily-challenge-btn.three-daily-ready .daily-challenge-icon {
     opacity: 0;
 }
@@ -1424,6 +1429,10 @@ body[data-tema="svetla"] #postavke-nadimak {
 }
 
 .settings-btn.three-settings-ready .settings-icon {
+    opacity: 0;
+}
+
+.solo-btn.three-solo-ready .solo-mode-icon {
     opacity: 0;
 }
 
@@ -1481,6 +1490,11 @@ body[data-tema="svetla"] #postavke-nadimak {
 
 .settings-btn:active .settings-three {
     transform: scale(0.96);
+}
+
+.solo-btn:active .solo-three,
+.sub-mode-wrapper:active .solo-three {
+    transform: scale(0.98);
 }
 
 .circle-btn:active .menu-action-icon {
@@ -1676,6 +1690,8 @@ body[data-tema="svetla"] #postavke-nadimak {
     cursor: pointer;
     backdrop-filter: blur(10px);
     transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
 }
 
 .sub-mode-wrapper:active .sub-mode-btn {
@@ -1689,6 +1705,15 @@ body[data-tema="svetla"] #postavke-nadimak {
     object-fit: contain;
     filter: drop-shadow(0 0 10px rgba(56, 239, 125, 0.3));
     transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.sub-mode-icon.solo-mode-icon {
+    width: 100%;
+    height: 100%;
+}
+
+.solo-three {
+    inset: -5px;
 }
 
 .sub-mode-wrapper:active .sub-mode-icon {

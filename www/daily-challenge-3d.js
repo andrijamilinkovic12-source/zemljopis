@@ -72,6 +72,20 @@
             planeSize: 2.4,
             showFrame: false,
             showSparkle: false
+        },
+        {
+            selector: '.solo-btn',
+            datasetKey: 'threeSoloReady',
+            iconSelector: '.solo-mode-icon',
+            mountClass: 'daily-challenge-three solo-three',
+            canvasClass: 'daily-challenge-three-canvas solo-three-canvas',
+            readyClass: 'three-solo-ready',
+            textureSrc: 'assets/mode-solo-clay-3d.png',
+            fallbackPngSrc: null,
+            fallbackSvgSrc: 'assets/mode-solo.svg',
+            planeSize: 2.44,
+            showFrame: false,
+            showSparkle: false
         }
     ];
     let threePromise = null;

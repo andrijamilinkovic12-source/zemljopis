@@ -80,7 +80,7 @@
         const tema = document.body.getAttribute('data-tema');
         if (tema === 'glina') return 'glina';
         if (tema === 'okean') return 'reka';
-        // Planina sada koristi pun clay PNG background, bez dodatnih lebdecih Three.js elemenata preko slike.
+        if (tema === 'planina') return 'planina-oblaci';
         return null;
     }
 
@@ -247,6 +247,36 @@
             rotate: 0.00012,
             roughness: 0.96
         }));
+    }
+
+    function dodajPlaninaOblaciScene(THREE) {
+        [
+            { x: -2.58, y: 2.52, z: -1.82, scale: 0.9, opacity: 0.56, phase: 0.2, color: 0xfff5ef },
+            { x: 2.48, y: 2.38, z: -1.9, scale: 0.78, opacity: 0.5, phase: 1.8, color: 0xfff2ec },
+            { x: -0.08, y: 3.03, z: -2.08, scale: 0.54, opacity: 0.42, phase: 3.0, color: 0xf7ecff },
+            { x: 3.46, y: 1.62, z: -2.18, scale: 0.42, opacity: 0.34, phase: 4.4, color: 0xfff5ef },
+            { x: -3.54, y: 1.74, z: -2.18, scale: 0.46, opacity: 0.32, phase: 5.2, color: 0xf4edff }
+        ].forEach(oblak => dodajOblak(
+            THREE,
+            oblak.x,
+            oblak.y,
+            oblak.z,
+            oblak.color,
+            oblak.opacity,
+            oblak.scale,
+            oblak.phase
+        ));
+
+        clayObjects.forEach((mesh, index) => {
+            mesh.userData.speed = 0.16 + (index % 5) * 0.018;
+            mesh.userData.wobble = 0.08 + (index % 3) * 0.012;
+            mesh.userData.driftX = index % 2 === 0 ? 1.9 : 1.35;
+            mesh.userData.driftY = 0.42;
+            mesh.userData.rotate = index % 2 === 0 ? 0.00005 : -0.00004;
+            mesh.userData.opacityPulse = 0.025;
+            mesh.userData.pulse = 0.018;
+            mesh.userData.pulseSpeed = 0.55;
+        });
     }
 
     function dodajDrvo(THREE, x, y, z, scale = 1, phase = 0) {
@@ -588,22 +618,23 @@
     }
 
     function podesiSvetloZaTemu(THREE, tema) {
+        const planinaTema = tema === 'planina' || tema === 'planina-oblaci';
         const ambijent = tema === 'reka'
             ? new THREE.HemisphereLight(0xe6feff, 0x031625, 1.95)
-            : tema === 'planina'
+            : planinaTema
                 ? new THREE.HemisphereLight(0xfff4ec, 0x6f8ba1, 1.82)
                 : new THREE.HemisphereLight(0xfff3e8, 0x160f24, 1.65);
         scene.add(ambijent);
 
-        const glavnoSvetlo = new THREE.DirectionalLight(0xffffff, tema === 'reka' ? 2.65 : tema === 'planina' ? 2.28 : 2.45);
+        const glavnoSvetlo = new THREE.DirectionalLight(0xffffff, tema === 'reka' ? 2.65 : planinaTema ? 2.15 : 2.45);
         glavnoSvetlo.position.set(-3.2, 4.4, 5.8);
         scene.add(glavnoSvetlo);
 
-        const primarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x7de3ff : tema === 'planina' ? 0xb5a1dd : 0xff8a7a, tema === 'reka' ? 2.05 : tema === 'planina' ? 1.05 : 1.45, 10);
+        const primarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x7de3ff : planinaTema ? 0xffefe3 : 0xff8a7a, tema === 'reka' ? 2.05 : planinaTema ? 0.85 : 1.45, 10);
         primarniSjaj.position.set(3.8, -1.8, 3.4);
         scene.add(primarniSjaj);
 
-        const sekundarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x2db7ff : tema === 'planina' ? 0xffd2b3 : 0xb993ff, tema === 'reka' ? 1.7 : tema === 'planina' ? 0.95 : 1.15, 9);
+        const sekundarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x2db7ff : planinaTema ? 0xd8c7ff : 0xb993ff, tema === 'reka' ? 1.7 : planinaTema ? 0.78 : 1.15, 9);
         sekundarniSjaj.position.set(-3.6, 1.4, 2.8);
         scene.add(sekundarniSjaj);
     }
@@ -618,7 +649,7 @@
         sceneTheme = tema;
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-        camera.position.set(0, 0, tema === 'reka' ? 8.05 : tema === 'planina' ? 8.15 : 8.4);
+        camera.position.set(0, 0, tema === 'reka' ? 8.05 : tema === 'planina' ? 8.15 : tema === 'planina-oblaci' ? 7.85 : 8.4);
 
         renderer = new THREE.WebGLRenderer({
             alpha: true,
@@ -642,6 +673,8 @@
             dodajRekaScene(THREE);
         } else if (tema === 'planina') {
             dodajPlaninaScene(THREE);
+        } else if (tema === 'planina-oblaci') {
+            dodajPlaninaOblaciScene(THREE);
         } else {
             dodajGlinaScene(THREE);
         }
@@ -676,8 +709,9 @@
         const t = vreme * 0.001;
         const reka = sceneTheme === 'reka';
         const planina = sceneTheme === 'planina';
-        clayGroup.rotation.z = Math.sin(t * (reka ? 0.13 : planina ? 0.08 : 0.18)) * (reka ? 0.022 : planina ? 0.012 : 0.035);
-        clayGroup.rotation.x = Math.sin(t * (reka ? 0.1 : planina ? 0.07 : 0.13)) * (reka ? 0.012 : planina ? 0.008 : 0.018);
+        const planinaOblaci = sceneTheme === 'planina-oblaci';
+        clayGroup.rotation.z = planinaOblaci ? 0 : Math.sin(t * (reka ? 0.13 : planina ? 0.08 : 0.18)) * (reka ? 0.022 : planina ? 0.012 : 0.035);
+        clayGroup.rotation.x = planinaOblaci ? 0 : Math.sin(t * (reka ? 0.1 : planina ? 0.07 : 0.13)) * (reka ? 0.012 : planina ? 0.008 : 0.018);
 
         clayObjects.forEach((mesh, index) => {
             const data = mesh.userData;
@@ -690,7 +724,7 @@
             }
             mesh.rotation.x += data.rotate * (index % 2 === 0 ? 1 : -1);
             mesh.rotation.y += data.rotate * 0.72;
-            mesh.rotation.z += data.rotate * (reka ? 0.95 : planina ? 0.36 : 0.45);
+            mesh.rotation.z += data.rotate * (reka ? 0.95 : planina || planinaOblaci ? 0.36 : 0.45);
         });
 
         renderer.render(scene, camera);

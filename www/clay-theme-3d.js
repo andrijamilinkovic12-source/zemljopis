@@ -115,14 +115,16 @@
         camera.updateProjectionMatrix();
     }
 
-    function napraviMatMaterijal(THREE, boja, opacity) {
+    function napraviMatMaterijal(THREE, boja, opacity, spec = {}) {
         return new THREE.MeshStandardMaterial({
             color: boja,
-            roughness: 0.94,
+            roughness: typeof spec.roughness === 'number' ? spec.roughness : 0.9,
             metalness: 0,
             transparent: true,
             opacity,
-            depthWrite: false
+            depthWrite: false,
+            emissive: spec.emissive || 0x000000,
+            emissiveIntensity: spec.emissiveIntensity || 0
         });
     }
 
@@ -130,12 +132,17 @@
         const geometry = spec.torus
             ? new THREE.TorusGeometry(1, spec.thickness || 0.08, 24, 96)
             : new THREE.SphereGeometry(1, 42, 32);
-        const mesh = new THREE.Mesh(geometry, napraviMatMaterijal(THREE, spec.color, spec.opacity || 0.54));
+        const opacity = typeof spec.opacity === 'number' ? spec.opacity : 0.54;
+        const mesh = new THREE.Mesh(geometry, napraviMatMaterijal(THREE, spec.color, opacity, spec));
 
         mesh.position.set(spec.x, spec.y, spec.z);
         mesh.rotation.set(spec.rx || 0, spec.ry || 0, spec.rz || 0);
         mesh.scale.set(spec.sx, spec.sy, spec.sz);
         mesh.userData = {
+            baseSx: spec.sx,
+            baseSy: spec.sy,
+            baseSz: spec.sz,
+            baseOpacity: opacity,
             baseX: spec.x,
             baseY: spec.y,
             baseZ: spec.z,
@@ -144,7 +151,10 @@
             wobble: spec.wobble || 0.08,
             driftX: typeof spec.driftX === 'number' ? spec.driftX : 0.55,
             driftY: typeof spec.driftY === 'number' ? spec.driftY : 1,
-            rotate: spec.rotate || 0.001
+            rotate: spec.rotate || 0.001,
+            pulse: spec.pulse || 0,
+            pulseSpeed: spec.pulseSpeed || 1,
+            opacityPulse: spec.opacityPulse || 0
         };
 
         clayGroup.add(mesh);
@@ -163,38 +173,60 @@
     }
 
     function dodajRekaScene(THREE) {
-        dodajMekuFormu(THREE, { x: -1.95, y: 2.05, z: -2.35, sx: 2.85, sy: 0.46, sz: 0.22, color: 0x1d9cff, opacity: 0.34, rz: -0.42, phase: 0.2, speed: 0.34, wobble: 0.12, driftX: 0.8, driftY: 0.55, rotate: 0.0006 });
-        dodajMekuFormu(THREE, { x: 1.15, y: 0.86, z: -2.25, sx: 3.25, sy: 0.54, sz: 0.24, color: 0x7de3ff, opacity: 0.38, rz: 0.32, phase: 1.1, speed: 0.31, wobble: 0.12, driftX: 0.75, driftY: 0.55, rotate: -0.00055 });
-        dodajMekuFormu(THREE, { x: -0.7, y: -0.82, z: -2.2, sx: 3.1, sy: 0.5, sz: 0.24, color: 0x2db7ff, opacity: 0.36, rz: -0.3, phase: 2.2, speed: 0.3, wobble: 0.12, driftX: 0.8, driftY: 0.6, rotate: 0.00065 });
-        dodajMekuFormu(THREE, { x: 1.55, y: -2.28, z: -2.25, sx: 2.8, sy: 0.42, sz: 0.2, color: 0x8cecff, opacity: 0.3, rz: 0.24, phase: 3.0, speed: 0.28, wobble: 0.1, driftX: 0.75, driftY: 0.5, rotate: -0.00045 });
+        const obale = [
+            { x: -3.1, y: 1.72, z: -2.42, sx: 1.74, sy: 0.78, sz: 0.32, color: 0x49c997, opacity: 0.42, rz: -0.36, phase: 0.3, speed: 0.2, wobble: 0.05, rotate: 0.00035 },
+            { x: 2.95, y: 1.05, z: -2.46, sx: 1.56, sy: 0.7, sz: 0.3, color: 0x7ecf93, opacity: 0.36, rz: 0.28, phase: 1.2, speed: 0.2, wobble: 0.05, rotate: -0.0003 },
+            { x: -3.0, y: -0.82, z: -2.48, sx: 1.52, sy: 0.68, sz: 0.28, color: 0x3dbb9d, opacity: 0.36, rz: 0.2, phase: 2.1, speed: 0.2, wobble: 0.05, rotate: 0.00032 },
+            { x: 3.08, y: -1.86, z: -2.5, sx: 1.76, sy: 0.72, sz: 0.28, color: 0x59d0a9, opacity: 0.34, rz: -0.22, phase: 2.8, speed: 0.2, wobble: 0.05, rotate: -0.00034 },
+            { x: -0.35, y: 2.94, z: -2.58, sx: 1.24, sy: 0.46, sz: 0.2, color: 0xffd36a, opacity: 0.32, rz: -0.12, phase: 1.8, speed: 0.18, wobble: 0.04, rotate: 0.00026 }
+        ];
 
-        dodajMekuFormu(THREE, { x: -2.95, y: 0.64, z: -2.7, sx: 1.2, sy: 0.58, sz: 0.22, color: 0x4bcfa6, opacity: 0.24, rz: -0.22, phase: 1.4, speed: 0.24, wobble: 0.06, rotate: 0.00045 });
-        dodajMekuFormu(THREE, { x: 3.05, y: -0.48, z: -2.75, sx: 1.4, sy: 0.64, sz: 0.22, color: 0x6fd7bd, opacity: 0.22, rz: 0.28, phase: 2.4, speed: 0.23, wobble: 0.06, rotate: -0.00035 });
-        dodajMekuFormu(THREE, { x: -3.22, y: -2.55, z: -2.72, sx: 1.0, sy: 0.42, sz: 0.18, color: 0xffd36a, opacity: 0.2, rz: 0.18, phase: 0.7, speed: 0.2, wobble: 0.05, rotate: 0.00035 });
+        const voda = [
+            { x: -1.55, y: 2.22, z: -2.02, sx: 3.24, sy: 0.82, sz: 0.34, color: 0x117cd8, opacity: 0.58, rz: -0.42, phase: 0.2, speed: 0.28, wobble: 0.11, driftX: 0.78, driftY: 0.46, rotate: 0.00042, roughness: 0.82 },
+            { x: 0.9, y: 1.1, z: -1.94, sx: 3.72, sy: 0.92, sz: 0.36, color: 0x1ba7f2, opacity: 0.64, rz: 0.34, phase: 1.0, speed: 0.3, wobble: 0.12, driftX: 0.74, driftY: 0.48, rotate: -0.00046, roughness: 0.8 },
+            { x: -0.88, y: -0.28, z: -1.9, sx: 3.64, sy: 0.9, sz: 0.34, color: 0x26bfff, opacity: 0.62, rz: -0.3, phase: 1.9, speed: 0.31, wobble: 0.12, driftX: 0.78, driftY: 0.48, rotate: 0.00048, roughness: 0.8 },
+            { x: 1.08, y: -1.56, z: -1.95, sx: 3.34, sy: 0.82, sz: 0.32, color: 0x188de2, opacity: 0.58, rz: 0.3, phase: 2.8, speed: 0.28, wobble: 0.11, driftX: 0.76, driftY: 0.46, rotate: -0.00042, roughness: 0.82 },
+            { x: -0.04, y: 0.48, z: -1.64, sx: 2.18, sy: 0.48, sz: 0.18, color: 0x94efff, opacity: 0.46, rz: 0.06, phase: 0.7, speed: 0.36, wobble: 0.1, driftX: 0.9, driftY: 0.36, rotate: 0.00055, roughness: 0.76 }
+        ];
 
-        dodajMekuFormu(THREE, { x: -0.95, y: 1.32, z: -1.85, sx: 0.92, sy: 0.09, sz: 0.07, color: 0xd7fbff, opacity: 0.34, rz: -0.4, phase: 0.6, speed: 0.46, wobble: 0.11, driftX: 1.1, driftY: 0.42, rotate: 0.0008 });
-        dodajMekuFormu(THREE, { x: 0.75, y: -0.04, z: -1.8, sx: 1.15, sy: 0.11, sz: 0.07, color: 0xe8fdff, opacity: 0.32, rz: 0.32, phase: 1.7, speed: 0.44, wobble: 0.11, driftX: 1.05, driftY: 0.42, rotate: -0.00075 });
-        dodajMekuFormu(THREE, { x: -0.38, y: -1.52, z: -1.82, sx: 0.86, sy: 0.09, sz: 0.06, color: 0xc8f7ff, opacity: 0.3, rz: -0.28, phase: 2.7, speed: 0.42, wobble: 0.1, driftX: 1, driftY: 0.4, rotate: 0.0007 });
+        const struje = [
+            { x: -1.22, y: 1.62, z: -1.34, sx: 1.58, sy: 0.12, sz: 0.08, color: 0xe8fdff, opacity: 0.68, rz: -0.4, phase: 0.55, speed: 0.58, wobble: 0.12, driftX: 1.1, driftY: 0.34, rotate: 0.00082, pulse: 0.05, pulseSpeed: 1.6, opacityPulse: 0.08, emissive: 0x7de3ff, emissiveIntensity: 0.2 },
+            { x: 0.82, y: 0.5, z: -1.3, sx: 1.76, sy: 0.13, sz: 0.08, color: 0xd8fbff, opacity: 0.62, rz: 0.32, phase: 1.4, speed: 0.56, wobble: 0.12, driftX: 1.05, driftY: 0.34, rotate: -0.0008, pulse: 0.05, pulseSpeed: 1.5, opacityPulse: 0.07, emissive: 0x7de3ff, emissiveIntensity: 0.18 },
+            { x: -0.7, y: -0.78, z: -1.3, sx: 1.48, sy: 0.11, sz: 0.07, color: 0xf0feff, opacity: 0.64, rz: -0.28, phase: 2.35, speed: 0.54, wobble: 0.1, driftX: 1.0, driftY: 0.32, rotate: 0.00076, pulse: 0.05, pulseSpeed: 1.55, opacityPulse: 0.07, emissive: 0x7de3ff, emissiveIntensity: 0.18 },
+            { x: 1.02, y: -1.96, z: -1.32, sx: 1.32, sy: 0.1, sz: 0.07, color: 0xd9fbff, opacity: 0.58, rz: 0.28, phase: 3.1, speed: 0.5, wobble: 0.1, driftX: 0.95, driftY: 0.3, rotate: -0.00072, pulse: 0.05, pulseSpeed: 1.45, opacityPulse: 0.06, emissive: 0x7de3ff, emissiveIntensity: 0.16 }
+        ];
 
-        dodajMekuFormu(THREE, { x: 2.62, y: 2.58, z: -3.05, sx: 1.4, sy: 0.72, sz: 0.12, color: 0x7de3ff, opacity: 0.12, phase: 2.1, speed: 0.18, wobble: 0.04, rotate: 0.0003, torus: true, thickness: 0.045, rx: 0.2, ry: 0.12, rz: -0.22 });
-        dodajMekuFormu(THREE, { x: -2.48, y: -0.82, z: -3.02, sx: 1.2, sy: 0.6, sz: 0.1, color: 0x2db7ff, opacity: 0.12, phase: 1.1, speed: 0.18, wobble: 0.04, rotate: -0.00035, torus: true, thickness: 0.045, rx: 0.24, ry: -0.08, rz: 0.2 });
+        const talasi = [
+            { x: 2.36, y: 2.28, z: -1.58, sx: 1.36, sy: 0.48, sz: 0.12, color: 0xcdfbff, opacity: 0.32, phase: 0.4, speed: 0.22, wobble: 0.05, rotate: 0.00032, torus: true, thickness: 0.04, rx: 0.18, ry: 0.1, rz: -0.24, pulse: 0.08, pulseSpeed: 1.05, opacityPulse: 0.06, emissive: 0x7de3ff, emissiveIntensity: 0.12 },
+            { x: -2.42, y: 0.04, z: -1.6, sx: 1.18, sy: 0.42, sz: 0.1, color: 0x8cecff, opacity: 0.3, phase: 1.4, speed: 0.22, wobble: 0.05, rotate: -0.00034, torus: true, thickness: 0.04, rx: 0.22, ry: -0.08, rz: 0.2, pulse: 0.08, pulseSpeed: 1.0, opacityPulse: 0.05, emissive: 0x2db7ff, emissiveIntensity: 0.1 },
+            { x: 2.36, y: -0.92, z: -1.58, sx: 1.04, sy: 0.36, sz: 0.1, color: 0xdffcff, opacity: 0.28, phase: 2.1, speed: 0.2, wobble: 0.04, rotate: 0.0003, torus: true, thickness: 0.035, rx: 0.2, ry: 0.08, rz: -0.18, pulse: 0.07, pulseSpeed: 0.95, opacityPulse: 0.05, emissive: 0x7de3ff, emissiveIntensity: 0.1 }
+        ];
+
+        const sjaj = [
+            { x: -0.22, y: 1.1, z: -1.05, sx: 0.11, sy: 0.11, sz: 0.11, color: 0xffffff, opacity: 0.88, phase: 0.1, speed: 0.55, wobble: 0.08, pulse: 0.2, pulseSpeed: 2.2, opacityPulse: 0.16, emissive: 0x9ef7ff, emissiveIntensity: 0.65, rotate: 0.0002 },
+            { x: 1.52, y: -0.12, z: -1.05, sx: 0.09, sy: 0.09, sz: 0.09, color: 0xf7ffff, opacity: 0.82, phase: 1.2, speed: 0.52, wobble: 0.08, pulse: 0.22, pulseSpeed: 2.0, opacityPulse: 0.15, emissive: 0x9ef7ff, emissiveIntensity: 0.58, rotate: -0.0002 },
+            { x: -1.46, y: -1.08, z: -1.05, sx: 0.08, sy: 0.08, sz: 0.08, color: 0xfff1aa, opacity: 0.74, phase: 2.2, speed: 0.5, wobble: 0.07, pulse: 0.2, pulseSpeed: 1.9, opacityPulse: 0.14, emissive: 0xffd36a, emissiveIntensity: 0.42, rotate: 0.0002 },
+            { x: 0.38, y: -2.32, z: -1.05, sx: 0.1, sy: 0.1, sz: 0.1, color: 0xffffff, opacity: 0.8, phase: 3.0, speed: 0.48, wobble: 0.07, pulse: 0.2, pulseSpeed: 2.1, opacityPulse: 0.14, emissive: 0x9ef7ff, emissiveIntensity: 0.55, rotate: -0.0002 }
+        ];
+
+        [...obale, ...voda, ...struje, ...talasi, ...sjaj].forEach(spec => dodajMekuFormu(THREE, spec));
     }
 
     function podesiSvetloZaTemu(THREE, tema) {
         const ambijent = tema === 'reka'
-            ? new THREE.HemisphereLight(0xd8fbff, 0x031625, 1.78)
+            ? new THREE.HemisphereLight(0xe6feff, 0x031625, 1.95)
             : new THREE.HemisphereLight(0xfff3e8, 0x160f24, 1.65);
         scene.add(ambijent);
 
-        const glavnoSvetlo = new THREE.DirectionalLight(0xffffff, tema === 'reka' ? 2.3 : 2.45);
+        const glavnoSvetlo = new THREE.DirectionalLight(0xffffff, tema === 'reka' ? 2.65 : 2.45);
         glavnoSvetlo.position.set(-3.2, 4.4, 5.8);
         scene.add(glavnoSvetlo);
 
-        const primarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x7de3ff : 0xff8a7a, tema === 'reka' ? 1.55 : 1.45, 10);
+        const primarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x7de3ff : 0xff8a7a, tema === 'reka' ? 2.05 : 1.45, 10);
         primarniSjaj.position.set(3.8, -1.8, 3.4);
         scene.add(primarniSjaj);
 
-        const sekundarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x2db7ff : 0xb993ff, tema === 'reka' ? 1.3 : 1.15, 9);
+        const sekundarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x2db7ff : 0xb993ff, tema === 'reka' ? 1.7 : 1.15, 9);
         sekundarniSjaj.position.set(-3.6, 1.4, 2.8);
         scene.add(sekundarniSjaj);
     }
@@ -209,7 +241,7 @@
         sceneTheme = tema;
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-        camera.position.set(0, 0, tema === 'reka' ? 8.8 : 8.4);
+        camera.position.set(0, 0, tema === 'reka' ? 8.05 : 8.4);
 
         renderer = new THREE.WebGLRenderer({
             alpha: true,
@@ -269,11 +301,16 @@
 
         clayObjects.forEach((mesh, index) => {
             const data = mesh.userData;
+            const pulse = data.pulse ? 1 + Math.sin(t * data.pulseSpeed + data.phase) * data.pulse : 1;
             mesh.position.x = data.baseX + Math.cos(t * data.speed + data.phase) * data.wobble * data.driftX;
             mesh.position.y = data.baseY + Math.sin(t * data.speed + data.phase) * data.wobble * data.driftY;
+            mesh.scale.set(data.baseSx * pulse, data.baseSy * pulse, data.baseSz * pulse);
+            if (mesh.material && data.opacityPulse) {
+                mesh.material.opacity = Math.max(0.04, Math.min(1, data.baseOpacity + Math.sin(t * data.pulseSpeed + data.phase) * data.opacityPulse));
+            }
             mesh.rotation.x += data.rotate * (index % 2 === 0 ? 1 : -1);
             mesh.rotation.y += data.rotate * 0.72;
-            mesh.rotation.z += data.rotate * (reka ? 0.72 : 0.45);
+            mesh.rotation.z += data.rotate * (reka ? 0.95 : 0.45);
         });
 
         renderer.render(scene, camera);

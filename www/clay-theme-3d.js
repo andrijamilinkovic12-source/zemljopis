@@ -80,6 +80,7 @@
         const tema = document.body.getAttribute('data-tema');
         if (tema === 'glina') return 'glina';
         if (tema === 'okean') return 'reka-efekti';
+        if (tema === 'drzava') return 'drzava-efekti';
         if (tema === 'planina') return 'planina-oblaci';
         return null;
     }
@@ -151,6 +152,11 @@
         };
     }
 
+    function smoothStep(edge0, edge1, value) {
+        const x = Math.max(0, Math.min(1, (value - edge0) / (edge1 - edge0)));
+        return x * x * (3 - 2 * x);
+    }
+
     function dodajMekuFormu(THREE, spec) {
         let geometry;
         if (spec.torus) {
@@ -187,14 +193,19 @@
             wobble: spec.wobble || 0.08,
             driftX: typeof spec.driftX === 'number' ? spec.driftX : 0.55,
             driftY: typeof spec.driftY === 'number' ? spec.driftY : 1,
-            rotate: spec.rotate || 0.001,
+            rotate: typeof spec.rotate === 'number' ? spec.rotate : 0.001,
             pulse: spec.pulse || 0,
             pulseSpeed: spec.pulseSpeed || 1,
             opacityPulse: spec.opacityPulse || 0,
             flowPath: spec.flowPath || null,
             flowSpeed: spec.flowSpeed || 0,
             flowPhase: spec.flowPhase || 0,
-            flowFade: !!spec.flowFade
+            flowFade: !!spec.flowFade,
+            flagWave: spec.flagWave || 0,
+            flagIndex: spec.flagIndex || 0,
+            spinType: spec.spinType || null,
+            spinSpeed: spec.spinSpeed || 0,
+            spinPhase: spec.spinPhase || 0
         };
 
         clayGroup.add(mesh);
@@ -467,6 +478,273 @@
                 pulseSpeed: 0.42
             }
         ));
+    }
+
+    function dodajDrzavaEfektiScene(THREE) {
+        const napraviOverlayMesh = (spec) => {
+            let geometry;
+            if (spec.torus) {
+                geometry = new THREE.TorusGeometry(1, spec.thickness || 0.08, 24, 96);
+            } else if (spec.cone) {
+                geometry = new THREE.ConeGeometry(1, 2, 48, 1);
+            } else if (spec.cylinder) {
+                geometry = new THREE.CylinderGeometry(spec.radiusTop || 1, spec.radiusBottom || 1, 2, 32);
+            } else {
+                geometry = new THREE.SphereGeometry(1, 42, 32);
+            }
+            const mesh = new THREE.Mesh(geometry, napraviMatMaterijal(THREE, spec.color, spec.opacity, spec));
+            mesh.position.set(spec.x || 0, spec.y || 0, spec.z || 0);
+            mesh.rotation.set(spec.rx || 0, spec.ry || 0, spec.rz || 0);
+            mesh.scale.set(spec.sx, spec.sy, spec.sz);
+            if (typeof spec.renderOrder === 'number') mesh.renderOrder = spec.renderOrder;
+            return mesh;
+        };
+
+        const dodajAnimiranuGrupu = (spec) => {
+            const grupa = new THREE.Group();
+            grupa.position.set(spec.x, spec.y, spec.z);
+            grupa.rotation.set(spec.rx || 0, spec.ry || 0, spec.rz || 0);
+            grupa.scale.set(spec.sx, spec.sy, spec.sz);
+            grupa.userData = {
+                baseSx: spec.sx,
+                baseSy: spec.sy,
+                baseSz: spec.sz,
+                baseOpacity: 1,
+                baseX: spec.x,
+                baseY: spec.y,
+                baseZ: spec.z,
+                baseRx: spec.rx || 0,
+                baseRy: spec.ry || 0,
+                baseRz: spec.rz || 0,
+                speed: spec.speed || 0,
+                phase: spec.phase || 0,
+                wobble: spec.wobble || 0,
+                driftX: typeof spec.driftX === 'number' ? spec.driftX : 0,
+                driftY: typeof spec.driftY === 'number' ? spec.driftY : 0,
+                rotate: 0,
+                pulse: spec.pulse || 0,
+                pulseSpeed: spec.pulseSpeed || 1,
+                opacityPulse: 0,
+                flowPath: null,
+                flowSpeed: 0,
+                flowPhase: 0,
+                flowFade: false,
+                flagWave: 0,
+                flagIndex: 0,
+                spinType: spec.spinType || null,
+                spinSpeed: spec.spinSpeed || 0,
+                spinPhase: spec.spinPhase || 0
+            };
+            clayGroup.add(grupa);
+            clayObjects.push(grupa);
+            return grupa;
+        };
+
+        const dodajZastavicu = (x, y, z, scale, boja, phase) => {
+            dodajMekuFormu(THREE, {
+                x,
+                y: y - 0.11 * scale,
+                z,
+                sx: 0.025 * scale,
+                sy: 0.26 * scale,
+                sz: 0.025 * scale,
+                color: 0xf3d3a1,
+                opacity: 0.7,
+                cylinder: true,
+                phase,
+                speed: 0.08,
+                wobble: 0.004,
+                driftX: 0.2,
+                driftY: 0.12,
+                rotate: 0,
+                roughness: 0.94,
+                renderOrder: 11
+            });
+
+            [
+                { dx: 0.1, dy: 0.07, sx: 0.15, sy: 0.062, idx: 0 },
+                { dx: 0.24, dy: 0.052, sx: 0.14, sy: 0.058, idx: 1 },
+                { dx: 0.36, dy: 0.026, sx: 0.1, sy: 0.05, idx: 2 }
+            ].forEach(deo => dodajMekuFormu(THREE, {
+                x: x + deo.dx * scale,
+                y: y + deo.dy * scale,
+                z: z + 0.02,
+                sx: deo.sx * scale,
+                sy: deo.sy * scale,
+                sz: 0.025 * scale,
+                color: boja,
+                opacity: 0.7,
+                phase: phase + deo.idx * 0.38,
+                speed: 0.08,
+                wobble: 0.01,
+                driftX: 0.16,
+                driftY: 0.12,
+                pulse: 0.018,
+                pulseSpeed: 1.1,
+                opacityPulse: 0.045,
+                flagWave: 1,
+                flagIndex: deo.idx,
+                rotate: 0,
+                roughness: 0.94,
+                renderOrder: 12
+            }));
+        };
+
+        [
+            { x: -1.42, y: 2.08, z: -1.92, scale: 0.78, opacity: 0.86, phase: 0.2, color: 0xfff1e6 },
+            { x: 1.22, y: 2.06, z: -1.86, scale: 0.8, opacity: 0.84, phase: 1.4, color: 0xfff1e8 },
+            { x: -1.64, y: 1.28, z: -2.02, scale: 0.44, opacity: 0.62, phase: 2.4, color: 0xf2f6ff },
+            { x: 1.6, y: 1.28, z: -2.02, scale: 0.48, opacity: 0.62, phase: 3.2, color: 0xfff4ec },
+            { x: 0.18, y: 2.24, z: -2.08, scale: 0.32, opacity: 0.52, phase: 4.2, color: 0xfff4e8 }
+        ].forEach(oblak => dodajOblak(
+            THREE,
+            oblak.x,
+            oblak.y,
+            oblak.z,
+            oblak.color,
+            oblak.opacity,
+            oblak.scale,
+            oblak.phase,
+            {
+                speed: 0.092,
+                wobble: 0.12,
+                driftX: 1.32,
+                driftY: 0.18,
+                opacityPulse: 0.03,
+                pulse: 0.016,
+                pulseSpeed: 0.42
+            }
+        ));
+
+        [
+            { x: -1.2, y: 0.58, scale: 0.82, color: 0xb993ff, phase: 0.2 },
+            { x: 0.48, y: 0.88, scale: 0.76, color: 0xffb46f, phase: 0.9 },
+            { x: 1.13, y: 0.5, scale: 0.78, color: 0xff7fa0, phase: 1.7 },
+            { x: 0.42, y: -0.18, scale: 0.72, color: 0x7fcaa5, phase: 2.5 },
+            { x: -0.48, y: -0.6, scale: 0.68, color: 0x7ed7ff, phase: 3.2 },
+            { x: -1.0, y: -1.02, scale: 0.66, color: 0xff8a7a, phase: 4.0 }
+        ].forEach(flag => dodajZastavicu(flag.x, flag.y, -1.14, flag.scale, flag.color, flag.phase));
+
+        const putanjaAtlasa = [
+            { x: -1.28, y: 0.54 },
+            { x: -0.64, y: 0.1 },
+            { x: -0.02, y: 0.42 },
+            { x: 0.62, y: 0.2 },
+            { x: 1.08, y: -0.28 },
+            { x: 0.42, y: -0.72 },
+            { x: -0.38, y: -0.56 },
+            { x: -1.0, y: -0.96 }
+        ];
+
+        [
+            { s: 0.05, phase: 0.04, color: 0xfff4c1 },
+            { s: 0.045, phase: 0.2, color: 0xffffff },
+            { s: 0.052, phase: 0.38, color: 0xe8fbff },
+            { s: 0.042, phase: 0.56, color: 0xfff1ce },
+            { s: 0.048, phase: 0.74, color: 0xffffff }
+        ].forEach(spec => dodajMekuFormu(THREE, {
+            x: putanjaAtlasa[0].x,
+            y: putanjaAtlasa[0].y,
+            z: -1.18,
+            sx: spec.s,
+            sy: spec.s,
+            sz: spec.s,
+            color: spec.color,
+            opacity: 0.56,
+            phase: spec.phase * 6.28,
+            speed: 0.34,
+            wobble: 0.045,
+            driftX: 0.55,
+            driftY: 0.24,
+            pulse: 0.22,
+            pulseSpeed: 1.35,
+            opacityPulse: 0.12,
+            emissive: 0xffe7a6,
+            emissiveIntensity: 0.38,
+            rotate: 0.00006,
+            flowPath: putanjaAtlasa,
+            flowSpeed: 0.055,
+            flowPhase: spec.phase,
+            flowFade: true,
+            renderOrder: 9
+        }));
+
+        const kompas = dodajAnimiranuGrupu({
+            x: -1.46,
+            y: -2.62,
+            z: -1.02,
+            sx: 0.78,
+            sy: 0.78,
+            sz: 0.78,
+            spinType: 'compass',
+            spinSpeed: 0.9,
+            spinPhase: 0.3,
+            wobble: 0.006,
+            speed: 0.08,
+            driftX: 0.16,
+            driftY: 0.12,
+            pulse: 0.01,
+            pulseSpeed: 0.6
+        });
+        kompas.add(napraviOverlayMesh({ torus: true, thickness: 0.1, sx: 0.52, sy: 0.52, sz: 0.08, color: 0xd7a25d, opacity: 0.78, roughness: 0.88 }));
+        kompas.add(napraviOverlayMesh({ sx: 0.42, sy: 0.42, sz: 0.06, color: 0xffe9c8, opacity: 0.62, roughness: 0.96 }));
+        [
+            { rz: 0, color: 0xf06f79, y: 0.12 },
+            { rz: Math.PI, color: 0x7fb6d9, y: -0.12 },
+            { rz: -Math.PI / 2, color: 0xf3c27a, x: 0.12 },
+            { rz: Math.PI / 2, color: 0x9ecf8b, x: -0.12 }
+        ].forEach(krak => kompas.add(napraviOverlayMesh({
+            cone: true,
+            x: krak.x || 0,
+            y: krak.y || 0,
+            z: 0.08,
+            sx: 0.08,
+            sy: 0.2,
+            sz: 0.035,
+            rz: krak.rz,
+            color: krak.color,
+            opacity: 0.72,
+            roughness: 0.9
+        })));
+        kompas.add(napraviOverlayMesh({ sx: 0.1, sy: 0.1, sz: 0.045, color: 0xe0a842, opacity: 0.82, roughness: 0.86, z: 0.12 }));
+
+        const globus = dodajAnimiranuGrupu({
+            x: 1.5,
+            y: -2.58,
+            z: -1.0,
+            sx: 0.72,
+            sy: 0.72,
+            sz: 0.72,
+            spinType: 'globe',
+            spinSpeed: 0.23,
+            spinPhase: 0.8,
+            wobble: 0.006,
+            speed: 0.08,
+            driftX: 0.14,
+            driftY: 0.1,
+            pulse: 0.008,
+            pulseSpeed: 0.5
+        });
+        globus.add(napraviOverlayMesh({ sx: 0.43, sy: 0.43, sz: 0.24, color: 0x77c9e6, opacity: 0.7, roughness: 0.92, emissive: 0x4bbce0, emissiveIntensity: 0.04 }));
+        globus.add(napraviOverlayMesh({ torus: true, thickness: 0.045, sx: 0.47, sy: 0.47, sz: 0.05, color: 0xd9a45e, opacity: 0.72, roughness: 0.86, rz: 0.18 }));
+        globus.add(napraviOverlayMesh({ torus: true, thickness: 0.026, sx: 0.43, sy: 0.43, sz: 0.04, color: 0xffdf9c, opacity: 0.38, roughness: 0.88, ry: Math.PI / 2 }));
+        [
+            { x: -0.13, y: 0.12, z: 0.2, sx: 0.14, sy: 0.07, rz: -0.35, color: 0x8fc77d },
+            { x: 0.08, y: -0.02, z: 0.22, sx: 0.12, sy: 0.09, rz: 0.25, color: 0xf1c16f },
+            { x: 0.16, y: 0.13, z: 0.16, sx: 0.1, sy: 0.06, rz: 0.1, color: 0xa5d58d },
+            { x: -0.06, y: -0.17, z: 0.2, sx: 0.08, sy: 0.1, rz: -0.15, color: 0x9fc97b }
+        ].forEach(kontinent => globus.add(napraviOverlayMesh({
+            x: kontinent.x,
+            y: kontinent.y,
+            z: kontinent.z,
+            sx: kontinent.sx,
+            sy: kontinent.sy,
+            sz: 0.026,
+            rz: kontinent.rz,
+            color: kontinent.color,
+            opacity: 0.72,
+            roughness: 0.96
+        })));
     }
 
     function dodajDrvo(THREE, x, y, z, scale = 1, phase = 0) {
@@ -809,23 +1087,26 @@
 
     function podesiSvetloZaTemu(THREE, tema) {
         const rekaTema = tema === 'reka' || tema === 'reka-efekti';
+        const drzavaTema = tema === 'drzava-efekti';
         const planinaTema = tema === 'planina' || tema === 'planina-oblaci';
         const ambijent = rekaTema
             ? new THREE.HemisphereLight(0xe6feff, 0x031625, 1.95)
+            : drzavaTema
+                ? new THREE.HemisphereLight(0xf2fbff, 0x7ea77a, 1.88)
             : planinaTema
                 ? new THREE.HemisphereLight(0xfff4ec, 0x6f8ba1, 1.82)
                 : new THREE.HemisphereLight(0xfff3e8, 0x160f24, 1.65);
         scene.add(ambijent);
 
-        const glavnoSvetlo = new THREE.DirectionalLight(0xffffff, rekaTema ? 2.35 : planinaTema ? 2.15 : 2.45);
+        const glavnoSvetlo = new THREE.DirectionalLight(0xffffff, rekaTema ? 2.35 : drzavaTema ? 2.18 : planinaTema ? 2.15 : 2.45);
         glavnoSvetlo.position.set(-3.2, 4.4, 5.8);
         scene.add(glavnoSvetlo);
 
-        const primarniSjaj = new THREE.PointLight(rekaTema ? 0x7de3ff : planinaTema ? 0xffefe3 : 0xff8a7a, rekaTema ? 1.35 : planinaTema ? 0.85 : 1.45, 10);
+        const primarniSjaj = new THREE.PointLight(rekaTema ? 0x7de3ff : drzavaTema ? 0xffdea6 : planinaTema ? 0xffefe3 : 0xff8a7a, rekaTema ? 1.35 : drzavaTema ? 0.9 : planinaTema ? 0.85 : 1.45, 10);
         primarniSjaj.position.set(3.8, -1.8, 3.4);
         scene.add(primarniSjaj);
 
-        const sekundarniSjaj = new THREE.PointLight(rekaTema ? 0x2db7ff : planinaTema ? 0xd8c7ff : 0xb993ff, rekaTema ? 1.05 : planinaTema ? 0.78 : 1.15, 9);
+        const sekundarniSjaj = new THREE.PointLight(rekaTema ? 0x2db7ff : drzavaTema ? 0x7ed7ff : planinaTema ? 0xd8c7ff : 0xb993ff, rekaTema ? 1.05 : drzavaTema ? 0.85 : planinaTema ? 0.78 : 1.15, 9);
         sekundarniSjaj.position.set(-3.6, 1.4, 2.8);
         scene.add(sekundarniSjaj);
     }
@@ -840,7 +1121,7 @@
         sceneTheme = tema;
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-        camera.position.set(0, 0, tema === 'reka' ? 8.05 : tema === 'reka-efekti' ? 7.95 : tema === 'planina' ? 8.15 : tema === 'planina-oblaci' ? 7.85 : 8.4);
+        camera.position.set(0, 0, tema === 'reka' ? 8.05 : tema === 'reka-efekti' ? 7.95 : tema === 'drzava-efekti' ? 7.9 : tema === 'planina' ? 8.15 : tema === 'planina-oblaci' ? 7.85 : 8.4);
 
         renderer = new THREE.WebGLRenderer({
             alpha: true,
@@ -864,6 +1145,8 @@
             dodajRekaScene(THREE);
         } else if (tema === 'reka-efekti') {
             dodajRekaEfektiScene(THREE);
+        } else if (tema === 'drzava-efekti') {
+            dodajDrzavaEfektiScene(THREE);
         } else if (tema === 'planina') {
             dodajPlaninaScene(THREE);
         } else if (tema === 'planina-oblaci') {
@@ -901,11 +1184,12 @@
 
         const t = vreme * 0.001;
         const rekaEfekti = sceneTheme === 'reka-efekti';
+        const drzavaEfekti = sceneTheme === 'drzava-efekti';
         const reka = sceneTheme === 'reka' || rekaEfekti;
         const planina = sceneTheme === 'planina';
         const planinaOblaci = sceneTheme === 'planina-oblaci';
-        clayGroup.rotation.z = planinaOblaci || rekaEfekti ? 0 : Math.sin(t * (reka ? 0.13 : planina ? 0.08 : 0.18)) * (reka ? 0.022 : planina ? 0.012 : 0.035);
-        clayGroup.rotation.x = planinaOblaci || rekaEfekti ? 0 : Math.sin(t * (reka ? 0.1 : planina ? 0.07 : 0.13)) * (reka ? 0.012 : planina ? 0.008 : 0.018);
+        clayGroup.rotation.z = planinaOblaci || rekaEfekti || drzavaEfekti ? 0 : Math.sin(t * (reka ? 0.13 : planina ? 0.08 : 0.18)) * (reka ? 0.022 : planina ? 0.012 : 0.035);
+        clayGroup.rotation.x = planinaOblaci || rekaEfekti || drzavaEfekti ? 0 : Math.sin(t * (reka ? 0.1 : planina ? 0.07 : 0.13)) * (reka ? 0.012 : planina ? 0.008 : 0.018);
 
         clayObjects.forEach((mesh, index) => {
             const data = mesh.userData;
@@ -925,7 +1209,35 @@
                 mesh.position.y = data.baseY + Math.sin(t * data.speed + data.phase) * data.wobble * data.driftY;
             }
 
-            mesh.scale.set(data.baseSx * pulse, data.baseSy * pulse, data.baseSz * pulse);
+            let wave = 0;
+            if (data.flagWave) {
+                wave = Math.sin(t * 2.35 + data.phase + data.flagIndex * 0.58);
+                mesh.position.x += Math.sin(t * 1.8 + data.phase) * 0.01 * (data.flagIndex + 1);
+                mesh.position.y += wave * 0.022 * data.flagWave;
+                mesh.rotation.z = data.baseRz + wave * 0.12 * data.flagWave;
+                mesh.rotation.x = data.baseRx + Math.sin(t * 1.9 + data.phase) * 0.035 * data.flagWave;
+            }
+
+            mesh.scale.set(
+                data.baseSx * pulse,
+                data.baseSy * pulse * (data.flagWave ? 1 + wave * 0.035 : 1),
+                data.baseSz * pulse
+            );
+
+            if (data.spinType === 'compass') {
+                const spinTime = t * 0.16 + data.spinPhase;
+                const cycle = spinTime % 1;
+                const turns = Math.floor(spinTime);
+                const spinWindow = smoothStep(0.08, 0.32, cycle) - smoothStep(0.58, 0.82, cycle);
+                mesh.rotation.x = data.baseRx;
+                mesh.rotation.y = data.baseRy;
+                mesh.rotation.z = data.baseRz + (turns + spinWindow) * Math.PI * 2;
+            } else if (data.spinType === 'globe') {
+                mesh.rotation.x = data.baseRx + Math.sin(t * 0.16 + data.spinPhase) * 0.035;
+                mesh.rotation.y = data.baseRy + t * data.spinSpeed + data.spinPhase;
+                mesh.rotation.z = data.baseRz + Math.sin(t * 0.12 + data.spinPhase) * 0.025;
+            }
+
             if (mesh.material && (data.opacityPulse || data.flowFade)) {
                 let nextOpacity = data.baseOpacity + Math.sin(t * data.pulseSpeed + data.phase) * data.opacityPulse;
                 if (data.flowFade && flowProgress !== null) {
@@ -933,10 +1245,10 @@
                 }
                 mesh.material.opacity = Math.max(0.02, Math.min(1, nextOpacity));
             }
-            if (!data.flowPath) {
+            if (!data.flowPath && !data.flagWave && !data.spinType) {
                 mesh.rotation.x += data.rotate * (index % 2 === 0 ? 1 : -1);
                 mesh.rotation.y += data.rotate * 0.72;
-                mesh.rotation.z += data.rotate * (reka ? 0.95 : planina || planinaOblaci ? 0.36 : 0.45);
+                mesh.rotation.z += data.rotate * (reka ? 0.95 : planina || planinaOblaci || drzavaEfekti ? 0.36 : 0.45);
             }
         });
 

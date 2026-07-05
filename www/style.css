@@ -2028,6 +2028,13 @@ body[data-tema="planina"] #main-menu > .clay-theme-three {
     filter: saturate(1.02) contrast(1.01) drop-shadow(0 12px 18px rgba(100, 118, 145, 0.18));
 }
 
+body[data-tema="drzava"] #main-menu > .clay-theme-three {
+    display: block;
+    opacity: 0.84;
+    mix-blend-mode: normal;
+    filter: saturate(1.04) contrast(1.01) drop-shadow(0 12px 18px rgba(93, 132, 154, 0.16));
+}
+
 body[data-tema="glina"] #main-menu .menu-pattern {
     opacity: 0.58;
 }
@@ -2038,6 +2045,10 @@ body[data-tema="okean"] #main-menu .menu-pattern {
 
 body[data-tema="planina"] #main-menu .menu-pattern {
     opacity: 0.18;
+}
+
+body[data-tema="drzava"] #main-menu .menu-pattern {
+    opacity: 0.16;
 }
 
 body[data-tema="glina"] #main-menu .menu-pattern::before {
@@ -5358,6 +5369,57 @@ body[data-tema="planina"] {
     background-repeat: no-repeat;
 }
 
+body[data-tema="drzava"] {
+    --theme-bg:
+        linear-gradient(180deg, rgba(223, 244, 255, 0.44) 0%, rgba(255, 244, 224, 0.18) 40%, rgba(219, 237, 210, 0.36) 100%),
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.18), transparent 48%),
+        url('assets/drzava-soft-matte-bg-v2.png');
+    --theme-splash-bg: linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
+    --theme-text: #28415a;
+    --theme-muted: #607789;
+    --theme-primary: #3f91ba;
+    --theme-primary-rgb: 63, 145, 186;
+    --theme-secondary: #d6a15f;
+    --theme-secondary-rgb: 214, 161, 95;
+    --theme-accent: #88b96f;
+    --theme-accent-rgb: 136, 185, 111;
+    --theme-danger: #de6b7d;
+    --theme-danger-rgb: 222, 107, 125;
+    --theme-panel: rgba(255, 255, 255, 0.8);
+    --theme-panel-strong: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(237, 247, 249, 0.9));
+    --theme-control-bg: rgba(255, 255, 255, 0.68);
+    --theme-input-bg: rgba(255, 255, 255, 0.84);
+    --theme-pill-bg: rgba(255, 255, 255, 0.78);
+    --theme-border: rgba(63, 145, 186, 0.3);
+    --theme-soft-border: rgba(214, 161, 95, 0.24);
+    --theme-shadow: 0 16px 34px rgba(84, 108, 132, 0.2), 0 0 28px rgba(63, 145, 186, 0.12);
+    --theme-control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), inset 0 -10px 22px rgba(63, 145, 186, 0.1), 0 9px 20px rgba(84, 108, 132, 0.16);
+    --theme-title-shadow: 0 2px 8px rgba(255, 255, 255, 0.72), 0 0 16px rgba(63, 145, 186, 0.24);
+    --theme-primary-gradient: linear-gradient(45deg, #74b7d6, #e0b36d 52%, #9ac77a);
+    --theme-on-primary: #22364d;
+    --theme-primary-shadow: 0 0 22px rgba(63, 145, 186, 0.26), 0 8px 20px rgba(84, 108, 132, 0.14);
+    --theme-phone-shadow: 0 0 54px rgba(121, 151, 175, 0.34);
+    --theme-contour-rgb: 63, 145, 186;
+    --theme-pattern-hue: 142deg;
+    --theme-pattern-saturation: 0.72;
+    --theme-map-brightness: 1.08;
+    --theme-contour-alpha: 0;
+    --theme-pattern-opacity: 0.2;
+    --theme-map-opacity: 0;
+    --theme-icon-opacity: 0;
+    --theme-pattern-grid:
+        radial-gradient(ellipse at 18% 12%, rgba(115, 184, 215, 0.16), transparent 34%),
+        radial-gradient(ellipse at 84% 16%, rgba(224, 179, 109, 0.14), transparent 32%),
+        radial-gradient(ellipse at 50% 86%, rgba(136, 185, 111, 0.14), transparent 40%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 48%, rgba(255, 255, 255, 0.08));
+    --theme-vignette:
+        linear-gradient(to bottom, rgba(110, 160, 190, 0.14), transparent 28%, transparent 70%, rgba(98, 142, 106, 0.18)),
+        linear-gradient(to right, rgba(94, 139, 173, 0.12), transparent 24%, transparent 76%, rgba(214, 161, 95, 0.12));
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
 body[data-tema="sakura"] {
     --theme-bg: radial-gradient(circle at 50% 12%, rgba(200, 79, 130, 0.09), transparent 36%), linear-gradient(145deg, #fff8fb 0%, #f8e9f0 54%, #f2edf7 100%);
     --theme-splash-bg: linear-gradient(135deg, #fffafc, #f8e9f0, #f2edf7);
@@ -5641,6 +5703,18 @@ body[data-tema="planina"] {
     --theme-icon-opacity: 0;
 }
 
+body[data-tema="drzava"] {
+    --theme-pattern-grid:
+        radial-gradient(ellipse at 18% 12%, rgba(115, 184, 215, 0.16), transparent 34%),
+        radial-gradient(ellipse at 84% 16%, rgba(224, 179, 109, 0.14), transparent 32%),
+        radial-gradient(ellipse at 50% 86%, rgba(136, 185, 111, 0.14), transparent 40%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 48%, rgba(255, 255, 255, 0.08));
+    --theme-pattern-opacity: 0.2;
+    --theme-contour-alpha: 0;
+    --theme-map-opacity: 0;
+    --theme-icon-opacity: 0;
+}
+
 body[data-tema] {
     background: var(--theme-bg);
     color: var(--theme-text);
@@ -5648,6 +5722,7 @@ body[data-tema] {
 }
 
 body[data-tema="okean"],
+body[data-tema="drzava"],
 body[data-tema="planina"] {
     background-size: cover;
     background-position: center center;
@@ -6117,6 +6192,22 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
 }
 
 body[data-tema="planina"] #main-menu .pattern-icon {
+    opacity: 0 !important;
+    animation: none;
+}
+
+body[data-tema="drzava"] #main-menu .menu-pattern::before {
+    background: var(--theme-pattern-grid);
+    opacity: var(--theme-pattern-opacity);
+    inset: 0;
+    transform: none;
+}
+
+body[data-tema="drzava"] #main-menu .menu-pattern::after {
+    background: var(--theme-vignette);
+}
+
+body[data-tema="drzava"] #main-menu .pattern-icon {
     opacity: 0 !important;
     animation: none;
 }

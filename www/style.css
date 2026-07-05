@@ -2016,9 +2016,44 @@ body[data-tema="glina"] #main-menu > .clay-theme-three {
 }
 
 body[data-tema="okean"] #main-menu > .clay-theme-three {
-    opacity: 0.9;
+    display: none;
+    opacity: 0;
     mix-blend-mode: normal;
     filter: saturate(1.16) contrast(1.05) drop-shadow(0 12px 18px rgba(27, 126, 160, 0.16));
+}
+
+body[data-tema="okean"] #main-menu::before {
+    content: "";
+    position: absolute;
+    inset: -4% -8%;
+    z-index: 2;
+    pointer-events: none;
+    background-image: url('assets/reka-clouds-layer.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    opacity: 0.94;
+    transform-origin: 50% 15%;
+    filter: saturate(1.08) contrast(1.04) brightness(1.03) drop-shadow(0 10px 16px rgba(73, 117, 151, 0.12));
+    will-change: transform, opacity;
+    animation: rekaCloudLayerDrift 24s ease-in-out infinite;
+}
+
+body[data-tema="okean"] #main-menu::after {
+    content: "";
+    position: absolute;
+    inset: -5% -6%;
+    z-index: 3;
+    pointer-events: none;
+    background-image: url('assets/reka-water-flow-layer.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    opacity: 0.58;
+    mix-blend-mode: screen;
+    filter: saturate(1.18) brightness(1.08) drop-shadow(0 0 10px rgba(125, 227, 255, 0.18));
+    will-change: transform, opacity;
+    animation: rekaWaterLayerFlow 8.5s linear infinite;
 }
 
 body[data-tema="planina"] #main-menu > .clay-theme-three {
@@ -2140,6 +2175,52 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     100% {
         opacity: calc(var(--pattern-opacity) * var(--theme-icon-opacity, 1));
         translate: 0 7px;
+    }
+}
+
+@keyframes rekaCloudLayerDrift {
+    0% {
+        transform: translate3d(-2.2%, 0.12%, 0) scale(1.012);
+        opacity: 0.9;
+    }
+    28% {
+        transform: translate3d(1.4%, -0.24%, 0) scale(1.022);
+        opacity: 0.96;
+    }
+    55% {
+        transform: translate3d(4.4%, 0.1%, 0) scale(1.016);
+        opacity: 0.94;
+    }
+    78% {
+        transform: translate3d(0.8%, 0.36%, 0) scale(1.024);
+        opacity: 0.98;
+    }
+    100% {
+        transform: translate3d(-2.2%, 0.12%, 0) scale(1.012);
+        opacity: 0.9;
+    }
+}
+
+@keyframes rekaWaterLayerFlow {
+    0% {
+        transform: translate3d(0.2%, -1.6%, 0) scale(1.018);
+        opacity: 0.34;
+    }
+    22% {
+        transform: translate3d(-0.25%, -0.55%, 0) scale(1.022);
+        opacity: 0.62;
+    }
+    50% {
+        transform: translate3d(0.35%, 0.72%, 0) scale(1.018);
+        opacity: 0.52;
+    }
+    74% {
+        transform: translate3d(-0.1%, 1.55%, 0) scale(1.024);
+        opacity: 0.68;
+    }
+    100% {
+        transform: translate3d(0.2%, 2.35%, 0) scale(1.018);
+        opacity: 0.34;
     }
 }
 
@@ -5240,7 +5321,7 @@ body[data-tema="okean"] {
     --theme-bg:
         linear-gradient(180deg, rgba(232, 243, 255, 0.12) 0%, rgba(255, 248, 228, 0.04) 38%, rgba(205, 238, 225, 0.1) 100%),
         radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.05), transparent 48%),
-        url('assets/reka-soft-matte-bg-v2.png');
+        url('assets/reka-soft-matte-bg-v3.png');
     --theme-splash-bg: linear-gradient(135deg, #dff3ff, #eaf8e6, #c6edf5);
     --theme-text: #17384d;
     --theme-muted: #557483;
@@ -5621,7 +5702,7 @@ body[data-tema="okean"] {
     --theme-bg:
         linear-gradient(180deg, rgba(232, 243, 255, 0.12) 0%, rgba(255, 248, 228, 0.04) 38%, rgba(205, 238, 225, 0.1) 100%),
         radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.05), transparent 48%),
-        url('assets/reka-soft-matte-bg-v2.png');
+        url('assets/reka-soft-matte-bg-v3.png');
     --theme-splash-bg: linear-gradient(135deg, #dff3ff, #eaf8e6, #c6edf5);
     --theme-contour-rgb: 91, 196, 210;
     --theme-pattern-hue: 128deg;

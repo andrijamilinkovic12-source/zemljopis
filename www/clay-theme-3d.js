@@ -79,7 +79,6 @@
     function aktivnaThreeTema() {
         const tema = document.body.getAttribute('data-tema');
         if (tema === 'glina') return 'glina';
-        if (tema === 'okean') return 'reka-efekti';
         if (tema === 'drzava') return 'drzava-efekti';
         return null;
     }

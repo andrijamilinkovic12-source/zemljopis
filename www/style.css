@@ -2022,9 +2022,8 @@ body[data-tema="okean"] #main-menu > .clay-theme-three {
 }
 
 body[data-tema="planina"] #main-menu > .clay-theme-three {
-    opacity: 0.98;
-    mix-blend-mode: normal;
-    filter: saturate(1.04) contrast(1.02) drop-shadow(0 18px 30px rgba(73, 92, 115, 0.24));
+    display: none;
+    opacity: 0;
 }
 
 body[data-tema="glina"] #main-menu .menu-pattern {
@@ -2036,7 +2035,7 @@ body[data-tema="okean"] #main-menu .menu-pattern {
 }
 
 body[data-tema="planina"] #main-menu .menu-pattern {
-    opacity: 0.42;
+    opacity: 0.18;
 }
 
 body[data-tema="glina"] #main-menu .menu-pattern::before {
@@ -2066,11 +2065,11 @@ body[data-tema="okean"] #main-menu .menu-pattern::after {
 
 body[data-tema="planina"] #main-menu .menu-pattern::before {
     background:
-        radial-gradient(ellipse at 18% 12%, rgba(181, 161, 221, 0.28), transparent 34%),
-        radial-gradient(ellipse at 84% 16%, rgba(255, 208, 183, 0.24), transparent 32%),
-        radial-gradient(ellipse at 50% 86%, rgba(128, 187, 147, 0.2), transparent 40%),
-        linear-gradient(145deg, rgba(154, 188, 216, 0.16), transparent 42%, rgba(255, 255, 255, 0.18));
-    opacity: 0.62;
+        radial-gradient(ellipse at 18% 10%, rgba(214, 196, 255, 0.22), transparent 34%),
+        radial-gradient(ellipse at 84% 18%, rgba(255, 221, 202, 0.18), transparent 32%),
+        radial-gradient(ellipse at 50% 88%, rgba(173, 218, 186, 0.16), transparent 42%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.14), transparent 46%, rgba(255, 255, 255, 0.1));
+    opacity: 0.34;
 }
 
 body[data-tema="planina"] #main-menu .menu-pattern::after {
@@ -5308,10 +5307,9 @@ body[data-tema="aurora"] {
 
 body[data-tema="planina"] {
     --theme-bg:
-        radial-gradient(circle at 18% 12%, rgba(181, 161, 221, 0.34), transparent 34%),
-        radial-gradient(circle at 84% 16%, rgba(255, 210, 188, 0.28), transparent 30%),
-        radial-gradient(circle at 50% 82%, rgba(129, 187, 151, 0.28), transparent 42%),
-        linear-gradient(145deg, #dfeaff 0%, #f5e8df 48%, #cfe5d8 100%);
+        linear-gradient(180deg, rgba(244, 236, 255, 0.44) 0%, rgba(255, 244, 235, 0.2) 35%, rgba(218, 239, 224, 0.42) 100%),
+        radial-gradient(circle at 50% 36%, rgba(255, 255, 255, 0.2), transparent 45%),
+        url('assets/planina-soft-matte-bg.png');
     --theme-splash-bg: linear-gradient(135deg, #dfeaff, #f5e8df, #cfe5d8);
     --theme-text: #27364a;
     --theme-muted: #5f7188;
@@ -5323,11 +5321,11 @@ body[data-tema="planina"] {
     --theme-accent-rgb: 119, 185, 141;
     --theme-danger: #d95870;
     --theme-danger-rgb: 217, 88, 112;
-    --theme-panel: rgba(255, 255, 255, 0.72);
-    --theme-panel-strong: linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(235, 243, 249, 0.86));
-    --theme-control-bg: rgba(127, 168, 199, 0.16);
-    --theme-input-bg: rgba(255, 255, 255, 0.78);
-    --theme-pill-bg: rgba(255, 255, 255, 0.72);
+    --theme-panel: rgba(255, 255, 255, 0.8);
+    --theme-panel-strong: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(237, 245, 249, 0.9));
+    --theme-control-bg: rgba(255, 255, 255, 0.68);
+    --theme-input-bg: rgba(255, 255, 255, 0.84);
+    --theme-pill-bg: rgba(255, 255, 255, 0.78);
     --theme-border: rgba(94, 132, 165, 0.32);
     --theme-soft-border: rgba(119, 185, 141, 0.26);
     --theme-shadow: 0 16px 34px rgba(91, 105, 125, 0.2), 0 0 28px rgba(127, 168, 199, 0.16);
@@ -5342,17 +5340,20 @@ body[data-tema="planina"] {
     --theme-pattern-saturation: 0.72;
     --theme-map-brightness: 1.08;
     --theme-contour-alpha: 0;
-    --theme-pattern-opacity: 0.56;
+    --theme-pattern-opacity: 0.22;
     --theme-map-opacity: 0;
     --theme-icon-opacity: 0;
     --theme-pattern-grid:
-        radial-gradient(ellipse at 18% 12%, rgba(181, 161, 221, 0.28), transparent 34%),
-        radial-gradient(ellipse at 84% 16%, rgba(255, 208, 183, 0.24), transparent 32%),
-        radial-gradient(ellipse at 50% 86%, rgba(128, 187, 147, 0.2), transparent 40%),
-        linear-gradient(145deg, rgba(154, 188, 216, 0.16), transparent 42%, rgba(255, 255, 255, 0.18));
+        radial-gradient(ellipse at 18% 12%, rgba(181, 161, 221, 0.18), transparent 34%),
+        radial-gradient(ellipse at 84% 16%, rgba(255, 208, 183, 0.14), transparent 32%),
+        radial-gradient(ellipse at 50% 86%, rgba(128, 187, 147, 0.14), transparent 40%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 48%, rgba(255, 255, 255, 0.08));
     --theme-vignette:
-        linear-gradient(to bottom, rgba(162, 178, 208, 0.26), transparent 28%, transparent 70%, rgba(94, 132, 114, 0.22)),
-        linear-gradient(to right, rgba(133, 148, 184, 0.18), transparent 24%, transparent 76%, rgba(185, 141, 120, 0.18));
+        linear-gradient(to bottom, rgba(162, 178, 208, 0.16), transparent 28%, transparent 70%, rgba(94, 132, 114, 0.18)),
+        linear-gradient(to right, rgba(133, 148, 184, 0.12), transparent 24%, transparent 76%, rgba(185, 141, 120, 0.12));
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
 }
 
 body[data-tema="sakura"] {
@@ -5629,11 +5630,11 @@ body[data-tema="okean"] {
 
 body[data-tema="planina"] {
     --theme-pattern-grid:
-        radial-gradient(ellipse at 18% 12%, rgba(181, 161, 221, 0.28), transparent 34%),
-        radial-gradient(ellipse at 84% 16%, rgba(255, 208, 183, 0.24), transparent 32%),
-        radial-gradient(ellipse at 50% 86%, rgba(128, 187, 147, 0.2), transparent 40%),
-        linear-gradient(145deg, rgba(154, 188, 216, 0.16), transparent 42%, rgba(255, 255, 255, 0.18));
-    --theme-pattern-opacity: 0.56;
+        radial-gradient(ellipse at 18% 12%, rgba(181, 161, 221, 0.18), transparent 34%),
+        radial-gradient(ellipse at 84% 16%, rgba(255, 208, 183, 0.14), transparent 32%),
+        radial-gradient(ellipse at 50% 86%, rgba(128, 187, 147, 0.14), transparent 40%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 48%, rgba(255, 255, 255, 0.08));
+    --theme-pattern-opacity: 0.22;
     --theme-contour-alpha: 0;
     --theme-map-opacity: 0;
     --theme-icon-opacity: 0;
@@ -5643,6 +5644,12 @@ body[data-tema] {
     background: var(--theme-bg);
     color: var(--theme-text);
     box-shadow: var(--theme-phone-shadow);
+}
+
+body[data-tema="planina"] {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
 }
 
 body[data-tema] #splash-screen {

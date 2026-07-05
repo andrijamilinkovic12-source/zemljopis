@@ -80,7 +80,7 @@
         const tema = document.body.getAttribute('data-tema');
         if (tema === 'glina') return 'glina';
         if (tema === 'okean') return 'reka';
-        if (tema === 'planina') return 'planina';
+        // Planina sada koristi pun clay PNG background, bez dodatnih lebdecih Three.js elemenata preko slike.
         return null;
     }
 

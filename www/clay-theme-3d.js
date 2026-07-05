@@ -413,43 +413,118 @@
         }));
     }
 
+    function dodajZiviOblak(THREE, spec) {
+        const grupa = new THREE.Group();
+        const scale = spec.scale || 1;
+        const opacity = typeof spec.opacity === 'number' ? spec.opacity : 0.82;
+        const delovi = spec.parts || [
+            { dx: -0.54, dy: -0.03, sx: 0.6, sy: 0.23, sz: 0.16, morphX: 0.018, morphY: 0.012 },
+            { dx: -0.12, dy: 0.08, sx: 0.7, sy: 0.33, sz: 0.19, morphX: 0.015, morphY: 0.016 },
+            { dx: 0.36, dy: 0.04, sx: 0.62, sy: 0.27, sz: 0.17, morphX: 0.016, morphY: 0.012 },
+            { dx: 0.68, dy: -0.05, sx: 0.42, sy: 0.18, sz: 0.13, morphX: 0.012, morphY: 0.009 },
+            { dx: -0.2, dy: -0.17, sx: 0.98, sy: 0.18, sz: 0.14, morphX: 0.02, morphY: 0.008 }
+        ];
+
+        delovi.forEach((deo, index) => {
+            const mesh = new THREE.Mesh(
+                new THREE.SphereGeometry(1, 42, 32),
+                napraviMatMaterijal(THREE, spec.color, opacity * (deo.opacity || 1), {
+                    roughness: 0.97,
+                    metalness: 0.02,
+                    emissive: spec.emissive || 0x000000,
+                    emissiveIntensity: spec.emissiveIntensity || 0
+                })
+            );
+            const px = deo.dx * scale;
+            const py = deo.dy * scale;
+            const sx = deo.sx * scale;
+            const sy = deo.sy * scale;
+            const sz = deo.sz * scale;
+            mesh.position.set(px, py, 0);
+            mesh.scale.set(sx, sy, sz);
+            mesh.userData = {
+                baseX: px,
+                baseY: py,
+                baseZ: 0,
+                baseSx: sx,
+                baseSy: sy,
+                baseSz: sz,
+                baseOpacity: opacity * (deo.opacity || 1),
+                morphX: (deo.morphX || 0.012) * scale,
+                morphY: (deo.morphY || 0.01) * scale,
+                morphScale: deo.morphScale || 0.018,
+                phase: (spec.phase || 0) + index * 0.74
+            };
+            if (typeof spec.renderOrder === 'number') {
+                mesh.renderOrder = spec.renderOrder;
+            }
+            grupa.add(mesh);
+        });
+
+        grupa.position.set(spec.x, spec.y, spec.z);
+        grupa.rotation.set(spec.rx || 0, spec.ry || 0, spec.rz || 0);
+        grupa.userData = {
+            cloudGroup: true,
+            baseSx: 1,
+            baseSy: 1,
+            baseSz: 1,
+            baseOpacity: opacity,
+            baseX: spec.x,
+            baseY: spec.y,
+            baseZ: spec.z,
+            baseRx: spec.rx || 0,
+            baseRy: spec.ry || 0,
+            baseRz: spec.rz || 0,
+            speed: spec.speed || 0.18,
+            phase: spec.phase || 0,
+            wobble: spec.wobble || 0.08,
+            driftX: typeof spec.driftX === 'number' ? spec.driftX : 0.22,
+            driftY: typeof spec.driftY === 'number' ? spec.driftY : 0.3,
+            rotate: 0,
+            pulse: spec.pulse || 0.018,
+            pulseSpeed: spec.pulseSpeed || 0.34,
+            opacityPulse: spec.opacityPulse || 0.03,
+            flowPath: null,
+            flowSpeed: 0,
+            flowPhase: 0,
+            flowFade: false,
+            flagWave: 0,
+            flagIndex: 0,
+            spinType: null,
+            spinSpeed: 0,
+            spinPhase: 0,
+            cloudSpeed: spec.cloudSpeed || 0.016,
+            cloudWrapMin: typeof spec.wrapMin === 'number' ? spec.wrapMin : -3.85,
+            cloudWrapMax: typeof spec.wrapMax === 'number' ? spec.wrapMax : 3.85,
+            cloudWidth: (spec.cloudWidth || 1.35) * scale,
+            cloudTilt: spec.cloudTilt || 0.018,
+            cloudMorph: spec.cloudMorph || 1
+        };
+
+        clayGroup.add(grupa);
+        clayObjects.push(grupa);
+        return grupa;
+    }
+
     function dodajPlaninaOblaciScene(THREE) {
         [
-            { x: -1.12, y: 1.78, z: -1.72, scale: 0.72, opacity: 0.9, phase: 0.2, color: 0xfff3ee },
-            { x: 0.05, y: 2.17, z: -1.88, scale: 0.46, opacity: 0.72, phase: 1.45, color: 0xf7ecff },
-            { x: 0.58, y: 2.02, z: -1.92, scale: 0.38, opacity: 0.68, phase: 2.3, color: 0xfff0e8 },
-            { x: 1.08, y: 1.76, z: -1.74, scale: 0.7, opacity: 0.86, phase: 3.1, color: 0xfff4ef },
-            { x: 1.46, y: 1.24, z: -2.0, scale: 0.36, opacity: 0.56, phase: 4.2, color: 0xf7eef8 }
-        ].forEach(oblak => dodajOblak(
-            THREE,
-            oblak.x,
-            oblak.y,
-            oblak.z,
-            oblak.color,
-            oblak.opacity,
-            oblak.scale,
-            oblak.phase,
-            {
-                speed: 0.105,
-                wobble: 0.16,
-                driftX: 1.55,
-                driftY: 0.2,
-                opacityPulse: 0.035,
-                pulse: 0.018,
-                pulseSpeed: 0.38
-            }
-        ));
-
-        clayObjects.forEach((mesh, index) => {
-            mesh.userData.speed = 0.092 + (index % 5) * 0.008;
-            mesh.userData.wobble = 0.15 + (index % 3) * 0.018;
-            mesh.userData.driftX = index % 2 === 0 ? 1.65 : 1.35;
-            mesh.userData.driftY = 0.22;
-            mesh.userData.rotate = index % 2 === 0 ? 0.00005 : -0.00004;
-            mesh.userData.opacityPulse = 0.035;
-            mesh.userData.pulse = 0.018;
-            mesh.userData.pulseSpeed = 0.38;
-        });
+            { x: -1.2, y: 1.78, z: -1.72, scale: 0.76, opacity: 0.9, phase: 0.2, color: 0xfff3ee, cloudSpeed: 0.014, wobble: 0.1 },
+            { x: 0.0, y: 2.18, z: -1.88, scale: 0.48, opacity: 0.72, phase: 1.45, color: 0xf7ecff, cloudSpeed: 0.018, wobble: 0.08 },
+            { x: 0.58, y: 2.03, z: -1.92, scale: 0.4, opacity: 0.66, phase: 2.3, color: 0xfff0e8, cloudSpeed: 0.016, wobble: 0.07 },
+            { x: 1.08, y: 1.76, z: -1.74, scale: 0.72, opacity: 0.86, phase: 3.1, color: 0xfff4ef, cloudSpeed: 0.012, wobble: 0.09 },
+            { x: 1.48, y: 1.24, z: -2.0, scale: 0.38, opacity: 0.56, phase: 4.2, color: 0xf7eef8, cloudSpeed: 0.019, wobble: 0.07 }
+        ].forEach(oblak => dodajZiviOblak(THREE, {
+            ...oblak,
+            speed: 0.13,
+            driftX: 0.26,
+            driftY: 0.22,
+            opacityPulse: 0.028,
+            pulse: 0.014,
+            pulseSpeed: 0.32,
+            cloudTilt: 0.016,
+            cloudMorph: 1,
+            renderOrder: 12
+        }));
     }
 
     function dodajRekaOblaci(THREE) {
@@ -1193,6 +1268,46 @@
 
         clayObjects.forEach((mesh, index) => {
             const data = mesh.userData;
+
+            if (data.cloudGroup) {
+                const wrapSpan = (data.cloudWrapMax - data.cloudWrapMin) + data.cloudWidth * 2;
+                let nextX = data.baseX + t * data.cloudSpeed + Math.sin(t * data.speed + data.phase) * data.wobble * data.driftX;
+                while (nextX > data.cloudWrapMax + data.cloudWidth) {
+                    nextX -= wrapSpan;
+                }
+                while (nextX < data.cloudWrapMin - data.cloudWidth) {
+                    nextX += wrapSpan;
+                }
+                const floatY = Math.sin(t * data.speed * 0.72 + data.phase) * data.wobble * data.driftY;
+                const pulse = data.pulse ? 1 + Math.sin(t * data.pulseSpeed + data.phase) * data.pulse : 1;
+                mesh.position.x = nextX;
+                mesh.position.y = data.baseY + floatY;
+                mesh.position.z = data.baseZ;
+                mesh.rotation.x = data.baseRx + Math.sin(t * 0.09 + data.phase) * 0.008;
+                mesh.rotation.y = data.baseRy + Math.sin(t * 0.07 + data.phase) * 0.006;
+                mesh.rotation.z = data.baseRz + Math.sin(t * 0.08 + data.phase) * data.cloudTilt;
+                mesh.scale.set(pulse, pulse * (1 + Math.sin(t * 0.11 + data.phase) * 0.008), pulse);
+
+                mesh.children.forEach((deo, deoIndex) => {
+                    const partData = deo.userData;
+                    const morph = Math.sin(t * 0.23 + partData.phase) * data.cloudMorph;
+                    const morphB = Math.cos(t * 0.19 + partData.phase) * data.cloudMorph;
+                    deo.position.x = partData.baseX + morph * partData.morphX;
+                    deo.position.y = partData.baseY + morphB * partData.morphY;
+                    deo.position.z = partData.baseZ;
+                    deo.scale.set(
+                        partData.baseSx * (1 + morph * partData.morphScale),
+                        partData.baseSy * (1 + morphB * partData.morphScale),
+                        partData.baseSz * (1 + Math.sin(t * 0.17 + partData.phase + deoIndex) * partData.morphScale * 0.5)
+                    );
+                    if (deo.material) {
+                        const nextOpacity = partData.baseOpacity + Math.sin(t * data.pulseSpeed + partData.phase) * data.opacityPulse;
+                        deo.material.opacity = Math.max(0.08, Math.min(1, nextOpacity));
+                    }
+                });
+                return;
+            }
+
             const pulse = data.pulse ? 1 + Math.sin(t * data.pulseSpeed + data.phase) * data.pulse : 1;
             let flowProgress = null;
 

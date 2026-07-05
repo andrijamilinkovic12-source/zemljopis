@@ -81,7 +81,6 @@
         if (tema === 'glina') return 'glina';
         if (tema === 'okean') return 'reka-efekti';
         if (tema === 'drzava') return 'drzava-efekti';
-        if (tema === 'planina') return 'planina-oblaci';
         return null;
     }
 

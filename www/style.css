@@ -2022,10 +2022,27 @@ body[data-tema="okean"] #main-menu > .clay-theme-three {
 }
 
 body[data-tema="planina"] #main-menu > .clay-theme-three {
-    display: block;
-    opacity: 0.96;
+    display: none;
+    opacity: 0;
     mix-blend-mode: normal;
     filter: saturate(1.14) contrast(1.04) drop-shadow(0 12px 18px rgba(100, 118, 145, 0.18));
+}
+
+body[data-tema="planina"] #main-menu::before {
+    content: "";
+    position: absolute;
+    inset: -1.5%;
+    z-index: 2;
+    pointer-events: none;
+    background-image: url('assets/planina-clouds-layer.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    opacity: 0.96;
+    transform-origin: 50% 18%;
+    filter: saturate(1.08) contrast(1.04) brightness(1.03) drop-shadow(0 10px 16px rgba(116, 104, 130, 0.12));
+    will-change: transform, opacity;
+    animation: planinaCloudLayerDrift 48s ease-in-out infinite;
 }
 
 body[data-tema="drzava"] #main-menu > .clay-theme-three {
@@ -2123,6 +2140,36 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     100% {
         opacity: calc(var(--pattern-opacity) * var(--theme-icon-opacity, 1));
         translate: 0 7px;
+    }
+}
+
+@keyframes planinaCloudLayerDrift {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+        opacity: 0.94;
+    }
+    28% {
+        transform: translate3d(0.9%, -0.16%, 0) scale(1.006);
+        opacity: 0.98;
+    }
+    56% {
+        transform: translate3d(1.55%, 0.08%, 0) scale(1.01);
+        opacity: 0.96;
+    }
+    78% {
+        transform: translate3d(0.55%, 0.2%, 0) scale(1.004);
+        opacity: 0.99;
+    }
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        opacity: 0.94;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-tema="planina"] #main-menu::before {
+        animation: none;
+        transform: none;
     }
 }
 
@@ -5322,7 +5369,7 @@ body[data-tema="planina"] {
     --theme-bg:
         linear-gradient(180deg, rgba(244, 236, 255, 0.12) 0%, rgba(255, 244, 235, 0.05) 35%, rgba(218, 239, 224, 0.12) 100%),
         radial-gradient(circle at 50% 36%, rgba(255, 255, 255, 0.05), transparent 45%),
-        url('assets/planina-soft-matte-bg-v2.png');
+        url('assets/planina-soft-matte-bg-v3.png');
     --theme-splash-bg: linear-gradient(135deg, #dfeaff, #f5e8df, #cfe5d8);
     --theme-text: #27364a;
     --theme-muted: #5f7188;

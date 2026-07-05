@@ -549,7 +549,7 @@
                 sy: 0.26 * scale,
                 sz: 0.025 * scale,
                 color: 0xf3d3a1,
-                opacity: 0.7,
+                opacity: 0.88,
                 cylinder: true,
                 phase,
                 speed: 0.08,
@@ -573,7 +573,7 @@
                 sy: deo.sy * scale,
                 sz: 0.025 * scale,
                 color: boja,
-                opacity: 0.7,
+                opacity: 0.92,
                 phase: phase + deo.idx * 0.38,
                 speed: 0.08,
                 wobble: 0.01,
@@ -591,11 +591,11 @@
         };
 
         [
-            { x: -1.42, y: 2.08, z: -1.92, scale: 0.78, opacity: 0.86, phase: 0.2, color: 0xfff1e6 },
-            { x: 1.22, y: 2.06, z: -1.86, scale: 0.8, opacity: 0.84, phase: 1.4, color: 0xfff1e8 },
-            { x: -1.64, y: 1.28, z: -2.02, scale: 0.44, opacity: 0.62, phase: 2.4, color: 0xf2f6ff },
-            { x: 1.6, y: 1.28, z: -2.02, scale: 0.48, opacity: 0.62, phase: 3.2, color: 0xfff4ec },
-            { x: 0.18, y: 2.24, z: -2.08, scale: 0.32, opacity: 0.52, phase: 4.2, color: 0xfff4e8 }
+            { x: -1.42, y: 2.08, z: -1.92, scale: 0.82, opacity: 0.94, phase: 0.2, color: 0xfff1e6 },
+            { x: 1.22, y: 2.06, z: -1.86, scale: 0.84, opacity: 0.92, phase: 1.4, color: 0xfff1e8 },
+            { x: -1.64, y: 1.28, z: -2.02, scale: 0.48, opacity: 0.72, phase: 2.4, color: 0xf2f6ff },
+            { x: 1.6, y: 1.28, z: -2.02, scale: 0.52, opacity: 0.72, phase: 3.2, color: 0xfff4ec },
+            { x: 0.18, y: 2.24, z: -2.08, scale: 0.36, opacity: 0.62, phase: 4.2, color: 0xfff4e8 }
         ].forEach(oblak => dodajOblak(
             THREE,
             oblak.x,
@@ -617,12 +617,12 @@
         ));
 
         [
-            { x: -1.2, y: 0.58, scale: 0.82, color: 0xb993ff, phase: 0.2 },
-            { x: 0.48, y: 0.88, scale: 0.76, color: 0xffb46f, phase: 0.9 },
-            { x: 1.13, y: 0.5, scale: 0.78, color: 0xff7fa0, phase: 1.7 },
-            { x: 0.42, y: -0.18, scale: 0.72, color: 0x7fcaa5, phase: 2.5 },
-            { x: -0.48, y: -0.6, scale: 0.68, color: 0x7ed7ff, phase: 3.2 },
-            { x: -1.0, y: -1.02, scale: 0.66, color: 0xff8a7a, phase: 4.0 }
+            { x: -1.2, y: 0.58, scale: 0.9, color: 0xb993ff, phase: 0.2 },
+            { x: 0.48, y: 0.88, scale: 0.84, color: 0xffb46f, phase: 0.9 },
+            { x: 1.13, y: 0.5, scale: 0.86, color: 0xff7fa0, phase: 1.7 },
+            { x: 0.42, y: -0.18, scale: 0.8, color: 0x7fcaa5, phase: 2.5 },
+            { x: -0.48, y: -0.6, scale: 0.76, color: 0x7ed7ff, phase: 3.2 },
+            { x: -1.0, y: -1.02, scale: 0.74, color: 0xff8a7a, phase: 4.0 }
         ].forEach(flag => dodajZastavicu(flag.x, flag.y, -1.14, flag.scale, flag.color, flag.phase));
 
         const putanjaAtlasa = [
@@ -670,12 +670,12 @@
         }));
 
         const kompas = dodajAnimiranuGrupu({
-            x: -1.46,
-            y: -2.62,
+            x: -1.54,
+            y: -2.52,
             z: -1.02,
-            sx: 0.78,
-            sy: 0.78,
-            sz: 0.78,
+            sx: 0.9,
+            sy: 0.9,
+            sz: 0.9,
             spinType: 'compass',
             spinSpeed: 0.9,
             spinPhase: 0.3,
@@ -686,8 +686,8 @@
             pulse: 0.01,
             pulseSpeed: 0.6
         });
-        kompas.add(napraviOverlayMesh({ torus: true, thickness: 0.1, sx: 0.52, sy: 0.52, sz: 0.08, color: 0xd7a25d, opacity: 0.78, roughness: 0.88 }));
-        kompas.add(napraviOverlayMesh({ sx: 0.42, sy: 0.42, sz: 0.06, color: 0xffe9c8, opacity: 0.62, roughness: 0.96 }));
+        kompas.add(napraviOverlayMesh({ torus: true, thickness: 0.1, sx: 0.52, sy: 0.52, sz: 0.08, color: 0xd7a25d, opacity: 0.9, roughness: 0.88 }));
+        kompas.add(napraviOverlayMesh({ sx: 0.42, sy: 0.42, sz: 0.06, color: 0xffe9c8, opacity: 0.82, roughness: 0.96 }));
         [
             { rz: 0, color: 0xf06f79, y: 0.12 },
             { rz: Math.PI, color: 0x7fb6d9, y: -0.12 },
@@ -703,18 +703,18 @@
             sz: 0.035,
             rz: krak.rz,
             color: krak.color,
-            opacity: 0.72,
+            opacity: 0.9,
             roughness: 0.9
         })));
-        kompas.add(napraviOverlayMesh({ sx: 0.1, sy: 0.1, sz: 0.045, color: 0xe0a842, opacity: 0.82, roughness: 0.86, z: 0.12 }));
+        kompas.add(napraviOverlayMesh({ sx: 0.1, sy: 0.1, sz: 0.045, color: 0xe0a842, opacity: 0.92, roughness: 0.86, z: 0.12 }));
 
         const globus = dodajAnimiranuGrupu({
             x: 1.5,
-            y: -2.58,
+            y: -2.5,
             z: -1.0,
-            sx: 0.72,
-            sy: 0.72,
-            sz: 0.72,
+            sx: 0.86,
+            sy: 0.86,
+            sz: 0.86,
             spinType: 'globe',
             spinSpeed: 0.23,
             spinPhase: 0.8,
@@ -725,9 +725,9 @@
             pulse: 0.008,
             pulseSpeed: 0.5
         });
-        globus.add(napraviOverlayMesh({ sx: 0.43, sy: 0.43, sz: 0.24, color: 0x77c9e6, opacity: 0.7, roughness: 0.92, emissive: 0x4bbce0, emissiveIntensity: 0.04 }));
-        globus.add(napraviOverlayMesh({ torus: true, thickness: 0.045, sx: 0.47, sy: 0.47, sz: 0.05, color: 0xd9a45e, opacity: 0.72, roughness: 0.86, rz: 0.18 }));
-        globus.add(napraviOverlayMesh({ torus: true, thickness: 0.026, sx: 0.43, sy: 0.43, sz: 0.04, color: 0xffdf9c, opacity: 0.38, roughness: 0.88, ry: Math.PI / 2 }));
+        globus.add(napraviOverlayMesh({ sx: 0.43, sy: 0.43, sz: 0.24, color: 0x77c9e6, opacity: 0.86, roughness: 0.92, emissive: 0x4bbce0, emissiveIntensity: 0.04 }));
+        globus.add(napraviOverlayMesh({ torus: true, thickness: 0.045, sx: 0.47, sy: 0.47, sz: 0.05, color: 0xd9a45e, opacity: 0.88, roughness: 0.86, rz: 0.18 }));
+        globus.add(napraviOverlayMesh({ torus: true, thickness: 0.026, sx: 0.43, sy: 0.43, sz: 0.04, color: 0xffdf9c, opacity: 0.54, roughness: 0.88, ry: Math.PI / 2 }));
         [
             { x: -0.13, y: 0.12, z: 0.2, sx: 0.14, sy: 0.07, rz: -0.35, color: 0x8fc77d },
             { x: 0.08, y: -0.02, z: 0.22, sx: 0.12, sy: 0.09, rz: 0.25, color: 0xf1c16f },
@@ -742,7 +742,7 @@
             sz: 0.026,
             rz: kontinent.rz,
             color: kontinent.color,
-            opacity: 0.72,
+            opacity: 0.88,
             roughness: 0.96
         })));
     }

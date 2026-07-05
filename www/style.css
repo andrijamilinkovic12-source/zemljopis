@@ -2016,23 +2016,23 @@ body[data-tema="glina"] #main-menu > .clay-theme-three {
 }
 
 body[data-tema="okean"] #main-menu > .clay-theme-three {
-    opacity: 0.78;
+    opacity: 0.9;
     mix-blend-mode: normal;
-    filter: saturate(1.04) contrast(1.02) drop-shadow(0 12px 18px rgba(27, 126, 160, 0.16));
+    filter: saturate(1.16) contrast(1.05) drop-shadow(0 12px 18px rgba(27, 126, 160, 0.16));
 }
 
 body[data-tema="planina"] #main-menu > .clay-theme-three {
     display: block;
-    opacity: 0.9;
+    opacity: 0.96;
     mix-blend-mode: normal;
-    filter: saturate(1.02) contrast(1.01) drop-shadow(0 12px 18px rgba(100, 118, 145, 0.18));
+    filter: saturate(1.14) contrast(1.04) drop-shadow(0 12px 18px rgba(100, 118, 145, 0.18));
 }
 
 body[data-tema="drzava"] #main-menu > .clay-theme-three {
     display: block;
-    opacity: 0.84;
+    opacity: 1;
     mix-blend-mode: normal;
-    filter: saturate(1.04) contrast(1.01) drop-shadow(0 12px 18px rgba(93, 132, 154, 0.16));
+    filter: saturate(1.18) contrast(1.05) drop-shadow(0 12px 18px rgba(93, 132, 154, 0.16));
 }
 
 body[data-tema="glina"] #main-menu .menu-pattern {
@@ -5198,9 +5198,9 @@ body[data-tema="neon"] {
 
 body[data-tema="okean"] {
     --theme-bg:
-        linear-gradient(180deg, rgba(232, 243, 255, 0.42) 0%, rgba(255, 248, 228, 0.14) 38%, rgba(205, 238, 225, 0.32) 100%),
-        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.18), transparent 48%),
-        url('assets/reka-soft-matte-bg.png');
+        linear-gradient(180deg, rgba(232, 243, 255, 0.12) 0%, rgba(255, 248, 228, 0.04) 38%, rgba(205, 238, 225, 0.1) 100%),
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.05), transparent 48%),
+        url('assets/reka-soft-matte-bg-v2.png');
     --theme-splash-bg: linear-gradient(135deg, #dff3ff, #eaf8e6, #c6edf5);
     --theme-text: #17384d;
     --theme-muted: #557483;
@@ -5320,9 +5320,9 @@ body[data-tema="aurora"] {
 
 body[data-tema="planina"] {
     --theme-bg:
-        linear-gradient(180deg, rgba(244, 236, 255, 0.44) 0%, rgba(255, 244, 235, 0.2) 35%, rgba(218, 239, 224, 0.42) 100%),
-        radial-gradient(circle at 50% 36%, rgba(255, 255, 255, 0.2), transparent 45%),
-        url('assets/planina-soft-matte-bg.png');
+        linear-gradient(180deg, rgba(244, 236, 255, 0.12) 0%, rgba(255, 244, 235, 0.05) 35%, rgba(218, 239, 224, 0.12) 100%),
+        radial-gradient(circle at 50% 36%, rgba(255, 255, 255, 0.05), transparent 45%),
+        url('assets/planina-soft-matte-bg-v2.png');
     --theme-splash-bg: linear-gradient(135deg, #dfeaff, #f5e8df, #cfe5d8);
     --theme-text: #27364a;
     --theme-muted: #5f7188;
@@ -5371,8 +5371,8 @@ body[data-tema="planina"] {
 
 body[data-tema="drzava"] {
     --theme-bg:
-        linear-gradient(180deg, rgba(223, 244, 255, 0.44) 0%, rgba(255, 244, 224, 0.18) 40%, rgba(219, 237, 210, 0.36) 100%),
-        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.18), transparent 48%),
+        linear-gradient(180deg, rgba(223, 244, 255, 0.12) 0%, rgba(255, 244, 224, 0.05) 40%, rgba(219, 237, 210, 0.1) 100%),
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.05), transparent 48%),
         url('assets/drzava-soft-matte-bg-v2.png');
     --theme-splash-bg: linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
     --theme-text: #28415a;
@@ -5579,9 +5579,9 @@ body[data-tema="neon"] {
 
 body[data-tema="okean"] {
     --theme-bg:
-        linear-gradient(180deg, rgba(232, 243, 255, 0.42) 0%, rgba(255, 248, 228, 0.14) 38%, rgba(205, 238, 225, 0.32) 100%),
-        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.18), transparent 48%),
-        url('assets/reka-soft-matte-bg.png');
+        linear-gradient(180deg, rgba(232, 243, 255, 0.12) 0%, rgba(255, 248, 228, 0.04) 38%, rgba(205, 238, 225, 0.1) 100%),
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.05), transparent 48%),
+        url('assets/reka-soft-matte-bg-v2.png');
     --theme-splash-bg: linear-gradient(135deg, #dff3ff, #eaf8e6, #c6edf5);
     --theme-contour-rgb: 91, 196, 210;
     --theme-pattern-hue: 128deg;

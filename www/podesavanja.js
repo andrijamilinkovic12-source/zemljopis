@@ -1402,7 +1402,7 @@ const PodesavanjaManager = {
             'tamna': 'Tamna',
             'svetla': 'Svetla',
             'neon': 'Neon',
-            'okean': 'Okean',
+            'okean': 'Reka',
             'zlatna': 'Zlatna',
             'aurora': 'Aurora',
             'pustinja': 'Pustinja',

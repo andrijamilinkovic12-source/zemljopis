@@ -2031,7 +2031,7 @@ body[data-tema="planina"] #main-menu > .clay-theme-three {
 body[data-tema="planina"] #main-menu::before {
     content: "";
     position: absolute;
-    inset: -1.5%;
+    inset: -4% -8%;
     z-index: 2;
     pointer-events: none;
     background-image: url('assets/planina-clouds-layer.png');
@@ -2042,7 +2042,7 @@ body[data-tema="planina"] #main-menu::before {
     transform-origin: 50% 18%;
     filter: saturate(1.08) contrast(1.04) brightness(1.03) drop-shadow(0 10px 16px rgba(116, 104, 130, 0.12));
     will-change: transform, opacity;
-    animation: planinaCloudLayerDrift 48s ease-in-out infinite;
+    animation: planinaCloudLayerDrift 22s ease-in-out infinite;
 }
 
 body[data-tema="drzava"] #main-menu > .clay-theme-three {
@@ -2145,31 +2145,24 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
 
 @keyframes planinaCloudLayerDrift {
     0% {
-        transform: translate3d(0, 0, 0) scale(1);
-        opacity: 0.94;
+        transform: translate3d(-2.6%, 0.1%, 0) scale(1.015);
+        opacity: 0.93;
     }
-    28% {
-        transform: translate3d(0.9%, -0.16%, 0) scale(1.006);
+    25% {
+        transform: translate3d(1.2%, -0.35%, 0) scale(1.024);
         opacity: 0.98;
     }
-    56% {
-        transform: translate3d(1.55%, 0.08%, 0) scale(1.01);
+    52% {
+        transform: translate3d(4.8%, 0.2%, 0) scale(1.018);
         opacity: 0.96;
     }
-    78% {
-        transform: translate3d(0.55%, 0.2%, 0) scale(1.004);
+    76% {
+        transform: translate3d(1.1%, 0.46%, 0) scale(1.026);
         opacity: 0.99;
     }
     100% {
-        transform: translate3d(0, 0, 0) scale(1);
-        opacity: 0.94;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    body[data-tema="planina"] #main-menu::before {
-        animation: none;
-        transform: none;
+        transform: translate3d(-2.6%, 0.1%, 0) scale(1.015);
+        opacity: 0.93;
     }
 }
 

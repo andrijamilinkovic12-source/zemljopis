@@ -123,7 +123,8 @@
             metalness: 0,
             transparent: true,
             opacity,
-            depthWrite: false,
+            depthWrite: spec.depthWrite === true,
+            flatShading: !!spec.flatShading,
             emissive: spec.emissive || 0x000000,
             emissiveIntensity: spec.emissiveIntensity || 0
         });
@@ -146,6 +147,9 @@
         mesh.position.set(spec.x, spec.y, spec.z);
         mesh.rotation.set(spec.rx || 0, spec.ry || 0, spec.rz || 0);
         mesh.scale.set(spec.sx, spec.sy, spec.sz);
+        if (typeof spec.renderOrder === 'number') {
+            mesh.renderOrder = spec.renderOrder;
+        }
         mesh.userData = {
             baseSx: spec.sx,
             baseSy: spec.sy,
@@ -260,7 +264,8 @@
             speed: 0.12,
             wobble: 0.015,
             rotate: 0.00008,
-            roughness: 0.94
+            roughness: 0.94,
+            renderOrder: 20
         });
 
         [
@@ -282,60 +287,304 @@
             driftX: 0.45,
             driftY: 0.35,
             rotate: 0.00014,
-            roughness: 0.96
+            roughness: 0.96,
+            renderOrder: 21 + index
+        }));
+    }
+
+    function dodajSneznuKapu(THREE, spec) {
+        const phase = spec.phase || 0;
+        const renderOrder = spec.renderOrder || 8;
+        const boja = spec.color || 0xfff4ec;
+        const senka = spec.shadow || 0xe8ddd8;
+
+        dodajMekuFormu(THREE, {
+            x: spec.x,
+            y: spec.y + spec.sy * 0.05,
+            z: spec.z + 0.06,
+            sx: spec.sx * 0.72,
+            sy: spec.sy * 0.62,
+            sz: spec.sz * 0.7,
+            color: boja,
+            opacity: 0.86,
+            cone: true,
+            phase,
+            speed: 0.1,
+            wobble: 0.012,
+            rotate: 0.00006,
+            roughness: 0.98,
+            renderOrder
+        });
+
+        [
+            { dx: -0.36, dy: -0.28, sx: 0.42, sy: 0.2, sz: 0.14, c: boja, o: 0.9 },
+            { dx: 0, dy: -0.32, sx: 0.62, sy: 0.22, sz: 0.15, c: boja, o: 0.92 },
+            { dx: 0.36, dy: -0.28, sx: 0.42, sy: 0.2, sz: 0.14, c: boja, o: 0.88 },
+            { dx: -0.13, dy: -0.48, sx: 0.24, sy: 0.18, sz: 0.12, c: boja, o: 0.82 },
+            { dx: 0.2, dy: -0.5, sx: 0.26, sy: 0.16, sz: 0.11, c: senka, o: 0.52 }
+        ].forEach((deo, index) => dodajMekuFormu(THREE, {
+            x: spec.x + deo.dx * spec.sx,
+            y: spec.y + deo.dy * spec.sy,
+            z: spec.z + 0.12,
+            sx: deo.sx * spec.sx,
+            sy: deo.sy * spec.sy,
+            sz: deo.sz * spec.sz,
+            color: deo.c,
+            opacity: deo.o,
+            phase: phase + index * 0.34,
+            speed: 0.11,
+            wobble: 0.016,
+            driftX: 0.5,
+            driftY: 0.32,
+            rotate: index % 2 ? -0.00006 : 0.00006,
+            roughness: 0.98,
+            renderOrder: renderOrder + 1
+        }));
+    }
+
+    function dodajPlaninskiVrh(THREE, spec) {
+        const phase = spec.phase || 0;
+        const renderOrder = spec.renderOrder || 4;
+        const shadow = spec.shadow || 0x6e8798;
+        const highlight = spec.highlight || 0xb8c8d2;
+
+        dodajMekuFormu(THREE, {
+            x: spec.x,
+            y: spec.y,
+            z: spec.z,
+            sx: spec.sx,
+            sy: spec.sy,
+            sz: spec.sz,
+            color: spec.color,
+            opacity: spec.opacity || 0.88,
+            cone: true,
+            phase,
+            speed: 0.09,
+            wobble: 0.015,
+            rotate: spec.rotate || 0.00008,
+            roughness: 0.96,
+            renderOrder,
+            flatShading: false
+        });
+
+        dodajMekuFormu(THREE, {
+            x: spec.x,
+            y: spec.y - spec.sy * 0.95,
+            z: spec.z + 0.04,
+            sx: spec.sx * 0.92,
+            sy: spec.sy * 0.16,
+            sz: spec.sz * 0.58,
+            color: spec.base || spec.color,
+            opacity: (spec.opacity || 0.88) * 0.72,
+            phase: phase + 0.2,
+            speed: 0.09,
+            wobble: 0.014,
+            rotate: spec.rotate || 0.00008,
+            roughness: 0.96,
+            renderOrder: renderOrder + 1
+        });
+
+        [
+            { dx: -0.22, rz: 0.26, color: highlight, opacity: 0.22, width: 0.09 },
+            { dx: 0.24, rz: -0.28, color: shadow, opacity: 0.2, width: 0.1 },
+            { dx: -0.02, rz: 0.04, color: highlight, opacity: 0.12, width: 0.06 }
+        ].forEach((traka, index) => dodajMekuFormu(THREE, {
+            x: spec.x + traka.dx * spec.sx,
+            y: spec.y - spec.sy * 0.23,
+            z: spec.z + 0.16,
+            sx: traka.width * spec.sx,
+            sy: spec.sy * 0.62,
+            sz: spec.sz * 0.045,
+            color: traka.color,
+            opacity: traka.opacity,
+            rz: traka.rz,
+            phase: phase + index * 0.31,
+            speed: 0.1,
+            wobble: 0.012,
+            driftX: 0.35,
+            driftY: 0.25,
+            rotate: index % 2 ? -0.00004 : 0.00004,
+            roughness: 0.98,
+            renderOrder: renderOrder + 2
+        }));
+
+        dodajSneznuKapu(THREE, {
+            x: spec.x + (spec.snowDx || 0),
+            y: spec.y + spec.sy * 0.62,
+            z: spec.z + 0.2,
+            sx: spec.snowSx || spec.sx * 0.5,
+            sy: spec.snowSy || spec.sy * 0.32,
+            sz: spec.snowSz || spec.sz * 0.42,
+            phase: phase + 0.5,
+            renderOrder: renderOrder + 4
+        });
+    }
+
+    function dodajZbun(THREE, x, y, z, scale = 1, phase = 0, color = 0x9aaa76) {
+        [
+            { dx: -0.24, dy: 0, s: 0.22 },
+            { dx: 0, dy: 0.05, s: 0.26 },
+            { dx: 0.24, dy: 0, s: 0.2 },
+            { dx: -0.02, dy: -0.12, s: 0.18 }
+        ].forEach((deo, index) => dodajMekuFormu(THREE, {
+            x: x + deo.dx * scale,
+            y: y + deo.dy * scale,
+            z,
+            sx: deo.s * scale,
+            sy: deo.s * 0.9 * scale,
+            sz: deo.s * 0.6 * scale,
+            color,
+            opacity: 0.58,
+            phase: phase + index * 0.38,
+            speed: 0.12,
+            wobble: 0.018,
+            driftX: 0.4,
+            driftY: 0.25,
+            rotate: 0.00008,
+            roughness: 0.96,
+            renderOrder: 12 + index
         }));
     }
 
     function dodajPlaninaScene(THREE) {
-        const pozadina = [
-            { x: 0, y: -2.5, z: -3.1, sx: 4.2, sy: 0.72, sz: 0.24, color: 0x8eb39f, opacity: 0.46, phase: 1.1, speed: 0.1, wobble: 0.02, rotate: 0.00008 },
-            { x: -1.25, y: -1.62, z: -2.82, sx: 2.45, sy: 0.62, sz: 0.22, color: 0xd9c6a4, opacity: 0.38, rz: 0.1, phase: 0.2, speed: 0.1, wobble: 0.02, rotate: 0.00008 },
-            { x: 1.25, y: -1.5, z: -2.8, sx: 2.35, sy: 0.64, sz: 0.22, color: 0x9fc7a5, opacity: 0.4, rz: -0.12, phase: 0.8, speed: 0.1, wobble: 0.02, rotate: -0.00008 },
-            { x: 0.05, y: -2.02, z: -2.48, sx: 3.5, sy: 0.42, sz: 0.16, color: 0x78a98d, opacity: 0.34, phase: 1.8, speed: 0.12, wobble: 0.02, rotate: 0.00008 }
+        const nebo = [
+            { x: -2.4, y: 2.9, z: -3.4, sx: 1.6, sy: 0.54, sz: 0.12, color: 0xbdaee5, opacity: 0.16, phase: 0.4, speed: 0.08, wobble: 0.025, renderOrder: 0 },
+            { x: 2.35, y: 2.55, z: -3.35, sx: 1.8, sy: 0.56, sz: 0.12, color: 0xffd8c6, opacity: 0.14, phase: 1.5, speed: 0.08, wobble: 0.025, renderOrder: 0 }
         ];
 
-        const planine = [
-            { x: -0.35, y: 0.48, z: -2.22, sx: 1.36, sy: 1.88, sz: 0.72, color: 0x8aa8ba, opacity: 0.72, phase: 0.4, speed: 0.1, wobble: 0.025, rotate: 0.00012, cone: true },
-            { x: -1.92, y: -0.28, z: -2.4, sx: 1.18, sy: 1.3, sz: 0.62, color: 0x7798ad, opacity: 0.62, phase: 1.1, speed: 0.1, wobble: 0.02, rotate: -0.0001, cone: true },
-            { x: 1.35, y: -0.2, z: -2.34, sx: 1.18, sy: 1.42, sz: 0.66, color: 0xc69276, opacity: 0.66, phase: 1.8, speed: 0.1, wobble: 0.02, rotate: 0.00011, cone: true },
-            { x: 2.32, y: -0.04, z: -2.55, sx: 0.95, sy: 1.18, sz: 0.54, color: 0xd0ad8d, opacity: 0.48, phase: 2.4, speed: 0.1, wobble: 0.018, rotate: -0.0001, cone: true }
+        const brda = [
+            { x: 0, y: -2.62, z: -3.0, sx: 4.55, sy: 0.7, sz: 0.24, color: 0x82aa90, opacity: 0.62, phase: 1.1, speed: 0.09, wobble: 0.018, renderOrder: 1 },
+            { x: -1.52, y: -1.7, z: -2.7, sx: 2.75, sy: 0.66, sz: 0.2, color: 0xd8c29f, opacity: 0.48, rz: 0.1, phase: 0.2, speed: 0.09, wobble: 0.016, renderOrder: 2 },
+            { x: 1.32, y: -1.62, z: -2.66, sx: 2.72, sy: 0.68, sz: 0.2, color: 0xa3c6a2, opacity: 0.52, rz: -0.12, phase: 0.8, speed: 0.09, wobble: 0.016, renderOrder: 2 },
+            { x: 2.28, y: -1.84, z: -2.42, sx: 1.44, sy: 0.42, sz: 0.15, color: 0xe0ccab, opacity: 0.42, rz: 0.06, phase: 1.6, speed: 0.09, wobble: 0.014, renderOrder: 3 },
+            { x: -0.08, y: -2.12, z: -2.28, sx: 3.92, sy: 0.5, sz: 0.16, color: 0x78a98d, opacity: 0.42, phase: 1.8, speed: 0.1, wobble: 0.016, renderOrder: 4 }
         ];
 
-        const sneg = [
-            { x: -0.35, y: 1.82, z: -1.74, sx: 0.72, sy: 0.28, sz: 0.18, color: 0xfff4ec, opacity: 0.86, phase: 0.7, speed: 0.12, wobble: 0.018, rotate: 0.00008 },
-            { x: -1.92, y: 0.68, z: -1.92, sx: 0.52, sy: 0.2, sz: 0.14, color: 0xfff3eb, opacity: 0.8, phase: 1.5, speed: 0.12, wobble: 0.016, rotate: -0.00008 },
-            { x: 1.35, y: 0.9, z: -1.88, sx: 0.56, sy: 0.22, sz: 0.14, color: 0xfff4ec, opacity: 0.82, phase: 2.2, speed: 0.12, wobble: 0.016, rotate: 0.00008 },
-            { x: 2.32, y: 0.78, z: -2.02, sx: 0.42, sy: 0.16, sz: 0.12, color: 0xfff4ec, opacity: 0.72, phase: 2.9, speed: 0.12, wobble: 0.014, rotate: -0.00008 },
-            { x: -0.55, y: -0.98, z: -1.95, sx: 0.84, sy: 0.16, sz: 0.1, color: 0xfff4ec, opacity: 0.56, rz: -0.08, phase: 3.1, speed: 0.1, wobble: 0.014, rotate: 0.00006 }
+        [...nebo, ...brda].forEach(spec => dodajMekuFormu(THREE, spec));
+
+        dodajOblak(THREE, -2.7, 2.34, -2.06, 0xffebe6, 0.68, 1.06, 0.2);
+        dodajOblak(THREE, 0.08, 2.86, -2.32, 0xc9ddec, 0.54, 0.58, 1.2);
+        dodajOblak(THREE, 2.42, 2.32, -2.04, 0xc9e0ef, 0.68, 1.0, 2.1);
+        dodajOblak(THREE, 1.36, 2.94, -2.48, 0xffe7dc, 0.48, 0.54, 2.8);
+
+        dodajPlaninskiVrh(THREE, {
+            x: -0.32,
+            y: 0.36,
+            z: -2.12,
+            sx: 1.34,
+            sy: 1.98,
+            sz: 0.78,
+            color: 0x86a8bc,
+            base: 0x7897ad,
+            shadow: 0x647f91,
+            highlight: 0xb7cad3,
+            opacity: 0.92,
+            snowSx: 0.88,
+            snowSy: 0.58,
+            snowSz: 0.36,
+            phase: 0.4,
+            renderOrder: 5
+        });
+
+        dodajPlaninskiVrh(THREE, {
+            x: -1.82,
+            y: -0.36,
+            z: -2.22,
+            sx: 1.18,
+            sy: 1.34,
+            sz: 0.62,
+            color: 0x7899ae,
+            base: 0x6f8da3,
+            shadow: 0x5d788d,
+            highlight: 0xb2c6cf,
+            opacity: 0.82,
+            snowSx: 0.62,
+            snowSy: 0.38,
+            snowSz: 0.28,
+            phase: 1.1,
+            renderOrder: 4
+        });
+
+        dodajPlaninskiVrh(THREE, {
+            x: 1.2,
+            y: -0.32,
+            z: -2.04,
+            sx: 1.16,
+            sy: 1.42,
+            sz: 0.66,
+            color: 0xc99376,
+            base: 0xba8068,
+            shadow: 0x9f6d5f,
+            highlight: 0xe3b293,
+            opacity: 0.88,
+            snowSx: 0.68,
+            snowSy: 0.4,
+            snowSz: 0.28,
+            phase: 1.8,
+            renderOrder: 6
+        });
+
+        dodajPlaninskiVrh(THREE, {
+            x: 2.22,
+            y: -0.14,
+            z: -2.26,
+            sx: 0.92,
+            sy: 1.15,
+            sz: 0.54,
+            color: 0xd1b091,
+            base: 0xc4a080,
+            shadow: 0xa9826b,
+            highlight: 0xe8ccb0,
+            opacity: 0.72,
+            snowSx: 0.5,
+            snowSy: 0.3,
+            snowSz: 0.22,
+            phase: 2.4,
+            renderOrder: 5
+        });
+
+        const prednjiPlan = [
+            { x: -1.12, y: -1.38, z: -1.66, sx: 1.42, sy: 0.28, sz: 0.12, color: 0xfff2e7, opacity: 0.62, rz: -0.04, phase: 3.1, speed: 0.08, wobble: 0.012, renderOrder: 10 },
+            { x: 1.5, y: -1.28, z: -1.62, sx: 1.28, sy: 0.24, sz: 0.12, color: 0xfff2e7, opacity: 0.58, rz: 0.04, phase: 3.5, speed: 0.08, wobble: 0.012, renderOrder: 10 },
+            { x: 0, y: -2.76, z: -1.42, sx: 4.08, sy: 0.42, sz: 0.14, color: 0x72a486, opacity: 0.72, phase: 2.2, speed: 0.09, wobble: 0.014, renderOrder: 11 },
+            { x: -1.74, y: -2.43, z: -1.38, sx: 1.02, sy: 0.28, sz: 0.1, color: 0x8fb694, opacity: 0.52, phase: 0.6, speed: 0.1, wobble: 0.012, renderOrder: 12 },
+            { x: 1.84, y: -2.42, z: -1.38, sx: 1.08, sy: 0.3, sz: 0.1, color: 0x88b090, opacity: 0.52, phase: 1.5, speed: 0.1, wobble: 0.012, renderOrder: 12 }
         ];
 
         const staza = [
-            { x: 0.32, y: -2.45, z: -1.64, sx: 0.9, sy: 0.13, sz: 0.08, color: 0xd0b7a6, opacity: 0.64, rz: -0.1, phase: 0.4, speed: 0.14, wobble: 0.012, rotate: 0.00012 },
-            { x: 0.2, y: -2.12, z: -1.66, sx: 0.62, sy: 0.11, sz: 0.07, color: 0xd7c0ad, opacity: 0.58, rz: 0.32, phase: 1.0, speed: 0.14, wobble: 0.012, rotate: -0.00012 },
-            { x: 0.44, y: -1.82, z: -1.68, sx: 0.54, sy: 0.1, sz: 0.06, color: 0xd0b7a6, opacity: 0.54, rz: -0.34, phase: 1.7, speed: 0.14, wobble: 0.012, rotate: 0.00012 },
-            { x: 0.16, y: -1.58, z: -1.7, sx: 0.42, sy: 0.08, sz: 0.06, color: 0xd7c0ad, opacity: 0.48, rz: 0.24, phase: 2.3, speed: 0.14, wobble: 0.012, rotate: -0.00012 }
+            { x: 0.1, y: -2.58, z: -1.18, sx: 1.0, sy: 0.12, sz: 0.07, color: 0xd9c0af, opacity: 0.78, rz: 0.04, phase: 0.4, speed: 0.12, wobble: 0.01, renderOrder: 18 },
+            { x: 0.2, y: -2.26, z: -1.2, sx: 0.7, sy: 0.105, sz: 0.06, color: 0xe0c8b6, opacity: 0.68, rz: -0.34, phase: 1.0, speed: 0.12, wobble: 0.01, renderOrder: 18 },
+            { x: 0.04, y: -2.0, z: -1.22, sx: 0.54, sy: 0.09, sz: 0.055, color: 0xd7bfad, opacity: 0.6, rz: 0.36, phase: 1.7, speed: 0.12, wobble: 0.01, renderOrder: 18 },
+            { x: 0.32, y: -1.76, z: -1.24, sx: 0.42, sy: 0.08, sz: 0.05, color: 0xe0c8b6, opacity: 0.54, rz: -0.34, phase: 2.3, speed: 0.12, wobble: 0.01, renderOrder: 18 }
         ];
 
-        [...pozadina, ...planine, ...sneg, ...staza].forEach(spec => dodajMekuFormu(THREE, spec));
-
-        dodajOblak(THREE, -2.6, 2.28, -2.08, 0xffebe6, 0.58, 0.92, 0.2);
-        dodajOblak(THREE, 0.15, 2.74, -2.26, 0xc8ddec, 0.5, 0.55, 1.2);
-        dodajOblak(THREE, 2.45, 2.3, -2.05, 0xc9e0ef, 0.58, 0.9, 2.1);
-        dodajOblak(THREE, 1.28, 2.9, -2.46, 0xffe8dd, 0.46, 0.5, 2.8);
+        [...prednjiPlan, ...staza].forEach(spec => dodajMekuFormu(THREE, spec));
 
         [
-            [-2.95, -2.12, -1.72, 0.8, 0.2],
-            [-2.42, -2.06, -1.68, 0.72, 0.9],
-            [-1.88, -2.18, -1.7, 0.62, 1.5],
-            [2.14, -2.1, -1.68, 0.72, 2.2],
-            [2.72, -2.02, -1.66, 0.82, 2.9],
-            [3.18, -2.18, -1.72, 0.64, 3.5],
-            [-0.98, -2.34, -1.6, 0.42, 4.1],
-            [1.02, -2.32, -1.6, 0.44, 4.8]
+            [-3.05, -2.18, -1.08, 0.88, 0.2],
+            [-2.55, -2.1, -1.04, 0.82, 0.9],
+            [-2.05, -2.22, -1.06, 0.72, 1.5],
+            [2.08, -2.16, -1.04, 0.78, 2.2],
+            [2.62, -2.08, -1.02, 0.92, 2.9],
+            [3.12, -2.22, -1.06, 0.72, 3.5],
+            [-0.94, -2.36, -1.0, 0.48, 4.1],
+            [1.02, -2.34, -1.0, 0.5, 4.8]
         ].forEach(([x, y, z, scale, phase]) => dodajDrvo(THREE, x, y, z, scale, phase));
 
-        dodajMekuFormu(THREE, { x: 0, y: -2.86, z: -1.36, sx: 0.38, sy: 0.38, sz: 0.08, color: 0xc18d73, opacity: 0.62, phase: 1.6, speed: 0.12, wobble: 0.018, pulse: 0.025, pulseSpeed: 1.1, rotate: 0.00018, torus: true, thickness: 0.09, rx: 0, ry: 0, rz: 0, emissive: 0xffd2b3, emissiveIntensity: 0.08 });
-        dodajMekuFormu(THREE, { x: 0, y: -2.86, z: -1.33, sx: 0.27, sy: 0.27, sz: 0.05, color: 0xd7a286, opacity: 0.48, phase: 2.2, speed: 0.12, wobble: 0.014, rotate: -0.00012 });
+        [
+            [-1.22, -2.42, -0.92, 0.72, 0.8, 0xa9b789],
+            [-0.58, -2.32, -0.92, 0.46, 1.6, 0xa3aa78],
+            [1.38, -2.36, -0.92, 0.6, 2.4, 0xa8b886],
+            [1.88, -2.46, -0.92, 0.46, 3.0, 0x9ead7b]
+        ].forEach(([x, y, z, scale, phase, color]) => dodajZbun(THREE, x, y, z, scale, phase, color));
+
+        dodajMekuFormu(THREE, { x: -0.42, y: -2.62, z: -0.84, sx: 0.28, sy: 0.1, sz: 0.06, color: 0xa9a483, opacity: 0.55, rz: -0.08, phase: 3.2, speed: 0.1, wobble: 0.01, renderOrder: 21, rotate: 0.00008 });
+
+        dodajMekuFormu(THREE, { x: 0, y: -2.9, z: -0.74, sx: 0.4, sy: 0.4, sz: 0.08, color: 0xc18d73, opacity: 0.72, phase: 1.6, speed: 0.12, wobble: 0.014, pulse: 0.018, pulseSpeed: 1.1, rotate: 0.00012, torus: true, thickness: 0.09, rx: 0, ry: 0, rz: 0, emissive: 0xffd2b3, emissiveIntensity: 0.08, renderOrder: 24 });
+        dodajMekuFormu(THREE, { x: 0, y: -2.9, z: -0.71, sx: 0.29, sy: 0.29, sz: 0.05, color: 0xd7a286, opacity: 0.54, phase: 2.2, speed: 0.12, wobble: 0.01, rotate: -0.0001, renderOrder: 25 });
+        dodajMekuFormu(THREE, { x: -0.08, y: -2.88, z: -0.66, sx: 0.08, sy: 0.1, sz: 0.025, color: 0xffe4c9, opacity: 0.68, cone: true, phase: 2.4, speed: 0.1, wobble: 0.006, renderOrder: 26, rotate: 0.00006 });
+        dodajMekuFormu(THREE, { x: 0.04, y: -2.88, z: -0.66, sx: 0.1, sy: 0.13, sz: 0.025, color: 0xffe4c9, opacity: 0.7, cone: true, phase: 2.8, speed: 0.1, wobble: 0.006, renderOrder: 26, rotate: -0.00006 });
+        dodajMekuFormu(THREE, { x: 0.16, y: -2.89, z: -0.66, sx: 0.07, sy: 0.09, sz: 0.025, color: 0xffe4c9, opacity: 0.62, cone: true, phase: 3.2, speed: 0.1, wobble: 0.006, renderOrder: 26, rotate: 0.00006 });
     }
 
     function podesiSvetloZaTemu(THREE, tema) {

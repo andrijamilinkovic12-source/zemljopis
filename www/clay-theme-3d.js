@@ -79,7 +79,7 @@
     function aktivnaThreeTema() {
         const tema = document.body.getAttribute('data-tema');
         if (tema === 'glina') return 'glina';
-        if (tema === 'okean') return 'reka';
+        if (tema === 'okean') return 'reka-efekti';
         if (tema === 'planina') return 'planina-oblaci';
         return null;
     }
@@ -130,6 +130,27 @@
         });
     }
 
+    function tackaNaPutanji(path, progress) {
+        if (!Array.isArray(path) || path.length < 2) {
+            return { x: 0, y: 0, angle: 0 };
+        }
+
+        const p = ((progress % 1) + 1) % 1;
+        const segment = p * (path.length - 1);
+        const index = Math.min(path.length - 2, Math.floor(segment));
+        const local = segment - index;
+        const a = path[index];
+        const b = path[index + 1];
+        const x = a.x + (b.x - a.x) * local;
+        const y = a.y + (b.y - a.y) * local;
+
+        return {
+            x,
+            y,
+            angle: Math.atan2(b.y - a.y, b.x - a.x)
+        };
+    }
+
     function dodajMekuFormu(THREE, spec) {
         let geometry;
         if (spec.torus) {
@@ -158,6 +179,9 @@
             baseX: spec.x,
             baseY: spec.y,
             baseZ: spec.z,
+            baseRx: spec.rx || 0,
+            baseRy: spec.ry || 0,
+            baseRz: spec.rz || 0,
             speed: spec.speed || 0.35,
             phase: spec.phase || 0,
             wobble: spec.wobble || 0.08,
@@ -166,7 +190,11 @@
             rotate: spec.rotate || 0.001,
             pulse: spec.pulse || 0,
             pulseSpeed: spec.pulseSpeed || 1,
-            opacityPulse: spec.opacityPulse || 0
+            opacityPulse: spec.opacityPulse || 0,
+            flowPath: spec.flowPath || null,
+            flowSpeed: spec.flowSpeed || 0,
+            flowPhase: spec.flowPhase || 0,
+            flowFade: !!spec.flowFade
         };
 
         clayGroup.add(mesh);
@@ -224,7 +252,126 @@
         [...obale, ...voda, ...struje, ...talasi, ...sjaj].forEach(spec => dodajMekuFormu(THREE, spec));
     }
 
-    function dodajOblak(THREE, x, y, z, boja, opacity, scale = 1, phase = 0) {
+    function dodajRekaEfektiScene(THREE) {
+        dodajRekaOblaci(THREE);
+
+        const rekaPutanja = [
+            { x: 0.08, y: 1.18 },
+            { x: -0.34, y: 0.62 },
+            { x: 0.36, y: 0.05 },
+            { x: 0.08, y: -0.58 },
+            { x: -0.34, y: -1.18 },
+            { x: 0.18, y: -1.82 },
+            { x: -0.12, y: -2.55 }
+        ];
+
+        [
+            { sx: 0.58, sy: 0.04, z: -1.5, phase: 0.02, speed: 0.085, opacity: 0.32, color: 0xf2ffff },
+            { sx: 0.82, sy: 0.05, z: -1.54, phase: 0.18, speed: 0.078, opacity: 0.24, color: 0xd7fbff },
+            { sx: 0.5, sy: 0.035, z: -1.48, phase: 0.35, speed: 0.092, opacity: 0.3, color: 0xffffff },
+            { sx: 0.74, sy: 0.045, z: -1.56, phase: 0.52, speed: 0.082, opacity: 0.22, color: 0xcff7ff },
+            { sx: 0.42, sy: 0.032, z: -1.44, phase: 0.7, speed: 0.096, opacity: 0.28, color: 0xffffff },
+            { sx: 0.66, sy: 0.04, z: -1.52, phase: 0.86, speed: 0.074, opacity: 0.2, color: 0xe9feff }
+        ].forEach(spec => dodajMekuFormu(THREE, {
+            x: rekaPutanja[0].x,
+            y: rekaPutanja[0].y,
+            z: spec.z,
+            sx: spec.sx,
+            sy: spec.sy,
+            sz: 0.045,
+            color: spec.color,
+            opacity: spec.opacity,
+            phase: spec.phase * 6.28,
+            speed: 0.34,
+            wobble: 0.025,
+            driftX: 0.42,
+            driftY: 0.18,
+            rotate: 0.00005,
+            roughness: 0.78,
+            pulse: 0.06,
+            pulseSpeed: 0.9,
+            opacityPulse: 0.05,
+            emissive: 0x9ef7ff,
+            emissiveIntensity: 0.2,
+            flowPath: rekaPutanja,
+            flowSpeed: spec.speed,
+            flowPhase: spec.phase,
+            flowFade: true,
+            renderOrder: 8
+        }));
+
+        [
+            { sx: 1.1, sy: 0.22, phase: 0.12, rz: -0.08 },
+            { sx: 1.28, sy: 0.24, phase: 0.46, rz: 0.06 },
+            { sx: 1.0, sy: 0.18, phase: 0.78, rz: -0.05 }
+        ].forEach(spec => dodajMekuFormu(THREE, {
+            x: rekaPutanja[0].x,
+            y: rekaPutanja[0].y,
+            z: -1.64,
+            sx: spec.sx,
+            sy: spec.sy,
+            sz: 0.052,
+            color: 0xdffcff,
+            opacity: 0.12,
+            phase: spec.phase * 6.28,
+            speed: 0.18,
+            wobble: 0.018,
+            driftX: 0.22,
+            driftY: 0.1,
+            rotate: 0.00004,
+            torus: true,
+            thickness: 0.028,
+            rx: 0.18,
+            ry: 0.06,
+            rz: spec.rz,
+            pulse: 0.04,
+            pulseSpeed: 0.7,
+            opacityPulse: 0.025,
+            emissive: 0x7de3ff,
+            emissiveIntensity: 0.08,
+            flowPath: rekaPutanja,
+            flowSpeed: 0.052,
+            flowPhase: spec.phase,
+            flowFade: true,
+            renderOrder: 7
+        }));
+
+        [
+            { s: 0.055, phase: 0.05 },
+            { s: 0.045, phase: 0.22 },
+            { s: 0.052, phase: 0.4 },
+            { s: 0.04, phase: 0.58 },
+            { s: 0.05, phase: 0.76 },
+            { s: 0.038, phase: 0.9 }
+        ].forEach(spec => dodajMekuFormu(THREE, {
+            x: rekaPutanja[0].x,
+            y: rekaPutanja[0].y,
+            z: -1.16,
+            sx: spec.s,
+            sy: spec.s,
+            sz: spec.s,
+            color: 0xffffff,
+            opacity: 0.56,
+            phase: spec.phase * 6.28,
+            speed: 0.38,
+            wobble: 0.04,
+            driftX: 0.55,
+            driftY: 0.22,
+            pulse: 0.24,
+            pulseSpeed: 1.55,
+            opacityPulse: 0.14,
+            emissive: 0x9ef7ff,
+            emissiveIntensity: 0.48,
+            rotate: 0.00006,
+            flowPath: rekaPutanja,
+            flowSpeed: 0.09,
+            flowPhase: spec.phase,
+            flowFade: true,
+            renderOrder: 9
+        }));
+    }
+
+    function dodajOblak(THREE, x, y, z, boja, opacity, scale = 1, phase = 0, opts = {}) {
         [
             { dx: -0.5, dy: -0.02, sx: 0.58, sy: 0.22, sz: 0.16 },
             { dx: 0, dy: 0.08, sx: 0.68, sy: 0.32, sz: 0.18 },
@@ -240,22 +387,28 @@
             color: boja,
             opacity,
             phase: phase + index * 0.42,
-            speed: 0.12,
-            wobble: 0.035,
-            driftX: 1.25,
-            driftY: 0.35,
-            rotate: 0.00012,
-            roughness: 0.96
+            speed: opts.speed || 0.07,
+            wobble: opts.wobble || 0.12,
+            driftX: typeof opts.driftX === 'number' ? opts.driftX : 1.35,
+            driftY: typeof opts.driftY === 'number' ? opts.driftY : 0.28,
+            rotate: opts.rotate || 0.00006,
+            roughness: 0.96,
+            pulse: opts.pulse || 0.022,
+            pulseSpeed: opts.pulseSpeed || 0.46,
+            opacityPulse: opts.opacityPulse || 0.04,
+            emissive: opts.emissive || 0x000000,
+            emissiveIntensity: opts.emissiveIntensity || 0,
+            renderOrder: opts.renderOrder
         }));
     }
 
     function dodajPlaninaOblaciScene(THREE) {
         [
-            { x: -2.58, y: 2.52, z: -1.82, scale: 0.9, opacity: 0.56, phase: 0.2, color: 0xfff5ef },
-            { x: 2.48, y: 2.38, z: -1.9, scale: 0.78, opacity: 0.5, phase: 1.8, color: 0xfff2ec },
-            { x: -0.08, y: 3.03, z: -2.08, scale: 0.54, opacity: 0.42, phase: 3.0, color: 0xf7ecff },
-            { x: 3.46, y: 1.62, z: -2.18, scale: 0.42, opacity: 0.34, phase: 4.4, color: 0xfff5ef },
-            { x: -3.54, y: 1.74, z: -2.18, scale: 0.46, opacity: 0.32, phase: 5.2, color: 0xf4edff }
+            { x: -1.12, y: 1.78, z: -1.72, scale: 0.72, opacity: 0.9, phase: 0.2, color: 0xfff3ee },
+            { x: 0.05, y: 2.17, z: -1.88, scale: 0.46, opacity: 0.72, phase: 1.45, color: 0xf7ecff },
+            { x: 0.58, y: 2.02, z: -1.92, scale: 0.38, opacity: 0.68, phase: 2.3, color: 0xfff0e8 },
+            { x: 1.08, y: 1.76, z: -1.74, scale: 0.7, opacity: 0.86, phase: 3.1, color: 0xfff4ef },
+            { x: 1.46, y: 1.24, z: -2.0, scale: 0.36, opacity: 0.56, phase: 4.2, color: 0xf7eef8 }
         ].forEach(oblak => dodajOblak(
             THREE,
             oblak.x,
@@ -264,19 +417,56 @@
             oblak.color,
             oblak.opacity,
             oblak.scale,
-            oblak.phase
+            oblak.phase,
+            {
+                speed: 0.105,
+                wobble: 0.16,
+                driftX: 1.55,
+                driftY: 0.2,
+                opacityPulse: 0.035,
+                pulse: 0.018,
+                pulseSpeed: 0.38
+            }
         ));
 
         clayObjects.forEach((mesh, index) => {
-            mesh.userData.speed = 0.16 + (index % 5) * 0.018;
-            mesh.userData.wobble = 0.08 + (index % 3) * 0.012;
-            mesh.userData.driftX = index % 2 === 0 ? 1.9 : 1.35;
-            mesh.userData.driftY = 0.42;
+            mesh.userData.speed = 0.092 + (index % 5) * 0.008;
+            mesh.userData.wobble = 0.15 + (index % 3) * 0.018;
+            mesh.userData.driftX = index % 2 === 0 ? 1.65 : 1.35;
+            mesh.userData.driftY = 0.22;
             mesh.userData.rotate = index % 2 === 0 ? 0.00005 : -0.00004;
-            mesh.userData.opacityPulse = 0.025;
+            mesh.userData.opacityPulse = 0.035;
             mesh.userData.pulse = 0.018;
-            mesh.userData.pulseSpeed = 0.55;
+            mesh.userData.pulseSpeed = 0.38;
         });
+    }
+
+    function dodajRekaOblaci(THREE) {
+        [
+            { x: -1.2, y: 2.12, z: -1.9, scale: 0.58, opacity: 0.84, phase: 0.4, color: 0xfff4df },
+            { x: 0.72, y: 2.12, z: -1.86, scale: 0.74, opacity: 0.88, phase: 1.5, color: 0xfff3e8 },
+            { x: 0.1, y: 1.66, z: -2.02, scale: 0.34, opacity: 0.62, phase: 2.6, color: 0xfff5ea },
+            { x: -1.18, y: 1.36, z: -2.02, scale: 0.42, opacity: 0.6, phase: 3.4, color: 0xeef4ff },
+            { x: 1.42, y: 1.46, z: -2.05, scale: 0.44, opacity: 0.58, phase: 4.3, color: 0xeef3ff }
+        ].forEach(oblak => dodajOblak(
+            THREE,
+            oblak.x,
+            oblak.y,
+            oblak.z,
+            oblak.color,
+            oblak.opacity,
+            oblak.scale,
+            oblak.phase,
+            {
+                speed: 0.108,
+                wobble: 0.13,
+                driftX: 1.45,
+                driftY: 0.18,
+                opacityPulse: 0.035,
+                pulse: 0.018,
+                pulseSpeed: 0.42
+            }
+        ));
     }
 
     function dodajDrvo(THREE, x, y, z, scale = 1, phase = 0) {
@@ -618,23 +808,24 @@
     }
 
     function podesiSvetloZaTemu(THREE, tema) {
+        const rekaTema = tema === 'reka' || tema === 'reka-efekti';
         const planinaTema = tema === 'planina' || tema === 'planina-oblaci';
-        const ambijent = tema === 'reka'
+        const ambijent = rekaTema
             ? new THREE.HemisphereLight(0xe6feff, 0x031625, 1.95)
             : planinaTema
                 ? new THREE.HemisphereLight(0xfff4ec, 0x6f8ba1, 1.82)
                 : new THREE.HemisphereLight(0xfff3e8, 0x160f24, 1.65);
         scene.add(ambijent);
 
-        const glavnoSvetlo = new THREE.DirectionalLight(0xffffff, tema === 'reka' ? 2.65 : planinaTema ? 2.15 : 2.45);
+        const glavnoSvetlo = new THREE.DirectionalLight(0xffffff, rekaTema ? 2.35 : planinaTema ? 2.15 : 2.45);
         glavnoSvetlo.position.set(-3.2, 4.4, 5.8);
         scene.add(glavnoSvetlo);
 
-        const primarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x7de3ff : planinaTema ? 0xffefe3 : 0xff8a7a, tema === 'reka' ? 2.05 : planinaTema ? 0.85 : 1.45, 10);
+        const primarniSjaj = new THREE.PointLight(rekaTema ? 0x7de3ff : planinaTema ? 0xffefe3 : 0xff8a7a, rekaTema ? 1.35 : planinaTema ? 0.85 : 1.45, 10);
         primarniSjaj.position.set(3.8, -1.8, 3.4);
         scene.add(primarniSjaj);
 
-        const sekundarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x2db7ff : planinaTema ? 0xd8c7ff : 0xb993ff, tema === 'reka' ? 1.7 : planinaTema ? 0.78 : 1.15, 9);
+        const sekundarniSjaj = new THREE.PointLight(rekaTema ? 0x2db7ff : planinaTema ? 0xd8c7ff : 0xb993ff, rekaTema ? 1.05 : planinaTema ? 0.78 : 1.15, 9);
         sekundarniSjaj.position.set(-3.6, 1.4, 2.8);
         scene.add(sekundarniSjaj);
     }
@@ -649,7 +840,7 @@
         sceneTheme = tema;
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-        camera.position.set(0, 0, tema === 'reka' ? 8.05 : tema === 'planina' ? 8.15 : tema === 'planina-oblaci' ? 7.85 : 8.4);
+        camera.position.set(0, 0, tema === 'reka' ? 8.05 : tema === 'reka-efekti' ? 7.95 : tema === 'planina' ? 8.15 : tema === 'planina-oblaci' ? 7.85 : 8.4);
 
         renderer = new THREE.WebGLRenderer({
             alpha: true,
@@ -671,6 +862,8 @@
 
         if (tema === 'reka') {
             dodajRekaScene(THREE);
+        } else if (tema === 'reka-efekti') {
+            dodajRekaEfektiScene(THREE);
         } else if (tema === 'planina') {
             dodajPlaninaScene(THREE);
         } else if (tema === 'planina-oblaci') {
@@ -707,24 +900,44 @@
         }
 
         const t = vreme * 0.001;
-        const reka = sceneTheme === 'reka';
+        const rekaEfekti = sceneTheme === 'reka-efekti';
+        const reka = sceneTheme === 'reka' || rekaEfekti;
         const planina = sceneTheme === 'planina';
         const planinaOblaci = sceneTheme === 'planina-oblaci';
-        clayGroup.rotation.z = planinaOblaci ? 0 : Math.sin(t * (reka ? 0.13 : planina ? 0.08 : 0.18)) * (reka ? 0.022 : planina ? 0.012 : 0.035);
-        clayGroup.rotation.x = planinaOblaci ? 0 : Math.sin(t * (reka ? 0.1 : planina ? 0.07 : 0.13)) * (reka ? 0.012 : planina ? 0.008 : 0.018);
+        clayGroup.rotation.z = planinaOblaci || rekaEfekti ? 0 : Math.sin(t * (reka ? 0.13 : planina ? 0.08 : 0.18)) * (reka ? 0.022 : planina ? 0.012 : 0.035);
+        clayGroup.rotation.x = planinaOblaci || rekaEfekti ? 0 : Math.sin(t * (reka ? 0.1 : planina ? 0.07 : 0.13)) * (reka ? 0.012 : planina ? 0.008 : 0.018);
 
         clayObjects.forEach((mesh, index) => {
             const data = mesh.userData;
             const pulse = data.pulse ? 1 + Math.sin(t * data.pulseSpeed + data.phase) * data.pulse : 1;
-            mesh.position.x = data.baseX + Math.cos(t * data.speed + data.phase) * data.wobble * data.driftX;
-            mesh.position.y = data.baseY + Math.sin(t * data.speed + data.phase) * data.wobble * data.driftY;
-            mesh.scale.set(data.baseSx * pulse, data.baseSy * pulse, data.baseSz * pulse);
-            if (mesh.material && data.opacityPulse) {
-                mesh.material.opacity = Math.max(0.04, Math.min(1, data.baseOpacity + Math.sin(t * data.pulseSpeed + data.phase) * data.opacityPulse));
+            let flowProgress = null;
+
+            if (data.flowPath) {
+                flowProgress = (t * data.flowSpeed + data.flowPhase) % 1;
+                const tacka = tackaNaPutanji(data.flowPath, flowProgress);
+                mesh.position.x = tacka.x + Math.cos(t * data.speed + data.phase) * data.wobble * data.driftX;
+                mesh.position.y = tacka.y + Math.sin(t * data.speed + data.phase) * data.wobble * data.driftY;
+                mesh.rotation.x = data.baseRx;
+                mesh.rotation.y = data.baseRy;
+                mesh.rotation.z = tacka.angle + data.baseRz + Math.sin(t * 0.7 + data.phase) * 0.025;
+            } else {
+                mesh.position.x = data.baseX + Math.cos(t * data.speed + data.phase) * data.wobble * data.driftX;
+                mesh.position.y = data.baseY + Math.sin(t * data.speed + data.phase) * data.wobble * data.driftY;
             }
-            mesh.rotation.x += data.rotate * (index % 2 === 0 ? 1 : -1);
-            mesh.rotation.y += data.rotate * 0.72;
-            mesh.rotation.z += data.rotate * (reka ? 0.95 : planina || planinaOblaci ? 0.36 : 0.45);
+
+            mesh.scale.set(data.baseSx * pulse, data.baseSy * pulse, data.baseSz * pulse);
+            if (mesh.material && (data.opacityPulse || data.flowFade)) {
+                let nextOpacity = data.baseOpacity + Math.sin(t * data.pulseSpeed + data.phase) * data.opacityPulse;
+                if (data.flowFade && flowProgress !== null) {
+                    nextOpacity *= Math.pow(Math.max(0, Math.sin(flowProgress * Math.PI)), 0.72);
+                }
+                mesh.material.opacity = Math.max(0.02, Math.min(1, nextOpacity));
+            }
+            if (!data.flowPath) {
+                mesh.rotation.x += data.rotate * (index % 2 === 0 ? 1 : -1);
+                mesh.rotation.y += data.rotate * 0.72;
+                mesh.rotation.z += data.rotate * (reka ? 0.95 : planina || planinaOblaci ? 0.36 : 0.45);
+            }
         });
 
         renderer.render(scene, camera);

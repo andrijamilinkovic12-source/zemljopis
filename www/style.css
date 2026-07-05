@@ -2016,14 +2016,14 @@ body[data-tema="glina"] #main-menu > .clay-theme-three {
 }
 
 body[data-tema="okean"] #main-menu > .clay-theme-three {
-    opacity: 0.96;
+    opacity: 0.78;
     mix-blend-mode: normal;
-    filter: saturate(1.12) contrast(1.03) drop-shadow(0 16px 28px rgba(0, 0, 0, 0.24));
+    filter: saturate(1.04) contrast(1.02) drop-shadow(0 12px 18px rgba(27, 126, 160, 0.16));
 }
 
 body[data-tema="planina"] #main-menu > .clay-theme-three {
     display: block;
-    opacity: 0.72;
+    opacity: 0.9;
     mix-blend-mode: normal;
     filter: saturate(1.02) contrast(1.01) drop-shadow(0 12px 18px rgba(100, 118, 145, 0.18));
 }
@@ -5187,42 +5187,42 @@ body[data-tema="neon"] {
 
 body[data-tema="okean"] {
     --theme-bg:
-        radial-gradient(circle at 18% 12%, rgba(125, 227, 255, 0.2), transparent 30%),
-        radial-gradient(circle at 82% 70%, rgba(45, 183, 255, 0.14), transparent 34%),
-        linear-gradient(145deg, #02111f 0%, #06385e 48%, #05253c 100%);
-    --theme-splash-bg: linear-gradient(135deg, #02111f, #06385e, #05253c);
-    --theme-text: #f4fbff;
-    --theme-muted: #b8d8e8;
-    --theme-primary: #7de3ff;
-    --theme-primary-rgb: 125, 227, 255;
-    --theme-secondary: #2db7ff;
-    --theme-secondary-rgb: 45, 183, 255;
-    --theme-accent: #ffd36a;
-    --theme-accent-rgb: 255, 211, 106;
-    --theme-danger: #ff4d6d;
-    --theme-danger-rgb: 255, 77, 109;
-    --theme-panel: rgba(3, 28, 48, 0.82);
-    --theme-panel-strong: linear-gradient(145deg, rgba(4, 38, 65, 0.96), rgba(2, 24, 42, 0.94));
-    --theme-control-bg: rgba(125, 227, 255, 0.11);
-    --theme-input-bg: rgba(2, 18, 32, 0.72);
-    --theme-pill-bg: rgba(2, 18, 32, 0.76);
-    --theme-border: rgba(125, 227, 255, 0.34);
-    --theme-soft-border: rgba(45, 183, 255, 0.26);
-    --theme-shadow: 0 16px 34px rgba(0, 0, 0, 0.46), 0 0 28px rgba(45, 183, 255, 0.11);
-    --theme-control-shadow: inset 0 2px 8px rgba(255, 255, 255, 0.08), inset 0 -10px 22px rgba(4, 70, 112, 0.18), 0 10px 20px rgba(0, 0, 0, 0.32);
-    --theme-title-shadow: 0 0 16px rgba(125, 227, 255, 0.5), 0 2px 8px rgba(0, 0, 0, 0.36);
-    --theme-primary-gradient: linear-gradient(45deg, #7de3ff, #2db7ff);
-    --theme-on-primary: #031625;
-    --theme-primary-shadow: 0 0 26px rgba(45, 183, 255, 0.36);
-    --theme-phone-shadow: 0 0 52px rgba(0, 20, 36, 0.78);
+        linear-gradient(180deg, rgba(232, 243, 255, 0.42) 0%, rgba(255, 248, 228, 0.14) 38%, rgba(205, 238, 225, 0.32) 100%),
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.18), transparent 48%),
+        url('assets/reka-soft-matte-bg.png');
+    --theme-splash-bg: linear-gradient(135deg, #dff3ff, #eaf8e6, #c6edf5);
+    --theme-text: #17384d;
+    --theme-muted: #557483;
+    --theme-primary: #148ec7;
+    --theme-primary-rgb: 20, 142, 199;
+    --theme-secondary: #5bc4d2;
+    --theme-secondary-rgb: 91, 196, 210;
+    --theme-accent: #78ba88;
+    --theme-accent-rgb: 120, 186, 136;
+    --theme-danger: #dc5a72;
+    --theme-danger-rgb: 220, 90, 114;
+    --theme-panel: rgba(255, 255, 255, 0.8);
+    --theme-panel-strong: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(232, 247, 250, 0.9));
+    --theme-control-bg: rgba(255, 255, 255, 0.68);
+    --theme-input-bg: rgba(255, 255, 255, 0.84);
+    --theme-pill-bg: rgba(255, 255, 255, 0.78);
+    --theme-border: rgba(44, 139, 174, 0.3);
+    --theme-soft-border: rgba(120, 186, 136, 0.24);
+    --theme-shadow: 0 16px 34px rgba(57, 106, 123, 0.2), 0 0 28px rgba(91, 196, 210, 0.12);
+    --theme-control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), inset 0 -10px 22px rgba(91, 196, 210, 0.12), 0 9px 20px rgba(57, 106, 123, 0.16);
+    --theme-title-shadow: 0 2px 8px rgba(255, 255, 255, 0.72), 0 0 16px rgba(91, 196, 210, 0.24);
+    --theme-primary-gradient: linear-gradient(45deg, #65c7e2, #8fd3d8 52%, #9ed49f);
+    --theme-on-primary: #123146;
+    --theme-primary-shadow: 0 0 22px rgba(91, 196, 210, 0.26), 0 8px 20px rgba(57, 106, 123, 0.14);
+    --theme-phone-shadow: 0 0 54px rgba(111, 164, 181, 0.34);
     --theme-pattern-grid:
-        radial-gradient(ellipse at 20% 16%, rgba(125, 227, 255, 0.16), transparent 32%),
-        radial-gradient(ellipse at 82% 78%, rgba(45, 183, 255, 0.13), transparent 34%),
-        linear-gradient(128deg, transparent 0 18%, rgba(125, 227, 255, 0.045) 30%, transparent 43% 100%);
+        radial-gradient(ellipse at 18% 14%, rgba(101, 199, 226, 0.16), transparent 34%),
+        radial-gradient(ellipse at 86% 82%, rgba(120, 186, 136, 0.14), transparent 36%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 48%, rgba(255, 255, 255, 0.08));
     --theme-vignette:
-        linear-gradient(to bottom, rgba(2, 17, 31, 0.42), transparent 28%, transparent 68%, rgba(2, 12, 24, 0.76)),
-        linear-gradient(to right, rgba(2, 17, 31, 0.48), transparent 24%, transparent 76%, rgba(2, 12, 24, 0.46));
-    --theme-pattern-opacity: 0.44;
+        linear-gradient(to bottom, rgba(109, 157, 191, 0.14), transparent 28%, transparent 70%, rgba(56, 130, 118, 0.18)),
+        linear-gradient(to right, rgba(64, 147, 177, 0.12), transparent 24%, transparent 76%, rgba(120, 186, 136, 0.12));
+    --theme-pattern-opacity: 0.2;
     --theme-map-opacity: 0;
     --theme-map-filter: hue-rotate(152deg) saturate(1.55) brightness(0.95) drop-shadow(0 0 18px rgba(125, 227, 255, 0.16));
     --theme-filter-cyan: hue-rotate(12deg) saturate(1.65) brightness(1.12) drop-shadow(0 10px 22px rgba(0, 0, 0, 0.42)) drop-shadow(0 0 18px rgba(125, 227, 255, 0.34));
@@ -5517,21 +5517,21 @@ body[data-tema="neon"] {
 
 body[data-tema="okean"] {
     --theme-bg:
-        radial-gradient(circle at 18% 12%, rgba(125, 227, 255, 0.2), transparent 30%),
-        radial-gradient(circle at 82% 70%, rgba(45, 183, 255, 0.14), transparent 34%),
-        linear-gradient(145deg, #02111f 0%, #06385e 48%, #05253c 100%);
-    --theme-splash-bg: linear-gradient(135deg, #02111f, #06385e, #05253c);
-    --theme-contour-rgb: 125, 227, 255;
-    --theme-pattern-hue: 156deg;
-    --theme-pattern-saturation: 1.25;
-    --theme-map-brightness: 0.96;
+        linear-gradient(180deg, rgba(232, 243, 255, 0.42) 0%, rgba(255, 248, 228, 0.14) 38%, rgba(205, 238, 225, 0.32) 100%),
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.18), transparent 48%),
+        url('assets/reka-soft-matte-bg.png');
+    --theme-splash-bg: linear-gradient(135deg, #dff3ff, #eaf8e6, #c6edf5);
+    --theme-contour-rgb: 91, 196, 210;
+    --theme-pattern-hue: 128deg;
+    --theme-pattern-saturation: 0.72;
+    --theme-map-brightness: 1.08;
     --theme-contour-alpha: 0;
-    --theme-pattern-opacity: 0.44;
+    --theme-pattern-opacity: 0.2;
     --theme-map-opacity: 0;
     --theme-icon-opacity: 0;
     --theme-vignette:
-        linear-gradient(to bottom, rgba(2, 17, 31, 0.42), transparent 28%, transparent 68%, rgba(2, 12, 24, 0.76)),
-        linear-gradient(to right, rgba(2, 17, 31, 0.48), transparent 24%, transparent 76%, rgba(2, 12, 24, 0.46));
+        linear-gradient(to bottom, rgba(109, 157, 191, 0.14), transparent 28%, transparent 70%, rgba(56, 130, 118, 0.18)),
+        linear-gradient(to right, rgba(64, 147, 177, 0.12), transparent 24%, transparent 76%, rgba(120, 186, 136, 0.12));
 }
 
 body[data-tema="zlatna"] {
@@ -5620,11 +5620,10 @@ body[data-tema] {
 
 body[data-tema="okean"] {
     --theme-pattern-grid:
-        radial-gradient(ellipse at 18% 14%, rgba(125, 227, 255, 0.18), transparent 34%),
-        radial-gradient(ellipse at 86% 82%, rgba(45, 183, 255, 0.16), transparent 36%),
-        radial-gradient(ellipse at 50% 48%, rgba(3, 38, 66, 0.36), transparent 58%),
-        linear-gradient(126deg, transparent 0 16%, rgba(125, 227, 255, 0.045) 28%, transparent 42% 100%);
-    --theme-pattern-opacity: 0.44;
+        radial-gradient(ellipse at 18% 14%, rgba(101, 199, 226, 0.16), transparent 34%),
+        radial-gradient(ellipse at 86% 82%, rgba(120, 186, 136, 0.14), transparent 36%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 48%, rgba(255, 255, 255, 0.08));
+    --theme-pattern-opacity: 0.2;
     --theme-contour-alpha: 0;
     --theme-map-opacity: 0;
     --theme-icon-opacity: 0;
@@ -5648,6 +5647,7 @@ body[data-tema] {
     box-shadow: var(--theme-phone-shadow);
 }
 
+body[data-tema="okean"],
 body[data-tema="planina"] {
     background-size: cover;
     background-position: center center;

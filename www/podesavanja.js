@@ -58,6 +58,7 @@ const PodesavanjaManager = {
             if (typeof this.postavke.playerId === 'undefined') this.postavke.playerId = null;
             if (typeof this.postavke.profilZavrsen !== 'boolean') this.postavke.profilZavrsen = false;
             if (typeof this.postavke.zvuk !== 'boolean') this.postavke.zvuk = true;
+            if (this.postavke.tema === 'pustinja') this.postavke.tema = 'planina';
         }
 
         if (!this.postavke.profilKljuc) {
@@ -1405,13 +1406,13 @@ const PodesavanjaManager = {
             'okean': 'Reka',
             'zlatna': 'Zlatna',
             'aurora': 'Aurora',
-            'pustinja': 'Pustinja',
+            'planina': 'Planina',
             'sakura': 'Sakura',
             'noir': 'Noir',
             'tropi': 'Tropi',
             'glina': 'Glina'
         };
-        const teme = ['tamna', 'svetla', 'neon', 'okean', 'zlatna', 'aurora', 'pustinja', 'sakura', 'noir', 'tropi', 'glina'];
+        const teme = ['tamna', 'svetla', 'neon', 'okean', 'zlatna', 'aurora', 'planina', 'sakura', 'noir', 'tropi', 'glina'];
         const boje = this.tematskeBoje();
         
         teme.forEach(tema => {

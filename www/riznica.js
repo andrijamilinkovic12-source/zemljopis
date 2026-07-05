@@ -13,7 +13,7 @@ const RiznicaManager = {
             { id: 'tema_zlatna', naziv: 'Kraljevsko Zlato', cena: 2500, kupljeno: false, opremljeno: false, ikona: 'fa-crown' },
             { id: 'tema_okean', naziv: 'Reka', cena: 800, kupljeno: false, opremljeno: false, ikona: 'fa-water' },
             { id: 'tema_aurora', naziv: 'Aurora Prime', cena: 0, kupljeno: true, opremljeno: false, ikona: 'fa-star' },
-            { id: 'tema_pustinja', naziv: 'Pustinjski zalazak', cena: 900, kupljeno: false, opremljeno: false, ikona: 'fa-sun' },
+            { id: 'tema_planina', naziv: 'Planina', cena: 900, kupljeno: false, opremljeno: false, ikona: 'fa-mountain' },
             { id: 'tema_sakura', naziv: 'Sakura san', cena: 1100, kupljeno: false, opremljeno: false, ikona: 'fa-seedling' },
             { id: 'tema_noir', naziv: 'Mono Noir', cena: 1400, kupljeno: false, opremljeno: false, ikona: 'fa-circle-half-stroke' },
             { id: 'tema_tropi', naziv: 'Tropski ritam', cena: 1200, kupljeno: false, opremljeno: false, ikona: 'fa-umbrella-beach' },

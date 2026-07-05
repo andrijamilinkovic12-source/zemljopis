@@ -80,6 +80,7 @@
         const tema = document.body.getAttribute('data-tema');
         if (tema === 'glina') return 'glina';
         if (tema === 'okean') return 'reka';
+        if (tema === 'planina') return 'planina';
         return null;
     }
 
@@ -129,9 +130,16 @@
     }
 
     function dodajMekuFormu(THREE, spec) {
-        const geometry = spec.torus
-            ? new THREE.TorusGeometry(1, spec.thickness || 0.08, 24, 96)
-            : new THREE.SphereGeometry(1, 42, 32);
+        let geometry;
+        if (spec.torus) {
+            geometry = new THREE.TorusGeometry(1, spec.thickness || 0.08, 24, 96);
+        } else if (spec.cone) {
+            geometry = new THREE.ConeGeometry(1, 2, 64, 2);
+        } else if (spec.cylinder) {
+            geometry = new THREE.CylinderGeometry(spec.radiusTop || 1, spec.radiusBottom || 1, 2, 32);
+        } else {
+            geometry = new THREE.SphereGeometry(1, 42, 32);
+        }
         const opacity = typeof spec.opacity === 'number' ? spec.opacity : 0.54;
         const mesh = new THREE.Mesh(geometry, napraviMatMaterijal(THREE, spec.color, opacity, spec));
 
@@ -212,21 +220,141 @@
         [...obale, ...voda, ...struje, ...talasi, ...sjaj].forEach(spec => dodajMekuFormu(THREE, spec));
     }
 
+    function dodajOblak(THREE, x, y, z, boja, opacity, scale = 1, phase = 0) {
+        [
+            { dx: -0.5, dy: -0.02, sx: 0.58, sy: 0.22, sz: 0.16 },
+            { dx: 0, dy: 0.08, sx: 0.68, sy: 0.32, sz: 0.18 },
+            { dx: 0.5, dy: -0.02, sx: 0.56, sy: 0.22, sz: 0.16 },
+            { dx: -0.12, dy: -0.16, sx: 0.92, sy: 0.18, sz: 0.14 }
+        ].forEach((deo, index) => dodajMekuFormu(THREE, {
+            x: x + deo.dx * scale,
+            y: y + deo.dy * scale,
+            z,
+            sx: deo.sx * scale,
+            sy: deo.sy * scale,
+            sz: deo.sz * scale,
+            color: boja,
+            opacity,
+            phase: phase + index * 0.42,
+            speed: 0.12,
+            wobble: 0.035,
+            driftX: 1.25,
+            driftY: 0.35,
+            rotate: 0.00012,
+            roughness: 0.96
+        }));
+    }
+
+    function dodajDrvo(THREE, x, y, z, scale = 1, phase = 0) {
+        dodajMekuFormu(THREE, {
+            x,
+            y: y - 0.22 * scale,
+            z: z + 0.02,
+            sx: 0.08 * scale,
+            sy: 0.22 * scale,
+            sz: 0.08 * scale,
+            color: 0x8f5f42,
+            opacity: 0.58,
+            cylinder: true,
+            phase,
+            speed: 0.12,
+            wobble: 0.015,
+            rotate: 0.00008,
+            roughness: 0.94
+        });
+
+        [
+            { dx: -0.12, dy: 0.02, s: 0.24 },
+            { dx: 0.12, dy: 0.04, s: 0.24 },
+            { dx: 0, dy: 0.2, s: 0.28 }
+        ].forEach((deo, index) => dodajMekuFormu(THREE, {
+            x: x + deo.dx * scale,
+            y: y + deo.dy * scale,
+            z,
+            sx: deo.s * scale,
+            sy: deo.s * 0.9 * scale,
+            sz: deo.s * 0.62 * scale,
+            color: index === 2 ? 0x8ebd95 : 0x7fac8a,
+            opacity: 0.58,
+            phase: phase + index * 0.5,
+            speed: 0.14,
+            wobble: 0.02,
+            driftX: 0.45,
+            driftY: 0.35,
+            rotate: 0.00014,
+            roughness: 0.96
+        }));
+    }
+
+    function dodajPlaninaScene(THREE) {
+        const pozadina = [
+            { x: 0, y: -2.5, z: -3.1, sx: 4.2, sy: 0.72, sz: 0.24, color: 0x8eb39f, opacity: 0.46, phase: 1.1, speed: 0.1, wobble: 0.02, rotate: 0.00008 },
+            { x: -1.25, y: -1.62, z: -2.82, sx: 2.45, sy: 0.62, sz: 0.22, color: 0xd9c6a4, opacity: 0.38, rz: 0.1, phase: 0.2, speed: 0.1, wobble: 0.02, rotate: 0.00008 },
+            { x: 1.25, y: -1.5, z: -2.8, sx: 2.35, sy: 0.64, sz: 0.22, color: 0x9fc7a5, opacity: 0.4, rz: -0.12, phase: 0.8, speed: 0.1, wobble: 0.02, rotate: -0.00008 },
+            { x: 0.05, y: -2.02, z: -2.48, sx: 3.5, sy: 0.42, sz: 0.16, color: 0x78a98d, opacity: 0.34, phase: 1.8, speed: 0.12, wobble: 0.02, rotate: 0.00008 }
+        ];
+
+        const planine = [
+            { x: -0.35, y: 0.48, z: -2.22, sx: 1.36, sy: 1.88, sz: 0.72, color: 0x8aa8ba, opacity: 0.72, phase: 0.4, speed: 0.1, wobble: 0.025, rotate: 0.00012, cone: true },
+            { x: -1.92, y: -0.28, z: -2.4, sx: 1.18, sy: 1.3, sz: 0.62, color: 0x7798ad, opacity: 0.62, phase: 1.1, speed: 0.1, wobble: 0.02, rotate: -0.0001, cone: true },
+            { x: 1.35, y: -0.2, z: -2.34, sx: 1.18, sy: 1.42, sz: 0.66, color: 0xc69276, opacity: 0.66, phase: 1.8, speed: 0.1, wobble: 0.02, rotate: 0.00011, cone: true },
+            { x: 2.32, y: -0.04, z: -2.55, sx: 0.95, sy: 1.18, sz: 0.54, color: 0xd0ad8d, opacity: 0.48, phase: 2.4, speed: 0.1, wobble: 0.018, rotate: -0.0001, cone: true }
+        ];
+
+        const sneg = [
+            { x: -0.35, y: 1.82, z: -1.74, sx: 0.72, sy: 0.28, sz: 0.18, color: 0xfff4ec, opacity: 0.86, phase: 0.7, speed: 0.12, wobble: 0.018, rotate: 0.00008 },
+            { x: -1.92, y: 0.68, z: -1.92, sx: 0.52, sy: 0.2, sz: 0.14, color: 0xfff3eb, opacity: 0.8, phase: 1.5, speed: 0.12, wobble: 0.016, rotate: -0.00008 },
+            { x: 1.35, y: 0.9, z: -1.88, sx: 0.56, sy: 0.22, sz: 0.14, color: 0xfff4ec, opacity: 0.82, phase: 2.2, speed: 0.12, wobble: 0.016, rotate: 0.00008 },
+            { x: 2.32, y: 0.78, z: -2.02, sx: 0.42, sy: 0.16, sz: 0.12, color: 0xfff4ec, opacity: 0.72, phase: 2.9, speed: 0.12, wobble: 0.014, rotate: -0.00008 },
+            { x: -0.55, y: -0.98, z: -1.95, sx: 0.84, sy: 0.16, sz: 0.1, color: 0xfff4ec, opacity: 0.56, rz: -0.08, phase: 3.1, speed: 0.1, wobble: 0.014, rotate: 0.00006 }
+        ];
+
+        const staza = [
+            { x: 0.32, y: -2.45, z: -1.64, sx: 0.9, sy: 0.13, sz: 0.08, color: 0xd0b7a6, opacity: 0.64, rz: -0.1, phase: 0.4, speed: 0.14, wobble: 0.012, rotate: 0.00012 },
+            { x: 0.2, y: -2.12, z: -1.66, sx: 0.62, sy: 0.11, sz: 0.07, color: 0xd7c0ad, opacity: 0.58, rz: 0.32, phase: 1.0, speed: 0.14, wobble: 0.012, rotate: -0.00012 },
+            { x: 0.44, y: -1.82, z: -1.68, sx: 0.54, sy: 0.1, sz: 0.06, color: 0xd0b7a6, opacity: 0.54, rz: -0.34, phase: 1.7, speed: 0.14, wobble: 0.012, rotate: 0.00012 },
+            { x: 0.16, y: -1.58, z: -1.7, sx: 0.42, sy: 0.08, sz: 0.06, color: 0xd7c0ad, opacity: 0.48, rz: 0.24, phase: 2.3, speed: 0.14, wobble: 0.012, rotate: -0.00012 }
+        ];
+
+        [...pozadina, ...planine, ...sneg, ...staza].forEach(spec => dodajMekuFormu(THREE, spec));
+
+        dodajOblak(THREE, -2.6, 2.28, -2.08, 0xffebe6, 0.58, 0.92, 0.2);
+        dodajOblak(THREE, 0.15, 2.74, -2.26, 0xc8ddec, 0.5, 0.55, 1.2);
+        dodajOblak(THREE, 2.45, 2.3, -2.05, 0xc9e0ef, 0.58, 0.9, 2.1);
+        dodajOblak(THREE, 1.28, 2.9, -2.46, 0xffe8dd, 0.46, 0.5, 2.8);
+
+        [
+            [-2.95, -2.12, -1.72, 0.8, 0.2],
+            [-2.42, -2.06, -1.68, 0.72, 0.9],
+            [-1.88, -2.18, -1.7, 0.62, 1.5],
+            [2.14, -2.1, -1.68, 0.72, 2.2],
+            [2.72, -2.02, -1.66, 0.82, 2.9],
+            [3.18, -2.18, -1.72, 0.64, 3.5],
+            [-0.98, -2.34, -1.6, 0.42, 4.1],
+            [1.02, -2.32, -1.6, 0.44, 4.8]
+        ].forEach(([x, y, z, scale, phase]) => dodajDrvo(THREE, x, y, z, scale, phase));
+
+        dodajMekuFormu(THREE, { x: 0, y: -2.86, z: -1.36, sx: 0.38, sy: 0.38, sz: 0.08, color: 0xc18d73, opacity: 0.62, phase: 1.6, speed: 0.12, wobble: 0.018, pulse: 0.025, pulseSpeed: 1.1, rotate: 0.00018, torus: true, thickness: 0.09, rx: 0, ry: 0, rz: 0, emissive: 0xffd2b3, emissiveIntensity: 0.08 });
+        dodajMekuFormu(THREE, { x: 0, y: -2.86, z: -1.33, sx: 0.27, sy: 0.27, sz: 0.05, color: 0xd7a286, opacity: 0.48, phase: 2.2, speed: 0.12, wobble: 0.014, rotate: -0.00012 });
+    }
+
     function podesiSvetloZaTemu(THREE, tema) {
         const ambijent = tema === 'reka'
             ? new THREE.HemisphereLight(0xe6feff, 0x031625, 1.95)
-            : new THREE.HemisphereLight(0xfff3e8, 0x160f24, 1.65);
+            : tema === 'planina'
+                ? new THREE.HemisphereLight(0xfff4ec, 0x6f8ba1, 1.82)
+                : new THREE.HemisphereLight(0xfff3e8, 0x160f24, 1.65);
         scene.add(ambijent);
 
-        const glavnoSvetlo = new THREE.DirectionalLight(0xffffff, tema === 'reka' ? 2.65 : 2.45);
+        const glavnoSvetlo = new THREE.DirectionalLight(0xffffff, tema === 'reka' ? 2.65 : tema === 'planina' ? 2.28 : 2.45);
         glavnoSvetlo.position.set(-3.2, 4.4, 5.8);
         scene.add(glavnoSvetlo);
 
-        const primarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x7de3ff : 0xff8a7a, tema === 'reka' ? 2.05 : 1.45, 10);
+        const primarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x7de3ff : tema === 'planina' ? 0xb5a1dd : 0xff8a7a, tema === 'reka' ? 2.05 : tema === 'planina' ? 1.05 : 1.45, 10);
         primarniSjaj.position.set(3.8, -1.8, 3.4);
         scene.add(primarniSjaj);
 
-        const sekundarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x2db7ff : 0xb993ff, tema === 'reka' ? 1.7 : 1.15, 9);
+        const sekundarniSjaj = new THREE.PointLight(tema === 'reka' ? 0x2db7ff : tema === 'planina' ? 0xffd2b3 : 0xb993ff, tema === 'reka' ? 1.7 : tema === 'planina' ? 0.95 : 1.15, 9);
         sekundarniSjaj.position.set(-3.6, 1.4, 2.8);
         scene.add(sekundarniSjaj);
     }
@@ -241,7 +369,7 @@
         sceneTheme = tema;
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-        camera.position.set(0, 0, tema === 'reka' ? 8.05 : 8.4);
+        camera.position.set(0, 0, tema === 'reka' ? 8.05 : tema === 'planina' ? 8.15 : 8.4);
 
         renderer = new THREE.WebGLRenderer({
             alpha: true,
@@ -263,6 +391,8 @@
 
         if (tema === 'reka') {
             dodajRekaScene(THREE);
+        } else if (tema === 'planina') {
+            dodajPlaninaScene(THREE);
         } else {
             dodajGlinaScene(THREE);
         }
@@ -296,8 +426,9 @@
 
         const t = vreme * 0.001;
         const reka = sceneTheme === 'reka';
-        clayGroup.rotation.z = Math.sin(t * (reka ? 0.13 : 0.18)) * (reka ? 0.022 : 0.035);
-        clayGroup.rotation.x = Math.sin(t * (reka ? 0.1 : 0.13)) * (reka ? 0.012 : 0.018);
+        const planina = sceneTheme === 'planina';
+        clayGroup.rotation.z = Math.sin(t * (reka ? 0.13 : planina ? 0.08 : 0.18)) * (reka ? 0.022 : planina ? 0.012 : 0.035);
+        clayGroup.rotation.x = Math.sin(t * (reka ? 0.1 : planina ? 0.07 : 0.13)) * (reka ? 0.012 : planina ? 0.008 : 0.018);
 
         clayObjects.forEach((mesh, index) => {
             const data = mesh.userData;
@@ -310,7 +441,7 @@
             }
             mesh.rotation.x += data.rotate * (index % 2 === 0 ? 1 : -1);
             mesh.rotation.y += data.rotate * 0.72;
-            mesh.rotation.z += data.rotate * (reka ? 0.95 : 0.45);
+            mesh.rotation.z += data.rotate * (reka ? 0.95 : planina ? 0.36 : 0.45);
         });
 
         renderer.render(scene, camera);

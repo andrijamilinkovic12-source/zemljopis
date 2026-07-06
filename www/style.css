@@ -2253,12 +2253,11 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 18%;
-    height: 74%;
+    width: 70%;
+    height: 70%;
     transform-origin: 50% 50%;
-    translate: -50% -50%;
-    border-radius: 999px;
     will-change: transform;
+    filter: drop-shadow(0 5px 7px rgba(92, 78, 64, 0.2));
 }
 
 .drzava-compass-needle::before,
@@ -2266,33 +2265,50 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     content: "";
     position: absolute;
     left: 50%;
-    width: 100%;
-    height: 50%;
-    clip-path: polygon(50% 0, 100% 100%, 50% 82%, 0 100%);
+    width: 24%;
+    height: 48%;
+    clip-path: polygon(50% 0, 100% 100%, 50% 86%, 0 100%);
     transform: translateX(-50%);
-    filter: drop-shadow(0 4px 5px rgba(92, 78, 64, 0.18));
 }
 
 .drzava-compass-needle::before {
     top: 0;
-    background: linear-gradient(160deg, #ffb0a5, #e56f77 62%, #bd5661);
+    background:
+        radial-gradient(ellipse at 36% 18%, rgba(255, 255, 255, 0.48), transparent 32%),
+        linear-gradient(160deg, #ffaea2, #e35f69 66%, #b94754);
+    border-radius: 58% 58% 10% 10%;
 }
 
 .drzava-compass-needle::after {
     bottom: 0;
-    rotate: 180deg;
-    background: linear-gradient(160deg, #d8e9ef, #91b7c8 62%, #6e94a7);
+    transform: translateX(-50%) rotate(180deg);
+    background:
+        radial-gradient(ellipse at 36% 18%, rgba(255, 255, 255, 0.42), transparent 32%),
+        linear-gradient(160deg, #dceff4, #8ab6c8 66%, #638ea4);
+    border-radius: 58% 58% 10% 10%;
 }
 
 .drzava-compass-needle-main {
-    animation: drzavaCompassNeedleSpin 2.1s linear infinite;
+    animation: drzavaCompassNeedleSeek 2.25s ease-in-out infinite;
 }
 
 .drzava-compass-needle-cross {
-    width: 14%;
-    height: 62%;
-    opacity: 0.78;
-    animation: drzavaCompassNeedleSpinReverse 2.85s linear infinite;
+    width: 60%;
+    height: 60%;
+    opacity: 0.7;
+    animation: drzavaCompassNeedleCrossSeek 2.25s ease-in-out infinite;
+}
+
+.drzava-compass-needle-cross::before {
+    background:
+        radial-gradient(ellipse at 36% 18%, rgba(255, 255, 255, 0.42), transparent 32%),
+        linear-gradient(160deg, #f9b1a6, #de7780 68%, #ba5a64);
+}
+
+.drzava-compass-needle-cross::after {
+    background:
+        radial-gradient(ellipse at 36% 18%, rgba(255, 255, 255, 0.38), transparent 32%),
+        linear-gradient(160deg, #d8e9ef, #9abdc8 68%, #7798a8);
 }
 
 .drzava-compass-center {
@@ -2335,20 +2351,17 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
 }
 
 .drzava-globe-continents {
-    inset: 12%;
+    inset: 11%;
     overflow: hidden;
-    background:
-        radial-gradient(ellipse at 8% 35%, rgba(134, 185, 111, 0.92) 0 12%, transparent 13%),
-        radial-gradient(ellipse at 30% 58%, rgba(245, 177, 95, 0.86) 0 13%, transparent 14%),
-        radial-gradient(ellipse at 58% 30%, rgba(140, 194, 116, 0.94) 0 16%, transparent 17%),
-        radial-gradient(ellipse at 82% 60%, rgba(237, 154, 100, 0.88) 0 12%, transparent 13%),
-        radial-gradient(ellipse at 118% 40%, rgba(134, 185, 111, 0.92) 0 13%, transparent 14%);
-    background-size: 172% 100%;
+    background-image: url('assets/drzava-globe-continents.svg');
+    background-repeat: repeat-x;
+    background-size: 214% 100%;
     background-position: 0% 50%;
-    filter: blur(0.2px) drop-shadow(0 3px 4px rgba(55, 86, 70, 0.12));
-    mix-blend-mode: multiply;
+    opacity: 0.94;
+    filter: drop-shadow(0 3px 4px rgba(55, 86, 70, 0.16));
+    mix-blend-mode: normal;
     will-change: background-position;
-    animation: drzavaGlobeContinents 18s linear infinite;
+    animation: drzavaGlobeContinents 24s linear infinite;
 }
 
 .drzava-globe-grid {
@@ -2570,19 +2583,27 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     74% { transform: translate(-50%, -92%) translateY(-3px) scale(1.012); }
 }
 
-@keyframes drzavaCompassNeedleSpin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+@keyframes drzavaCompassNeedleSeek {
+    0%, 100% { transform: translate(-50%, -50%) rotate(-18deg); }
+    18% { transform: translate(-50%, -50%) rotate(29deg); }
+    34% { transform: translate(-50%, -50%) rotate(-13deg); }
+    52% { transform: translate(-50%, -50%) rotate(17deg); }
+    72% { transform: translate(-50%, -50%) rotate(-7deg); }
+    88% { transform: translate(-50%, -50%) rotate(3deg); }
 }
 
-@keyframes drzavaCompassNeedleSpinReverse {
-    from { transform: rotate(90deg); }
-    to { transform: rotate(-270deg); }
+@keyframes drzavaCompassNeedleCrossSeek {
+    0%, 100% { transform: translate(-50%, -50%) rotate(72deg); }
+    18% { transform: translate(-50%, -50%) rotate(119deg); }
+    34% { transform: translate(-50%, -50%) rotate(77deg); }
+    52% { transform: translate(-50%, -50%) rotate(107deg); }
+    72% { transform: translate(-50%, -50%) rotate(83deg); }
+    88% { transform: translate(-50%, -50%) rotate(93deg); }
 }
 
 @keyframes drzavaGlobeContinents {
     0% { background-position: 0% 50%; }
-    100% { background-position: 172% 50%; }
+    100% { background-position: -214% 50%; }
 }
 
 @keyframes drzavaGlobeBreath {

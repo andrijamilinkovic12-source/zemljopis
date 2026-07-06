@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="greenClay" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b8dd92"/>
+      <stop offset="0.56" stop-color="#84bf72"/>
+      <stop offset="1" stop-color="#5e9d65"/>
+    </linearGradient>
+    <linearGradient id="sandClay" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd99a"/>
+      <stop offset="0.58" stop-color="#e5aa5f"/>
+      <stop offset="1" stop-color="#bf7d47"/>
+    </linearGradient>
+    <linearGradient id="roseClay" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7c1b2"/>
+      <stop offset="0.62" stop-color="#e08a77"/>
+      <stop offset="1" stop-color="#b96a61"/>
+    </linearGradient>
+    <filter id="softClay" x="-16%" y="-16%" width="132%" height="132%">
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#3c6f61" flood-opacity="0.2"/>
+      <feDropShadow dx="-4" dy="-5" stdDeviation="4" flood-color="#ffffff" flood-opacity="0.24"/>
+    </filter>
+  </defs>
+  <g filter="url(#softClay)">
+    <path fill="url(#greenClay)" d="M58 105c19-34 66-46 105-30 28 12 44 31 69 32 17 1 33-15 48-6 18 11 7 34-13 41-19 7-42 1-55 17-13 16 3 40-9 57-12 18-39 9-55-6-21-20-31-47-55-62-19-12-50-14-35-43z"/>
+    <path fill="url(#sandClay)" d="M205 206c21 10 34 31 30 56-5 29-26 52-45 74-24-18-29-51-17-79 7-18 15-38 32-51z"/>
+    <path fill="url(#greenClay)" d="M316 114c28-17 61-18 87-1 16 10 33 6 49 11 24 8 31 34 12 49-16 12-41 7-57 22-17 16-8 47-31 58-25 12-51-12-53-38-2-22 9-40-6-58-11-14-22-30-1-43z"/>
+    <path fill="url(#sandClay)" d="M385 190c28 3 50 25 55 55 5 29-8 60-29 80-23-20-45-43-48-74-2-24 6-47 22-61z"/>
+    <path fill="url(#greenClay)" d="M484 91c47-31 116-25 166 2 39 21 79 18 111 45 29 25 20 62-16 74-42 14-85-14-126 4-33 15-51 52-87 48-35-4-48-40-40-73 7-27-35-53-8-100z"/>
+    <path fill="url(#roseClay)" d="M784 225c24-16 58-6 75 15 18 22 12 53-14 68-21 12-54 9-68-13-13-21-10-55 7-70z"/>
+    <path fill="url(#greenClay)" d="M914 118c29-20 69-15 94 7 21 18 55 11 76 30 25 23 15 58-20 66-31 7-60-17-91-7-27 9-44 35-74 25-28-9-39-41-24-66 13-22 16-40 39-55z"/>
+    <path fill="url(#sandClay)" d="M1042 250c21-10 51-2 62 19 12 23-5 46-31 49-25 3-52-15-56-39-2-12 9-23 25-29z"/>
+    <ellipse cx="250" cy="92" rx="24" ry="15" fill="url(#sandClay)" opacity="0.92"/>
+    <ellipse cx="810" cy="112" rx="28" ry="18" fill="url(#greenClay)" opacity="0.9"/>
+    <ellipse cx="1124" cy="118" rx="22" ry="14" fill="url(#roseClay)" opacity="0.88"/>
+  </g>
+</svg>

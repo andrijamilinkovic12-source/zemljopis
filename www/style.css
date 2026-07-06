@@ -2250,17 +2250,17 @@ body[data-tema="zivotinja"] #main-menu > .zivotinja-live-layer {
     animation: zivotinjaButterflyLoopC 17s ease-in-out infinite;
 }
 
-.ziv-owl { left: 5.5%; top: 32.7%; width: 27.2%; z-index: 7; }
-.ziv-owl-wings { left: 5.5%; top: 32.7%; width: 27.2%; z-index: 8; transform-origin: 50% 55%; animation: zivotinjaOwlWingFlap 9s ease-in-out infinite; }
-.ziv-fox { left: 0%; top: 54.8%; width: 27.5%; z-index: 9; }
-.ziv-fox-tail { left: 0%; top: 54.8%; width: 27.5%; z-index: 10; transform-origin: 24% 80%; animation: zivotinjaFoxTailWag 6.8s ease-in-out infinite; }
-.ziv-deer { left: 62.4%; top: 46.6%; width: 27.6%; z-index: 8; }
-.ziv-deer-head { left: 62.4%; top: 46.6%; width: 27.6%; z-index: 10; transform-origin: 33% 45%; animation: zivotinjaDeerHeadMove 9.5s ease-in-out infinite; }
-.ziv-deer-leg { left: 62.4%; top: 46.6%; width: 27.6%; z-index: 11; transform-origin: 38% 63%; animation: zivotinjaDeerLegLift 11s ease-in-out infinite; }
-.ziv-hedgehog { left: 9.2%; top: 75.2%; width: 21.4%; z-index: 11; }
-.ziv-hedgehog-eyelids { left: 9.2%; top: 75.2%; width: 21.4%; z-index: 12; animation: zivotinjaHedgehogSleepyEyes 7.4s ease-in-out infinite; }
-.ziv-rabbit { left: 69.5%; top: 69.8%; width: 15.4%; z-index: 12; }
-.ziv-rabbit-ears { left: 69.5%; top: 69.8%; width: 15.4%; z-index: 13; transform-origin: 50% 39%; animation: zivotinjaRabbitEars 7.8s ease-in-out infinite; }
+.ziv-owl { left: 8.8%; top: 34%; width: 20.5%; z-index: 7; }
+.ziv-owl-wings { left: 8.8%; top: 34%; width: 20.5%; z-index: 8; transform-origin: 50% 55%; animation: zivotinjaOwlWingFlap 9s ease-in-out infinite; }
+.ziv-fox { left: 1.8%; top: 54.9%; width: 25%; z-index: 9; }
+.ziv-fox-tail { left: 1.8%; top: 54.9%; width: 25%; z-index: 10; transform-origin: 24% 80%; animation: zivotinjaFoxTailWag 6.8s ease-in-out infinite; }
+.ziv-deer { left: 60.8%; top: 46.4%; width: 27%; z-index: 8; }
+.ziv-deer-head { left: 60.8%; top: 46.4%; width: 27%; z-index: 10; transform-origin: 33% 45%; animation: zivotinjaDeerHeadMove 9.5s ease-in-out infinite; }
+.ziv-deer-leg { left: 60.8%; top: 46.4%; width: 27%; z-index: 11; transform-origin: 38% 63%; animation: zivotinjaDeerLegLift 11s ease-in-out infinite; }
+.ziv-hedgehog { left: 8.6%; top: 74.8%; width: 24.5%; z-index: 11; }
+.ziv-hedgehog-eyelids { left: 8.6%; top: 74.8%; width: 24.5%; z-index: 12; animation: zivotinjaHedgehogSleepyEyes 7.4s ease-in-out infinite; }
+.ziv-rabbit { left: 68%; top: 69.2%; width: 18%; z-index: 12; }
+.ziv-rabbit-ears { left: 68%; top: 69.2%; width: 18%; z-index: 13; transform-origin: 50% 39%; animation: zivotinjaRabbitEars 7.8s ease-in-out infinite; }
 
 .ziv-eye {
     position: absolute;

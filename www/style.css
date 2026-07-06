@@ -2195,70 +2195,70 @@ body[data-tema="zivotinja"] #main-menu > .zivotinja-live-layer {
 }
 
 .ziv-blue-bird {
-    left: 85%;
-    top: 27.2%;
-    width: 15%;
+    left: 83.5%;
+    top: 27%;
+    width: 14.5%;
     z-index: 4;
     animation: zivotinjaPerchedFlutter 7.4s ease-in-out infinite;
 }
 
 .ziv-pink-bird {
-    width: 15.5%;
+    width: 13%;
     z-index: 5;
 }
 
 .ziv-pink-bird-a {
-    left: 64%;
-    top: 31.5%;
+    left: 63.5%;
+    top: 36.5%;
     animation: zivotinjaBirdLoopA 18s ease-in-out infinite;
 }
 
 .ziv-pink-bird-b {
     left: 18%;
     top: 24%;
-    width: 12.8%;
+    width: 10.8%;
     opacity: 0.82;
     transform: scaleX(-1);
     animation: zivotinjaBirdLoopB 22s ease-in-out infinite;
 }
 
 .ziv-butterfly {
-    width: 9.6%;
+    width: 7.6%;
     z-index: 6;
 }
 
 .ziv-butterfly-a {
-    left: 13%;
-    top: 21%;
-    width: 14%;
+    left: 14.5%;
+    top: 22.5%;
+    width: 10.5%;
     animation: zivotinjaButterflyLoopA 13s ease-in-out infinite;
 }
 
 .ziv-butterfly-b {
-    left: 43%;
-    top: 57%;
+    left: 44%;
+    top: 61%;
     filter: hue-rotate(20deg) saturate(1.05);
     animation: zivotinjaButterflyLoopB 15s ease-in-out infinite;
 }
 
 .ziv-butterfly-c {
-    left: 86%;
-    top: 72%;
-    width: 8.8%;
+    left: 87.5%;
+    top: 74.2%;
+    width: 7.5%;
     filter: hue-rotate(315deg) saturate(0.92);
     animation: zivotinjaButterflyLoopC 17s ease-in-out infinite;
 }
 
-.ziv-owl { left: 8.5%; top: 30.2%; width: 26%; z-index: 7; animation: zivotinjaSleepyNod 8.5s ease-in-out infinite; }
-.ziv-owl-wings { left: 9.6%; top: 33.5%; width: 23.9%; z-index: 8; transform-origin: 50% 62%; animation: zivotinjaOwlWingFlap 9s ease-in-out infinite; }
-.ziv-fox { left: 2.7%; top: 48.4%; width: 35%; z-index: 9; animation: zivotinjaFoxBreath 7.2s ease-in-out infinite; }
-.ziv-fox-tail { left: 2.7%; top: 54.4%; width: 17.5%; z-index: 10; transform-origin: 82% 55%; animation: zivotinjaFoxTailWag 6.8s ease-in-out infinite; }
-.ziv-deer { left: 57.9%; top: 42.5%; width: 35.6%; z-index: 8; animation: zivotinjaDeerBody 10.5s ease-in-out infinite; }
-.ziv-deer-head { left: 60%; top: 41.9%; width: 18.1%; z-index: 10; transform-origin: 62% 82%; animation: zivotinjaDeerHeadMove 9.5s ease-in-out infinite; }
-.ziv-deer-leg { left: 69.6%; top: 55.6%; width: 9%; z-index: 11; transform-origin: 50% 8%; animation: zivotinjaDeerLegLift 11s ease-in-out infinite; }
-.ziv-hedgehog { left: -0.2%; top: 67.6%; width: 32.4%; z-index: 11; animation: zivotinjaSleepyNod 9.4s ease-in-out infinite reverse; }
-.ziv-rabbit { left: 69.1%; top: 67.9%; width: 27.6%; z-index: 12; animation: zivotinjaRabbitBody 8.6s ease-in-out infinite; }
-.ziv-rabbit-ears { left: 75.2%; top: 68.1%; width: 13.5%; z-index: 13; transform-origin: 50% 96%; animation: zivotinjaRabbitEars 7.8s ease-in-out infinite; }
+.ziv-owl { left: 9.5%; top: 31.5%; width: 23.5%; z-index: 7; animation: zivotinjaSleepyNod 8.5s ease-in-out infinite; }
+.ziv-owl-wings { left: 9.5%; top: 31.5%; width: 23.5%; z-index: 8; clip-path: inset(14% 5% 7% 5%); transform-origin: 50% 58%; animation: zivotinjaOwlWingFlap 9s ease-in-out infinite; }
+.ziv-fox { left: 4.8%; top: 49.2%; width: 31%; z-index: 9; animation: zivotinjaFoxBreath 7.2s ease-in-out infinite; }
+.ziv-fox-tail { left: 4.8%; top: 49.2%; width: 31%; z-index: 10; clip-path: inset(42% 47% 8% 0%); transform-origin: 22% 72%; animation: zivotinjaFoxTailWag 6.8s ease-in-out infinite; }
+.ziv-deer { left: 57.5%; top: 41.5%; width: 32%; z-index: 8; animation: zivotinjaDeerBody 10.5s ease-in-out infinite; }
+.ziv-deer-head { left: 57.5%; top: 41.5%; width: 32%; z-index: 10; clip-path: inset(0% 50% 47% 0%); transform-origin: 27% 28%; animation: zivotinjaDeerHeadMove 9.5s ease-in-out infinite; }
+.ziv-deer-leg { left: 57.5%; top: 41.5%; width: 32%; z-index: 11; clip-path: inset(48% 16% 0% 40%); transform-origin: 55% 77%; animation: zivotinjaDeerLegLift 11s ease-in-out infinite; }
+.ziv-hedgehog { left: 2%; top: 70.5%; width: 28.5%; z-index: 11; animation: zivotinjaSleepyNod 9.4s ease-in-out infinite reverse; }
+.ziv-rabbit { left: 68%; top: 67.5%; width: 26.5%; z-index: 12; animation: zivotinjaRabbitBody 8.6s ease-in-out infinite; }
+.ziv-rabbit-ears { left: 68%; top: 67.5%; width: 26.5%; z-index: 13; clip-path: inset(0% 6% 52% 6%); transform-origin: 50% 36%; animation: zivotinjaRabbitEars 7.8s ease-in-out infinite; }
 
 .ziv-eye {
     position: absolute;

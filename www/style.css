@@ -2040,21 +2040,253 @@ body[data-tema="okean"] #main-menu::before {
 }
 
 body[data-tema="okean"] #main-menu::after {
-    content: "";
+    display: none;
+}
+
+#main-menu > .reka-live-layer {
     position: absolute;
     inset: -5% -6%;
     z-index: 3;
+    display: none;
     pointer-events: none;
-    background-image: url('assets/reka-water-flow-layer.png');
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover;
-    opacity: 0.58;
+    overflow: hidden;
     mix-blend-mode: screen;
-    filter: saturate(1.18) brightness(1.08) drop-shadow(0 0 10px rgba(125, 227, 255, 0.18));
-    will-change: transform, opacity;
-    animation: rekaWaterLayerFlow 8.5s linear infinite;
 }
+
+body[data-tema="okean"] #main-menu > .reka-live-layer {
+    display: block;
+}
+
+.reka-current-svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.72;
+    filter: drop-shadow(0 0 8px rgba(125, 227, 255, 0.28));
+}
+
+.reka-current,
+.reka-ripple {
+    fill: none;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.reka-current {
+    stroke: rgba(178, 245, 255, 0.72);
+    stroke-width: clamp(2.4px, 0.72vw, 4.8px);
+    stroke-dasharray: 34 76;
+    stroke-dashoffset: 0;
+    will-change: stroke-dashoffset, opacity;
+    animation: rekaCurrentDash 4.6s linear infinite;
+}
+
+.reka-current-main-glow {
+    stroke: rgba(56, 189, 248, 0.22);
+    stroke-width: clamp(18px, 4.2vw, 32px);
+    stroke-dasharray: 56 96;
+    filter: blur(5px);
+    opacity: 0.62;
+    animation-duration: 5.2s;
+}
+
+.reka-current-main {
+    stroke: rgba(224, 252, 255, 0.86);
+    stroke-width: clamp(3px, 0.86vw, 5.8px);
+    stroke-dasharray: 42 78;
+    animation-duration: 4.2s;
+}
+
+.reka-current-left {
+    stroke: rgba(125, 227, 255, 0.56);
+    stroke-width: clamp(2px, 0.58vw, 4px);
+    stroke-dasharray: 28 84;
+    animation-duration: 5.4s;
+    animation-delay: -1.15s;
+}
+
+.reka-current-right {
+    stroke: rgba(167, 243, 255, 0.58);
+    stroke-width: clamp(2px, 0.62vw, 4.2px);
+    stroke-dasharray: 30 88;
+    animation-duration: 5.1s;
+    animation-delay: -2.05s;
+}
+
+.reka-current-soft {
+    stroke: rgba(255, 255, 255, 0.34);
+    stroke-width: clamp(1.5px, 0.46vw, 3px);
+    stroke-dasharray: 20 92;
+    animation-duration: 3.9s;
+    animation-delay: -0.7s;
+}
+
+.reka-current-soft-alt {
+    animation-delay: -2.4s;
+    opacity: 0.78;
+}
+
+.reka-ripple {
+    stroke: rgba(233, 253, 255, 0.54);
+    stroke-width: clamp(1.6px, 0.5vw, 3.2px);
+    stroke-dasharray: 28 220;
+    stroke-dashoffset: 0;
+    opacity: 0;
+    filter: drop-shadow(0 0 5px rgba(125, 227, 255, 0.28));
+    will-change: stroke-dashoffset, opacity;
+    animation: rekaRippleFlow 6.8s ease-in-out infinite;
+}
+
+.reka-ripple-1 { animation-delay: -0.4s; }
+.reka-ripple-2 { animation-delay: -1.6s; }
+.reka-ripple-3 { animation-delay: -2.8s; }
+.reka-ripple-4 { animation-delay: -4s; }
+.reka-ripple-5 { animation-delay: -5.2s; }
+
+body[data-tema="zivotinja"] #main-menu > .clay-theme-three {
+    display: none;
+    opacity: 0;
+}
+
+#main-menu > .zivotinja-live-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+body[data-tema="zivotinja"] #main-menu > .zivotinja-live-layer {
+    display: block;
+}
+
+.zivotinja-clouds-layer {
+    position: absolute;
+    inset: -4% -8%;
+    width: 116%;
+    height: 108%;
+    object-fit: cover;
+    object-position: center top;
+    opacity: 0.96;
+    filter: saturate(1.04) contrast(1.02) brightness(1.02) drop-shadow(0 10px 16px rgba(104, 132, 95, 0.12));
+    transform-origin: 50% 14%;
+    will-change: transform, opacity;
+    animation: zivotinjaCloudDrift 25s ease-in-out infinite;
+}
+
+.ziv-flyer,
+.ziv-animal,
+.ziv-animal-part {
+    position: absolute;
+    display: block;
+    pointer-events: none;
+    transform-origin: 50% 50%;
+    will-change: transform, opacity;
+}
+
+.ziv-flyer img,
+.ziv-animal img,
+.ziv-animal-part img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 10px 12px rgba(75, 93, 60, 0.16));
+}
+
+.ziv-blue-bird {
+    left: 85%;
+    top: 27.2%;
+    width: 15%;
+    z-index: 4;
+    animation: zivotinjaPerchedFlutter 7.4s ease-in-out infinite;
+}
+
+.ziv-pink-bird {
+    width: 15.5%;
+    z-index: 5;
+}
+
+.ziv-pink-bird-a {
+    left: 64%;
+    top: 31.5%;
+    animation: zivotinjaBirdLoopA 18s ease-in-out infinite;
+}
+
+.ziv-pink-bird-b {
+    left: 18%;
+    top: 24%;
+    width: 12.8%;
+    opacity: 0.82;
+    transform: scaleX(-1);
+    animation: zivotinjaBirdLoopB 22s ease-in-out infinite;
+}
+
+.ziv-butterfly {
+    width: 9.6%;
+    z-index: 6;
+}
+
+.ziv-butterfly-a {
+    left: 13%;
+    top: 21%;
+    width: 14%;
+    animation: zivotinjaButterflyLoopA 13s ease-in-out infinite;
+}
+
+.ziv-butterfly-b {
+    left: 43%;
+    top: 57%;
+    filter: hue-rotate(20deg) saturate(1.05);
+    animation: zivotinjaButterflyLoopB 15s ease-in-out infinite;
+}
+
+.ziv-butterfly-c {
+    left: 86%;
+    top: 72%;
+    width: 8.8%;
+    filter: hue-rotate(315deg) saturate(0.92);
+    animation: zivotinjaButterflyLoopC 17s ease-in-out infinite;
+}
+
+.ziv-owl { left: 8.5%; top: 30.2%; width: 26%; z-index: 7; animation: zivotinjaSleepyNod 8.5s ease-in-out infinite; }
+.ziv-owl-wings { left: 9.6%; top: 33.5%; width: 23.9%; z-index: 8; transform-origin: 50% 62%; animation: zivotinjaOwlWingFlap 9s ease-in-out infinite; }
+.ziv-fox { left: 2.7%; top: 48.4%; width: 35%; z-index: 9; animation: zivotinjaFoxBreath 7.2s ease-in-out infinite; }
+.ziv-fox-tail { left: 2.7%; top: 54.4%; width: 17.5%; z-index: 10; transform-origin: 82% 55%; animation: zivotinjaFoxTailWag 6.8s ease-in-out infinite; }
+.ziv-deer { left: 57.9%; top: 42.5%; width: 35.6%; z-index: 8; animation: zivotinjaDeerBody 10.5s ease-in-out infinite; }
+.ziv-deer-head { left: 60%; top: 41.9%; width: 18.1%; z-index: 10; transform-origin: 62% 82%; animation: zivotinjaDeerHeadMove 9.5s ease-in-out infinite; }
+.ziv-deer-leg { left: 69.6%; top: 55.6%; width: 9%; z-index: 11; transform-origin: 50% 8%; animation: zivotinjaDeerLegLift 11s ease-in-out infinite; }
+.ziv-hedgehog { left: -0.2%; top: 67.6%; width: 32.4%; z-index: 11; animation: zivotinjaSleepyNod 9.4s ease-in-out infinite reverse; }
+.ziv-rabbit { left: 69.1%; top: 67.9%; width: 27.6%; z-index: 12; animation: zivotinjaRabbitBody 8.6s ease-in-out infinite; }
+.ziv-rabbit-ears { left: 75.2%; top: 68.1%; width: 13.5%; z-index: 13; transform-origin: 50% 96%; animation: zivotinjaRabbitEars 7.8s ease-in-out infinite; }
+
+.ziv-eye {
+    position: absolute;
+    z-index: 20;
+    display: block;
+    width: 5.5%;
+    height: 1.9%;
+    border-radius: 999px;
+    background: rgba(48, 31, 20, 0.76);
+    opacity: 0;
+    transform: scaleY(0.2);
+    transform-origin: 50% 50%;
+    animation: zivotinjaSleepBlink 7.6s ease-in-out infinite;
+}
+
+.ziv-eye.left { left: 41%; top: 39%; }
+.ziv-eye.right { left: 56%; top: 39%; }
+.ziv-fox .ziv-eye.left { left: 39%; top: 34%; }
+.ziv-fox .ziv-eye.right { left: 55%; top: 34%; }
+.ziv-rabbit .ziv-eye.left { left: 35%; top: 43%; }
+.ziv-rabbit .ziv-eye.right { left: 54%; top: 43%; }
+.ziv-deer .ziv-eye.left { left: 23%; top: 36%; }
+.ziv-deer .ziv-eye.right { left: 37%; top: 36%; }
+.ziv-hedgehog .ziv-eye.left { left: 67%; top: 43%; width: 5%; }
+.ziv-rabbit .ziv-eye { animation-delay: -1.2s; }
+.ziv-deer .ziv-eye { animation-delay: -2.4s; }
+.ziv-fox .ziv-eye { animation-delay: -3.1s; }
+.ziv-hedgehog .ziv-eye { animation-delay: -4s; }
 
 body[data-tema="planina"] #main-menu > .clay-theme-three {
     display: none;
@@ -2519,6 +2751,40 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     }
 }
 
+@keyframes rekaCurrentDash {
+    0% {
+        stroke-dashoffset: -92;
+        opacity: 0.36;
+    }
+    18% {
+        opacity: 0.72;
+    }
+    54% {
+        opacity: 0.9;
+    }
+    100% {
+        stroke-dashoffset: 210;
+        opacity: 0.42;
+    }
+}
+
+@keyframes rekaRippleFlow {
+    0% {
+        stroke-dashoffset: 190;
+        opacity: 0;
+    }
+    18% {
+        opacity: 0.62;
+    }
+    58% {
+        opacity: 0.34;
+    }
+    100% {
+        stroke-dashoffset: -82;
+        opacity: 0;
+    }
+}
+
 @keyframes planinaCloudLayerDrift {
     0% {
         transform: translate3d(-2.6%, 0.1%, 0) scale(1.015);
@@ -2609,6 +2875,152 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
 @keyframes drzavaGlobeBreath {
     0%, 100% { opacity: 0.78; transform: translate3d(0, 0, 0) scale(1); }
     50% { opacity: 0.96; transform: translate3d(-1.5%, -1%, 0) scale(1.025); }
+}
+
+@keyframes zivotinjaCloudDrift {
+    0% {
+        transform: translate3d(-2.5%, 0.06%, 0) scale(1.014);
+        opacity: 0.92;
+    }
+    27% {
+        transform: translate3d(1.3%, -0.28%, 0) scale(1.024);
+        opacity: 0.98;
+    }
+    55% {
+        transform: translate3d(4.6%, 0.18%, 0) scale(1.018);
+        opacity: 0.96;
+    }
+    78% {
+        transform: translate3d(0.9%, 0.38%, 0) scale(1.026);
+        opacity: 0.99;
+    }
+    100% {
+        transform: translate3d(-2.5%, 0.06%, 0) scale(1.014);
+        opacity: 0.92;
+    }
+}
+
+@keyframes zivotinjaPerchedFlutter {
+    0%, 58%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    63% { transform: translate3d(-1.5%, -2.5%, 0) rotate(-3deg); }
+    68% { transform: translate3d(1.2%, 1.2%, 0) rotate(2deg); }
+    73% { transform: translate3d(-0.8%, -1%, 0) rotate(-1deg); }
+}
+
+@keyframes zivotinjaBirdLoopA {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 0.96; }
+    23% { transform: translate3d(-24%, -18%, 0) rotate(-8deg) scale(1.03); opacity: 1; }
+    49% { transform: translate3d(-55%, 4%, 0) rotate(4deg) scale(0.98); opacity: 0.92; }
+    74% { transform: translate3d(-26%, 18%, 0) rotate(8deg) scale(1.02); opacity: 1; }
+}
+
+@keyframes zivotinjaBirdLoopB {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scaleX(-1) scale(0.92); opacity: 0.78; }
+    24% { transform: translate3d(31%, 16%, 0) rotate(7deg) scaleX(-1) scale(1); opacity: 0.9; }
+    52% { transform: translate3d(68%, -3%, 0) rotate(-5deg) scaleX(-1) scale(0.94); opacity: 0.78; }
+    78% { transform: translate3d(28%, -19%, 0) rotate(-9deg) scaleX(-1) scale(0.98); opacity: 0.86; }
+}
+
+@keyframes zivotinjaButterflyLoopA {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(-7deg) scale(1); opacity: 0.96; }
+    18% { transform: translate3d(24%, -12%, 0) rotate(11deg) scale(0.94); opacity: 1; }
+    42% { transform: translate3d(48%, 18%, 0) rotate(-16deg) scale(1.04); opacity: 0.9; }
+    67% { transform: translate3d(14%, 36%, 0) rotate(12deg) scale(0.98); opacity: 1; }
+    84% { transform: translate3d(-10%, 14%, 0) rotate(-10deg) scale(1.03); opacity: 0.93; }
+}
+
+@keyframes zivotinjaButterflyLoopB {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(9deg) scale(0.92); opacity: 0.86; }
+    22% { transform: translate3d(-26%, -14%, 0) rotate(-13deg) scale(1.04); opacity: 1; }
+    48% { transform: translate3d(-54%, 11%, 0) rotate(16deg) scale(0.95); opacity: 0.9; }
+    73% { transform: translate3d(-18%, 30%, 0) rotate(-11deg) scale(1.02); opacity: 0.96; }
+}
+
+@keyframes zivotinjaButterflyLoopC {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(-4deg) scale(0.88); opacity: 0.78; }
+    19% { transform: translate3d(-18%, -19%, 0) rotate(12deg) scale(1.02); opacity: 0.96; }
+    44% { transform: translate3d(-42%, -5%, 0) rotate(-15deg) scale(0.92); opacity: 0.85; }
+    71% { transform: translate3d(-22%, 18%, 0) rotate(9deg) scale(1.01); opacity: 0.94; }
+}
+
+@keyframes zivotinjaSleepyNod {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+    46% { transform: translate3d(0, 1.4%, 0) rotate(-0.7deg) scale(1.006); }
+    72% { transform: translate3d(0, -0.4%, 0) rotate(0.4deg) scale(1); }
+}
+
+@keyframes zivotinjaOwlWingFlap {
+    0%, 62%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 0.98; }
+    66% { transform: translate3d(0, -1.8%, 0) rotate(-2.8deg) scaleX(1.035) scaleY(0.965); opacity: 1; }
+    70% { transform: translate3d(0, 1.1%, 0) rotate(2.2deg) scaleX(0.985) scaleY(1.02); opacity: 1; }
+    75% { transform: translate3d(0, -0.7%, 0) rotate(-1.2deg) scale(1.01); opacity: 0.99; }
+}
+
+@keyframes zivotinjaFoxBreath {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+    48% { transform: translate3d(0.6%, 0.6%, 0) rotate(0.45deg) scale(1.006); }
+    74% { transform: translate3d(0, -0.35%, 0) rotate(-0.25deg) scale(1); }
+}
+
+@keyframes zivotinjaFoxTailWag {
+    0%, 56%, 100% { transform: rotate(0deg); }
+    61% { transform: rotate(-8deg) translateY(-1px); }
+    66% { transform: rotate(10deg) translateY(1px); }
+    71% { transform: rotate(-6deg); }
+    77% { transform: rotate(5deg); }
+}
+
+@keyframes zivotinjaDeerBody {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    42% { transform: translate3d(0, 0.7%, 0) scale(1.003); }
+    72% { transform: translate3d(0, -0.4%, 0) scale(1); }
+}
+
+@keyframes zivotinjaDeerHeadMove {
+    0%, 52%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); }
+    58% { transform: rotate(-4deg) translate3d(-1%, -1%, 0); }
+    66% { transform: rotate(3deg) translate3d(1%, 0.6%, 0); }
+    73% { transform: rotate(-1deg) translate3d(0, -0.4%, 0); }
+}
+
+@keyframes zivotinjaDeerLegLift {
+    0%, 60%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); }
+    66% { transform: rotate(-9deg) translate3d(0, -4px, 0); }
+    72% { transform: rotate(4deg) translate3d(0, -1px, 0); }
+    78% { transform: rotate(0deg) translate3d(0, 0, 0); }
+}
+
+@keyframes zivotinjaRabbitBody {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    43% { transform: translate3d(0, 1.1%, 0) scale(1.006); }
+    72% { transform: translate3d(0, -0.5%, 0) scale(1); }
+}
+
+@keyframes zivotinjaRabbitEars {
+    0%, 55%, 100% { transform: rotate(0deg) skewX(0deg); }
+    60% { transform: rotate(-5deg) skewX(-2deg); }
+    65% { transform: rotate(7deg) skewX(2deg); }
+    71% { transform: rotate(-3deg) skewX(-1deg); }
+    78% { transform: rotate(2deg) skewX(0.5deg); }
+}
+
+@keyframes zivotinjaSleepBlink {
+    0%, 84%, 100% {
+        opacity: 0;
+        transform: scaleY(0.15);
+    }
+    86% {
+        opacity: 0.72;
+        transform: scaleY(1);
+    }
+    88% {
+        opacity: 0.9;
+        transform: scaleY(0.72);
+    }
+    90% {
+        opacity: 0;
+        transform: scaleY(0.12);
+    }
 }
 
 /* --- TABLA ZA IGRU --- */
@@ -6200,6 +6612,54 @@ body[data-tema="drzava"] {
     --theme-icon-opacity: 0;
 }
 
+body[data-tema="zivotinja"] {
+    --theme-bg:
+        linear-gradient(180deg, rgba(222, 246, 255, 0.08) 0%, rgba(255, 242, 210, 0.04) 42%, rgba(200, 236, 179, 0.1) 100%),
+        radial-gradient(circle at 50% 36%, rgba(255, 255, 255, 0.05), transparent 48%),
+        url('assets/zivotinja-soft-matte-bg-clean.png');
+    --theme-splash-bg: linear-gradient(135deg, #dff5ff, #fff1c9, #cbeaa8);
+    --theme-text: #28462f;
+    --theme-muted: #607b57;
+    --theme-primary: #5eaa4e;
+    --theme-primary-rgb: 94, 170, 78;
+    --theme-secondary: #e38f45;
+    --theme-secondary-rgb: 227, 143, 69;
+    --theme-accent: #f2c85e;
+    --theme-accent-rgb: 242, 200, 94;
+    --theme-danger: #db6d7a;
+    --theme-danger-rgb: 219, 109, 122;
+    --theme-panel: rgba(255, 255, 255, 0.78);
+    --theme-panel-strong: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(238, 248, 225, 0.9));
+    --theme-control-bg: rgba(255, 255, 255, 0.66);
+    --theme-input-bg: rgba(255, 255, 255, 0.84);
+    --theme-pill-bg: rgba(255, 255, 255, 0.78);
+    --theme-border: rgba(94, 170, 78, 0.3);
+    --theme-soft-border: rgba(227, 143, 69, 0.24);
+    --theme-shadow: 0 16px 34px rgba(85, 113, 73, 0.2), 0 0 28px rgba(94, 170, 78, 0.12);
+    --theme-control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), inset 0 -10px 22px rgba(94, 170, 78, 0.1), 0 9px 20px rgba(85, 113, 73, 0.16);
+    --theme-title-shadow: 0 2px 8px rgba(255, 255, 255, 0.72), 0 0 16px rgba(94, 170, 78, 0.24);
+    --theme-primary-gradient: linear-gradient(45deg, #86c86b, #f2c85e 52%, #e38f45);
+    --theme-on-primary: #213619;
+    --theme-primary-shadow: 0 0 22px rgba(94, 170, 78, 0.26), 0 8px 20px rgba(85, 113, 73, 0.14);
+    --theme-phone-shadow: 0 0 54px rgba(115, 150, 91, 0.34);
+    --theme-contour-rgb: 94, 170, 78;
+    --theme-pattern-hue: 74deg;
+    --theme-pattern-saturation: 0.72;
+    --theme-map-brightness: 1.08;
+    --theme-contour-alpha: 0;
+    --theme-pattern-grid:
+        radial-gradient(ellipse at 18% 12%, rgba(132, 196, 100, 0.16), transparent 34%),
+        radial-gradient(ellipse at 84% 16%, rgba(242, 200, 94, 0.14), transparent 32%),
+        radial-gradient(ellipse at 50% 86%, rgba(227, 143, 69, 0.12), transparent 40%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 48%, rgba(255, 255, 255, 0.08));
+    --theme-pattern-opacity: 0.18;
+    --theme-map-opacity: 0;
+    --theme-icon-opacity: 0;
+    --theme-vignette:
+        linear-gradient(to bottom, rgba(125, 175, 117, 0.12), transparent 28%, transparent 70%, rgba(99, 142, 71, 0.16)),
+        linear-gradient(to right, rgba(107, 158, 88, 0.1), transparent 24%, transparent 76%, rgba(227, 143, 69, 0.1));
+}
+
 body[data-tema] {
     background: var(--theme-bg);
     color: var(--theme-text);
@@ -6208,7 +6668,8 @@ body[data-tema] {
 
 body[data-tema="okean"],
 body[data-tema="drzava"],
-body[data-tema="planina"] {
+body[data-tema="planina"],
+body[data-tema="zivotinja"] {
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -6693,6 +7154,22 @@ body[data-tema="drzava"] #main-menu .menu-pattern::after {
 }
 
 body[data-tema="drzava"] #main-menu .pattern-icon {
+    opacity: 0 !important;
+    animation: none;
+}
+
+body[data-tema="zivotinja"] #main-menu .menu-pattern::before {
+    background: var(--theme-pattern-grid);
+    opacity: var(--theme-pattern-opacity);
+    inset: 0;
+    transform: none;
+}
+
+body[data-tema="zivotinja"] #main-menu .menu-pattern::after {
+    background: var(--theme-vignette);
+}
+
+body[data-tema="zivotinja"] #main-menu .pattern-icon {
     opacity: 0 !important;
     animation: none;
 }

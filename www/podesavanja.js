@@ -1408,12 +1408,13 @@ const PodesavanjaManager = {
             'zlatna': 'Zlatna',
             'aurora': 'Aurora',
             'planina': 'Planina',
+            'zivotinja': 'Životinja',
             'sakura': 'Sakura',
             'noir': 'Noir',
             'tropi': 'Tropi',
             'glina': 'Glina'
         };
-        const teme = ['tamna', 'svetla', 'neon', 'okean', 'drzava', 'zlatna', 'aurora', 'planina', 'sakura', 'noir', 'tropi', 'glina'];
+        const teme = ['tamna', 'svetla', 'neon', 'okean', 'drzava', 'zlatna', 'aurora', 'planina', 'zivotinja', 'sakura', 'noir', 'tropi', 'glina'];
         const boje = this.tematskeBoje();
         
         teme.forEach(tema => {

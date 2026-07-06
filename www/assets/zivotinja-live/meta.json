@@ -1,0 +1,210 @@
+{
+  "clouds": {
+    "path": "www/assets/zivotinja-live/clouds.png",
+    "box": [
+      0,
+      0,
+      941,
+      1672
+    ],
+    "size": [
+      941,
+      1672
+    ]
+  },
+  "bird_blue": {
+    "path": "www/assets/zivotinja-live/bird_blue.png",
+    "box": [
+      800,
+      455,
+      941,
+      600
+    ],
+    "size": [
+      141,
+      145
+    ]
+  },
+  "bird_pink": {
+    "path": "www/assets/zivotinja-live/bird_pink.png",
+    "box": [
+      625,
+      520,
+      780,
+      632
+    ],
+    "size": [
+      155,
+      112
+    ]
+  },
+  "butterfly_top": {
+    "path": "www/assets/zivotinja-live/butterfly_top.png",
+    "box": [
+      120,
+      345,
+      260,
+      490
+    ],
+    "size": [
+      140,
+      145
+    ]
+  },
+  "butterfly_mid": {
+    "path": "www/assets/zivotinja-live/butterfly_mid.png",
+    "box": [
+      388,
+      920,
+      493,
+      1040
+    ],
+    "size": [
+      105,
+      120
+    ]
+  },
+  "butterfly_right": {
+    "path": "www/assets/zivotinja-live/butterfly_right.png",
+    "box": [
+      825,
+      1190,
+      925,
+      1320
+    ],
+    "size": [
+      100,
+      130
+    ]
+  },
+  "owl": {
+    "path": "www/assets/zivotinja-live/owl.png",
+    "box": [
+      80,
+      505,
+      325,
+      760
+    ],
+    "size": [
+      245,
+      255
+    ]
+  },
+  "fox": {
+    "path": "www/assets/zivotinja-live/fox.png",
+    "box": [
+      25,
+      810,
+      355,
+      1150
+    ],
+    "size": [
+      330,
+      340
+    ]
+  },
+  "hedgehog": {
+    "path": "www/assets/zivotinja-live/hedgehog.png",
+    "box": [
+      0,
+      1130,
+      305,
+      1465
+    ],
+    "size": [
+      305,
+      335
+    ]
+  },
+  "deer": {
+    "path": "www/assets/zivotinja-live/deer.png",
+    "box": [
+      545,
+      710,
+      880,
+      1065
+    ],
+    "size": [
+      335,
+      355
+    ]
+  },
+  "rabbit": {
+    "path": "www/assets/zivotinja-live/rabbit.png",
+    "box": [
+      650,
+      1135,
+      910,
+      1515
+    ],
+    "size": [
+      260,
+      380
+    ]
+  },
+  "fox_tail": {
+    "path": "www/assets/zivotinja-live/fox_tail.png",
+    "box": [
+      25,
+      910,
+      190,
+      1130
+    ],
+    "size": [
+      165,
+      220
+    ]
+  },
+  "rabbit_ears": {
+    "path": "www/assets/zivotinja-live/rabbit_ears.png",
+    "box": [
+      708,
+      1138,
+      835,
+      1315
+    ],
+    "size": [
+      127,
+      177
+    ]
+  },
+  "deer_head": {
+    "path": "www/assets/zivotinja-live/deer_head.png",
+    "box": [
+      565,
+      700,
+      735,
+      890
+    ],
+    "size": [
+      170,
+      190
+    ]
+  },
+  "deer_leg": {
+    "path": "www/assets/zivotinja-live/deer_leg.png",
+    "box": [
+      655,
+      930,
+      740,
+      1065
+    ],
+    "size": [
+      85,
+      135
+    ]
+  },
+  "owl_wings": {
+    "path": "www/assets/zivotinja-live/owl_wings.png",
+    "box": [
+      90,
+      560,
+      315,
+      735
+    ],
+    "size": [
+      225,
+      175
+    ]
+  }
+}

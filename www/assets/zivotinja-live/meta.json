@@ -44,11 +44,25 @@
     },
     "deer_head.png": {
       "width": 397,
-      "height": 581
+      "height": 581,
+      "bbox": [
+        26,
+        26,
+        256,
+        290
+      ],
+      "kind": "strict manual moving part mask"
     },
     "deer_leg.png": {
       "width": 397,
-      "height": 581
+      "height": 581,
+      "bbox": [
+        107,
+        285,
+        186,
+        555
+      ],
+      "kind": "strict manual moving part mask"
     },
     "fox.png": {
       "width": 373,
@@ -56,7 +70,14 @@
     },
     "fox_tail.png": {
       "width": 373,
-      "height": 488
+      "height": 488,
+      "bbox": [
+        22,
+        217,
+        166,
+        473
+      ],
+      "kind": "strict manual moving part mask"
     },
     "hedgehog.png": {
       "width": 379,
@@ -68,7 +89,14 @@
     },
     "owl_wings.png": {
       "width": 340,
-      "height": 404
+      "height": 404,
+      "bbox": [
+        22,
+        57,
+        318,
+        357
+      ],
+      "kind": "strict manual moving part mask"
     },
     "rabbit.png": {
       "width": 272,
@@ -76,8 +104,20 @@
     },
     "rabbit_ears.png": {
       "width": 272,
-      "height": 484
+      "height": 484,
+      "bbox": [
+        50,
+        22,
+        225,
+        211
+      ],
+      "kind": "strict manual moving part mask"
+    },
+    "hedgehog_eyelids.png": {
+      "width": 379,
+      "height": 349,
+      "kind": "sleepy eyelid overlay"
     }
   },
-  "notes": "Complete regenerated sprites. Deer uses a custom taller crop to keep full legs."
+  "notes": "Strict moving part masks: ears/tail/wings/head/leg separated; hedgehog uses eyelid overlay only."
 }

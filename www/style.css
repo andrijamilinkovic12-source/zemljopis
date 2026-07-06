@@ -2195,75 +2195,77 @@ body[data-tema="zivotinja"] #main-menu > .zivotinja-live-layer {
 }
 
 .ziv-blue-bird {
-    left: 83.5%;
-    top: 27%;
-    width: 14.5%;
+    left: 84.7%;
+    top: 27.9%;
+    width: 12.3%;
     z-index: 4;
     animation: zivotinjaPerchedFlutter 7.4s ease-in-out infinite;
 }
 
 .ziv-pink-bird {
-    width: 13%;
+    width: 9.7%;
     z-index: 5;
 }
 
 .ziv-pink-bird-a {
-    left: 63.5%;
-    top: 36.5%;
+    left: 69.7%;
+    top: 34%;
     animation: zivotinjaBirdLoopA 18s ease-in-out infinite;
 }
 
 .ziv-pink-bird-b {
-    left: 18%;
-    top: 24%;
-    width: 10.8%;
+    left: 22%;
+    top: 26%;
+    width: 8.4%;
     opacity: 0.82;
     transform: scaleX(-1);
     animation: zivotinjaBirdLoopB 22s ease-in-out infinite;
 }
 
 .ziv-butterfly {
-    width: 7.6%;
+    width: 7.4%;
     z-index: 6;
 }
 
 .ziv-butterfly-a {
-    left: 14.5%;
+    left: 17.4%;
     top: 22.5%;
-    width: 10.5%;
+    width: 7.4%;
     animation: zivotinjaButterflyLoopA 13s ease-in-out infinite;
 }
 
 .ziv-butterfly-b {
-    left: 44%;
-    top: 61%;
+    left: 40.2%;
+    top: 60.3%;
+    width: 8.9%;
     filter: hue-rotate(20deg) saturate(1.05);
     animation: zivotinjaButterflyLoopB 15s ease-in-out infinite;
 }
 
 .ziv-butterfly-c {
-    left: 87.5%;
-    top: 74.2%;
-    width: 7.5%;
+    left: 89.2%;
+    top: 74.9%;
+    width: 9.1%;
     filter: hue-rotate(315deg) saturate(0.92);
     animation: zivotinjaButterflyLoopC 17s ease-in-out infinite;
 }
 
-.ziv-owl { left: 9.5%; top: 31.5%; width: 23.5%; z-index: 7; animation: zivotinjaSleepyNod 8.5s ease-in-out infinite; }
-.ziv-owl-wings { left: 9.5%; top: 31.5%; width: 23.5%; z-index: 8; clip-path: inset(14% 5% 7% 5%); transform-origin: 50% 58%; animation: zivotinjaOwlWingFlap 9s ease-in-out infinite; }
-.ziv-fox { left: 4.8%; top: 49.2%; width: 31%; z-index: 9; animation: zivotinjaFoxBreath 7.2s ease-in-out infinite; }
-.ziv-fox-tail { left: 4.8%; top: 49.2%; width: 31%; z-index: 10; clip-path: inset(42% 47% 8% 0%); transform-origin: 22% 72%; animation: zivotinjaFoxTailWag 6.8s ease-in-out infinite; }
-.ziv-deer { left: 57.5%; top: 41.5%; width: 32%; z-index: 8; animation: zivotinjaDeerBody 10.5s ease-in-out infinite; }
-.ziv-deer-head { left: 57.5%; top: 41.5%; width: 32%; z-index: 10; clip-path: inset(0% 50% 47% 0%); transform-origin: 27% 28%; animation: zivotinjaDeerHeadMove 9.5s ease-in-out infinite; }
-.ziv-deer-leg { left: 57.5%; top: 41.5%; width: 32%; z-index: 11; clip-path: inset(48% 16% 0% 40%); transform-origin: 55% 77%; animation: zivotinjaDeerLegLift 11s ease-in-out infinite; }
-.ziv-hedgehog { left: 2%; top: 70.5%; width: 28.5%; z-index: 11; animation: zivotinjaSleepyNod 9.4s ease-in-out infinite reverse; }
-.ziv-rabbit { left: 68%; top: 67.5%; width: 26.5%; z-index: 12; animation: zivotinjaRabbitBody 8.6s ease-in-out infinite; }
-.ziv-rabbit-ears { left: 68%; top: 67.5%; width: 26.5%; z-index: 13; clip-path: inset(0% 6% 52% 6%); transform-origin: 50% 36%; animation: zivotinjaRabbitEars 7.8s ease-in-out infinite; }
+.ziv-owl { left: 5.5%; top: 32.7%; width: 27.2%; z-index: 7; }
+.ziv-owl-wings { left: 5.5%; top: 32.7%; width: 27.2%; z-index: 8; transform-origin: 50% 55%; animation: zivotinjaOwlWingFlap 9s ease-in-out infinite; }
+.ziv-fox { left: 0%; top: 54.8%; width: 27.5%; z-index: 9; }
+.ziv-fox-tail { left: 0%; top: 54.8%; width: 27.5%; z-index: 10; transform-origin: 24% 80%; animation: zivotinjaFoxTailWag 6.8s ease-in-out infinite; }
+.ziv-deer { left: 62.4%; top: 46.6%; width: 27.6%; z-index: 8; }
+.ziv-deer-head { left: 62.4%; top: 46.6%; width: 27.6%; z-index: 10; transform-origin: 33% 45%; animation: zivotinjaDeerHeadMove 9.5s ease-in-out infinite; }
+.ziv-deer-leg { left: 62.4%; top: 46.6%; width: 27.6%; z-index: 11; transform-origin: 38% 63%; animation: zivotinjaDeerLegLift 11s ease-in-out infinite; }
+.ziv-hedgehog { left: 9.2%; top: 75.2%; width: 21.4%; z-index: 11; }
+.ziv-hedgehog-eyelids { left: 9.2%; top: 75.2%; width: 21.4%; z-index: 12; animation: zivotinjaHedgehogSleepyEyes 7.4s ease-in-out infinite; }
+.ziv-rabbit { left: 69.5%; top: 69.8%; width: 15.4%; z-index: 12; }
+.ziv-rabbit-ears { left: 69.5%; top: 69.8%; width: 15.4%; z-index: 13; transform-origin: 50% 39%; animation: zivotinjaRabbitEars 7.8s ease-in-out infinite; }
 
 .ziv-eye {
     position: absolute;
     z-index: 20;
-    display: block;
+    display: none;
     width: 5.5%;
     height: 1.9%;
     border-radius: 999px;
@@ -2951,9 +2953,9 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
 
 @keyframes zivotinjaOwlWingFlap {
     0%, 62%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 0.98; }
-    66% { transform: translate3d(0, -1.8%, 0) rotate(-2.8deg) scaleX(1.035) scaleY(0.965); opacity: 1; }
-    70% { transform: translate3d(0, 1.1%, 0) rotate(2.2deg) scaleX(0.985) scaleY(1.02); opacity: 1; }
-    75% { transform: translate3d(0, -0.7%, 0) rotate(-1.2deg) scale(1.01); opacity: 0.99; }
+    66% { transform: translate3d(0, -0.8%, 0) rotate(-1.4deg) scaleX(1.012) scaleY(0.992); opacity: 1; }
+    70% { transform: translate3d(0, 0.5%, 0) rotate(1.1deg) scaleX(0.994) scaleY(1.008); opacity: 1; }
+    75% { transform: translate3d(0, -0.3%, 0) rotate(-0.7deg) scale(1.004); opacity: 0.99; }
 }
 
 @keyframes zivotinjaFoxBreath {
@@ -2964,10 +2966,10 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
 
 @keyframes zivotinjaFoxTailWag {
     0%, 56%, 100% { transform: rotate(0deg); }
-    61% { transform: rotate(-8deg) translateY(-1px); }
-    66% { transform: rotate(10deg) translateY(1px); }
-    71% { transform: rotate(-6deg); }
-    77% { transform: rotate(5deg); }
+    61% { transform: rotate(-4deg) translateY(-1px); }
+    66% { transform: rotate(5deg) translateY(1px); }
+    71% { transform: rotate(-3deg); }
+    77% { transform: rotate(2deg); }
 }
 
 @keyframes zivotinjaDeerBody {
@@ -2978,15 +2980,15 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
 
 @keyframes zivotinjaDeerHeadMove {
     0%, 52%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); }
-    58% { transform: rotate(-4deg) translate3d(-1%, -1%, 0); }
-    66% { transform: rotate(3deg) translate3d(1%, 0.6%, 0); }
-    73% { transform: rotate(-1deg) translate3d(0, -0.4%, 0); }
+    58% { transform: rotate(-1.8deg) translate3d(-0.4%, -0.3%, 0); }
+    66% { transform: rotate(1.4deg) translate3d(0.35%, 0.2%, 0); }
+    73% { transform: rotate(-0.6deg) translate3d(0, -0.2%, 0); }
 }
 
 @keyframes zivotinjaDeerLegLift {
     0%, 60%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); }
-    66% { transform: rotate(-9deg) translate3d(0, -4px, 0); }
-    72% { transform: rotate(4deg) translate3d(0, -1px, 0); }
+    66% { transform: rotate(-4deg) translate3d(0, -2px, 0); }
+    72% { transform: rotate(2deg) translate3d(0, -1px, 0); }
     78% { transform: rotate(0deg) translate3d(0, 0, 0); }
 }
 
@@ -2998,10 +3000,29 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
 
 @keyframes zivotinjaRabbitEars {
     0%, 55%, 100% { transform: rotate(0deg) skewX(0deg); }
-    60% { transform: rotate(-5deg) skewX(-2deg); }
-    65% { transform: rotate(7deg) skewX(2deg); }
-    71% { transform: rotate(-3deg) skewX(-1deg); }
-    78% { transform: rotate(2deg) skewX(0.5deg); }
+    60% { transform: rotate(-2.5deg) skewX(-0.8deg); }
+    65% { transform: rotate(3deg) skewX(0.9deg); }
+    71% { transform: rotate(-1.4deg) skewX(-0.5deg); }
+    78% { transform: rotate(0.8deg) skewX(0.2deg); }
+}
+
+@keyframes zivotinjaHedgehogSleepyEyes {
+    0%, 68%, 100% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scaleY(0.7);
+    }
+    74% {
+        opacity: 0.9;
+        transform: translate3d(0, 0, 0) scaleY(1);
+    }
+    82% {
+        opacity: 0.96;
+        transform: translate3d(0, 0.4%, 0) scaleY(1.05);
+    }
+    88% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scaleY(0.7);
+    }
 }
 
 @keyframes zivotinjaSleepBlink {

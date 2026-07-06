@@ -84,19 +84,26 @@
       "height": 349
     },
     "owl.png": {
-      "width": 340,
-      "height": 404
+      "width": 178,
+      "height": 261,
+      "source": "strict original owl mask no tree no branch v6",
+      "canvas_bbox": [
+        80,
+        535,
+        258,
+        796
+      ]
     },
     "owl_wings.png": {
-      "width": 340,
-      "height": 404,
-      "bbox": [
-        22,
-        57,
-        318,
-        357
-      ],
-      "kind": "strict manual moving part mask"
+      "width": 179,
+      "height": 261,
+      "source": "original background wings-only overlay",
+      "canvas_bbox": [
+        79,
+        535,
+        258,
+        796
+      ]
     },
     "rabbit.png": {
       "width": 272,
@@ -119,5 +126,5 @@
       "kind": "sleepy eyelid overlay"
     }
   },
-  "notes": "Strict moving part masks: ears/tail/wings/head/leg separated; hedgehog uses eyelid overlay only."
+  "notes": "Sova phase: use original full background as static scene; overlay only original owl wings."
 }

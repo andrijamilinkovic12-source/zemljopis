@@ -1,0 +1,379 @@
+{
+  "theme": "zivotinja",
+  "style": "Soft Matte 3D / Clay-style 3D",
+  "sourceWorkflow": "production-layer-pack",
+  "canvas": {
+    "width": 941,
+    "height": 1672
+  },
+  "files": {
+    "finalReference": "zivotinja-final-reference.png",
+    "cleanPlate": "zivotinja-clean-plate.png",
+    "objectIdMap": "zivotinja-object-id-map.png",
+    "overlayPreview": "zivotinja-object-id-overlay-preview.png"
+  },
+  "rule": "This ID map is a clean production blueprint. Final animation layers must be exported from the original source scene, not cut from the flattened final PNG.",
+  "layers": [
+    {
+      "id": "cloud_left",
+      "color": "#8DD6FF",
+      "bbox": [
+        66,
+        148,
+        264,
+        266
+      ],
+      "bbox_pct": [
+        7.014,
+        8.852,
+        21.041,
+        7.057
+      ],
+      "role": "animated_cloud",
+      "animation": "slow horizontal drift, tiny vertical float",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "cloud_top",
+      "color": "#6FB7FF",
+      "bbox": [
+        622,
+        8,
+        832,
+        132
+      ],
+      "bbox_pct": [
+        66.1,
+        0.478,
+        22.317,
+        7.416
+      ],
+      "role": "animated_cloud",
+      "animation": "slow horizontal drift, tiny vertical float",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "cloud_right",
+      "color": "#4E97FF",
+      "bbox": [
+        744,
+        82,
+        941,
+        248
+      ],
+      "bbox_pct": [
+        79.065,
+        4.904,
+        20.935,
+        9.928
+      ],
+      "role": "animated_cloud",
+      "animation": "slow horizontal drift, tiny vertical float",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "butterfly_sky",
+      "color": "#FF9B2E",
+      "bbox": [
+        158,
+        360,
+        218,
+        442
+      ],
+      "bbox_pct": [
+        16.791,
+        21.531,
+        6.376,
+        4.904
+      ],
+      "role": "animated_flyer",
+      "animation": "small loop flight path",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "bird_blue",
+      "color": "#25C8FF",
+      "bbox": [
+        806,
+        478,
+        941,
+        602
+      ],
+      "bbox_pct": [
+        85.654,
+        28.589,
+        14.346,
+        7.416
+      ],
+      "role": "animated_flyer",
+      "animation": "perched flutter; wing scale only",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "bird_pink",
+      "color": "#FF79AE",
+      "bbox": [
+        636,
+        574,
+        746,
+        652
+      ],
+      "bbox_pct": [
+        67.588,
+        34.33,
+        11.69,
+        4.665
+      ],
+      "role": "animated_flyer",
+      "animation": "small loop flight path",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "owl_body",
+      "color": "#B66BFF",
+      "bbox": [
+        108,
+        520,
+        258,
+        780
+      ],
+      "bbox_pct": [
+        11.477,
+        31.1,
+        15.94,
+        15.55
+      ],
+      "role": "static_animal_base",
+      "animation": "body stays locked to branch; optional tiny blink overlay only",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "owl_wings",
+      "color": "#8438FF",
+      "bbox": [
+        86,
+        600,
+        272,
+        776
+      ],
+      "bbox_pct": [
+        9.139,
+        35.885,
+        19.766,
+        10.526
+      ],
+      "role": "animated_part",
+      "animation": "subtle wing flap around shoulder pivots; never moves head or branch",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "fox_body",
+      "color": "#FF5B2E",
+      "bbox": [
+        36,
+        858,
+        274,
+        1186
+      ],
+      "bbox_pct": [
+        3.826,
+        51.316,
+        25.292,
+        19.617
+      ],
+      "role": "static_animal_base",
+      "animation": "body locked; optional sleepy blink overlay only",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "fox_tail",
+      "color": "#FFB12E",
+      "bbox": [
+        0,
+        1022,
+        188,
+        1212
+      ],
+      "bbox_pct": [
+        0.0,
+        61.124,
+        19.979,
+        11.364
+      ],
+      "role": "animated_part",
+      "animation": "tail wag only; no torso pixels in this layer",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "butterfly_mid",
+      "color": "#FFC733",
+      "bbox": [
+        396,
+        1014,
+        462,
+        1088
+      ],
+      "bbox_pct": [
+        42.083,
+        60.646,
+        7.014,
+        4.426
+      ],
+      "role": "animated_flyer",
+      "animation": "small loop flight path",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "deer_body",
+      "color": "#D88931",
+      "bbox": [
+        610,
+        866,
+        852,
+        1168
+      ],
+      "bbox_pct": [
+        64.825,
+        51.794,
+        25.717,
+        18.062
+      ],
+      "role": "static_animal_base",
+      "animation": "body locked; head/leg use separate layers",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "deer_head",
+      "color": "#A75C25",
+      "bbox": [
+        612,
+        746,
+        762,
+        944
+      ],
+      "bbox_pct": [
+        65.037,
+        44.617,
+        15.94,
+        11.842
+      ],
+      "role": "animated_part",
+      "animation": "occasional gentle nod; antlers included with head",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "deer_front_leg",
+      "color": "#743C1E",
+      "bbox": [
+        644,
+        1010,
+        704,
+        1168
+      ],
+      "bbox_pct": [
+        68.438,
+        60.407,
+        6.376,
+        9.45
+      ],
+      "role": "animated_part",
+      "animation": "one front leg lifts slightly; no body pixels",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "hedgehog_body",
+      "color": "#8A5A3C",
+      "bbox": [
+        58,
+        1228,
+        306,
+        1478
+      ],
+      "bbox_pct": [
+        6.164,
+        73.445,
+        26.355,
+        14.952
+      ],
+      "role": "static_animal_base",
+      "animation": "body locked; eyelids separate",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "hedgehog_eyelids",
+      "color": "#FFD2B2",
+      "bbox": [
+        176,
+        1340,
+        258,
+        1390
+      ],
+      "bbox_pct": [
+        18.704,
+        80.144,
+        8.714,
+        2.99
+      ],
+      "role": "animated_part",
+      "animation": "sleepy eyelid blink overlay only",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "rabbit_body",
+      "color": "#E9C9A5",
+      "bbox": [
+        646,
+        1178,
+        824,
+        1460
+      ],
+      "bbox_pct": [
+        68.65,
+        70.455,
+        18.916,
+        16.866
+      ],
+      "role": "static_animal_base",
+      "animation": "body locked; ears separate",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "rabbit_ears",
+      "color": "#FF9FC6",
+      "bbox": [
+        650,
+        1128,
+        812,
+        1308
+      ],
+      "bbox_pct": [
+        69.075,
+        67.464,
+        17.216,
+        10.766
+      ],
+      "role": "animated_part",
+      "animation": "ear wiggle only; no head/cheek pixels",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    },
+    {
+      "id": "butterfly_right",
+      "color": "#F45E8E",
+      "bbox": [
+        798,
+        1300,
+        880,
+        1380
+      ],
+      "bbox_pct": [
+        84.803,
+        77.751,
+        8.714,
+        4.785
+      ],
+      "role": "animated_flyer",
+      "animation": "small loop flight path",
+      "maskMethod": "source blueprint; exact edge mask must be exported from source render"
+    }
+  ]
+}

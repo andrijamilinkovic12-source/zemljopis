@@ -2326,9 +2326,9 @@ body[data-tema="grad"] #main-menu::before {
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
-    opacity: 0.95;
+    opacity: 0.82;
     transform-origin: 50% 16%;
-    filter: saturate(1.08) contrast(1.04) brightness(1.03) drop-shadow(0 10px 16px rgba(112, 126, 154, 0.12));
+    filter: saturate(1.04) contrast(1.05) brightness(0.98) drop-shadow(0 10px 16px rgba(73, 117, 151, 0.12));
     will-change: transform, opacity;
     animation: gradCloudLayerDrift 25s ease-in-out infinite;
 }
@@ -2347,6 +2347,10 @@ body[data-tema="grad"] #main-menu::after {
     opacity: 0;
     will-change: opacity;
     animation: gradDayNightCycle 112s ease-in-out infinite;
+}
+
+body[data-tema="grad"] #main-menu::after {
+    display: none;
 }
 
 body[data-tema="drzava"] #main-menu > .clay-theme-three {
@@ -7029,7 +7033,7 @@ body[data-tema="predmet"] {
 
 body[data-tema="drzava"] { --theme-bg-image: url('assets/drzava-soft-matte-bg-v3.png'); }
 body[data-tema="okean"] { --theme-bg-image: url('assets/reka-soft-matte-bg-v3.png'); }
-body[data-tema="grad"] { --theme-bg-image: url('assets/grad-soft-matte-bg-clean.png'); }
+body[data-tema="grad"] { --theme-bg-image: url('assets/grad-soft-matte-bg-reka-tuned.png'); }
 body[data-tema="planina"] { --theme-bg-image: url('assets/planina-soft-matte-bg-v3.png'); }
 body[data-tema="biljka"] { --theme-bg-image: url('assets/biljka-soft-matte-bg.png'); }
 body[data-tema="zivotinja"] { --theme-bg-image: url('assets/zivotinja-soft-matte-bg-clean.png'); }

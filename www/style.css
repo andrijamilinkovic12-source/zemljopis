@@ -3876,12 +3876,26 @@ body.keyboard-open .dnevni-input-group input {
 
 /* --- SPLASH / LOADING EKRAN (Slovo po slovo sa ikonicama) --- */
 #splash-screen { 
-    background: linear-gradient(135deg, #030a03, #0a1c0a, #0d290d); 
+    background:
+        linear-gradient(180deg, rgba(233, 246, 255, 0.11) 0%, rgba(255, 247, 229, 0.055) 40%, rgba(217, 237, 215, 0.1) 100%),
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.055), transparent 48%),
+        url('assets/splash-soft-matte-bg.png') center center / cover no-repeat,
+        linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
     justify-content: center; 
     align-items: center; 
     z-index: 9999; 
     transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
     transform-origin: center;
+}
+
+@media (orientation: landscape) {
+    #splash-screen {
+        background:
+            linear-gradient(180deg, rgba(233, 246, 255, 0.11) 0%, rgba(255, 247, 229, 0.055) 40%, rgba(217, 237, 215, 0.1) 100%),
+            radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.055), transparent 48%),
+            url('assets/splash-soft-matte-bg-landscape.png') center center / cover no-repeat,
+            linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
+    }
 }
 
 #splash-screen.leaving {

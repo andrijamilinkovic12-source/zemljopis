@@ -7,20 +7,13 @@ const RiznicaManager = {
 
     podaci: {
         teme: [
-            { id: 'tema_tamna', naziv: 'Tamna (Standard)', cena: 0, kupljeno: true, opremljeno: true, ikona: 'fa-moon' },
-            { id: 'tema_svetla', naziv: 'Svetla', cena: 0, kupljeno: true, opremljeno: false, ikona: 'fa-sun' },
-            { id: 'tema_neon', naziv: 'Neon Cyber', cena: 1000, kupljeno: false, opremljeno: false, ikona: 'fa-bolt' },
-            { id: 'tema_zlatna', naziv: 'Kraljevsko Zlato', cena: 2500, kupljeno: false, opremljeno: false, ikona: 'fa-crown' },
+            { id: 'tema_drzava', naziv: 'Država', cena: 0, kupljeno: true, opremljeno: true, ikona: 'fa-map-location-dot' },
             { id: 'tema_okean', naziv: 'Reka', cena: 800, kupljeno: false, opremljeno: false, ikona: 'fa-water' },
-            { id: 'tema_drzava', naziv: 'Država', cena: 950, kupljeno: false, opremljeno: false, ikona: 'fa-map-location-dot' },
             { id: 'tema_grad', naziv: 'Grad', cena: 1000, kupljeno: false, opremljeno: false, ikona: 'fa-city' },
-            { id: 'tema_aurora', naziv: 'Aurora Prime', cena: 0, kupljeno: true, opremljeno: false, ikona: 'fa-star' },
             { id: 'tema_planina', naziv: 'Planina', cena: 900, kupljeno: false, opremljeno: false, ikona: 'fa-mountain' },
+            { id: 'tema_biljka', naziv: 'Biljka', cena: 850, kupljeno: false, opremljeno: false, ikona: 'fa-leaf' },
             { id: 'tema_zivotinja', naziv: 'Životinja', cena: 0, kupljeno: true, opremljeno: false, ikona: 'fa-paw' },
-            { id: 'tema_sakura', naziv: 'Sakura san', cena: 1100, kupljeno: false, opremljeno: false, ikona: 'fa-seedling' },
-            { id: 'tema_noir', naziv: 'Mono Noir', cena: 1400, kupljeno: false, opremljeno: false, ikona: 'fa-circle-half-stroke' },
-            { id: 'tema_tropi', naziv: 'Tropski ritam', cena: 1200, kupljeno: false, opremljeno: false, ikona: 'fa-umbrella-beach' },
-            { id: 'tema_glina', naziv: 'Clay Berry', cena: 0, kupljeno: true, opremljeno: false, ikona: 'fa-shapes' }
+            { id: 'tema_predmet', naziv: 'Predmet', cena: 850, kupljeno: false, opremljeno: false, ikona: 'fa-box-open' }
         ],
         efekti: [
             { id: 'ef_nista', naziv: 'Bez efekta', cena: 0, kupljeno: true, opremljeno: true, ikona: 'fa-ban' },
@@ -64,7 +57,30 @@ const RiznicaManager = {
             }
         }
 
+        this.normalizujTeme();
+        this.snimiStanje();
         this.primeniSkinTastature();
+    },
+
+    normalizujTeme: function() {
+        const redosledTema = ['tema_drzava', 'tema_okean', 'tema_grad', 'tema_planina', 'tema_biljka', 'tema_zivotinja', 'tema_predmet'];
+        this.podaci.teme = redosledTema
+            .map(id => this.podaci.teme.find(tema => tema.id === id))
+            .filter(Boolean);
+
+        const osnovnaTema = this.podaci.teme.find(tema => tema.id === 'tema_drzava');
+        if (osnovnaTema) {
+            osnovnaTema.cena = 0;
+            osnovnaTema.kupljeno = true;
+        }
+
+        const aktivnaTema = typeof PodesavanjaManager !== 'undefined'
+            ? `tema_${PodesavanjaManager.postavke.tema}`
+            : null;
+        const ciljnaTema = this.podaci.teme.some(tema => tema.id === aktivnaTema) ? aktivnaTema : 'tema_drzava';
+        this.podaci.teme.forEach(tema => {
+            tema.opremljeno = tema.id === ciljnaTema;
+        });
     },
 
     normalizujDukate: function(vrednost, podrazumevano = this.dukati) {

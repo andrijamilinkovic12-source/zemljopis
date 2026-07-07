@@ -2143,6 +2143,8 @@ body[data-tema="okean"] #main-menu > .reka-live-layer {
 .reka-ripple-4 { animation-delay: -4s; }
 .reka-ripple-5 { animation-delay: -5.2s; }
 
+body[data-tema="biljka"] #main-menu > .clay-theme-three,
+body[data-tema="predmet"] #main-menu > .clay-theme-three,
 body[data-tema="zivotinja"] #main-menu > .clay-theme-three {
     display: none;
     opacity: 0;
@@ -6860,6 +6862,54 @@ body[data-tema="grad"] {
     --theme-icon-opacity: 0;
 }
 
+body[data-tema="biljka"] {
+    --theme-bg:
+        linear-gradient(180deg, rgba(255, 247, 220, 0.08) 0%, rgba(244, 255, 230, 0.05) 42%, rgba(206, 236, 168, 0.1) 100%),
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.06), transparent 48%),
+        url('assets/biljka-soft-matte-bg.png');
+    --theme-splash-bg: linear-gradient(135deg, #fff2bf, #e9f4c9, #bfe8a3);
+    --theme-text: #2d4226;
+    --theme-muted: #637753;
+    --theme-primary: #72ad48;
+    --theme-primary-rgb: 114, 173, 72;
+    --theme-secondary: #d68a45;
+    --theme-secondary-rgb: 214, 138, 69;
+    --theme-accent: #f0c85a;
+    --theme-accent-rgb: 240, 200, 90;
+    --theme-danger: #d96d78;
+    --theme-danger-rgb: 217, 109, 120;
+    --theme-panel: rgba(255, 255, 255, 0.78);
+    --theme-panel-strong: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(242, 250, 224, 0.9));
+    --theme-control-bg: rgba(255, 255, 255, 0.66);
+    --theme-input-bg: rgba(255, 255, 255, 0.84);
+    --theme-pill-bg: rgba(255, 255, 255, 0.78);
+    --theme-border: rgba(114, 173, 72, 0.3);
+    --theme-soft-border: rgba(214, 138, 69, 0.24);
+    --theme-shadow: 0 16px 34px rgba(91, 115, 68, 0.2), 0 0 28px rgba(114, 173, 72, 0.12);
+    --theme-control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), inset 0 -10px 22px rgba(114, 173, 72, 0.1), 0 9px 20px rgba(91, 115, 68, 0.16);
+    --theme-title-shadow: 0 2px 8px rgba(255, 255, 255, 0.72), 0 0 16px rgba(114, 173, 72, 0.24);
+    --theme-primary-gradient: linear-gradient(45deg, #86c765, #f0c85a 52%, #d68a45);
+    --theme-on-primary: #24391a;
+    --theme-primary-shadow: 0 0 22px rgba(114, 173, 72, 0.26), 0 8px 20px rgba(91, 115, 68, 0.14);
+    --theme-phone-shadow: 0 0 54px rgba(123, 155, 86, 0.34);
+    --theme-contour-rgb: 114, 173, 72;
+    --theme-pattern-hue: 78deg;
+    --theme-pattern-saturation: 0.72;
+    --theme-map-brightness: 1.08;
+    --theme-contour-alpha: 0;
+    --theme-pattern-grid:
+        radial-gradient(ellipse at 18% 12%, rgba(132, 196, 100, 0.16), transparent 34%),
+        radial-gradient(ellipse at 84% 16%, rgba(240, 200, 90, 0.14), transparent 32%),
+        radial-gradient(ellipse at 50% 86%, rgba(214, 138, 69, 0.12), transparent 40%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 48%, rgba(255, 255, 255, 0.08));
+    --theme-pattern-opacity: 0.18;
+    --theme-map-opacity: 0;
+    --theme-icon-opacity: 0;
+    --theme-vignette:
+        linear-gradient(to bottom, rgba(146, 180, 94, 0.12), transparent 28%, transparent 70%, rgba(96, 142, 65, 0.16)),
+        linear-gradient(to right, rgba(107, 158, 88, 0.1), transparent 24%, transparent 76%, rgba(214, 138, 69, 0.1));
+}
+
 body[data-tema="zivotinja"] {
     --theme-bg:
         linear-gradient(180deg, rgba(222, 246, 255, 0.08) 0%, rgba(255, 242, 210, 0.04) 42%, rgba(200, 236, 179, 0.1) 100%),
@@ -6908,6 +6958,54 @@ body[data-tema="zivotinja"] {
         linear-gradient(to right, rgba(107, 158, 88, 0.1), transparent 24%, transparent 76%, rgba(227, 143, 69, 0.1));
 }
 
+body[data-tema="predmet"] {
+    --theme-bg:
+        linear-gradient(180deg, rgba(255, 236, 194, 0.08) 0%, rgba(250, 243, 226, 0.05) 42%, rgba(231, 185, 132, 0.1) 100%),
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.06), transparent 48%),
+        url('assets/predmet-soft-matte-bg.png');
+    --theme-splash-bg: linear-gradient(135deg, #ffe5b8, #f3d5ad, #bfe5d4);
+    --theme-text: #3f3429;
+    --theme-muted: #806c58;
+    --theme-primary: #65b6aa;
+    --theme-primary-rgb: 101, 182, 170;
+    --theme-secondary: #d98562;
+    --theme-secondary-rgb: 217, 133, 98;
+    --theme-accent: #eab84f;
+    --theme-accent-rgb: 234, 184, 79;
+    --theme-danger: #d96b75;
+    --theme-danger-rgb: 217, 107, 117;
+    --theme-panel: rgba(255, 250, 241, 0.8);
+    --theme-panel-strong: linear-gradient(145deg, rgba(255, 250, 241, 0.96), rgba(246, 232, 212, 0.9));
+    --theme-control-bg: rgba(255, 250, 241, 0.68);
+    --theme-input-bg: rgba(255, 250, 241, 0.86);
+    --theme-pill-bg: rgba(255, 250, 241, 0.78);
+    --theme-border: rgba(101, 182, 170, 0.3);
+    --theme-soft-border: rgba(217, 133, 98, 0.24);
+    --theme-shadow: 0 16px 34px rgba(126, 92, 58, 0.2), 0 0 28px rgba(101, 182, 170, 0.12);
+    --theme-control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), inset 0 -10px 22px rgba(101, 182, 170, 0.1), 0 9px 20px rgba(126, 92, 58, 0.16);
+    --theme-title-shadow: 0 2px 8px rgba(255, 255, 255, 0.72), 0 0 16px rgba(101, 182, 170, 0.24);
+    --theme-primary-gradient: linear-gradient(45deg, #8ed0c3, #eab84f 52%, #d98562);
+    --theme-on-primary: #2f2a20;
+    --theme-primary-shadow: 0 0 22px rgba(101, 182, 170, 0.26), 0 8px 20px rgba(126, 92, 58, 0.14);
+    --theme-phone-shadow: 0 0 54px rgba(182, 130, 73, 0.32);
+    --theme-contour-rgb: 101, 182, 170;
+    --theme-pattern-hue: 156deg;
+    --theme-pattern-saturation: 0.66;
+    --theme-map-brightness: 1.08;
+    --theme-contour-alpha: 0;
+    --theme-pattern-grid:
+        radial-gradient(ellipse at 18% 12%, rgba(101, 182, 170, 0.16), transparent 34%),
+        radial-gradient(ellipse at 84% 16%, rgba(234, 184, 79, 0.14), transparent 32%),
+        radial-gradient(ellipse at 50% 86%, rgba(217, 133, 98, 0.12), transparent 40%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 48%, rgba(255, 255, 255, 0.08));
+    --theme-pattern-opacity: 0.18;
+    --theme-map-opacity: 0;
+    --theme-icon-opacity: 0;
+    --theme-vignette:
+        linear-gradient(to bottom, rgba(185, 141, 83, 0.12), transparent 28%, transparent 70%, rgba(122, 94, 64, 0.16)),
+        linear-gradient(to right, rgba(101, 182, 170, 0.1), transparent 24%, transparent 76%, rgba(217, 133, 98, 0.1));
+}
+
 body[data-tema] {
     background: var(--theme-bg);
     color: var(--theme-text);
@@ -6918,6 +7016,8 @@ body[data-tema="okean"],
 body[data-tema="drzava"],
 body[data-tema="planina"],
 body[data-tema="grad"],
+body[data-tema="biljka"],
+body[data-tema="predmet"],
 body[data-tema="zivotinja"] {
     background-size: cover;
     background-position: center center;
@@ -7435,6 +7535,38 @@ body[data-tema="zivotinja"] #main-menu .menu-pattern::after {
 }
 
 body[data-tema="zivotinja"] #main-menu .pattern-icon {
+    opacity: 0 !important;
+    animation: none;
+}
+
+body[data-tema="biljka"] #main-menu .menu-pattern::before {
+    background: var(--theme-pattern-grid);
+    opacity: var(--theme-pattern-opacity);
+    inset: 0;
+    transform: none;
+}
+
+body[data-tema="biljka"] #main-menu .menu-pattern::after {
+    background: var(--theme-vignette);
+}
+
+body[data-tema="biljka"] #main-menu .pattern-icon {
+    opacity: 0 !important;
+    animation: none;
+}
+
+body[data-tema="predmet"] #main-menu .menu-pattern::before {
+    background: var(--theme-pattern-grid);
+    opacity: var(--theme-pattern-opacity);
+    inset: 0;
+    transform: none;
+}
+
+body[data-tema="predmet"] #main-menu .menu-pattern::after {
+    background: var(--theme-vignette);
+}
+
+body[data-tema="predmet"] #main-menu .pattern-icon {
     opacity: 0 !important;
     animation: none;
 }

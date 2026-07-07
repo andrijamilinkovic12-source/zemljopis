@@ -12,8 +12,20 @@ const PodesavanjaManager = {
         playerId: null,
         profilZavrsen: false,
         zvuk: true,
-        tema: "tamna",
+        tema: "drzava",
         pismo: "latinica" // Podrazumevano pismo
+    },
+
+    dozvoljeneTeme: ['drzava', 'okean', 'grad', 'planina', 'biljka', 'zivotinja', 'predmet'],
+
+    naziviTema: {
+        'drzava': 'Država',
+        'okean': 'Reka',
+        'grad': 'Grad',
+        'planina': 'Planina',
+        'biljka': 'Biljka',
+        'zivotinja': 'Životinja',
+        'predmet': 'Predmet'
     },
 
     // NAŠI NOVI VIRTUALNI DJ PLEJERI ZA CROSSFADE (NEPRIMETAN PRELAZ)
@@ -59,6 +71,7 @@ const PodesavanjaManager = {
             if (typeof this.postavke.profilZavrsen !== 'boolean') this.postavke.profilZavrsen = false;
             if (typeof this.postavke.zvuk !== 'boolean') this.postavke.zvuk = true;
             if (this.postavke.tema === 'pustinja') this.postavke.tema = 'planina';
+            if (!this.dozvoljeneTeme.includes(this.postavke.tema)) this.postavke.tema = 'drzava';
         }
 
         if (!this.postavke.profilKljuc) {
@@ -69,7 +82,7 @@ const PodesavanjaManager = {
             this.postavke.profilZavrsen = false;
         }
         this.snimiULokalnuMemoriju();
-        document.body.setAttribute('data-tema', this.postavke.tema || 'tamna');
+        document.body.setAttribute('data-tema', this.postavke.tema || 'drzava');
         
         this.primeniPostavkeGlobalno();
 
@@ -1355,6 +1368,10 @@ const PodesavanjaManager = {
     },
 
     promeniTemu: function(novaTema) {
+        if (!this.dozvoljeneTeme.includes(novaTema)) {
+            novaTema = 'drzava';
+        }
+
         let prikazNazivaTeme = novaTema;
 
         // PROVERA VLASNIŠTVA U RIZNICI
@@ -1399,23 +1416,8 @@ const PodesavanjaManager = {
     },
 
     azurirajDugmadTeme: function() {
-        const naziviTema = {
-            'tamna': 'Tamna',
-            'svetla': 'Svetla',
-            'neon': 'Neon',
-            'okean': 'Reka',
-            'drzava': 'Država',
-            'grad': 'Grad',
-            'zlatna': 'Zlatna',
-            'aurora': 'Aurora',
-            'planina': 'Planina',
-            'zivotinja': 'Životinja',
-            'sakura': 'Sakura',
-            'noir': 'Noir',
-            'tropi': 'Tropi',
-            'glina': 'Glina'
-        };
-        const teme = ['tamna', 'svetla', 'neon', 'okean', 'drzava', 'grad', 'zlatna', 'aurora', 'planina', 'zivotinja', 'sakura', 'noir', 'tropi', 'glina'];
+        const naziviTema = this.naziviTema;
+        const teme = this.dozvoljeneTeme;
         const boje = this.tematskeBoje();
         
         teme.forEach(tema => {
@@ -1489,7 +1491,7 @@ const PodesavanjaManager = {
                 <b style="color:#f5af19; font-size: 1.1rem;">Šta sledi? (Uskoro)</b><br>
                 <i class="fa-solid fa-clock" style="color:#f5af19;"></i> Dnevni izazovi sa nagradama.<br>
                 <i class="fa-solid fa-clock" style="color:#f5af19;"></i> Proširenje baze reči.<br>
-                <i class="fa-solid fa-clock" style="color:#f5af19;"></i> Implementacija svetle i neon teme.
+                <i class="fa-solid fa-clock" style="color:#f5af19;"></i> Nova soft matte tematska proširenja.
             </div>
         `;
         UIManager.prikaziObavestenje("🔔 Najnovija Obaveštenja", tekst, null, "Zatvori");

@@ -2,19 +2,19 @@
   <defs>
     <linearGradient id="zemljopis-m-left-clay" x1="0" x2="0" y1="0" y2="1">
       <stop offset="0" stop-color="#d8efc8"/>
-      <stop offset="0.52" stop-color="#88b96f"/>
-      <stop offset="1" stop-color="#67995f"/>
+      <stop offset="0.5" stop-color="#7fb866"/>
+      <stop offset="1" stop-color="#5d9557"/>
     </linearGradient>
     <linearGradient id="zemljopis-m-right-clay" x1="0" x2="0" y1="0" y2="1">
       <stop offset="0" stop-color="#ffe0b7"/>
       <stop offset="0.55" stop-color="#d98562"/>
-      <stop offset="1" stop-color="#b66b55"/>
+      <stop offset="1" stop-color="#ad604e"/>
     </linearGradient>
     <filter id="clay-m-shadow" x="-18%" y="-28%" width="136%" height="156%">
-      <feDropShadow dx="0" dy="5" stdDeviation="2.6" flood-color="#465868" flood-opacity="0.24"/>
+      <feDropShadow dx="0" dy="6" stdDeviation="3" flood-color="#27384d" flood-opacity="0.32"/>
     </filter>
   </defs>
-  <g fill="#607589" opacity="0.24" transform="translate(0 5)">
+  <g fill="#405d70" opacity="0.3" transform="translate(0 6)">
     <path d="M5 76 43 16c4-6 12-6 16 0l38 60H5Z"/>
     <path d="M58 76 87 32c4-6 11-6 15 0l28 44H58Z"/>
   </g>
@@ -26,7 +26,7 @@
     <path d="m36 43 9-14 8 14h-7l-3-5-3 5h-4Z"/>
     <path d="m84 54 9-13 8 13h-6l-3-5-3 5h-5Z"/>
   </g>
-  <g fill="#ffffff" opacity="0.3">
+  <g fill="#ffffff" opacity="0.42">
     <path d="M45 20c2-3 7-3 9 0l5 8c-6-3-12-3-19 0l5-8Z"/>
     <path d="M90 36c2-3 6-3 8 0l4 7c-5-2-10-2-16 0l4-7Z"/>
   </g>

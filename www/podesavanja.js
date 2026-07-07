@@ -1405,6 +1405,7 @@ const PodesavanjaManager = {
             'neon': 'Neon',
             'okean': 'Reka',
             'drzava': 'Država',
+            'grad': 'Grad',
             'zlatna': 'Zlatna',
             'aurora': 'Aurora',
             'planina': 'Planina',
@@ -1414,7 +1415,7 @@ const PodesavanjaManager = {
             'tropi': 'Tropi',
             'glina': 'Glina'
         };
-        const teme = ['tamna', 'svetla', 'neon', 'okean', 'drzava', 'zlatna', 'aurora', 'planina', 'zivotinja', 'sakura', 'noir', 'tropi', 'glina'];
+        const teme = ['tamna', 'svetla', 'neon', 'okean', 'drzava', 'grad', 'zlatna', 'aurora', 'planina', 'zivotinja', 'sakura', 'noir', 'tropi', 'glina'];
         const boje = this.tematskeBoje();
         
         teme.forEach(tema => {

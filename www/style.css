@@ -2314,6 +2314,39 @@ body[data-tema="planina"] #main-menu::before {
     animation: planinaCloudLayerDrift 22s ease-in-out infinite;
 }
 
+body[data-tema="grad"] #main-menu::before {
+    content: "";
+    position: absolute;
+    inset: -4% -8%;
+    z-index: 2;
+    pointer-events: none;
+    background-image: url('assets/grad-clouds-layer.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    opacity: 0.95;
+    transform-origin: 50% 16%;
+    filter: saturate(1.08) contrast(1.04) brightness(1.03) drop-shadow(0 10px 16px rgba(112, 126, 154, 0.12));
+    will-change: transform, opacity;
+    animation: gradCloudLayerDrift 25s ease-in-out infinite;
+}
+
+body[data-tema="grad"] #main-menu::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 78% 12%, rgba(255, 231, 166, 0.42) 0 2.4%, rgba(255, 231, 166, 0.18) 2.8%, transparent 5.8%),
+        radial-gradient(circle at 18% 18%, rgba(118, 151, 222, 0.18), transparent 30%),
+        linear-gradient(180deg, rgba(20, 32, 84, 0.48) 0%, rgba(42, 43, 92, 0.34) 38%, rgba(52, 45, 78, 0.28) 100%);
+    mix-blend-mode: normal;
+    opacity: 0;
+    will-change: opacity;
+    animation: gradDayNightCycle 112s ease-in-out infinite;
+}
+
 body[data-tema="drzava"] #main-menu > .clay-theme-three {
     display: none;
     opacity: 0;
@@ -2807,6 +2840,44 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     100% {
         transform: translate3d(-2.6%, 0.1%, 0) scale(1.015);
         opacity: 0.93;
+    }
+}
+
+@keyframes gradCloudLayerDrift {
+    0% {
+        transform: translate3d(-2.4%, 0.08%, 0) scale(1.014);
+        opacity: 0.9;
+    }
+    25% {
+        transform: translate3d(1.1%, -0.28%, 0) scale(1.022);
+        opacity: 0.97;
+    }
+    54% {
+        transform: translate3d(4.5%, 0.14%, 0) scale(1.018);
+        opacity: 0.95;
+    }
+    78% {
+        transform: translate3d(0.9%, 0.34%, 0) scale(1.024);
+        opacity: 0.98;
+    }
+    100% {
+        transform: translate3d(-2.4%, 0.08%, 0) scale(1.014);
+        opacity: 0.9;
+    }
+}
+
+@keyframes gradDayNightCycle {
+    0%, 72% {
+        opacity: 0;
+    }
+    78% {
+        opacity: 0.18;
+    }
+    84%, 96% {
+        opacity: 0.64;
+    }
+    100% {
+        opacity: 0;
     }
 }
 
@@ -6431,6 +6502,57 @@ body[data-tema="drzava"] {
     background-repeat: no-repeat;
 }
 
+body[data-tema="grad"] {
+    --theme-bg:
+        linear-gradient(180deg, rgba(224, 244, 255, 0.1) 0%, rgba(255, 242, 224, 0.05) 42%, rgba(205, 234, 214, 0.1) 100%),
+        radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.06), transparent 48%),
+        url('assets/grad-soft-matte-bg-clean.png');
+    --theme-splash-bg: linear-gradient(135deg, #dff4ff, #ffe8d7, #d5ead9);
+    --theme-text: #2f3b55;
+    --theme-muted: #66758c;
+    --theme-primary: #5f91c9;
+    --theme-primary-rgb: 95, 145, 201;
+    --theme-secondary: #d9846e;
+    --theme-secondary-rgb: 217, 132, 110;
+    --theme-accent: #78b984;
+    --theme-accent-rgb: 120, 185, 132;
+    --theme-danger: #d85f78;
+    --theme-danger-rgb: 216, 95, 120;
+    --theme-panel: rgba(255, 255, 255, 0.8);
+    --theme-panel-strong: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(242, 247, 250, 0.9));
+    --theme-control-bg: rgba(255, 255, 255, 0.68);
+    --theme-input-bg: rgba(255, 255, 255, 0.84);
+    --theme-pill-bg: rgba(255, 255, 255, 0.78);
+    --theme-border: rgba(95, 145, 201, 0.32);
+    --theme-soft-border: rgba(217, 132, 110, 0.24);
+    --theme-shadow: 0 16px 34px rgba(88, 108, 132, 0.2), 0 0 28px rgba(95, 145, 201, 0.13);
+    --theme-control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), inset 0 -10px 22px rgba(95, 145, 201, 0.1), 0 9px 20px rgba(88, 108, 132, 0.16);
+    --theme-title-shadow: 0 2px 8px rgba(255, 255, 255, 0.72), 0 0 16px rgba(95, 145, 201, 0.24);
+    --theme-primary-gradient: linear-gradient(45deg, #8bb8df, #e5a085 52%, #95c995);
+    --theme-on-primary: #22334d;
+    --theme-primary-shadow: 0 0 22px rgba(95, 145, 201, 0.26), 0 8px 20px rgba(88, 108, 132, 0.14);
+    --theme-phone-shadow: 0 0 54px rgba(130, 154, 186, 0.34);
+    --theme-contour-rgb: 95, 145, 201;
+    --theme-pattern-hue: 126deg;
+    --theme-pattern-saturation: 0.72;
+    --theme-map-brightness: 1.08;
+    --theme-contour-alpha: 0;
+    --theme-pattern-opacity: 0.18;
+    --theme-map-opacity: 0;
+    --theme-icon-opacity: 0;
+    --theme-pattern-grid:
+        radial-gradient(ellipse at 18% 12%, rgba(139, 184, 223, 0.16), transparent 34%),
+        radial-gradient(ellipse at 84% 16%, rgba(229, 160, 133, 0.14), transparent 32%),
+        radial-gradient(ellipse at 50% 86%, rgba(149, 201, 149, 0.14), transparent 40%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 48%, rgba(255, 255, 255, 0.08));
+    --theme-vignette:
+        linear-gradient(to bottom, rgba(117, 159, 196, 0.12), transparent 28%, transparent 70%, rgba(107, 152, 115, 0.16)),
+        linear-gradient(to right, rgba(95, 145, 201, 0.1), transparent 24%, transparent 76%, rgba(217, 132, 110, 0.1));
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
 body[data-tema="sakura"] {
     --theme-bg: radial-gradient(circle at 50% 12%, rgba(200, 79, 130, 0.09), transparent 36%), linear-gradient(145deg, #fff8fb 0%, #f8e9f0 54%, #f2edf7 100%);
     --theme-splash-bg: linear-gradient(135deg, #fffafc, #f8e9f0, #f2edf7);
@@ -6726,6 +6848,18 @@ body[data-tema="drzava"] {
     --theme-icon-opacity: 0;
 }
 
+body[data-tema="grad"] {
+    --theme-pattern-grid:
+        radial-gradient(ellipse at 18% 12%, rgba(139, 184, 223, 0.16), transparent 34%),
+        radial-gradient(ellipse at 84% 16%, rgba(229, 160, 133, 0.14), transparent 32%),
+        radial-gradient(ellipse at 50% 86%, rgba(149, 201, 149, 0.14), transparent 40%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 48%, rgba(255, 255, 255, 0.08));
+    --theme-pattern-opacity: 0.18;
+    --theme-contour-alpha: 0;
+    --theme-map-opacity: 0;
+    --theme-icon-opacity: 0;
+}
+
 body[data-tema="zivotinja"] {
     --theme-bg:
         linear-gradient(180deg, rgba(222, 246, 255, 0.08) 0%, rgba(255, 242, 210, 0.04) 42%, rgba(200, 236, 179, 0.1) 100%),
@@ -6783,6 +6917,7 @@ body[data-tema] {
 body[data-tema="okean"],
 body[data-tema="drzava"],
 body[data-tema="planina"],
+body[data-tema="grad"],
 body[data-tema="zivotinja"] {
     background-size: cover;
     background-position: center center;
@@ -7268,6 +7403,22 @@ body[data-tema="drzava"] #main-menu .menu-pattern::after {
 }
 
 body[data-tema="drzava"] #main-menu .pattern-icon {
+    opacity: 0 !important;
+    animation: none;
+}
+
+body[data-tema="grad"] #main-menu .menu-pattern::before {
+    background: var(--theme-pattern-grid);
+    opacity: var(--theme-pattern-opacity);
+    inset: 0;
+    transform: none;
+}
+
+body[data-tema="grad"] #main-menu .menu-pattern::after {
+    background: var(--theme-vignette);
+}
+
+body[data-tema="grad"] #main-menu .pattern-icon {
     opacity: 0 !important;
     animation: none;
 }

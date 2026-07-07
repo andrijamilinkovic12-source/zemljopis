@@ -3923,7 +3923,7 @@ body.keyboard-open .dnevni-input-group input {
 }
 
 .splash-brand-mark-3d {
-    --splash-logo-glow: rgba(var(--theme-primary-rgb, 56, 239, 125), 0.32);
+    --splash-logo-glow: rgba(var(--theme-primary-rgb, 63, 145, 186), 0.28);
     width: clamp(106px, 27vw, 154px);
     border: 0;
     border-radius: 50%;
@@ -3946,18 +3946,18 @@ body.keyboard-open .dnevni-input-group input {
 .splash-brand-mark-3d::before {
     background:
         radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.26), transparent 24%),
-        radial-gradient(circle, rgba(var(--theme-primary-rgb, 56, 239, 125), 0.16), transparent 62%);
+        radial-gradient(circle, rgba(var(--theme-primary-rgb, 63, 145, 186), 0.16), transparent 62%);
     filter: blur(8px);
     transform: scale(1.18);
     opacity: 0.9;
 }
 
 .splash-brand-mark-3d::after {
-    border: 1px solid rgba(255, 247, 191, 0.28);
+    border: 1px solid rgba(255, 244, 217, 0.36);
     box-shadow:
-        0 18px 42px rgba(0, 0, 0, 0.42),
+        0 18px 42px rgba(70, 88, 104, 0.24),
         0 0 34px var(--splash-logo-glow),
-        inset 0 0 22px rgba(255, 247, 191, 0.1);
+        inset 0 0 22px rgba(255, 244, 217, 0.14);
     transform: scale(0.92);
 }
 
@@ -3982,8 +3982,8 @@ body.keyboard-open .dnevni-input-group input {
     opacity: 1;
     transform: translateZ(0);
     filter:
-        drop-shadow(0 15px 24px rgba(0, 0, 0, 0.36))
-        drop-shadow(0 0 18px rgba(var(--theme-primary-rgb, 56, 239, 125), 0.25));
+        drop-shadow(0 15px 24px rgba(70, 88, 104, 0.28))
+        drop-shadow(0 0 18px rgba(var(--theme-primary-rgb, 63, 145, 186), 0.22));
     transition: opacity 0.25s ease, transform 0.35s ease;
 }
 
@@ -4000,7 +4000,7 @@ body.keyboard-open .dnevni-input-group input {
     animation: splashFallbackFloat 3.6s ease-in-out infinite;
 }
 
-.splash-logo { 
+.splash-logo {
     font-size: clamp(2rem, 7.7vw, 2.9rem); 
     font-weight: 950; 
     margin-bottom: clamp(1.15rem, 3.6vh, 1.8rem);
@@ -4014,7 +4014,7 @@ body.keyboard-open .dnevni-input-group input {
     letter-spacing: 0;
     perspective: 520px;
     transform-style: preserve-3d;
-    filter: drop-shadow(0 15px 16px rgba(26, 18, 13, 0.26));
+    filter: drop-shadow(0 15px 16px rgba(53, 64, 72, 0.22));
     animation: clayWordBreath 3.8s ease-in-out infinite;
     animation-delay: 3.2s;
 }
@@ -4048,10 +4048,10 @@ body.keyboard-open .dnevni-input-group input {
 
 /* ZAJEDNIČKI STIL ZA SVA SLOVA I IKONICE (Samo animacija i pozicija) */
 .splash-logo span {
-    --clay-highlight: #ffd0a7;
-    --clay-face: #e89466;
-    --clay-side: #b8654e;
-    --clay-base: #865041;
+    --clay-highlight: #ffe0b7;
+    --clay-face: #d98562;
+    --clay-side: #b66b55;
+    --clay-base: #7f5148;
     opacity: 0; 
     transform: translateY(24px) rotateX(34deg) rotateZ(-2deg) scale(0.72); 
     transform-origin: 50% 78%;
@@ -4065,38 +4065,45 @@ body.keyboard-open .dnevni-input-group input {
 }
 
 .splash-logo span:nth-child(1) {
-    --clay-highlight: #ffd1ad;
-    --clay-face: #e99264;
-    --clay-side: #bc684d;
-    --clay-base: #8b4f3d;
+    --clay-highlight: #ffe0b7;
+    --clay-face: #d98562;
+    --clay-side: #b66b55;
+    --clay-base: #7f5148;
 }
 
 .splash-logo span:nth-child(4) {
-    --clay-highlight: #c8efbd;
-    --clay-face: #88ca86;
-    --clay-side: #5e9b67;
-    --clay-base: #3e704e;
+    --clay-highlight: #dcefc7;
+    --clay-face: #88b96f;
+    --clay-side: #67995f;
+    --clay-base: #486d55;
 }
 
 .splash-logo span:nth-child(6) {
-    --clay-highlight: #bfe9ef;
-    --clay-face: #7ac5d3;
-    --clay-side: #4e91a5;
-    --clay-base: #386a7c;
+    --clay-highlight: #c7edf4;
+    --clay-face: #74b7d6;
+    --clay-side: #4f91ad;
+    --clay-base: #3f6e86;
 }
 
 .splash-logo span:nth-child(7) {
-    --clay-highlight: #ffe09d;
-    --clay-face: #efc26f;
-    --clay-side: #c58d49;
-    --clay-base: #8c6138;
+    --clay-highlight: #ffe5ad;
+    --clay-face: #e0b36d;
+    --clay-side: #ba864c;
+    --clay-base: #80603f;
 }
 
 .splash-logo span:nth-child(8) {
-    --clay-highlight: #f5b6ad;
-    --clay-face: #df8175;
-    --clay-side: #ac5a58;
-    --clay-base: #783f45;
+    --clay-highlight: #ffd8c1;
+    --clay-face: #d98562;
+    --clay-side: #b66b55;
+    --clay-base: #7f5148;
+}
+
+.splash-logo span:nth-child(9) {
+    --clay-highlight: #d8efc8;
+    --clay-face: #88b96f;
+    --clay-side: #67995f;
+    --clay-base: #486d55;
 }
 
 /* GRADIENT ZA OBIČNA SLOVA (Z, L, J, P, I, S) */
@@ -4113,8 +4120,8 @@ body.keyboard-open .dnevni-input-group input {
         0 2px 0 var(--clay-side),
         0 3px 0 var(--clay-base),
         0 4px 0 var(--clay-base),
-        0 7px 9px rgba(54, 39, 30, 0.3),
-        0 13px 20px rgba(2, 9, 8, 0.22);
+        0 7px 9px rgba(70, 88, 104, 0.24),
+        0 13px 20px rgba(49, 67, 82, 0.18);
 }
 
 .splash-logo span:not(.icon-letter)::before,
@@ -4127,7 +4134,7 @@ body.keyboard-open .dnevni-input-group input {
     bottom: -0.18em;
     height: 0.24em;
     border-radius: 999px;
-    background: rgba(38, 24, 18, 0.24);
+    background: rgba(70, 88, 104, 0.18);
     filter: blur(7px);
     transform: translate3d(0.08em, 0.06em, -1px) skewX(-8deg);
 }
@@ -4136,7 +4143,7 @@ body.keyboard-open .dnevni-input-group input {
 .splash-logo span.icon-letter i {
     font-family: "Font Awesome 6 Free" !important;
     font-weight: 900 !important; /* Forsira pravi oblik planine, sprečava običan emoji */
-    background: linear-gradient(to bottom, #38ef7d, #11998e);
+    background: linear-gradient(to bottom, #c7edf4, #74b7d6 52%, #88b96f);
     -webkit-background-clip: text; 
     -webkit-text-fill-color: transparent; 
     font-size: 0.9em; 
@@ -4151,9 +4158,9 @@ body.keyboard-open .dnevni-input-group input {
     align-items: center;
     justify-content: center;
     filter:
-        drop-shadow(0 1px 0 rgba(122, 77, 54, 0.72))
-        drop-shadow(0 3px 0 rgba(90, 58, 45, 0.45))
-        drop-shadow(0 8px 10px rgba(45, 31, 24, 0.3));
+        drop-shadow(0 1px 0 rgba(102, 95, 83, 0.62))
+        drop-shadow(0 3px 0 rgba(91, 94, 86, 0.34))
+        drop-shadow(0 8px 10px rgba(70, 88, 104, 0.22));
 }
 
 .splash-letter-svg {
@@ -4193,13 +4200,13 @@ body.keyboard-open .dnevni-input-group input {
 @keyframes clayWordBreath {
     0%, 100% {
         filter:
-            drop-shadow(0 15px 16px rgba(26, 18, 13, 0.26))
-            drop-shadow(0 0 10px rgba(245, 190, 118, 0.08));
+            drop-shadow(0 15px 16px rgba(53, 64, 72, 0.22))
+            drop-shadow(0 0 10px rgba(116, 183, 214, 0.08));
     }
     50% {
         filter:
-            drop-shadow(0 17px 18px rgba(26, 18, 13, 0.3))
-            drop-shadow(0 0 18px rgba(173, 219, 182, 0.12));
+            drop-shadow(0 17px 18px rgba(53, 64, 72, 0.26))
+            drop-shadow(0 0 18px rgba(136, 185, 111, 0.13));
     }
 }
 
@@ -7050,15 +7057,15 @@ body[data-tema="predmet"] {
     --theme-accent-rgb: 136, 185, 111;
     --theme-danger: #d85f78;
     --theme-danger-rgb: 216, 95, 120;
-    --theme-panel: rgba(255, 255, 255, 0.8);
-    --theme-panel-strong: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(239, 247, 241, 0.9));
-    --theme-control-bg: rgba(255, 255, 255, 0.68);
-    --theme-input-bg: rgba(255, 255, 255, 0.84);
-    --theme-pill-bg: rgba(255, 255, 255, 0.78);
-    --theme-border: rgba(63, 145, 186, 0.3);
+    --theme-panel: linear-gradient(145deg, rgba(255, 250, 241, 0.88), rgba(232, 246, 240, 0.82));
+    --theme-panel-strong: linear-gradient(145deg, rgba(255, 250, 241, 0.98), rgba(226, 243, 244, 0.92));
+    --theme-control-bg: linear-gradient(145deg, rgba(255, 250, 241, 0.9), rgba(225, 242, 237, 0.82));
+    --theme-input-bg: rgba(255, 250, 241, 0.9);
+    --theme-pill-bg: linear-gradient(145deg, rgba(255, 250, 241, 0.9), rgba(225, 242, 237, 0.8));
+    --theme-border: rgba(63, 145, 186, 0.28);
     --theme-soft-border: rgba(217, 133, 98, 0.24);
-    --theme-shadow: 0 16px 34px rgba(84, 108, 132, 0.2), 0 0 28px rgba(63, 145, 186, 0.12);
-    --theme-control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), inset 0 -10px 22px rgba(63, 145, 186, 0.1), 0 9px 20px rgba(84, 108, 132, 0.16);
+    --theme-shadow: 0 16px 34px rgba(72, 96, 118, 0.18), 0 0 28px rgba(63, 145, 186, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.52);
+    --theme-control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), inset 0 -10px 22px rgba(63, 145, 186, 0.09), 0 9px 20px rgba(72, 96, 118, 0.14);
     --theme-title-shadow: 0 2px 8px rgba(255, 255, 255, 0.72), 0 0 16px rgba(63, 145, 186, 0.24);
     --theme-primary-gradient: linear-gradient(45deg, #74b7d6, #e0b36d 52%, #9ac77a);
     --theme-on-primary: #22364d;
@@ -7101,7 +7108,21 @@ body[data-tema="zivotinja"] {
 }
 
 body[data-tema] #splash-screen {
-    background: var(--theme-splash-bg);
+    background:
+        linear-gradient(180deg, rgba(233, 246, 255, 0.11) 0%, rgba(255, 247, 229, 0.055) 40%, rgba(217, 237, 215, 0.1) 100%),
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.055), transparent 48%),
+        url('assets/splash-soft-matte-bg.png') center center / cover no-repeat,
+        var(--theme-splash-bg);
+}
+
+@media (orientation: landscape) {
+    body[data-tema] #splash-screen {
+        background:
+            linear-gradient(180deg, rgba(233, 246, 255, 0.11) 0%, rgba(255, 247, 229, 0.055) 40%, rgba(217, 237, 215, 0.1) 100%),
+            radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.055), transparent 48%),
+            url('assets/splash-soft-matte-bg-landscape.png') center center / cover no-repeat,
+            var(--theme-splash-bg);
+    }
 }
 
 body[data-tema] h2,
@@ -7115,9 +7136,9 @@ body[data-tema] .pattern-icon {
 }
 
 body[data-tema] .menu-btn {
-    background: var(--theme-control-bg);
-    color: var(--theme-text);
-    border: 1px solid var(--theme-border);
+    background: var(--theme-control-bg) !important;
+    color: var(--theme-text) !important;
+    border-color: var(--theme-border) !important;
     box-shadow: var(--theme-control-shadow);
 }
 
@@ -7126,15 +7147,15 @@ body[data-tema] .btn-finish,
 body[data-tema] .loading-bar,
 body[data-tema] .badge-multi,
 body[data-tema] .current-player .player-score {
-    background: var(--theme-primary-gradient);
-    color: var(--theme-on-primary);
-    border: 1px solid rgba(255, 255, 255, 0.42);
+    background: var(--theme-primary-gradient) !important;
+    color: var(--theme-on-primary) !important;
+    border-color: rgba(255, 255, 255, 0.42) !important;
     box-shadow: var(--theme-primary-shadow);
 }
 
 body[data-tema] .btn-secondary {
-    background: linear-gradient(45deg, var(--theme-danger), var(--theme-accent));
-    color: #fff;
+    background: linear-gradient(45deg, var(--theme-secondary), var(--theme-danger)) !important;
+    color: #fff !important;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
 }
 
@@ -7299,13 +7320,13 @@ body[data-tema] .current-player {
 }
 
 body[data-tema] .solo-mode-active .game-header {
-    background: linear-gradient(135deg, rgba(22, 15, 4, 0.96), rgba(10, 12, 16, 0.86));
+    background: var(--theme-panel);
     border-color: rgba(var(--theme-accent-rgb), 0.3);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px rgba(255, 255, 255, 0.05);
+    box-shadow: var(--theme-shadow);
 }
 
 body[data-tema] .solo-mode-active .stats-panel {
-    background: linear-gradient(145deg, rgba(24, 17, 7, 0.84), rgba(8, 12, 16, 0.74));
+    background: var(--theme-panel);
     border-color: rgba(var(--theme-accent-rgb), 0.3);
 }
 
@@ -7330,19 +7351,19 @@ body[data-tema] .solo-mode-active .current-player .player-score {
 #game-board.control-panel-compact {
     --game-mode-accent: var(--theme-primary, #38ef7d);
     --game-mode-accent-rgb: var(--theme-primary-rgb, 56, 239, 125);
-    --game-mode-label: #b9fbe4;
+    --game-mode-label: var(--theme-muted, #607589);
 }
 
 #game-board.control-panel-compact.solo-mode-active,
 #game-board.control-panel-compact.friends-mode-active {
     --game-mode-accent: var(--theme-accent, #f5af19);
     --game-mode-accent-rgb: var(--theme-accent-rgb, 245, 175, 25);
-    --game-mode-label: #ffe08a;
+    --game-mode-label: var(--theme-secondary, #d98562);
 }
 
 #game-board.control-panel-compact .game-header {
     background:
-        linear-gradient(135deg, rgba(7, 18, 14, 0.96), rgba(10, 12, 16, 0.9)),
+        linear-gradient(145deg, rgba(255, 250, 241, 0.92), rgba(229, 244, 241, 0.86)),
         radial-gradient(circle at 50% 0%, rgba(var(--game-mode-accent-rgb), 0.12), transparent 54%);
     border-color: rgba(var(--game-mode-accent-rgb), 0.24);
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -7383,7 +7404,7 @@ body[data-tema] .solo-mode-active .current-player .player-score {
 }
 
 #game-board.control-panel-compact .stat-value {
-    color: #fff;
+    color: var(--theme-text, #27384d);
     font-size: clamp(0.68rem, 2.8vw, 0.88rem);
 }
 
@@ -7396,7 +7417,7 @@ body[data-tema] .solo-mode-active .current-player .player-score {
 }
 
 #game-board.control-panel-compact .current-letter .game-control-label {
-    color: rgba(255, 255, 255, 0.78);
+    color: var(--theme-muted, #607589);
     line-height: 1.05;
 }
 
@@ -8533,3 +8554,239 @@ body[data-tema][data-tastatura="monohrom"] .kb-key { background: rgba(255, 255, 
 body[data-tema][data-tastatura="monohrom"] .kb-special { background: rgba(255, 255, 255, 0.16); color: #f2f2f2; }
 body[data-tema][data-tastatura="monohrom"] .kb-enter { background: linear-gradient(45deg, #70757c, #f2f2f2); color: #111315; }
 body[data-tema][data-tastatura="monohrom"] .kb-key:active { background: #f2f2f2; color: #111315; box-shadow: 0 0 12px rgba(255, 255, 255, 0.42); }
+
+/* --- ZAVRSNI CLAY UI PASS: boje bez promene dimenzija --- */
+body[data-tema] .modal-overlay {
+    background: rgba(39, 56, 77, 0.34);
+    backdrop-filter: blur(10px);
+}
+
+body[data-tema] .splash-quote,
+body[data-tema] .splash-quote p {
+    color: var(--theme-text) !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.62), 0 7px 18px rgba(72, 96, 118, 0.18);
+}
+
+body[data-tema] .splash-quote span {
+    color: var(--theme-primary) !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+body[data-tema] .splash-legal-links .login-legal-copy,
+body[data-tema] .splash-legal-links a {
+    color: var(--theme-muted) !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+body[data-tema] .splash-legal-links a:active {
+    color: var(--theme-secondary) !important;
+}
+
+body[data-tema] .profile-info-panel,
+body[data-tema] .toplista-shell,
+body[data-tema] #toplista-sadrzaj > div,
+body[data-tema] #kvartalni-nivo-sadrzaj > div,
+body[data-tema] .summary-card,
+body[data-tema] .solo-summary-card,
+body[data-tema] .final-ranking-player,
+body[data-tema] .final-bonus-panel,
+body[data-tema] .ad-preview-panel,
+body[data-tema] .tastatura-kartica,
+body[data-tema] .riznica-kartica {
+    background: var(--theme-panel) !important;
+    border-color: var(--theme-border) !important;
+    box-shadow: var(--theme-shadow) !important;
+    color: var(--theme-text) !important;
+}
+
+body[data-tema] .profile-setup-google,
+body[data-tema] .profile-setup-guest,
+body[data-tema] .profile-setup-submit,
+body[data-tema] .profile-logout-btn,
+body[data-tema] .bubble-btn,
+body[data-tema] .invite-btn {
+    background: var(--theme-control-bg) !important;
+    border-color: var(--theme-border) !important;
+    color: var(--theme-text) !important;
+    box-shadow: var(--theme-control-shadow) !important;
+}
+
+body[data-tema] .profile-setup-submit,
+body[data-tema] .invite-btn.filled {
+    background: var(--theme-primary-gradient) !important;
+    color: var(--theme-on-primary) !important;
+    border-color: rgba(255, 255, 255, 0.42) !important;
+}
+
+body[data-tema] .overlay-private .bubble-btn,
+body[data-tema] .invite-btn {
+    color: var(--theme-secondary) !important;
+    border-color: rgba(var(--theme-secondary-rgb), 0.4) !important;
+}
+
+body[data-tema] .overlay-multi .bubble-btn {
+    color: var(--theme-primary) !important;
+    border-color: rgba(var(--theme-primary-rgb), 0.4) !important;
+}
+
+body[data-tema] .bubble-btn:active,
+body[data-tema] .invite-btn:active {
+    background: rgba(var(--theme-primary-rgb), 0.18) !important;
+    color: var(--theme-text) !important;
+}
+
+body[data-tema] #chat-input,
+body[data-tema] #unos-novog-prijatelja,
+body[data-tema] #anti-cheat-status {
+    background: var(--theme-input-bg) !important;
+    border-color: var(--theme-border) !important;
+    color: var(--theme-text) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.48) !important;
+}
+
+body[data-tema] #chat-input:focus,
+body[data-tema] #unos-novog-prijatelja:focus {
+    border-color: var(--theme-primary) !important;
+    box-shadow: 0 0 16px rgba(var(--theme-primary-rgb), 0.22) !important;
+}
+
+body[data-tema] .chat-msg {
+    box-shadow: var(--theme-control-shadow);
+    color: var(--theme-text);
+}
+
+body[data-tema] .chat-msg.tudja {
+    background: var(--theme-panel) !important;
+    border-color: var(--theme-soft-border) !important;
+}
+
+body[data-tema] .chat-msg.mojna {
+    background: linear-gradient(145deg, rgba(var(--theme-primary-rgb), 0.16), rgba(var(--theme-accent-rgb), 0.12)) !important;
+    border-color: rgba(var(--theme-primary-rgb), 0.34) !important;
+}
+
+body[data-tema] .chat-tekst,
+body[data-tema] .chat-msg.tudja .chat-ime,
+body[data-tema] .tastatura-kartica h4 {
+    color: var(--theme-text) !important;
+}
+
+body[data-tema] .chat-msg.mojna .chat-ime,
+body[data-tema] #global-chat-screen > div > span,
+body[data-tema] .tastatura-opremljena,
+body[data-tema] .riznica-opremljeno {
+    color: var(--theme-primary) !important;
+}
+
+body[data-tema] .prijatelj-header {
+    border-bottom-color: var(--theme-soft-border) !important;
+}
+
+body[data-tema] .final-ranking-overlay,
+body[data-tema] .ad-preview-overlay,
+body[data-tema] .dnevni-intro-overlay {
+    color: var(--theme-text);
+    background:
+        radial-gradient(circle at 50% 24%, rgba(var(--theme-primary-rgb), 0.14), transparent 34%),
+        radial-gradient(circle at 50% 68%, rgba(var(--theme-accent-rgb), 0.12), transparent 48%),
+        rgba(223, 244, 255, 0.84) !important;
+}
+
+body[data-tema] .final-ranking-grid {
+    background-image:
+        linear-gradient(rgba(var(--theme-primary-rgb), 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--theme-primary-rgb), 0.07) 1px, transparent 1px);
+}
+
+body[data-tema] .final-ranking-header h2,
+body[data-tema] .final-ranking-name,
+body[data-tema] .final-bonus-copy h3,
+body[data-tema] .ad-preview-panel h2,
+body[data-tema] .summary-card h3,
+body[data-tema] .dnevni-intro-title,
+body[data-tema] .dnevni-intro-word {
+    color: var(--theme-text) !important;
+}
+
+body[data-tema] .final-ranking-kicker,
+body[data-tema] .final-ranking-stats span,
+body[data-tema] .final-ranking-effect-name,
+body[data-tema] #final-bonus-status,
+body[data-tema] .ad-preview-panel p {
+    color: var(--theme-muted) !important;
+}
+
+body[data-tema] .final-ranking-place,
+body[data-tema] .solo-summary-count {
+    background: rgba(var(--theme-primary-rgb), 0.12) !important;
+    border-color: rgba(var(--theme-primary-rgb), 0.34) !important;
+    color: var(--theme-text) !important;
+}
+
+body[data-tema] .final-ranking-place.place-1 {
+    background: linear-gradient(135deg, #fff0bd, var(--theme-accent)) !important;
+    color: var(--theme-on-primary) !important;
+}
+
+body[data-tema] .final-bonus-btn,
+body[data-tema] .ad-preview-progress span {
+    background: var(--theme-primary-gradient) !important;
+    color: var(--theme-on-primary) !important;
+}
+
+body[data-tema] .final-bonus-10x {
+    background: linear-gradient(135deg, var(--theme-accent), #ffe5ad) !important;
+}
+
+body[data-tema] .ad-preview-badge,
+body[data-tema] #ad-preview-time {
+    color: var(--theme-secondary) !important;
+    border-color: rgba(var(--theme-secondary-rgb), 0.35) !important;
+}
+
+body[data-tema] .tastatura-preview {
+    background: linear-gradient(145deg, rgba(255, 250, 241, 0.78), rgba(225, 242, 237, 0.68)) !important;
+}
+
+body[data-tema] .tastatura-preview-red span {
+    background: rgba(var(--theme-primary-rgb), 0.1) !important;
+    border-color: rgba(var(--theme-primary-rgb), 0.26) !important;
+    color: var(--theme-primary) !important;
+    box-shadow: 0 2px 3px rgba(72, 96, 118, 0.18) !important;
+}
+
+body[data-tema] .tastatura-preview-red span.enter {
+    background: var(--theme-primary-gradient) !important;
+    color: var(--theme-on-primary) !important;
+}
+
+body[data-tema][data-tastatura] #custom-keyboard {
+    background: var(--theme-panel) !important;
+    border-top-color: var(--theme-border) !important;
+    box-shadow: 0 -12px 28px rgba(72, 96, 118, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.52) !important;
+}
+
+body[data-tema][data-tastatura] .kb-key {
+    background: rgba(var(--theme-primary-rgb), 0.08) !important;
+    color: var(--theme-primary) !important;
+    border-color: rgba(var(--theme-primary-rgb), 0.22) !important;
+    box-shadow: var(--theme-control-shadow) !important;
+}
+
+body[data-tema][data-tastatura] .kb-special {
+    background: rgba(var(--theme-secondary-rgb), 0.12) !important;
+    color: var(--theme-secondary) !important;
+    border-color: rgba(var(--theme-secondary-rgb), 0.28) !important;
+}
+
+body[data-tema][data-tastatura] .kb-enter {
+    background: var(--theme-primary-gradient) !important;
+    color: var(--theme-on-primary) !important;
+    border-color: rgba(255, 255, 255, 0.42) !important;
+}
+
+body[data-tema][data-tastatura] .kb-key:active {
+    background: var(--theme-primary) !important;
+    color: var(--theme-on-primary) !important;
+    box-shadow: 0 0 14px rgba(var(--theme-primary-rgb), 0.34) !important;
+}

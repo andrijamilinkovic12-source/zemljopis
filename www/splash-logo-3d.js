@@ -58,32 +58,32 @@ import * as THREE from './vendor/three.module.js';
 
         scene.add(new THREE.AmbientLight(0xffffff, 1.35));
 
-        const keyLight = new THREE.DirectionalLight(0xfff0c4, 2.2);
+        const keyLight = new THREE.DirectionalLight(0xfff2d8, 2.05);
         keyLight.position.set(2.8, 3.4, 4.8);
         scene.add(keyLight);
 
-        const rimLight = new THREE.PointLight(0x38ef7d, 2.1, 7);
+        const rimLight = new THREE.PointLight(0x74b7d6, 1.75, 7);
         rimLight.position.set(-2.6, -1.8, 3.2);
         scene.add(rimLight);
 
-        const softLight = new THREE.PointLight(0x7fd7ff, 1.15, 7);
+        const softLight = new THREE.PointLight(0x88b96f, 1.05, 7);
         softLight.position.set(2.4, -2.2, 2.5);
         scene.add(softLight);
 
-        const bronze = new THREE.MeshStandardMaterial({
-            color: 0x96744c,
-            metalness: 0.58,
-            roughness: 0.32
+        const clayRim = new THREE.MeshStandardMaterial({
+            color: 0xf2d8ad,
+            metalness: 0.02,
+            roughness: 0.72
         });
-        const darkBronze = new THREE.MeshStandardMaterial({
-            color: 0x4d3b28,
-            metalness: 0.48,
-            roughness: 0.42
+        const clayGroove = new THREE.MeshStandardMaterial({
+            color: 0xd98562,
+            metalness: 0.01,
+            roughness: 0.78
         });
         const glowMaterial = new THREE.MeshBasicMaterial({
-            color: 0x38ef7d,
+            color: 0x74b7d6,
             transparent: true,
-            opacity: 0.16,
+            opacity: 0.13,
             side: THREE.DoubleSide
         });
 
@@ -96,27 +96,27 @@ import * as THREE from './vendor/three.module.js';
 
                 const faceMaterial = new THREE.MeshStandardMaterial({
                     map: texture,
-                    metalness: 0.06,
-                    roughness: 0.54
+                    metalness: 0.01,
+                    roughness: 0.74
                 });
 
                 const coinGeometry = new THREE.CylinderGeometry(1, 1, 0.18, 96, 1, false);
                 coinGeometry.rotateX(Math.PI / 2);
 
-                const coin = new THREE.Mesh(coinGeometry, [bronze, faceMaterial, faceMaterial]);
+                const coin = new THREE.Mesh(coinGeometry, [clayRim, faceMaterial, faceMaterial]);
                 coin.scale.set(1, 1, 1);
                 group.add(coin);
 
                 const outerRim = new THREE.Mesh(
                     new THREE.TorusGeometry(1.02, 0.055, 12, 128),
-                    bronze
+                    clayRim
                 );
                 outerRim.position.z = 0.105;
                 group.add(outerRim);
 
                 const innerRim = new THREE.Mesh(
                     new THREE.TorusGeometry(0.76, 0.016, 8, 96),
-                    darkBronze
+                    clayGroove
                 );
                 innerRim.position.z = 0.116;
                 group.add(innerRim);

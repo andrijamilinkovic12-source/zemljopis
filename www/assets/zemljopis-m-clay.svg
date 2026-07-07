@@ -1,20 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 86" role="img" aria-label="Slovo M kao planina">
   <defs>
     <linearGradient id="zemljopis-m-left-clay" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0" stop-color="#d4efb2"/>
-      <stop offset="0.52" stop-color="#87c97c"/>
-      <stop offset="1" stop-color="#5f9560"/>
+      <stop offset="0" stop-color="#d8efc8"/>
+      <stop offset="0.52" stop-color="#88b96f"/>
+      <stop offset="1" stop-color="#67995f"/>
     </linearGradient>
     <linearGradient id="zemljopis-m-right-clay" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0" stop-color="#ffd0a2"/>
-      <stop offset="0.55" stop-color="#de9a62"/>
-      <stop offset="1" stop-color="#a9664d"/>
+      <stop offset="0" stop-color="#ffe0b7"/>
+      <stop offset="0.55" stop-color="#d98562"/>
+      <stop offset="1" stop-color="#b66b55"/>
     </linearGradient>
     <filter id="clay-m-shadow" x="-18%" y="-28%" width="136%" height="156%">
-      <feDropShadow dx="0" dy="5" stdDeviation="2.6" flood-color="#4e382d" flood-opacity="0.3"/>
+      <feDropShadow dx="0" dy="5" stdDeviation="2.6" flood-color="#465868" flood-opacity="0.24"/>
     </filter>
   </defs>
-  <g fill="#5f4638" opacity="0.32" transform="translate(0 5)">
+  <g fill="#607589" opacity="0.24" transform="translate(0 5)">
     <path d="M5 76 43 16c4-6 12-6 16 0l38 60H5Z"/>
     <path d="M58 76 87 32c4-6 11-6 15 0l28 44H58Z"/>
   </g>

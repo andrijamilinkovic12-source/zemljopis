@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 82" role="img" aria-label="Slovo E kao voda">
   <defs>
     <linearGradient id="zemljopis-e-clay-gradient" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0" stop-color="#bceaf0"/>
-      <stop offset="0.52" stop-color="#72c4d4"/>
-      <stop offset="1" stop-color="#4a8da7"/>
+      <stop offset="0" stop-color="#c7edf4"/>
+      <stop offset="0.52" stop-color="#74b7d6"/>
+      <stop offset="1" stop-color="#4f91ad"/>
     </linearGradient>
     <filter id="clay-soft-shadow" x="-18%" y="-42%" width="136%" height="184%">
-      <feDropShadow dx="0" dy="4" stdDeviation="2.4" flood-color="#4d372c" flood-opacity="0.28"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="2.4" flood-color="#465868" flood-opacity="0.24"/>
     </filter>
   </defs>
-  <g fill="none" stroke="#5f4638" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" opacity="0.34">
+  <g fill="none" stroke="#607589" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" opacity="0.28">
     <path d="M9 22c8-10 18-10 28 0s20 10 30 0 20-10 30 0 15 8 22 3"/>
     <path d="M9 45c8-10 18-10 28 0s20 10 30 0 20-10 30 0 15 8 22 3"/>
     <path d="M9 68c8-10 18-10 28 0s20 10 30 0 20-10 30 0 15 8 22 3"/>

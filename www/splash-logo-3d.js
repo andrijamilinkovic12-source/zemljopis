@@ -1,7 +1,7 @@
 import * as THREE from './vendor/three.module.js';
 
 (function () {
-    const LOGO_SRC = 'assets/zemljopis-game-icon.png';
+    const LOGO_SRC = 'assets/zemljopis-splash-logo-v2.png';
 
     function webglDostupan() {
         try {

@@ -53,7 +53,7 @@ import * as THREE from './vendor/three.module.js';
         camera.position.set(0, 0, 4.4);
 
         const group = new THREE.Group();
-        group.rotation.set(-0.04, 0, 0);
+        group.rotation.set(0, 0, 0);
         scene.add(group);
 
         scene.add(new THREE.AmbientLight(0xffffff, 0.9));
@@ -108,9 +108,18 @@ import * as THREE from './vendor/three.module.js';
                 const coinGeometry = new THREE.CylinderGeometry(1, 1, 0.28, 96, 1, false);
                 coinGeometry.rotateX(Math.PI / 2);
 
-                const coin = new THREE.Mesh(coinGeometry, [claySide, faceMaterial, faceMaterial]);
+                const coin = new THREE.Mesh(coinGeometry, [claySide, clayRim, clayRim]);
                 coin.scale.set(1, 1, 1);
                 group.add(coin);
+
+                // Cylinder cap UVs rotate the texture when the WebGL canvas replaces
+                // the upright fallback image. A dedicated XY face keeps north at top.
+                const frontFace = new THREE.Mesh(
+                    new THREE.CircleGeometry(0.982, 128),
+                    faceMaterial
+                );
+                frontFace.position.z = 0.146;
+                group.add(frontFace);
 
                 const outerRim = new THREE.Mesh(
                     new THREE.TorusGeometry(1.02, 0.072, 14, 128),
@@ -178,7 +187,7 @@ import * as THREE from './vendor/three.module.js';
             currentX = THREE.MathUtils.lerp(currentX, targetX, 5 * delta);
             currentY = THREE.MathUtils.lerp(currentY, targetY, 5 * delta);
 
-            group.rotation.x = -0.04 + Math.sin(seconds * 1.2) * 0.008;
+            group.rotation.x = 0;
             group.rotation.y = 0;
             group.rotation.z = 0;
             group.position.y = Math.sin(seconds * 1.35) * 0.035;

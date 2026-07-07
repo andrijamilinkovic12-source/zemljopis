@@ -3881,9 +3881,9 @@ body.keyboard-open .dnevni-input-group input {
 /* --- SPLASH / LOADING EKRAN (Slovo po slovo sa ikonicama) --- */
 #splash-screen { 
     background:
-        linear-gradient(180deg, rgba(233, 246, 255, 0.11) 0%, rgba(255, 247, 229, 0.055) 40%, rgba(217, 237, 215, 0.1) 100%),
-        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.055), transparent 48%),
-        url('assets/splash-soft-matte-bg-reka-tuned.png') center center / cover no-repeat,
+        linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
+        url('assets/splash-soft-matte-bg-reka-clean-v2.png') center center / cover no-repeat,
         linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
     justify-content: center; 
     align-items: center; 
@@ -3895,9 +3895,9 @@ body.keyboard-open .dnevni-input-group input {
 @media (orientation: landscape) {
     #splash-screen {
         background:
-            linear-gradient(180deg, rgba(233, 246, 255, 0.11) 0%, rgba(255, 247, 229, 0.055) 40%, rgba(217, 237, 215, 0.1) 100%),
-            radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.055), transparent 48%),
-            url('assets/splash-soft-matte-bg-landscape-reka-tuned.png') center center / cover no-repeat,
+            linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
+            radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
+            url('assets/splash-soft-matte-bg-landscape-reka-clean-v2.png') center center / cover no-repeat,
             linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
     }
 }
@@ -3927,7 +3927,7 @@ body.keyboard-open .dnevni-input-group input {
 }
 
 .splash-brand-mark-3d {
-    --splash-logo-glow: rgba(var(--theme-primary-rgb, 63, 145, 186), 0.28);
+    --splash-logo-glow: rgba(var(--theme-primary-rgb, 63, 145, 186), 0.2);
     width: clamp(106px, 27vw, 154px);
     border: 0;
     border-radius: 50%;
@@ -3949,19 +3949,19 @@ body.keyboard-open .dnevni-input-group input {
 
 .splash-brand-mark-3d::before {
     background:
-        radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.26), transparent 24%),
-        radial-gradient(circle, rgba(var(--theme-primary-rgb, 63, 145, 186), 0.16), transparent 62%);
-    filter: blur(8px);
+        radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.16), transparent 22%),
+        radial-gradient(circle, rgba(var(--theme-primary-rgb, 63, 145, 186), 0.1), transparent 62%);
+    filter: blur(5px);
     transform: scale(1.18);
-    opacity: 0.9;
+    opacity: 0.72;
 }
 
 .splash-brand-mark-3d::after {
     border: 1px solid rgba(255, 244, 217, 0.36);
     box-shadow:
-        0 18px 42px rgba(70, 88, 104, 0.24),
-        0 0 34px var(--splash-logo-glow),
-        inset 0 0 22px rgba(255, 244, 217, 0.14);
+        0 14px 26px rgba(70, 88, 104, 0.22),
+        0 0 22px var(--splash-logo-glow),
+        inset 0 0 14px rgba(255, 244, 217, 0.1);
     transform: scale(0.92);
 }
 
@@ -3974,6 +3974,7 @@ body.keyboard-open .dnevni-input-group input {
     display: block;
     opacity: 0;
     transition: opacity 0.35s ease;
+    filter: saturate(1.04) contrast(1.05);
 }
 
 .splash-brand-fallback {
@@ -3986,8 +3987,8 @@ body.keyboard-open .dnevni-input-group input {
     opacity: 1;
     transform: translateZ(0);
     filter:
-        drop-shadow(0 15px 24px rgba(70, 88, 104, 0.28))
-        drop-shadow(0 0 18px rgba(var(--theme-primary-rgb, 63, 145, 186), 0.22));
+        drop-shadow(0 12px 16px rgba(70, 88, 104, 0.24))
+        drop-shadow(0 0 10px rgba(var(--theme-primary-rgb, 63, 145, 186), 0.14));
     transition: opacity 0.25s ease, transform 0.35s ease;
 }
 
@@ -4018,7 +4019,7 @@ body.keyboard-open .dnevni-input-group input {
     letter-spacing: 0;
     perspective: 520px;
     transform-style: preserve-3d;
-    filter: drop-shadow(0 17px 17px rgba(38, 56, 72, 0.28));
+    filter: drop-shadow(0 12px 10px rgba(38, 56, 72, 0.22));
     animation: clayWordBreath 3.8s ease-in-out infinite;
     animation-delay: 3.2s;
 }
@@ -4127,9 +4128,9 @@ body.keyboard-open .dnevni-input-group input {
         0 2px 0 var(--clay-side),
         0 3px 0 var(--clay-base),
         0 4px 0 var(--clay-base),
-        0 5px 0 rgba(58, 72, 81, 0.16),
-        0 8px 10px var(--clay-depth),
-        0 15px 22px rgba(37, 52, 65, 0.22);
+        0 5px 0 rgba(58, 72, 81, 0.14),
+        0 7px 6px var(--clay-depth),
+        0 12px 10px rgba(37, 52, 65, 0.18);
 }
 
 .splash-logo span:not(.icon-letter)::before,
@@ -4142,8 +4143,8 @@ body.keyboard-open .dnevni-input-group input {
     bottom: -0.18em;
     height: 0.24em;
     border-radius: 999px;
-    background: rgba(38, 56, 72, 0.24);
-    filter: blur(8px);
+    background: rgba(38, 56, 72, 0.2);
+    filter: blur(4px);
     transform: translate3d(0.08em, 0.06em, -1px) skewX(-8deg);
 }
 
@@ -4162,8 +4163,8 @@ body.keyboard-open .dnevni-input-group input {
     filter:
         drop-shadow(0 -1px 0 rgba(255, 246, 220, 0.64))
         drop-shadow(0 2px 0 rgba(67, 137, 170, 0.62))
-        drop-shadow(0 5px 0 rgba(49, 95, 125, 0.32))
-        drop-shadow(0 10px 11px rgba(38, 56, 72, 0.24));
+        drop-shadow(0 4px 0 rgba(49, 95, 125, 0.3))
+        drop-shadow(0 8px 6px rgba(38, 56, 72, 0.2));
 }
 
 .splash-logo span.svg-letter {
@@ -4175,15 +4176,15 @@ body.keyboard-open .dnevni-input-group input {
     filter:
         drop-shadow(0 -1px 0 rgba(255, 246, 220, 0.58))
         drop-shadow(0 2px 0 rgba(70, 96, 111, 0.52))
-        drop-shadow(0 5px 0 rgba(47, 74, 91, 0.28))
-        drop-shadow(0 11px 12px rgba(38, 56, 72, 0.26));
+        drop-shadow(0 4px 0 rgba(47, 74, 91, 0.26))
+        drop-shadow(0 8px 7px rgba(38, 56, 72, 0.2));
 }
 
 .splash-letter-svg {
     width: 100%;
     height: 100%;
     display: block;
-    filter: saturate(1.1) contrast(1.06);
+    filter: saturate(1.08) contrast(1.12);
 }
 
 /* --- KREIRANJE SLOVA M OD 2 PLANINE --- */
@@ -7125,18 +7126,18 @@ body[data-tema="zivotinja"] {
 
 body[data-tema] #splash-screen {
     background:
-        linear-gradient(180deg, rgba(233, 246, 255, 0.11) 0%, rgba(255, 247, 229, 0.055) 40%, rgba(217, 237, 215, 0.1) 100%),
-        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.055), transparent 48%),
-        url('assets/splash-soft-matte-bg-reka-tuned.png') center center / cover no-repeat,
+        linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
+        url('assets/splash-soft-matte-bg-reka-clean-v2.png') center center / cover no-repeat,
         var(--theme-splash-bg);
 }
 
 @media (orientation: landscape) {
     body[data-tema] #splash-screen {
         background:
-            linear-gradient(180deg, rgba(233, 246, 255, 0.11) 0%, rgba(255, 247, 229, 0.055) 40%, rgba(217, 237, 215, 0.1) 100%),
-            radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.055), transparent 48%),
-            url('assets/splash-soft-matte-bg-landscape-reka-tuned.png') center center / cover no-repeat,
+            linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
+            radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
+            url('assets/splash-soft-matte-bg-landscape-reka-clean-v2.png') center center / cover no-repeat,
             var(--theme-splash-bg);
     }
 }

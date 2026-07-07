@@ -1,7 +1,7 @@
 import * as THREE from './vendor/three.module.js';
 
 (function () {
-    const LOGO_SRC = 'assets/zemljopis-splash-logo-v2.png';
+    const LOGO_SRC = 'assets/zemljopis-splash-logo-clean-v2.png';
 
     function webglDostupan() {
         try {
@@ -42,7 +42,7 @@ import * as THREE from './vendor/three.module.js';
         }
 
         renderer.setClearColor(0x000000, 0);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.25));
         if (THREE.ColorManagement) THREE.ColorManagement.enabled = true;
         if ('outputColorSpace' in renderer && THREE.SRGBColorSpace) {
             renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -56,29 +56,29 @@ import * as THREE from './vendor/three.module.js';
         group.rotation.set(-0.08, -0.24, 0.02);
         scene.add(group);
 
-        scene.add(new THREE.AmbientLight(0xffffff, 1.35));
+        scene.add(new THREE.AmbientLight(0xffffff, 1.05));
 
-        const keyLight = new THREE.DirectionalLight(0xfff2d8, 2.05);
+        const keyLight = new THREE.DirectionalLight(0xfff2d8, 1.72);
         keyLight.position.set(2.8, 3.4, 4.8);
         scene.add(keyLight);
 
-        const rimLight = new THREE.PointLight(0x74b7d6, 1.75, 7);
+        const rimLight = new THREE.PointLight(0x74b7d6, 1.25, 7);
         rimLight.position.set(-2.6, -1.8, 3.2);
         scene.add(rimLight);
 
-        const softLight = new THREE.PointLight(0x88b96f, 1.05, 7);
+        const softLight = new THREE.PointLight(0x88b96f, 0.8, 7);
         softLight.position.set(2.4, -2.2, 2.5);
         scene.add(softLight);
 
         const clayRim = new THREE.MeshStandardMaterial({
             color: 0xf2d8ad,
             metalness: 0.02,
-            roughness: 0.72
+            roughness: 0.68
         });
         const clayGroove = new THREE.MeshStandardMaterial({
             color: 0xd98562,
             metalness: 0.01,
-            roughness: 0.78
+            roughness: 0.72
         });
         const glowMaterial = new THREE.MeshBasicMaterial({
             color: 0x74b7d6,
@@ -92,12 +92,12 @@ import * as THREE from './vendor/three.module.js';
             LOGO_SRC,
             texture => {
                 if (THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
-                texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+                texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
 
                 const faceMaterial = new THREE.MeshStandardMaterial({
                     map: texture,
                     metalness: 0.01,
-                    roughness: 0.74
+                    roughness: 0.68
                 });
 
                 const coinGeometry = new THREE.CylinderGeometry(1, 1, 0.18, 96, 1, false);

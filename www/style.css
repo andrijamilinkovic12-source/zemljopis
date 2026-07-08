@@ -1544,6 +1544,17 @@ body[data-tema="svetla"] #postavke-nadimak {
     opacity: 0;
 }
 
+/* Navy soft-matte Solo/Turnir icons use cleaned raster assets instead of legacy canvases. */
+.solo-btn.three-solo-ready .solo-three,
+.tournament-btn.three-tournament-ready .tournament-three {
+    display: none;
+}
+
+.solo-btn.three-solo-ready .solo-mode-icon,
+.tournament-btn.three-tournament-ready .tournament-mode-icon {
+    opacity: 1;
+}
+
 .multiplayer-icon-slot.three-multiplayer-ready .multiplayer-mode-icon,
 .invite-friends-icon-slot.three-invite-friends-ready .invite-friends-mode-icon {
     opacity: 0;
@@ -1871,6 +1882,10 @@ body[data-tema="svetla"] #postavke-nadimak {
     transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
     overflow: hidden;
+}
+
+.sub-modes-row .sub-mode-btn {
+    margin-bottom: 0;
 }
 
 .sub-mode-wrapper:active .sub-mode-btn {

@@ -1521,6 +1521,21 @@ body[data-tema="svetla"] #postavke-nadimak {
     opacity: 0;
 }
 
+/* Navy soft-matte bottom-row icons use cleaned raster assets instead of legacy canvases. */
+.treasury-btn.three-treasury-ready .treasury-three,
+.leaderboard-btn.three-leaderboard-ready .leaderboard-three,
+.friend-room-btn.three-friend-room-ready .friend-room-three,
+.settings-btn.three-settings-ready .settings-three {
+    display: none;
+}
+
+.treasury-btn.three-treasury-ready .treasury-icon,
+.leaderboard-btn.three-leaderboard-ready .leaderboard-icon,
+.friend-room-btn.three-friend-room-ready .friend-room-icon,
+.settings-btn.three-settings-ready .settings-icon {
+    opacity: 1;
+}
+
 .solo-btn.three-solo-ready .solo-mode-icon {
     opacity: 0;
 }

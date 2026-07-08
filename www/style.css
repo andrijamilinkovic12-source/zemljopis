@@ -1560,6 +1560,17 @@ body[data-tema="svetla"] #postavke-nadimak {
     opacity: 0;
 }
 
+/* Navy soft-matte central action icons use cleaned raster assets instead of legacy canvases. */
+.multiplayer-icon-slot.three-multiplayer-ready .multiplayer-mode-three,
+.invite-friends-icon-slot.three-invite-friends-ready .invite-friends-mode-three {
+    display: none;
+}
+
+.multiplayer-icon-slot.three-multiplayer-ready .multiplayer-mode-icon,
+.invite-friends-icon-slot.three-invite-friends-ready .invite-friends-mode-icon {
+    opacity: 1;
+}
+
 .global-chat-btn.three-global-chat-ready .global-chat-icon,
 .quarterly-level-btn.three-quarterly-level-ready .quarterly-level-icon,
 .trophy-room-btn.three-trophy-room-ready .trophy-room-icon {
@@ -7274,6 +7285,65 @@ body[data-tema] .circle-half span { color: var(--theme-text); }
 body[data-tema] .circle-divider { background: var(--theme-border); }
 body[data-tema] .circle-overlay { background: var(--theme-panel-strong); }
 body[data-tema] .close-overlay-btn { color: var(--theme-muted); }
+
+/* Navy translucent treatment for the central Multiplayer / Pozovi prijatelje CTA. */
+.big-circle,
+body[data-tema] .big-circle {
+    background:
+        radial-gradient(circle at 50% 18%, rgba(32, 59, 89, 0.82), rgba(20, 44, 70, 0.66) 58%, rgba(8, 22, 39, 0.56));
+    border-color: rgba(245, 233, 208, 0.34);
+    box-shadow:
+        0 12px 30px rgba(4, 12, 24, 0.34),
+        inset 0 1px 0 rgba(245, 233, 208, 0.18),
+        inset 0 0 24px rgba(255, 255, 255, 0.035);
+    backdrop-filter: blur(8px) saturate(1.05);
+}
+
+.top-half,
+body[data-tema] .top-half {
+    background: linear-gradient(to bottom, rgba(32, 59, 89, 0.38), rgba(20, 44, 70, 0.08));
+}
+
+.bottom-half,
+body[data-tema] .bottom-half {
+    background: linear-gradient(to top, rgba(32, 59, 89, 0.38), rgba(20, 44, 70, 0.08));
+}
+
+.top-half:active,
+body[data-tema] .top-half:active,
+.bottom-half:active,
+body[data-tema] .bottom-half:active {
+    background: rgba(32, 59, 89, 0.48);
+}
+
+.big-mode-label,
+body[data-tema] .circle-half .big-mode-label {
+    color: #F8EFD8;
+    font-size: clamp(0.82rem, 2.25vw, 0.94rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-shadow:
+        0 2px 5px rgba(2, 10, 20, 0.82),
+        0 0 12px rgba(20, 44, 70, 0.62);
+}
+
+.invite-friends-label {
+    font-size: clamp(0.72rem, 2vw, 0.86rem);
+    letter-spacing: 0.065em;
+    white-space: nowrap;
+}
+
+.circle-divider,
+body[data-tema] .circle-divider {
+    background: rgba(245, 233, 208, 0.28);
+}
+
+.big-mode-icon-slot {
+    width: min(3.65rem, 17vw, 7.6vh);
+    height: min(3.65rem, 17vw, 7.6vh);
+}
 
 body[data-tema] .solo-btn {
     background: rgba(var(--theme-accent-rgb), 0.13);

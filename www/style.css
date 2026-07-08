@@ -1496,6 +1496,15 @@ body[data-tema="svetla"] #postavke-nadimak {
     opacity: 0;
 }
 
+/* Navy soft-matte candidate uses the cleaned raster instead of the legacy canvas. */
+.daily-challenge-btn.three-daily-ready .daily-challenge-three {
+    display: none;
+}
+
+.daily-challenge-btn.three-daily-ready .daily-challenge-icon {
+    opacity: 1;
+}
+
 .treasury-btn.three-treasury-ready .treasury-icon {
     opacity: 0;
 }

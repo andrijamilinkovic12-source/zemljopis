@@ -2160,7 +2160,13 @@ body[data-tema="zivotinja"] #main-menu > .clay-theme-three {
 }
 
 body[data-tema="zivotinja"] #main-menu > .zivotinja-live-layer {
-    display: block;
+    /* Privremeno ugašeno: statični završni render već sadrži sve životinje. */
+    display: none;
+}
+
+body[data-tema="zivotinja"] #main-menu > .zivotinja-live-layer,
+body[data-tema="zivotinja"] #main-menu > .zivotinja-live-layer * {
+    animation: none !important;
 }
 
 .zivotinja-clouds-layer {
@@ -7049,7 +7055,7 @@ body[data-tema="okean"] { --theme-bg-image: url('assets/reka-soft-matte-bg-v3.pn
 body[data-tema="grad"] { --theme-bg-image: url('assets/grad-soft-matte-bg-reka-clean-v2.png'); }
 body[data-tema="planina"] { --theme-bg-image: url('assets/planina-soft-matte-bg-reka-clean-v2.png'); }
 body[data-tema="biljka"] { --theme-bg-image: url('assets/biljka-soft-matte-bg-reka-clean-v2.png'); }
-body[data-tema="zivotinja"] { --theme-bg-image: url('assets/zivotinja-soft-matte-bg-reka-clean-v2.png'); }
+body[data-tema="zivotinja"] { --theme-bg-image: url('assets/zivotinja-soft-matte-bg-static-clean-v2.png'); }
 body[data-tema="predmet"] { --theme-bg-image: url('assets/predmet-soft-matte-bg-reka-clean-v2.png'); }
 
 body[data-tema="drzava"],

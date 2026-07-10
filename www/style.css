@@ -3883,11 +3883,11 @@ body.keyboard-open .dnevni-input-group input {
 
 /* ZAJEDNIČKI STIL ZA SVA SLOVA I IKONICE (Samo animacija i pozicija) */
 .splash-logo span {
-    --clay-highlight: #4f78a4;
-    --clay-face: #2b5686;
-    --clay-accent: #1d4675;
-    --clay-side: #15385f;
-    --clay-base: #102b4d;
+    --clay-highlight: #416b9b;
+    --clay-face: #254e7d;
+    --clay-accent: #183d67;
+    --clay-side: #102f53;
+    --clay-base: #0b243f;
     opacity: 0; 
     transform: translateY(24px) rotateX(34deg) rotateZ(-2deg) scale(0.72); 
     transform-origin: 50% 78%;
@@ -3903,43 +3903,43 @@ body.keyboard-open .dnevni-input-group input {
 }
 
 .splash-logo span:nth-child(1) {
-    --clay-highlight: #4f78a4;
-    --clay-face: #2b5686;
-    --clay-accent: #1d4675;
-    --clay-side: #15385f;
-    --clay-base: #102b4d;
+    --clay-highlight: #416b9b;
+    --clay-face: #254e7d;
+    --clay-accent: #183d67;
+    --clay-side: #102f53;
+    --clay-base: #0b243f;
 }
 
 .splash-logo span:nth-child(4) {
-    --clay-highlight: #6da37a;
-    --clay-face: #3d7f5f;
-    --clay-accent: #2d6b54;
-    --clay-side: #245744;
-    --clay-base: #1b4337;
+    --clay-highlight: #42b894;
+    --clay-face: #168f72;
+    --clay-accent: #10765f;
+    --clay-side: #0c604f;
+    --clay-base: #08483f;
 }
 
 .splash-logo span:nth-child(6) {
-    --clay-highlight: #ff8983;
-    --clay-face: #e94f59;
-    --clay-accent: #c83b50;
-    --clay-side: #a53048;
-    --clay-base: #7d2b42;
+    --clay-highlight: #f37d9c;
+    --clay-face: #df4a7c;
+    --clay-accent: #bd376d;
+    --clay-side: #96305f;
+    --clay-base: #72294e;
 }
 
 .splash-logo span:nth-child(7) {
-    --clay-highlight: #f8dcaa;
-    --clay-face: #e9bd7a;
-    --clay-accent: #cd955d;
-    --clay-side: #a76d4a;
-    --clay-base: #795140;
+    --clay-highlight: #ffe2b8;
+    --clay-face: #f3cb91;
+    --clay-accent: #dca869;
+    --clay-side: #b87c4d;
+    --clay-base: #86553d;
 }
 
 .splash-logo span:nth-child(8) {
-    --clay-highlight: #c69be7;
-    --clay-face: #9167c7;
-    --clay-accent: #724fac;
-    --clay-side: #573e88;
-    --clay-base: #41336c;
+    --clay-highlight: #a98ad4;
+    --clay-face: #765ab4;
+    --clay-accent: #5f479a;
+    --clay-side: #493a7c;
+    --clay-base: #362f61;
 }
 
 .splash-logo span:nth-child(9) {

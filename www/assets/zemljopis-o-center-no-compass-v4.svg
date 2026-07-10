@@ -1,53 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Globus bez kompasa">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Originalni globus sa uklonjenim kompasom">
   <defs>
-    <radialGradient id="center-ocean" cx="31%" cy="22%" r="78%">
-      <stop offset="0" stop-color="#73d5e6"/>
-      <stop offset="0.46" stop-color="#36acd1"/>
-      <stop offset="1" stop-color="#21789e"/>
+    <radialGradient id="compass-ocean" cx="31%" cy="22%" r="78%">
+      <stop offset="0" stop-color="#70d3e5"/>
+      <stop offset="0.46" stop-color="#35abd0"/>
+      <stop offset="1" stop-color="#21779e"/>
     </radialGradient>
-    <linearGradient id="center-green" x1="0.18" x2="0.84" y1="0" y2="1">
-      <stop offset="0" stop-color="#b9df72"/>
-      <stop offset="1" stop-color="#61a84c"/>
+    <linearGradient id="compass-green" x1="0.18" x2="0.84" y1="0" y2="1">
+      <stop offset="0" stop-color="#b8df73"/>
+      <stop offset="1" stop-color="#61a84d"/>
     </linearGradient>
-    <linearGradient id="center-sand" x1="0.2" x2="0.82" y1="0" y2="1">
-      <stop offset="0" stop-color="#ffd26f"/>
+    <linearGradient id="compass-sand" x1="0.2" x2="0.82" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffd16e"/>
       <stop offset="1" stop-color="#df9835"/>
     </linearGradient>
-    <linearGradient id="center-purple" x1="0.18" x2="0.82" y1="0" y2="1">
+    <linearGradient id="compass-purple" x1="0.18" x2="0.82" y1="0" y2="1">
       <stop offset="0" stop-color="#bf96d4"/>
-      <stop offset="1" stop-color="#875da3"/>
+      <stop offset="1" stop-color="#865ca2"/>
     </linearGradient>
-    <linearGradient id="center-orange" x1="0.18" x2="0.82" y1="0" y2="1">
+    <linearGradient id="compass-orange" x1="0.18" x2="0.82" y1="0" y2="1">
       <stop offset="0" stop-color="#ff9856"/>
       <stop offset="1" stop-color="#d95f37"/>
     </linearGradient>
-    <clipPath id="center-globe-clip">
-      <circle cx="48" cy="47" r="45"/>
+    <path id="compass-shape" d="M48 2 57 34 68 23 62 41 95 48 62 55 70 72 56 61 48 96 40 61 26 72 34 55 1 48 34 41 26 23 39 34Z"/>
+    <clipPath id="compass-clip">
+      <use href="#compass-shape"/>
     </clipPath>
   </defs>
-  <circle cx="48" cy="50" r="45" fill="#1d6789"/>
-  <circle cx="48" cy="47" r="45" fill="url(#center-ocean)"/>
-  <g clip-path="url(#center-globe-clip)" opacity="0.55" transform="translate(0 2.2)">
-    <path fill="#4d873e" d="M7 24c8-12 23-18 36-12l7 7-7 7-9 1-5 10-9 6-10-7-3-12Z"/>
-    <path fill="#4d873e" d="M23 42c10-4 19 1 21 10-1 11-9 22-13 36-6-6-9-16-7-24l-7-11 6-11Z"/>
-    <path fill="#4d873e" d="M47 17c15-9 34-6 45 5l5 9-11 5-12-3-9 7-15-5-8-10 5-8Z"/>
-    <path fill="#ac752e" d="M54 38c10-5 20 0 23 9 0 12-8 25-16 36-6-7-7-17-11-24-5-8-3-16 4-21Z"/>
-    <path fill="#a34a31" d="M73 66c9-4 18 0 20 8-5 8-17 10-25 4l5-12Z"/>
-  </g>
-  <g clip-path="url(#center-globe-clip)">
-    <path fill="url(#center-green)" d="M7 24c8-12 23-18 36-12l7 7-7 7-9 1-5 10-9 6-10-7-3-12Z"/>
-    <path fill="url(#center-green)" d="M23 42c10-4 19 1 21 10-1 11-9 22-13 36-6-6-9-16-7-24l-7-11 6-11Z"/>
-    <path fill="url(#center-green)" d="M47 17c15-9 34-6 45 5l5 9-11 5-12-3-9 7-15-5-8-10 5-8Z"/>
-    <path fill="url(#center-sand)" d="M54 38c10-5 20 0 23 9 0 12-8 25-16 36-6-7-7-17-11-24-5-8-3-16 4-21Z"/>
-    <path fill="url(#center-purple)" d="M68 24c8-3 17 0 22 6l-8 6-11-3-7-6 4-3Z"/>
-    <path fill="url(#center-orange)" d="M73 66c9-4 18 0 20 8-5 8-17 10-25 4l5-12Z"/>
-    <path fill="url(#center-purple)" d="M40 87c12-5 28-4 39 2-10 7-27 8-41 4l2-6Z"/>
-    <g fill="#efd8aa" opacity="0.92">
-      <circle cx="8" cy="50" r="1.5"/>
-      <circle cx="11" cy="57" r="1.2"/>
-      <circle cx="87" cy="48" r="1.3"/>
+  <use href="#compass-shape" fill="url(#compass-ocean)" stroke="#2a97ba" stroke-width="2.4" stroke-linejoin="round"/>
+  <g clip-path="url(#compass-clip)">
+    <path fill="url(#compass-green)" d="M-2 13C10 2 29 2 42 12l8 8-8 7-11 1-6 10-11 7L2 36-2 13Z"/>
+    <path fill="url(#compass-sand)" d="M5 39c12-5 24 0 28 11-1 11-9 21-14 35-7-7-10-17-8-26L4 49l1-10Z"/>
+    <path fill="url(#compass-green)" d="M45 10c16-9 37-5 50 8l5 10-12 7-14-3-10 8-16-6-9-11 6-13Z"/>
+    <path fill="url(#compass-green)" d="M24 48c10-4 20 2 22 11-1 12-9 23-14 37-7-7-9-17-7-26l-7-12 6-10Z"/>
+    <path fill="url(#compass-sand)" d="M53 36c11-5 22 0 25 10 0 13-8 27-17 39-7-8-8-18-12-26-5-9-3-18 4-23Z"/>
+    <path fill="url(#compass-purple)" d="M67 22c9-4 20-1 27 7l-10 7-13-3-8-7 4-4Z"/>
+    <path fill="url(#compass-orange)" d="M73 65c10-4 20 0 23 9-6 10-19 11-29 4l6-13Z"/>
+    <path fill="url(#compass-purple)" d="M39 87c14-5 32-4 45 3-12 7-31 8-47 4l2-7Z"/>
+    <g fill="#efd8aa" opacity="0.9">
+      <circle cx="7" cy="51" r="1.4"/>
+      <circle cx="11" cy="58" r="1.2"/>
+      <circle cx="88" cy="47" r="1.3"/>
       <circle cx="92" cy="57" r="1.1"/>
-      <circle cx="47" cy="8" r="1.2"/>
     </g>
   </g>
 </svg>

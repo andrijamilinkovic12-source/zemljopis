@@ -3849,7 +3849,9 @@ body.keyboard-open .dnevni-input-group input {
     letter-spacing: 0;
     perspective: 520px;
     transform-style: preserve-3d;
-    filter: drop-shadow(0 12px 10px rgba(38, 56, 72, 0.22));
+    filter:
+        drop-shadow(0 13px 10px rgba(8, 29, 52, 0.36))
+        drop-shadow(0 0 6px rgba(35, 190, 202, 0.12));
     animation: clayWordBreath 3.8s ease-in-out infinite;
     animation-delay: 3.2s;
 }
@@ -3883,12 +3885,13 @@ body.keyboard-open .dnevni-input-group input {
 
 /* ZAJEDNIČKI STIL ZA SVA SLOVA I IKONICE (Samo animacija i pozicija) */
 .splash-logo span {
-    --clay-highlight: #ffe2b8;
-    --clay-face: #d98562;
-    --clay-side: #ad604e;
-    --clay-base: #6f463f;
-    --clay-rim: rgba(255, 246, 220, 0.72);
-    --clay-depth: rgba(39, 56, 77, 0.32);
+    --clay-highlight: #ffd5c1;
+    --clay-face: #f17870;
+    --clay-side: #c64f62;
+    --clay-base: #7b314d;
+    --clay-outline: #153957;
+    --clay-rim: rgba(255, 249, 231, 0.9);
+    --clay-depth: rgba(8, 27, 48, 0.56);
     opacity: 0; 
     transform: translateY(24px) rotateX(34deg) rotateZ(-2deg) scale(0.72); 
     transform-origin: 50% 78%;
@@ -3902,38 +3905,38 @@ body.keyboard-open .dnevni-input-group input {
 }
 
 .splash-logo span:nth-child(1) {
-    --clay-highlight: #ffe2b8;
-    --clay-face: #d98562;
-    --clay-side: #ad604e;
-    --clay-base: #6f463f;
+    --clay-highlight: #ffd5c1;
+    --clay-face: #f17870;
+    --clay-side: #c64f62;
+    --clay-base: #7b314d;
 }
 
 .splash-logo span:nth-child(4) {
-    --clay-highlight: #dcefc7;
-    --clay-face: #7fb866;
-    --clay-side: #5d9557;
-    --clay-base: #3f684d;
+    --clay-highlight: #d9f7a5;
+    --clay-face: #79c768;
+    --clay-side: #3a8c69;
+    --clay-base: #214f5b;
 }
 
 .splash-logo span:nth-child(6) {
-    --clay-highlight: #c3eef5;
-    --clay-face: #5fb5d7;
-    --clay-side: #4389aa;
-    --clay-base: #315f7d;
+    --clay-highlight: #b9f4f5;
+    --clay-face: #32c0ca;
+    --clay-side: #1986a8;
+    --clay-base: #164d72;
 }
 
 .splash-logo span:nth-child(7) {
-    --clay-highlight: #ffe5ad;
-    --clay-face: #e0b36d;
-    --clay-side: #a8753e;
-    --clay-base: #6f5237;
+    --clay-highlight: #ffe397;
+    --clay-face: #f2bc52;
+    --clay-side: #d77845;
+    --clay-base: #784257;
 }
 
 .splash-logo span:nth-child(8) {
-    --clay-highlight: #ffd8c1;
-    --clay-face: #d98562;
-    --clay-side: #ad604e;
-    --clay-base: #6f463f;
+    --clay-highlight: #ffc5d1;
+    --clay-face: #f16d91;
+    --clay-side: #bc447c;
+    --clay-base: #67345f;
 }
 
 .splash-logo span:nth-child(9) {
@@ -3952,15 +3955,22 @@ body.keyboard-open .dnevni-input-group input {
     background-clip: text;
     -webkit-text-fill-color: transparent; 
     color: transparent;
+    -webkit-text-stroke: clamp(0.9px, 0.032em, 1.45px) var(--clay-outline);
+    paint-order: stroke fill;
     text-shadow:
         0 -1px 0 var(--clay-rim),
-        0 1px 0 var(--clay-side),
-        0 2px 0 var(--clay-side),
-        0 3px 0 var(--clay-base),
-        0 4px 0 var(--clay-base),
-        0 5px 0 rgba(58, 72, 81, 0.14),
-        0 7px 6px var(--clay-depth),
-        0 12px 10px rgba(37, 52, 65, 0.18);
+        0 1px 0 #153957,
+        0 2px 0 #123252,
+        0 3px 0 #0d2947,
+        0 4px 0 #0a223c,
+        0 6px 0 rgba(7, 25, 45, 0.38),
+        0 8px 7px var(--clay-depth),
+        0 13px 12px rgba(7, 22, 40, 0.28);
+}
+
+.splash-logo .splash-letter-s {
+    font-size: 1.06em;
+    min-width: 0.66em;
 }
 
 .splash-logo span:not(.icon-letter)::before,
@@ -3973,7 +3983,7 @@ body.keyboard-open .dnevni-input-group input {
     bottom: -0.18em;
     height: 0.24em;
     border-radius: 999px;
-    background: rgba(38, 56, 72, 0.2);
+    background: rgba(8, 27, 48, 0.3);
     filter: blur(4px);
     transform: translate3d(0.08em, 0.06em, -1px) skewX(-8deg);
 }
@@ -4004,17 +4014,19 @@ body.keyboard-open .dnevni-input-group input {
     align-items: center;
     justify-content: center;
     filter:
-        drop-shadow(0 -1px 0 rgba(255, 246, 220, 0.58))
-        drop-shadow(0 2px 0 rgba(70, 96, 111, 0.52))
-        drop-shadow(0 4px 0 rgba(47, 74, 91, 0.26))
-        drop-shadow(0 8px 7px rgba(38, 56, 72, 0.2));
+        drop-shadow(0 -1px 0 rgba(255, 249, 231, 0.9))
+        drop-shadow(1px 0 0 rgba(21, 57, 87, 0.96))
+        drop-shadow(-1px 0 0 rgba(21, 57, 87, 0.96))
+        drop-shadow(0 1px 0 rgba(21, 57, 87, 0.96))
+        drop-shadow(0 3px 0 rgba(13, 41, 71, 0.88))
+        drop-shadow(0 8px 7px rgba(8, 27, 48, 0.46));
 }
 
 .splash-letter-svg {
     width: 100%;
     height: 100%;
     display: block;
-    filter: saturate(1.08) contrast(1.12);
+    filter: saturate(1.28) contrast(1.2) brightness(0.98);
 }
 
 /* --- KREIRANJE SLOVA M OD 2 PLANINE --- */
@@ -4047,13 +4059,13 @@ body.keyboard-open .dnevni-input-group input {
 @keyframes clayWordBreath {
     0%, 100% {
         filter:
-            drop-shadow(0 17px 17px rgba(38, 56, 72, 0.28))
-            drop-shadow(0 0 12px rgba(95, 181, 215, 0.1));
+            drop-shadow(0 15px 14px rgba(8, 29, 52, 0.4))
+            drop-shadow(0 0 8px rgba(35, 190, 202, 0.14));
     }
     50% {
         filter:
-            drop-shadow(0 19px 20px rgba(38, 56, 72, 0.32))
-            drop-shadow(0 0 20px rgba(127, 184, 102, 0.15));
+            drop-shadow(0 17px 17px rgba(8, 29, 52, 0.44))
+            drop-shadow(0 0 12px rgba(241, 109, 145, 0.14));
     }
 }
 

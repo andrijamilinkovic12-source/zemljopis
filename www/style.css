@@ -2139,33 +2139,30 @@ body[data-tema="okean"] #main-menu > .reka-live-layer {
     display: block;
 }
 
-.reka-water-surface {
+.reka-water-flow {
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center center;
-    opacity: 0;
-    transform-origin: 50% 76%;
-    filter: saturate(1.08) contrast(1.015);
-    will-change: transform, opacity;
-    animation: rekaWaterLayerFlow 8s linear infinite;
-}
-
-.reka-water-surface-b {
-    animation-delay: -4s;
+    background-image: url("assets/reka-water-flow-texture-v3.png");
+    background-repeat: repeat-y;
+    background-position: 35% 0%;
+    background-size: 115% 50%;
+    -webkit-mask-image: url("assets/reka-water-surface-clean-v2.png");
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: 100% 100%;
+    mask-image: url("assets/reka-water-surface-clean-v2.png");
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: 100% 100%;
+    will-change: background-position;
+    animation: rekaWaterTextureFlow 5.2s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .reka-water-surface {
+    .reka-water-flow {
         animation: none;
-        opacity: 0.26;
-        transform: none;
-    }
-
-    .reka-water-surface-b {
-        display: none;
+        opacity: 0.7;
+        background-position: 50% 50%;
     }
 }
 
@@ -2739,24 +2736,15 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     }
 }
 
-@keyframes rekaWaterLayerFlow {
+@keyframes rekaWaterTextureFlow {
     0% {
-        transform: translate3d(0, -0.18%, 0) scale(1.004);
-        opacity: 0;
+        background-position: 35% 0%;
     }
-    16% {
-        opacity: 0.22;
-    }
-    52% {
-        transform: translate3d(0.06%, 0.12%, 0) scale(1.006);
-        opacity: 0.32;
-    }
-    82% {
-        opacity: 0.22;
+    50% {
+        background-position: 65% 50%;
     }
     100% {
-        transform: translate3d(-0.04%, 0.46%, 0) scale(1.008);
-        opacity: 0;
+        background-position: 35% 100%;
     }
 }
 

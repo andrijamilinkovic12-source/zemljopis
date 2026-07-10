@@ -1,29 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 82" role="img" aria-label="Slovo E kao reka">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 82" role="img" aria-label="Slovo E kao reka iz Zemljopis logoa">
   <defs>
-    <linearGradient id="river-face" x1="0.18" x2="0.78" y1="0" y2="1">
-      <stop offset="0" stop-color="#c4f5fb"/>
-      <stop offset="0.34" stop-color="#71d8ec"/>
-      <stop offset="0.7" stop-color="#43b7d7"/>
-      <stop offset="1" stop-color="#2789b1"/>
+    <linearGradient id="logo-river-face" x1="0.08" x2="0.9" y1="0" y2="1">
+      <stop offset="0" stop-color="#72d6eb"/>
+      <stop offset="0.48" stop-color="#32acd8"/>
+      <stop offset="1" stop-color="#1e72aa"/>
     </linearGradient>
   </defs>
-  <g fill="none" stroke="#24789f" stroke-linecap="round" stroke-linejoin="round" stroke-width="15" transform="translate(0 3.4)">
-    <path d="M9 18c8-10 18-10 28 0s20 10 30 0 20-10 30 0 15 8 22 3"/>
-    <path d="M9 41c8-10 18-10 28 0s20 10 30 0 20-10 30 0 15 8 22 3"/>
-    <path d="M9 64c8-10 18-10 28 0s20 10 30 0 20-10 30 0 15 8 22 3"/>
-  </g>
-  <g fill="none" stroke="url(#river-face)" stroke-linecap="round" stroke-linejoin="round" stroke-width="14">
-    <path d="M9 18c8-10 18-10 28 0s20 10 30 0 20-10 30 0 15 8 22 3"/>
-    <path d="M9 41c8-10 18-10 28 0s20 10 30 0 20-10 30 0 15 8 22 3"/>
-    <path d="M9 64c8-10 18-10 28 0s20 10 30 0 20-10 30 0 15 8 22 3"/>
-  </g>
-  <g fill="none" stroke="#e5fbfd" stroke-linecap="round" stroke-width="2.5" opacity="0.72">
-    <path d="M15 14c5-4 11-4 17 0"/>
-    <path d="M45 37c5 4 11 4 17 0"/>
-    <path d="M78 60c5-4 11-4 17 0"/>
-  </g>
-  <g fill="none" stroke="#8ee4f1" stroke-linecap="round" stroke-width="1.8" opacity="0.48">
-    <path d="M101 16c6 2 11 7 18 5"/>
-    <path d="M12 42c6-5 12-5 18 0"/>
-  </g>
+  <path d="M8 51c13 0 26-1 37-9 9-7 9-17 1-21-10-5-21 3-21 16 0 16 14 27 31 25 15-2 23-13 33-12" fill="none" stroke="#1e628f" stroke-linecap="round" stroke-linejoin="round" stroke-width="19" transform="translate(0 3.2)"/>
+  <path d="M8 51c13 0 26-1 37-9 9-7 9-17 1-21-10-5-21 3-21 16 0 16 14 27 31 25 15-2 23-13 33-12" fill="none" stroke="url(#logo-river-face)" stroke-linecap="round" stroke-linejoin="round" stroke-width="17"/>
+  <path d="M11 47c12 0 23-2 31-8 6-4 7-10 4-14" fill="none" stroke="#78d7e9" stroke-linecap="round" stroke-width="2.4" opacity="0.38"/>
+  <path d="M59 58c11-3 19-12 28-11" fill="none" stroke="#48b9dc" stroke-linecap="round" stroke-width="2" opacity="0.34"/>
 </svg>

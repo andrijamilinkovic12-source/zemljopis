@@ -1,32 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 86" role="img" aria-label="Slovo M kao planina">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 86" role="img" aria-label="Slovo M kao planine iz Zemljopis logoa">
   <defs>
-    <linearGradient id="mountain-green-face" x1="0.2" x2="0.82" y1="0" y2="1">
-      <stop offset="0" stop-color="#d2f29b"/>
-      <stop offset="0.42" stop-color="#79ca68"/>
-      <stop offset="0.76" stop-color="#4b9a60"/>
-      <stop offset="1" stop-color="#2f7058"/>
+    <linearGradient id="logo-blue-mountain" x1="0.2" x2="0.82" y1="0" y2="1">
+      <stop offset="0" stop-color="#70c9ea"/>
+      <stop offset="0.46" stop-color="#3b99d1"/>
+      <stop offset="1" stop-color="#286aa8"/>
     </linearGradient>
-    <linearGradient id="mountain-coral-face" x1="0.18" x2="0.78" y1="0" y2="1">
-      <stop offset="0" stop-color="#ffdc8e"/>
-      <stop offset="0.4" stop-color="#f39a5d"/>
-      <stop offset="0.76" stop-color="#d45f55"/>
-      <stop offset="1" stop-color="#a4404b"/>
+    <linearGradient id="logo-orange-mountain" x1="0.18" x2="0.82" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffb36a"/>
+      <stop offset="0.5" stop-color="#f18243"/>
+      <stop offset="1" stop-color="#cf512f"/>
     </linearGradient>
   </defs>
   <g transform="translate(0 3.2)">
-    <path fill="#285c4a" d="M5 76 43 16c4-6 12-6 16 0l38 60H5Z"/>
-    <path fill="#843746" d="M58 76 87 32c4-6 11-6 15 0l28 44H58Z"/>
+    <path fill="#245a8e" d="M4 76 43 15c4-6 12-6 16 0l39 61H4Z"/>
+    <path fill="#a83f2a" d="M58 76 88 31c4-6 11-6 15 0l28 45H58Z"/>
   </g>
-  <path fill="url(#mountain-green-face)" d="M5 76 43 16c4-6 12-6 16 0l38 60H5Z"/>
-  <path fill="url(#mountain-coral-face)" d="M58 76 87 32c4-6 11-6 15 0l28 44H58Z"/>
-  <g fill="#f8e8bd">
-    <path d="m36 43 9-14 8 14h-7l-3-5-3 5h-4Z"/>
-    <path d="m84 54 9-13 8 13h-6l-3-5-3 5h-5Z"/>
-  </g>
-  <g fill="#fff6dd" opacity="0.38">
-    <path d="M45 20c2-3 7-3 9 0l5 8c-6-3-12-3-19 0l5-8Z"/>
-    <path d="M90 36c2-3 6-3 8 0l4 7c-5-2-10-2-16 0l4-7Z"/>
-  </g>
-  <path d="M18 69 45 25" fill="none" stroke="#e5f7b7" stroke-linecap="round" stroke-width="2.3" opacity="0.35"/>
-  <path d="M73 69 92 39" fill="none" stroke="#ffe1a6" stroke-linecap="round" stroke-width="2.1" opacity="0.3"/>
+  <path fill="url(#logo-blue-mountain)" d="M4 76 43 15c4-6 12-6 16 0l39 61H4Z"/>
+  <path fill="url(#logo-orange-mountain)" d="M58 76 88 31c4-6 11-6 15 0l28 45H58Z"/>
+  <path fill="#f7e9ca" d="m35 45 10-17 9 17-7-4-4 6-4-7-4 5Z"/>
+  <path fill="#f7e9ca" d="m82 55 11-17 9 17-7-4-4 6-4-7-5 5Z"/>
+  <path d="M17 68 44 26" fill="none" stroke="#82cdeb" stroke-linecap="round" stroke-width="2.2" opacity="0.3"/>
+  <path d="M72 69 92 40" fill="none" stroke="#ffbd78" stroke-linecap="round" stroke-width="2" opacity="0.28"/>
 </svg>

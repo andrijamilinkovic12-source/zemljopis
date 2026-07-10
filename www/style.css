@@ -2072,21 +2072,66 @@ body[data-tema="okean"] #main-menu > .clay-theme-three {
     filter: saturate(1.16) contrast(1.05) drop-shadow(0 12px 18px rgba(27, 126, 160, 0.16));
 }
 
-body[data-tema="okean"] #main-menu::before {
+body[data-tema="okean"] #main-menu::before,
+body[data-tema="planina"] #main-menu::before,
+body[data-tema="grad"] #main-menu::before,
+body[data-tema="drzava"] #main-menu::before,
+body[data-tema="zivotinja"] #main-menu::before {
     content: "";
     position: absolute;
     inset: -4% -8%;
     z-index: 2;
     pointer-events: none;
-    background-image: url('assets/reka-clouds-layer.png');
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
     opacity: 0.94;
     transform-origin: 50% 15%;
-    filter: saturate(1.08) contrast(1.04) brightness(1.03) drop-shadow(0 10px 16px rgba(73, 117, 151, 0.12));
+    filter: none;
     will-change: transform, opacity;
-    animation: rekaCloudLayerDrift 24s ease-in-out infinite;
+    animation: themeCloudLayerDrift 24s ease-in-out infinite;
+}
+
+body[data-tema="okean"] #main-menu::before {
+    background-image: url('assets/reka-clouds-layer.png');
+}
+
+body[data-tema="planina"] #main-menu::before {
+    background-image: url('assets/planina-clouds-layer.png');
+}
+
+body[data-tema="grad"] #main-menu::before {
+    background-image: url('assets/grad-clouds-layer.png');
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 26%, rgba(0, 0, 0, 0.78) 34%, transparent 43%);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-image: linear-gradient(to bottom, #000 0%, #000 26%, rgba(0, 0, 0, 0.78) 34%, transparent 43%);
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+}
+
+body[data-tema="drzava"] #main-menu::before {
+    background-image: url('assets/drzava-clouds-layer.png');
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 21%, rgba(0, 0, 0, 0.78) 30%, transparent 38%);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-image: linear-gradient(to bottom, #000 0%, #000 21%, rgba(0, 0, 0, 0.78) 30%, transparent 38%);
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+}
+
+body[data-tema="zivotinja"] #main-menu::before {
+    background-image: url('assets/zivotinja-live/clouds.png');
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-tema="okean"] #main-menu::before,
+    body[data-tema="planina"] #main-menu::before,
+    body[data-tema="grad"] #main-menu::before,
+    body[data-tema="drzava"] #main-menu::before,
+    body[data-tema="zivotinja"] #main-menu::before {
+        animation: none;
+    }
 }
 
 body[data-tema="okean"] #main-menu::after {
@@ -2355,40 +2400,6 @@ body[data-tema="planina"] #main-menu > .clay-theme-three {
     filter: saturate(1.14) contrast(1.04) drop-shadow(0 12px 18px rgba(100, 118, 145, 0.18));
 }
 
-body[data-tema="planina"] #main-menu::before {
-    content: "";
-    position: absolute;
-    inset: -4% -8%;
-    z-index: 2;
-    pointer-events: none;
-    background-image: url('assets/planina-clouds-layer.png');
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover;
-    opacity: 0.96;
-    transform-origin: 50% 18%;
-    filter: saturate(1.08) contrast(1.04) brightness(1.03) drop-shadow(0 10px 16px rgba(116, 104, 130, 0.12));
-    will-change: transform, opacity;
-    animation: planinaCloudLayerDrift 22s ease-in-out infinite;
-}
-
-body[data-tema="grad"] #main-menu::before {
-    content: "";
-    position: absolute;
-    inset: -4% -8%;
-    z-index: 2;
-    pointer-events: none;
-    background-image: url('assets/grad-clouds-layer.png');
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover;
-    opacity: 0.82;
-    transform-origin: 50% 16%;
-    filter: saturate(1.04) contrast(1.05) brightness(0.98) drop-shadow(0 10px 16px rgba(73, 117, 151, 0.12));
-    will-change: transform, opacity;
-    animation: gradCloudLayerDrift 25s ease-in-out infinite;
-}
-
 body[data-tema="grad"] #main-menu::after {
     content: "";
     position: absolute;
@@ -2442,6 +2453,10 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     transform-origin: 50% 14%;
     will-change: transform, opacity;
     animation: drzavaCloudLayerDrift 27s ease-in-out infinite;
+}
+
+body[data-tema="drzava"] .drzava-clouds-layer {
+    display: none;
 }
 
 .drzava-flags-layer,
@@ -2802,7 +2817,7 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     }
 }
 
-@keyframes rekaCloudLayerDrift {
+@keyframes themeCloudLayerDrift {
     0% {
         transform: translate3d(-2.2%, 0.12%, 0) scale(1.012);
         opacity: 0.9;

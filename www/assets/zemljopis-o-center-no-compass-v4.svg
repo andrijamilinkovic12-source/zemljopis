@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Globus bez kompasa">
+  <defs>
+    <radialGradient id="center-ocean" cx="31%" cy="22%" r="78%">
+      <stop offset="0" stop-color="#73d5e6"/>
+      <stop offset="0.46" stop-color="#36acd1"/>
+      <stop offset="1" stop-color="#21789e"/>
+    </radialGradient>
+    <linearGradient id="center-green" x1="0.18" x2="0.84" y1="0" y2="1">
+      <stop offset="0" stop-color="#b9df72"/>
+      <stop offset="1" stop-color="#61a84c"/>
+    </linearGradient>
+    <linearGradient id="center-sand" x1="0.2" x2="0.82" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffd26f"/>
+      <stop offset="1" stop-color="#df9835"/>
+    </linearGradient>
+    <linearGradient id="center-purple" x1="0.18" x2="0.82" y1="0" y2="1">
+      <stop offset="0" stop-color="#bf96d4"/>
+      <stop offset="1" stop-color="#875da3"/>
+    </linearGradient>
+    <linearGradient id="center-orange" x1="0.18" x2="0.82" y1="0" y2="1">
+      <stop offset="0" stop-color="#ff9856"/>
+      <stop offset="1" stop-color="#d95f37"/>
+    </linearGradient>
+    <clipPath id="center-globe-clip">
+      <circle cx="48" cy="47" r="45"/>
+    </clipPath>
+  </defs>
+  <circle cx="48" cy="50" r="45" fill="#1d6789"/>
+  <circle cx="48" cy="47" r="45" fill="url(#center-ocean)"/>
+  <g clip-path="url(#center-globe-clip)" opacity="0.55" transform="translate(0 2.2)">
+    <path fill="#4d873e" d="M7 24c8-12 23-18 36-12l7 7-7 7-9 1-5 10-9 6-10-7-3-12Z"/>
+    <path fill="#4d873e" d="M23 42c10-4 19 1 21 10-1 11-9 22-13 36-6-6-9-16-7-24l-7-11 6-11Z"/>
+    <path fill="#4d873e" d="M47 17c15-9 34-6 45 5l5 9-11 5-12-3-9 7-15-5-8-10 5-8Z"/>
+    <path fill="#ac752e" d="M54 38c10-5 20 0 23 9 0 12-8 25-16 36-6-7-7-17-11-24-5-8-3-16 4-21Z"/>
+    <path fill="#a34a31" d="M73 66c9-4 18 0 20 8-5 8-17 10-25 4l5-12Z"/>
+  </g>
+  <g clip-path="url(#center-globe-clip)">
+    <path fill="url(#center-green)" d="M7 24c8-12 23-18 36-12l7 7-7 7-9 1-5 10-9 6-10-7-3-12Z"/>
+    <path fill="url(#center-green)" d="M23 42c10-4 19 1 21 10-1 11-9 22-13 36-6-6-9-16-7-24l-7-11 6-11Z"/>
+    <path fill="url(#center-green)" d="M47 17c15-9 34-6 45 5l5 9-11 5-12-3-9 7-15-5-8-10 5-8Z"/>
+    <path fill="url(#center-sand)" d="M54 38c10-5 20 0 23 9 0 12-8 25-16 36-6-7-7-17-11-24-5-8-3-16 4-21Z"/>
+    <path fill="url(#center-purple)" d="M68 24c8-3 17 0 22 6l-8 6-11-3-7-6 4-3Z"/>
+    <path fill="url(#center-orange)" d="M73 66c9-4 18 0 20 8-5 8-17 10-25 4l5-12Z"/>
+    <path fill="url(#center-purple)" d="M40 87c12-5 28-4 39 2-10 7-27 8-41 4l2-6Z"/>
+    <g fill="#efd8aa" opacity="0.92">
+      <circle cx="8" cy="50" r="1.5"/>
+      <circle cx="11" cy="57" r="1.2"/>
+      <circle cx="87" cy="48" r="1.3"/>
+      <circle cx="92" cy="57" r="1.1"/>
+      <circle cx="47" cy="8" r="1.2"/>
+    </g>
+  </g>
+</svg>

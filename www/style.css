@@ -4014,8 +4014,8 @@ body.keyboard-open .dnevni-input-group input {
 }
 
 .splash-logo span.svg-letter {
-    width: 1.08em;
-    height: 0.92em;
+    width: 1.17em;
+    height: 1em;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -4031,15 +4031,15 @@ body.keyboard-open .dnevni-input-group input {
 
 /* --- KREIRANJE SLOVA M OD 2 PLANINE --- */
 .splash-logo span.custom-m {
-    width: 1.4em;
-    height: 0.92em;
+    width: 1.52em;
+    height: 1em;
     align-items: flex-end;
     overflow: hidden;
 }
 
 .splash-logo span.custom-o {
-    width: 0.92em;
-    height: 0.92em;
+    width: 1em;
+    height: 1em;
     overflow: hidden;
     border-radius: 50%;
 }
@@ -4053,9 +4053,9 @@ body.keyboard-open .dnevni-input-group input {
 }
 
 .custom-m .splash-logo-source {
-    width: 295%;
-    left: -153%;
-    top: -36%;
+    width: 320%;
+    left: -166%;
+    top: -39%;
 }
 
 .splash-m-blue-source {
@@ -4070,6 +4070,17 @@ body.keyboard-open .dnevni-input-group input {
     width: 256%;
     left: -78.3%;
     top: -76.2%;
+}
+
+.splash-o-no-compass {
+    position: absolute;
+    z-index: 2;
+    left: 8.5%;
+    top: 8.5%;
+    width: 83%;
+    height: 83%;
+    display: block;
+    pointer-events: none;
 }
 
 @keyframes popInClayLetter {

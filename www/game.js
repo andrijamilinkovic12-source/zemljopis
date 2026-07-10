@@ -2189,3 +2189,27 @@ const Game = {
 };
 
 Game.init();
+
+const StatusBarMotion = {
+    reanimate: function(value) {
+        if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+        value.classList.remove('status-value-reveal');
+        void value.offsetWidth;
+        value.classList.add('status-value-reveal');
+    },
+
+    init: function() {
+        document.querySelectorAll('.status-value').forEach((value) => {
+            const observer = new MutationObserver(() => this.reanimate(value));
+            observer.observe(value, { childList: true, characterData: true, subtree: true });
+            requestAnimationFrame(() => this.reanimate(value));
+        });
+    }
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => StatusBarMotion.init(), { once: true });
+} else {
+    StatusBarMotion.init();
+}

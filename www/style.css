@@ -8872,6 +8872,125 @@ body[data-tema][data-tastatura] .kb-enter {
     opacity: 1;
 }
 
+/* Compact, centered status icons with values that slide out from the medalion edge. */
+#main-menu .status-bar {
+    width: min(328px, 90vw);
+    max-width: none;
+    justify-content: space-between;
+    gap: 0;
+    margin-inline: auto;
+}
+
+#main-menu .status-pill {
+    --status-icon-size: clamp(38px, 10vw, 44px);
+    flex: 0 0 var(--status-icon-size);
+    width: var(--status-icon-size);
+    min-width: var(--status-icon-size);
+    min-height: var(--status-icon-size);
+    height: var(--status-icon-size);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    overflow: visible;
+}
+
+#main-menu .status-icon-slot {
+    width: var(--status-icon-size);
+    height: var(--status-icon-size);
+    flex: 0 0 var(--status-icon-size);
+    margin: 0;
+    border-radius: 50%;
+    overflow: visible;
+}
+
+#main-menu .status-icon {
+    width: 100%;
+    height: 100%;
+    filter: none;
+}
+
+#main-menu .status-value {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    min-width: clamp(38px, 10vw, 46px);
+    height: clamp(24px, 6.5vw, 28px);
+    padding: 0 clamp(0.34rem, 1.4vw, 0.5rem);
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 999px;
+    background: rgba(7, 20, 45, 0.9);
+    box-shadow: 0 3px 8px rgba(5, 14, 32, 0.3);
+    font-size: clamp(0.64rem, 2.25vw, 0.76rem);
+    line-height: 1;
+    transform: translateY(-50%);
+}
+
+#main-menu .ducats-pill .status-value {
+    left: calc(100% - 4px);
+    transform-origin: left center;
+}
+
+#main-menu .tokens-pill .status-value,
+#main-menu .online-pill .status-value {
+    right: calc(100% - 4px);
+    transform-origin: right center;
+}
+
+#main-menu .ducats-pill .status-value.status-value-reveal {
+    animation: statusValueRevealRight 440ms cubic-bezier(0.22, 0.9, 0.32, 1) both;
+}
+
+#main-menu .tokens-pill .status-value.status-value-reveal,
+#main-menu .online-pill .status-value.status-value-reveal {
+    animation: statusValueRevealLeft 440ms cubic-bezier(0.22, 0.9, 0.32, 1) both;
+}
+
+/* The raster medals have complete circular edges; legacy canvas mounts expanded beyond their bounds. */
+#main-menu .ducats-status-icon-slot.three-status-ducats-ready .ducats-status-three,
+#main-menu .tokens-status-icon-slot.three-status-tokens-ready .tokens-status-three,
+#main-menu .online-status-icon-slot.three-status-online-ready .online-status-three {
+    display: none;
+}
+
+#main-menu .ducats-status-icon-slot.three-status-ducats-ready .ducats-status-icon,
+#main-menu .tokens-status-icon-slot.three-status-tokens-ready .tokens-status-icon,
+#main-menu .online-status-icon-slot.three-status-online-ready .online-status-icon {
+    opacity: 1;
+}
+
+@keyframes statusValueRevealRight {
+    from {
+        opacity: 0;
+        transform: translate(-12px, -50%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(0, -50%) scale(1);
+    }
+}
+
+@keyframes statusValueRevealLeft {
+    from {
+        opacity: 0;
+        transform: translate(12px, -50%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(0, -50%) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #main-menu .status-value.status-value-reveal {
+        animation: none;
+    }
+}
+
 body[data-tema][data-tastatura] .kb-key:active {
     background: var(--theme-primary) !important;
     color: var(--theme-on-primary) !important;

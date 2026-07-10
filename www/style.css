@@ -3883,12 +3883,11 @@ body.keyboard-open .dnevni-input-group input {
 
 /* ZAJEDNIČKI STIL ZA SVA SLOVA I IKONICE (Samo animacija i pozicija) */
 .splash-logo span {
-    --clay-highlight: #ff957f;
-    --clay-face: #ed5b63;
-    --clay-accent: #cf3f68;
-    --clay-side: #a43b5b;
-    --clay-base: #7f3555;
-    --clay-rim: rgba(255, 205, 176, 0.52);
+    --clay-highlight: #4f78a4;
+    --clay-face: #2b5686;
+    --clay-accent: #1d4675;
+    --clay-side: #15385f;
+    --clay-base: #102b4d;
     opacity: 0; 
     transform: translateY(24px) rotateX(34deg) rotateZ(-2deg) scale(0.72); 
     transform-origin: 50% 78%;
@@ -3902,43 +3901,43 @@ body.keyboard-open .dnevni-input-group input {
 }
 
 .splash-logo span:nth-child(1) {
-    --clay-highlight: #ff957f;
-    --clay-face: #ed5b63;
-    --clay-accent: #cf3f68;
-    --clay-side: #a43b5b;
-    --clay-base: #7f3555;
+    --clay-highlight: #4f78a4;
+    --clay-face: #2b5686;
+    --clay-accent: #1d4675;
+    --clay-side: #15385f;
+    --clay-base: #102b4d;
 }
 
 .splash-logo span:nth-child(4) {
-    --clay-highlight: #a8e66f;
-    --clay-face: #58bb69;
-    --clay-accent: #22a47d;
-    --clay-side: #267b70;
-    --clay-base: #315c65;
+    --clay-highlight: #6da37a;
+    --clay-face: #3d7f5f;
+    --clay-accent: #2d6b54;
+    --clay-side: #245744;
+    --clay-base: #1b4337;
 }
 
 .splash-logo span:nth-child(6) {
-    --clay-highlight: #7edce6;
-    --clay-face: #24b8c8;
-    --clay-accent: #208fc1;
-    --clay-side: #246d9e;
-    --clay-base: #31567d;
+    --clay-highlight: #ff8983;
+    --clay-face: #e94f59;
+    --clay-accent: #c83b50;
+    --clay-side: #a53048;
+    --clay-base: #7d2b42;
 }
 
 .splash-logo span:nth-child(7) {
-    --clay-highlight: #ffd36b;
-    --clay-face: #edae36;
-    --clay-accent: #dc7437;
-    --clay-side: #a85d46;
-    --clay-base: #794653;
+    --clay-highlight: #f8dcaa;
+    --clay-face: #e9bd7a;
+    --clay-accent: #cd955d;
+    --clay-side: #a76d4a;
+    --clay-base: #795140;
 }
 
 .splash-logo span:nth-child(8) {
-    --clay-highlight: #ff93ae;
-    --clay-face: #e95786;
-    --clay-accent: #c64091;
-    --clay-side: #8e4387;
-    --clay-base: #654276;
+    --clay-highlight: #c69be7;
+    --clay-face: #9167c7;
+    --clay-accent: #724fac;
+    --clay-side: #573e88;
+    --clay-base: #41336c;
 }
 
 .splash-logo span:nth-child(9) {
@@ -3951,22 +3950,15 @@ body.keyboard-open .dnevni-input-group input {
 /* GRADIENT ZA OBIČNA SLOVA (Z, L, J, P, I, S) */
 .splash-logo span:not(.icon-letter) {
     background:
-        radial-gradient(ellipse at 31% 12%, rgba(255, 255, 255, 0.28), transparent 20%),
-        linear-gradient(148deg, var(--clay-highlight) 0%, var(--clay-face) 28%, var(--clay-accent) 58%, var(--clay-side) 82%, var(--clay-base) 100%);
+        radial-gradient(ellipse at 31% 12%, rgba(255, 255, 255, 0.18), transparent 18%),
+        linear-gradient(148deg, var(--clay-highlight) 0%, var(--clay-face) 30%, var(--clay-accent) 60%, var(--clay-side) 84%, var(--clay-base) 100%);
     -webkit-background-clip: text; 
     background-clip: text;
     -webkit-text-fill-color: transparent; 
     color: transparent;
     text-shadow:
-        0 -1px 0 var(--clay-rim),
         0 1px 0 var(--clay-side),
-        0 2px 0 var(--clay-base),
-        0 3px 2px rgba(75, 73, 72, 0.14);
-}
-
-.splash-logo .splash-letter-s {
-    font-size: 1.06em;
-    min-width: 0.66em;
+        0 2px 0 var(--clay-base);
 }
 
 .splash-logo span:not(.icon-letter)::before,
@@ -3995,7 +3987,7 @@ body.keyboard-open .dnevni-input-group input {
 
 .splash-logo span.svg-letter {
     width: 1.08em;
-    height: 0.84em;
+    height: 0.92em;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -4006,19 +3998,19 @@ body.keyboard-open .dnevni-input-group input {
     width: 100%;
     height: 100%;
     display: block;
-    filter: saturate(1.2) contrast(1.1);
+    filter: none;
 }
 
 /* --- KREIRANJE SLOVA M OD 2 PLANINE --- */
 .splash-logo span.custom-m {
     width: 1.4em;
-    height: 0.94em;
+    height: 0.92em;
     align-items: flex-end;
 }
 
 .splash-logo span.custom-o {
-    width: 0.96em;
-    height: 0.96em;
+    width: 0.92em;
+    height: 0.92em;
 }
 
 @keyframes popInClayLetter {

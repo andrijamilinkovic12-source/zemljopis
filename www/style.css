@@ -4034,11 +4034,42 @@ body.keyboard-open .dnevni-input-group input {
     width: 1.4em;
     height: 0.92em;
     align-items: flex-end;
+    overflow: hidden;
 }
 
 .splash-logo span.custom-o {
     width: 0.92em;
     height: 0.92em;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.splash-logo-source {
+    position: absolute;
+    display: block;
+    max-width: none;
+    height: auto;
+    pointer-events: none;
+}
+
+.custom-m .splash-logo-source {
+    width: 295%;
+    left: -153%;
+    top: -36%;
+}
+
+.splash-m-blue-source {
+    clip-path: polygon(53.7% 27.6%, 63.1% 12.1%, 65.5% 9.6%, 67.8% 12.2%, 76.1% 27.6%);
+}
+
+.splash-m-orange-source {
+    clip-path: polygon(65.9% 28.2%, 73.8% 20.1%, 76.1% 17.8%, 78.4% 20.1%, 84.8% 28.2%);
+}
+
+.custom-o .splash-o-source {
+    width: 256%;
+    left: -78.3%;
+    top: -76.2%;
 }
 
 @keyframes popInClayLetter {

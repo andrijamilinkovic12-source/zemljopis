@@ -4072,17 +4072,6 @@ body.keyboard-open .dnevni-input-group input {
     top: -76.2%;
 }
 
-.splash-o-no-compass {
-    position: absolute;
-    z-index: 2;
-    left: 8.5%;
-    top: 8.5%;
-    width: 83%;
-    height: 83%;
-    display: block;
-    pointer-events: none;
-}
-
 @keyframes popInClayLetter {
     0% {
         opacity: 0;

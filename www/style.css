@@ -3892,6 +3892,8 @@ body.keyboard-open .dnevni-input-group input {
     transform: translateY(24px) rotateX(34deg) rotateZ(-2deg) scale(0.72); 
     transform-origin: 50% 78%;
     position: relative;
+    z-index: 0;
+    isolation: isolate;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -3950,19 +3952,54 @@ body.keyboard-open .dnevni-input-group input {
 /* GRADIENT ZA OBIČNA SLOVA (Z, L, J, P, I, S) */
 .splash-logo span:not(.icon-letter) {
     background:
-        radial-gradient(ellipse at 31% 12%, rgba(255, 255, 255, 0.18), transparent 18%),
+        radial-gradient(ellipse at 30% 10%, rgba(255, 255, 255, 0.27), transparent 17%),
+        linear-gradient(102deg, rgba(255, 255, 255, 0.1) 0%, transparent 38%),
         linear-gradient(148deg, var(--clay-highlight) 0%, var(--clay-face) 30%, var(--clay-accent) 60%, var(--clay-side) 84%, var(--clay-base) 100%);
     -webkit-background-clip: text; 
     background-clip: text;
     -webkit-text-fill-color: transparent; 
     color: transparent;
-    text-shadow:
-        0 1px 0 var(--clay-side),
-        0 2px 0 var(--clay-base);
+    text-shadow: none;
 }
 
 .splash-logo span:not(.icon-letter)::before,
-.splash-logo span.svg-letter::before {
+.splash-logo span:not(.icon-letter)::after {
+    content: attr(data-letter);
+    position: absolute;
+    inset: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: inherit;
+    font: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    pointer-events: none;
+}
+
+.splash-logo span:not(.icon-letter)::before {
+    z-index: -1;
+    color: var(--clay-side);
+    -webkit-text-fill-color: var(--clay-side);
+    transform: translateY(0.075em);
+    text-shadow:
+        0 0.035em 0 var(--clay-base),
+        0 0.085em 0.075em rgba(55, 55, 58, 0.16);
+}
+
+.splash-logo span:not(.icon-letter)::after {
+    z-index: 1;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.06) 31%, transparent 56%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    opacity: 0.72;
+}
+
+.splash-logo span.svg-letter::before,
+.splash-logo span.svg-letter::after {
     display: none;
 }
 

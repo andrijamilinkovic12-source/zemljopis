@@ -1,28 +1,32 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 86" role="img" aria-label="Slovo M kao planina">
   <defs>
-    <linearGradient id="mountain-green" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0" stop-color="#bce982"/>
-      <stop offset="0.5" stop-color="#67bd5e"/>
-      <stop offset="1" stop-color="#32795d"/>
+    <linearGradient id="mountain-green-face" x1="0.2" x2="0.82" y1="0" y2="1">
+      <stop offset="0" stop-color="#d2f29b"/>
+      <stop offset="0.42" stop-color="#79ca68"/>
+      <stop offset="0.76" stop-color="#4b9a60"/>
+      <stop offset="1" stop-color="#2f7058"/>
     </linearGradient>
-    <linearGradient id="mountain-coral" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0" stop-color="#ffd17e"/>
-      <stop offset="0.54" stop-color="#ed8754"/>
-      <stop offset="1" stop-color="#b84b52"/>
+    <linearGradient id="mountain-coral-face" x1="0.18" x2="0.78" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffdc8e"/>
+      <stop offset="0.4" stop-color="#f39a5d"/>
+      <stop offset="0.76" stop-color="#d45f55"/>
+      <stop offset="1" stop-color="#a4404b"/>
     </linearGradient>
   </defs>
-  <g opacity="0.58" transform="translate(0 3)">
-    <path fill="#2b644f" d="M5 76 43 16c4-6 12-6 16 0l38 60H5Z"/>
-    <path fill="#8f3947" d="M58 76 87 32c4-6 11-6 15 0l28 44H58Z"/>
+  <g transform="translate(0 3.2)">
+    <path fill="#285c4a" d="M5 76 43 16c4-6 12-6 16 0l38 60H5Z"/>
+    <path fill="#843746" d="M58 76 87 32c4-6 11-6 15 0l28 44H58Z"/>
   </g>
-  <path fill="url(#mountain-green)" d="M5 76 43 16c4-6 12-6 16 0l38 60H5Z"/>
-  <path fill="url(#mountain-coral)" d="M58 76 87 32c4-6 11-6 15 0l28 44H58Z"/>
-  <g fill="#f7e6bd" opacity="0.94">
+  <path fill="url(#mountain-green-face)" d="M5 76 43 16c4-6 12-6 16 0l38 60H5Z"/>
+  <path fill="url(#mountain-coral-face)" d="M58 76 87 32c4-6 11-6 15 0l28 44H58Z"/>
+  <g fill="#f8e8bd">
     <path d="m36 43 9-14 8 14h-7l-3-5-3 5h-4Z"/>
     <path d="m84 54 9-13 8 13h-6l-3-5-3 5h-5Z"/>
   </g>
-  <g fill="#fff2cf" opacity="0.34">
+  <g fill="#fff6dd" opacity="0.38">
     <path d="M45 20c2-3 7-3 9 0l5 8c-6-3-12-3-19 0l5-8Z"/>
     <path d="M90 36c2-3 6-3 8 0l4 7c-5-2-10-2-16 0l4-7Z"/>
   </g>
+  <path d="M18 69 45 25" fill="none" stroke="#e5f7b7" stroke-linecap="round" stroke-width="2.3" opacity="0.35"/>
+  <path d="M73 69 92 39" fill="none" stroke="#ffe1a6" stroke-linecap="round" stroke-width="2.1" opacity="0.3"/>
 </svg>

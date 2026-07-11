@@ -3733,6 +3733,7 @@ body.keyboard-open .dnevni-input-group input {
 }
 
 #splash-screen {
+    position: relative;
     isolation: isolate;
     overflow: hidden;
 }
@@ -3745,10 +3746,29 @@ body.keyboard-open .dnevni-input-group input {
     pointer-events: none;
     background: url('assets/splash-clouds-layer-v3.png') center center / cover no-repeat;
     opacity: 0.94;
-    transform-origin: 50% 15%;
+    transform-origin: center;
     filter: none;
     will-change: transform, opacity;
-    animation: rekaCloudLayerDrift 24s ease-in-out infinite;
+    animation: splashCloudFloat 12s ease-in-out infinite;
+}
+
+@keyframes splashCloudFloat {
+    0%, 100% {
+        transform: translate3d(0, 0, 0);
+        opacity: 0.94;
+    }
+    28% {
+        transform: translate3d(0, -3px, 0);
+        opacity: 0.97;
+    }
+    58% {
+        transform: translate3d(0, 1px, 0);
+        opacity: 0.94;
+    }
+    80% {
+        transform: translate3d(0, -2px, 0);
+        opacity: 0.96;
+    }
 }
 
 #splash-screen::after {
@@ -3757,8 +3777,9 @@ body.keyboard-open .dnevni-input-group input {
     inset: 0;
     z-index: 3;
     pointer-events: none;
-    background: url('assets/splash-sun-layer-v4.png') center center / cover no-repeat;
+    background: url('assets/splash-sun-layer-clean-v5.png') center center / cover no-repeat;
     transform-origin: 85% 13%;
+    filter: none;
     will-change: transform, filter;
     animation:
         splashSunFloat 5.8s ease-in-out infinite,
@@ -3767,22 +3788,22 @@ body.keyboard-open .dnevni-input-group input {
 
 @keyframes splashSunFloat {
     0%, 100% {
-        transform: translate3d(0, 0, 0) scale(1);
+        transform: translate3d(0, 0, 0);
     }
     50% {
-        transform: translate3d(0, -2px, 0) scale(1.006);
+        transform: translate3d(0, -2px, 0);
     }
 }
 
 @keyframes splashSunWarmPulse {
     0%, 24%, 58%, 100% {
-        filter: saturate(1) brightness(1) drop-shadow(0 0 0 rgba(255, 142, 38, 0));
+        filter: none;
     }
     36% {
-        filter: saturate(1.18) brightness(1.07) drop-shadow(0 0 10px rgba(255, 142, 38, 0.34));
+        filter: brightness(1.04) saturate(1.11) hue-rotate(-3deg);
     }
     72% {
-        filter: saturate(1.09) brightness(1.035) drop-shadow(0 0 6px rgba(255, 142, 38, 0.2));
+        filter: brightness(1.02) saturate(1.055) hue-rotate(-1deg);
     }
 }
 

@@ -3713,32 +3713,42 @@ body.keyboard-open .dnevni-input-group input {
     background:
         linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
         radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
-        url('assets/splash-soft-matte-bg-reka-clean-v2.png') center center / cover no-repeat,
+        url('assets/splash-soft-matte-bg-reka-cloudless-v3.png') center center / cover no-repeat,
         linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
     justify-content: center; 
     align-items: center; 
     z-index: 9999; 
-    isolation: isolate;
-    overflow: hidden;
     transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
     transform-origin: center;
 }
 
-/* Isti parallax sloj oblaka koji koriste ilustrovane teme. */
+@media (orientation: landscape) {
+    #splash-screen {
+        background:
+            linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
+            radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
+            url('assets/splash-soft-matte-bg-landscape-reka-cloudless-v3.png') center center / cover no-repeat,
+            linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
+    }
+}
+
+#splash-screen {
+    isolation: isolate;
+    overflow: hidden;
+}
+
 #splash-screen::before {
     content: "";
     position: absolute;
     inset: -4% -8%;
     z-index: 2;
     pointer-events: none;
-    background: url('assets/reka-clouds-layer.png') center center / cover no-repeat;
-    opacity: 0.38;
+    background: url('assets/splash-clouds-layer-v3.png') center center / cover no-repeat;
+    opacity: 0.94;
     transform-origin: 50% 15%;
-    filter: saturate(0.84) brightness(1.03);
+    filter: none;
     will-change: transform, opacity;
     animation: rekaCloudLayerDrift 24s ease-in-out infinite;
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 60%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 60%);
 }
 
 #splash-screen > .splash-content,
@@ -3747,19 +3757,15 @@ body.keyboard-open .dnevni-input-group input {
     z-index: 5;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (orientation: landscape) {
     #splash-screen::before {
-        animation: none;
+        background-image: url('assets/splash-clouds-layer-landscape-v3.png');
     }
 }
 
-@media (orientation: landscape) {
-    #splash-screen {
-        background:
-            linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
-            radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
-            url('assets/splash-soft-matte-bg-landscape-reka-clean-v2.png') center center / cover no-repeat,
-            linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
+@media (prefers-reduced-motion: reduce) {
+    #splash-screen::before {
+        animation: none;
     }
 }
 
@@ -7042,7 +7048,7 @@ body[data-tema] #splash-screen {
     background:
         linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
         radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
-        url('assets/splash-soft-matte-bg-reka-clean-v2.png') center center / cover no-repeat,
+        url('assets/splash-soft-matte-bg-reka-cloudless-v3.png') center center / cover no-repeat,
         var(--theme-splash-bg);
 }
 
@@ -7051,7 +7057,7 @@ body[data-tema] #splash-screen {
         background:
             linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
             radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
-            url('assets/splash-soft-matte-bg-landscape-reka-clean-v2.png') center center / cover no-repeat,
+            url('assets/splash-soft-matte-bg-landscape-reka-cloudless-v3.png') center center / cover no-repeat,
             var(--theme-splash-bg);
     }
 }

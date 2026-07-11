@@ -3713,7 +3713,7 @@ body.keyboard-open .dnevni-input-group input {
     background:
         linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
         radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
-        url('assets/splash-soft-matte-bg-reka-sunless-v4.png') center center / cover no-repeat,
+        url('assets/splash-soft-matte-bg-reka-master-clean-v6.png') center center / cover no-repeat,
         linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
     justify-content: center; 
     align-items: center; 
@@ -3727,7 +3727,7 @@ body.keyboard-open .dnevni-input-group input {
         background:
             linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
             radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
-            url('assets/splash-soft-matte-bg-landscape-reka-cloudless-v3.png') center center / cover no-repeat,
+            url('assets/splash-soft-matte-bg-landscape-reka-master-clean-v6.png') center center / cover no-repeat,
             linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
     }
 }
@@ -3745,29 +3745,27 @@ body.keyboard-open .dnevni-input-group input {
     z-index: 2;
     pointer-events: none;
     background: url('assets/splash-clouds-layer-v3.png') center center / cover no-repeat;
-    opacity: 0.94;
-    transform-origin: center;
+    opacity: 1;
+    transform: none;
     filter: none;
-    will-change: transform, opacity;
-    animation: splashCloudFloat 12s ease-in-out infinite;
+    animation: splashCloudFloatSharp 12s step-end infinite;
 }
 
-@keyframes splashCloudFloat {
+@keyframes splashCloudFloatSharp {
     0%, 100% {
-        transform: translate3d(0, 0, 0);
-        opacity: 0.94;
+        background-position: 50% 50%;
     }
-    28% {
-        transform: translate3d(0, -3px, 0);
-        opacity: 0.97;
+    18% {
+        background-position: 50% calc(50% - 1px);
+    }
+    36% {
+        background-position: 50% calc(50% - 2px);
     }
     58% {
-        transform: translate3d(0, 1px, 0);
-        opacity: 0.94;
+        background-position: 50% calc(50% + 1px);
     }
     80% {
-        transform: translate3d(0, -2px, 0);
-        opacity: 0.96;
+        background-position: 50% calc(50% - 2px);
     }
 }
 
@@ -3777,33 +3775,33 @@ body.keyboard-open .dnevni-input-group input {
     inset: 0;
     z-index: 3;
     pointer-events: none;
-    background: url('assets/splash-sun-layer-clean-v5.png') center center / cover no-repeat;
-    transform-origin: 85% 13%;
+    background: url('assets/splash-sun-layer-master-clean-v6.png') center center / cover no-repeat;
+    opacity: 1;
+    transform: none;
     filter: none;
-    will-change: transform, filter;
     animation:
-        splashSunFloat 5.8s ease-in-out infinite,
-        splashSunWarmPulse 11.6s ease-in-out infinite;
+        splashSunFloatSharp 5.8s step-end infinite,
+        splashSunWarmFrame 11.6s step-end infinite;
 }
 
-@keyframes splashSunFloat {
+@keyframes splashSunFloatSharp {
     0%, 100% {
-        transform: translate3d(0, 0, 0);
+        background-position: 50% 50%;
+    }
+    25%, 75% {
+        background-position: 50% calc(50% - 1px);
     }
     50% {
-        transform: translate3d(0, -2px, 0);
+        background-position: 50% calc(50% - 2px);
     }
 }
 
-@keyframes splashSunWarmPulse {
-    0%, 24%, 58%, 100% {
-        filter: none;
+@keyframes splashSunWarmFrame {
+    0%, 28%, 43%, 67%, 77%, 100% {
+        background-image: url('assets/splash-sun-layer-master-clean-v6.png');
     }
-    36% {
-        filter: brightness(1.04) saturate(1.11) hue-rotate(-3deg);
-    }
-    72% {
-        filter: brightness(1.02) saturate(1.055) hue-rotate(-1deg);
+    29%, 42%, 68%, 76% {
+        background-image: url('assets/splash-sun-layer-master-warm-v6.png');
     }
 }
 
@@ -7109,7 +7107,7 @@ body[data-tema] #splash-screen {
     background:
         linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
         radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
-        url('assets/splash-soft-matte-bg-reka-sunless-v4.png') center center / cover no-repeat,
+        url('assets/splash-soft-matte-bg-reka-master-clean-v6.png') center center / cover no-repeat,
         var(--theme-splash-bg);
 }
 
@@ -7118,7 +7116,7 @@ body[data-tema] #splash-screen {
         background:
             linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.04) 100%),
             radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.025), transparent 48%),
-            url('assets/splash-soft-matte-bg-landscape-reka-cloudless-v3.png') center center / cover no-repeat,
+            url('assets/splash-soft-matte-bg-landscape-reka-master-clean-v6.png') center center / cover no-repeat,
             var(--theme-splash-bg);
     }
 }

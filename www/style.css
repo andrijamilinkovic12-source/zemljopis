@@ -2192,6 +2192,93 @@ body[data-tema="zivotinja"] #main-menu > .zivotinja-live-layer * {
     animation: none !important;
 }
 
+/* Isolated owl animation: the old all-animal live layer remains disabled. */
+#main-menu > .zivotinja-owl-animation {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+body[data-tema="zivotinja"] #main-menu > .zivotinja-owl-animation {
+    display: block;
+}
+
+.zivotinja-owl-frame {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    object-position: 50% 50%;
+    pointer-events: none;
+    backface-visibility: hidden;
+}
+
+.zivotinja-owl-body {
+    z-index: 2;
+}
+
+.zivotinja-owl-wings-closed,
+.zivotinja-owl-wings-half,
+.zivotinja-owl-wings-open {
+    z-index: 1;
+    will-change: opacity;
+    animation-duration: 8.6s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+.zivotinja-owl-wings-closed {
+    opacity: 1;
+    animation-name: zivotinjaOwlWingsClosed;
+}
+
+.zivotinja-owl-wings-half {
+    opacity: 0;
+    animation-name: zivotinjaOwlWingsHalf;
+}
+
+.zivotinja-owl-wings-open {
+    opacity: 0;
+    animation-name: zivotinjaOwlWingsOpen;
+}
+
+@keyframes zivotinjaOwlWingsClosed {
+    0%, 67.99% { opacity: 1; }
+    68%, 85.99% { opacity: 0; }
+    86%, 100% { opacity: 1; }
+}
+
+@keyframes zivotinjaOwlWingsHalf {
+    0%, 67.99% { opacity: 0; }
+    68%, 72.99% { opacity: 1; }
+    73%, 80.99% { opacity: 0; }
+    81%, 85.99% { opacity: 1; }
+    86%, 100% { opacity: 0; }
+}
+
+@keyframes zivotinjaOwlWingsOpen {
+    0%, 72.99% { opacity: 0; }
+    73%, 80.99% { opacity: 1; }
+    81%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .zivotinja-owl-wings-closed,
+    .zivotinja-owl-wings-half,
+    .zivotinja-owl-wings-open {
+        animation: none;
+    }
+
+    .zivotinja-owl-wings-closed { opacity: 1; }
+    .zivotinja-owl-wings-half,
+    .zivotinja-owl-wings-open { opacity: 0; }
+}
+
 .ziv-flyer,
 .ziv-animal,
 .ziv-animal-part {
@@ -7014,7 +7101,7 @@ body[data-tema="okean"] { --theme-bg-image: url('assets/reka-soft-matte-bg-v3.pn
 body[data-tema="grad"] { --theme-bg-image: url('assets/grad-soft-matte-bg-reka-clean-v2.png'); }
 body[data-tema="planina"] { --theme-bg-image: url('assets/planina-soft-matte-bg-reka-clean-v2.png'); }
 body[data-tema="biljka"] { --theme-bg-image: url('assets/biljka-soft-matte-bg-reka-clean-v2.png'); }
-body[data-tema="zivotinja"] { --theme-bg-image: url('assets/zivotinja-soft-matte-bg-cloudless-v3.png'); }
+body[data-tema="zivotinja"] { --theme-bg-image: url('assets/zivotinja-soft-matte-bg-owl-clean-v4.png'); }
 body[data-tema="predmet"] { --theme-bg-image: url('assets/predmet-soft-matte-bg-reka-clean-v2.png'); }
 
 body[data-tema="drzava"],

@@ -3718,8 +3718,39 @@ body.keyboard-open .dnevni-input-group input {
     justify-content: center; 
     align-items: center; 
     z-index: 9999; 
+    isolation: isolate;
+    overflow: hidden;
     transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
     transform-origin: center;
+}
+
+/* Isti parallax sloj oblaka koji koriste ilustrovane teme. */
+#splash-screen::before {
+    content: "";
+    position: absolute;
+    inset: -4% -8%;
+    z-index: 2;
+    pointer-events: none;
+    background: url('assets/reka-clouds-layer.png') center center / cover no-repeat;
+    opacity: 0.38;
+    transform-origin: 50% 15%;
+    filter: saturate(0.84) brightness(1.03);
+    will-change: transform, opacity;
+    animation: rekaCloudLayerDrift 24s ease-in-out infinite;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 60%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 60%);
+}
+
+#splash-screen > .splash-content,
+#splash-screen > .splash-legal-links {
+    position: relative;
+    z-index: 5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #splash-screen::before {
+        animation: none;
+    }
 }
 
 @media (orientation: landscape) {

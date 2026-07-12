@@ -68,17 +68,6 @@
       "width": 373,
       "height": 488
     },
-    "fox_tail.png": {
-      "width": 373,
-      "height": 488,
-      "bbox": [
-        22,
-        217,
-        166,
-        473
-      ],
-      "kind": "strict manual moving part mask"
-    },
     "hedgehog.png": {
       "width": 379,
       "height": 349

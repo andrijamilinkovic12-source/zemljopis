@@ -2323,8 +2323,8 @@ body[data-tema="zivotinja"] #main-menu > .zivotinja-owl-animation {
     .zivotinja-owl-wing-right { opacity: 0; }
 }
 
-/* Isolated fox-tail animation: body and every other animal stay locked. */
-#main-menu > .zivotinja-fox-animation {
+/* Original-pixel fox tail, animated only by the local GSAP runtime. */
+#main-menu > .zivotinja-fox-gsap {
     position: absolute;
     inset: 0;
     z-index: 3;
@@ -2333,55 +2333,46 @@ body[data-tema="zivotinja"] #main-menu > .zivotinja-owl-animation {
     pointer-events: none;
 }
 
-body[data-tema="zivotinja"] #main-menu > .zivotinja-fox-animation {
+body[data-tema="zivotinja"] #main-menu > .zivotinja-fox-gsap {
     display: block;
 }
 
-.zivotinja-fox-tail {
+.zivotinja-fox-gsap-tail {
     position: absolute;
-    left: 1.913%;
-    top: 62.919%;
+    left: 3.188%;
+    top: 62.141%;
     display: block;
-    width: 17.535%;
-    height: 9.33%;
+    width: 16.684%;
+    height: 10.347%;
     object-fit: fill;
     transform: rotate(0deg);
-    transform-origin: 75% 18%;
+    transform-origin: 71.338% 23.699%;
     pointer-events: none;
-    backface-visibility: hidden;
-    animation: zivotinjaFoxTailFlow 7.2s cubic-bezier(0.42, 0, 0.2, 1) infinite;
 }
 
-.zivotinja-fox-tail-back {
+.zivotinja-fox-gsap-tail-back {
     z-index: 1;
 }
 
-.zivotinja-fox-body-occluder {
+.zivotinja-fox-gsap-occluder {
     position: absolute;
-    inset: 0;
+    left: 13.39%;
+    top: 61.483%;
     z-index: 2;
     display: block;
-    background: url('assets/zivotinja-soft-matte-bg-owl-fox-clean-v6.png') 50% 50% / 100% 100% no-repeat;
-    clip-path: polygon(11.2% 55.2%, 16.3% 53.8%, 25.8% 54.9%, 29.8% 59.2%, 27.4% 64.1%, 25.9% 70.8%, 15% 71.8%, 13.5% 66.8%, 9.4% 63.6%, 9.9% 58.2%);
+    width: 9.564%;
+    height: 11.722%;
+    object-fit: fill;
+    pointer-events: none;
 }
 
-.zivotinja-fox-tail-tip {
+.zivotinja-fox-gsap-tail-tip {
     z-index: 3;
 }
 
-@keyframes zivotinjaFoxTailFlow {
-    0%, 56%, 100% { transform: rotate(0deg); }
-    64% { transform: rotate(-2.8deg); }
-    72% { transform: rotate(4.2deg); }
-    80% { transform: rotate(-4.8deg); }
-    88% { transform: rotate(2.6deg); }
-    95% { transform: rotate(-1deg); }
-}
-
 @media (prefers-reduced-motion: reduce) {
-    .zivotinja-fox-tail {
-        animation: none;
-        transform: rotate(0deg);
+    .zivotinja-fox-gsap-tail {
+        transform: rotate(0deg) !important;
     }
 }
 
@@ -2463,7 +2454,6 @@ body[data-tema="zivotinja"] #main-menu > .zivotinja-fox-animation {
 .ziv-owl { left: 8.8%; top: 34%; width: 20.5%; z-index: 7; }
 .ziv-owl-wings { left: 8.8%; top: 34%; width: 20.5%; z-index: 8; transform-origin: 50% 55%; animation: zivotinjaOwlWingFlap 9s ease-in-out infinite; }
 .ziv-fox { left: 1.8%; top: 54.9%; width: 25%; z-index: 9; }
-.ziv-fox-tail { left: 1.8%; top: 54.9%; width: 25%; z-index: 10; transform-origin: 24% 80%; animation: zivotinjaFoxTailWag 6.8s ease-in-out infinite; }
 .ziv-deer { left: 60.8%; top: 46.4%; width: 27%; z-index: 8; }
 .ziv-deer-head { left: 60.8%; top: 46.4%; width: 27%; z-index: 10; transform-origin: 33% 45%; animation: zivotinjaDeerHeadMove 9.5s ease-in-out infinite; }
 .ziv-deer-leg { left: 60.8%; top: 46.4%; width: 27%; z-index: 11; transform-origin: 38% 63%; animation: zivotinjaDeerLegLift 11s ease-in-out infinite; }
@@ -3062,14 +3052,6 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
     48% { transform: translate3d(0.6%, 0.6%, 0) rotate(0.45deg) scale(1.006); }
     74% { transform: translate3d(0, -0.35%, 0) rotate(-0.25deg) scale(1); }
-}
-
-@keyframes zivotinjaFoxTailWag {
-    0%, 56%, 100% { transform: rotate(0deg); }
-    61% { transform: rotate(-4deg) translateY(-1px); }
-    66% { transform: rotate(5deg) translateY(1px); }
-    71% { transform: rotate(-3deg); }
-    77% { transform: rotate(2deg); }
 }
 
 @keyframes zivotinjaDeerBody {
@@ -7207,7 +7189,7 @@ body[data-tema="okean"] { --theme-bg-image: url('assets/reka-soft-matte-bg-v3.pn
 body[data-tema="grad"] { --theme-bg-image: url('assets/grad-soft-matte-bg-reka-clean-v2.png'); }
 body[data-tema="planina"] { --theme-bg-image: url('assets/planina-soft-matte-bg-reka-clean-v2.png'); }
 body[data-tema="biljka"] { --theme-bg-image: url('assets/biljka-soft-matte-bg-reka-clean-v2.png'); }
-body[data-tema="zivotinja"] { --theme-bg-image: url('assets/zivotinja-soft-matte-bg-owl-fox-clean-v6.png'); }
+body[data-tema="zivotinja"] { --theme-bg-image: url('assets/zivotinja-fox-gsap/zivotinja-bg-fox-tail-clean.png'); }
 body[data-tema="predmet"] { --theme-bg-image: url('assets/predmet-soft-matte-bg-reka-clean-v2.png'); }
 
 body[data-tema="drzava"],

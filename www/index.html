@@ -137,7 +137,6 @@
             <span class="ziv-animal ziv-owl"><img src="assets/zivotinja-live/owl.png" alt="" aria-hidden="true" decoding="async"><span class="ziv-eye left"></span><span class="ziv-eye right"></span></span>
             <span class="ziv-animal-part ziv-owl-wings"><img src="assets/zivotinja-live/owl_wings.png" alt="" aria-hidden="true" decoding="async"></span>
             <span class="ziv-animal ziv-fox"><img src="assets/zivotinja-live/fox.png" alt="" aria-hidden="true" decoding="async"><span class="ziv-eye left"></span><span class="ziv-eye right"></span></span>
-            <span class="ziv-animal-part ziv-fox-tail"><img src="assets/zivotinja-live/fox_tail.png" alt="" aria-hidden="true" decoding="async"></span>
             <span class="ziv-animal ziv-deer"><img src="assets/zivotinja-live/deer.png" alt="" aria-hidden="true" decoding="async"><span class="ziv-eye left"></span><span class="ziv-eye right"></span></span>
             <span class="ziv-animal-part ziv-deer-head"><img src="assets/zivotinja-live/deer_head.png" alt="" aria-hidden="true" decoding="async"></span>
             <span class="ziv-animal-part ziv-deer-leg"><img src="assets/zivotinja-live/deer_leg.png" alt="" aria-hidden="true" decoding="async"></span>
@@ -154,10 +153,10 @@
             <img class="zivotinja-owl-frame zivotinja-owl-body" src="assets/zivotinja-owl-animation/owl-body-v4.png" alt="" aria-hidden="true" decoding="async">
         </div>
 
-        <div class="zivotinja-fox-animation" aria-hidden="true">
-            <img class="zivotinja-fox-tail zivotinja-fox-tail-back" src="assets/zivotinja-fox-animation/fox-tail-v2.png" alt="" aria-hidden="true" decoding="async">
-            <span class="zivotinja-fox-body-occluder" aria-hidden="true"></span>
-            <img class="zivotinja-fox-tail zivotinja-fox-tail-tip" src="assets/zivotinja-fox-animation/fox-tail-tip-v2.png" alt="" aria-hidden="true" decoding="async">
+        <div class="zivotinja-fox-gsap" aria-hidden="true">
+            <img class="zivotinja-fox-gsap-tail zivotinja-fox-gsap-tail-back" src="assets/zivotinja-fox-gsap/fox-tail-original.png" alt="" aria-hidden="true" decoding="async">
+            <img class="zivotinja-fox-gsap-occluder" src="assets/zivotinja-fox-gsap/fox-body-occluder.png" alt="" aria-hidden="true" decoding="async">
+            <img class="zivotinja-fox-gsap-tail zivotinja-fox-gsap-tail-tip" src="assets/zivotinja-fox-gsap/fox-tail-tip-original.png" alt="" aria-hidden="true" decoding="async">
         </div>
 
         <div class="drzava-live-layer" aria-hidden="true">
@@ -973,6 +972,8 @@
             window.ZemljopisIntro.izaberiCitat();
         }
     </script>
+    <script src="vendor/gsap.min.js"></script>
+    <script src="fox-tail-gsap.js"></script>
     <script type="module" src="splash-logo-3d.js"></script>
     <script src="game.js"></script>
 

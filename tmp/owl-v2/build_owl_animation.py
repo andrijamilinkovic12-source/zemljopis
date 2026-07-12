@@ -1,6 +1,8 @@
+import colorsys
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter
+import numpy as np
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 
 ROOT = Path(__file__).resolve().parent
@@ -20,6 +22,36 @@ def sharpen_preserving_alpha(image: Image.Image) -> Image.Image:
     )
     rgb.putalpha(alpha)
     return rgb
+
+
+def apply_rgb_scale(image: Image.Image, scales) -> Image.Image:
+    image = image.convert("RGBA")
+    array = np.asarray(image).copy()
+    rgb = array[..., :3].astype(np.float32)
+    rgb *= np.asarray(scales, dtype=np.float32)
+    array[..., :3] = np.clip(np.rint(rgb), 0, 255).astype(np.uint8)
+    array[array[..., 3] == 0, :3] = 0
+    return Image.fromarray(array, "RGBA")
+
+
+def apply_hsv_grade(image, hue_shift, saturation_scale, value_base, value_sat_drop):
+    image = image.convert("RGBA")
+    array = np.asarray(image).copy()
+    mask = array[..., 3] > 0
+    colors = array[..., :3][mask].astype(np.float32) / 255.0
+    corrected = np.empty_like(colors)
+    for index, (red, green, blue) in enumerate(colors):
+        hue, saturation, value = colorsys.rgb_to_hsv(red, green, blue)
+        saturation = min(1.0, saturation * saturation_scale)
+        value *= max(0.0, value_base - value_sat_drop * saturation)
+        corrected[index] = colorsys.hsv_to_rgb(
+            (hue + hue_shift) % 1.0,
+            saturation,
+            min(1.0, value),
+        )
+    array[..., :3][mask] = np.rint(corrected * 255).astype(np.uint8)
+    array[array[..., 3] == 0, :3] = 0
+    return Image.fromarray(array, "RGBA")
 
 
 def crop_with_margin(image: Image.Image, bbox, margin=4):
@@ -110,6 +142,52 @@ def save_previews():
     contact.save(ROOT / "preview-v2-contact-sheet.jpg", quality=96, subsampling=0)
 
 
+def save_continuous_wing_assets():
+    open_wings = Image.open(ROOT / "wings-open-alpha.png").convert("RGBA")
+
+    closed_v2 = Image.open(OUTPUT / "owl-wings-closed-v2.png").convert("RGBA")
+    apply_rgb_scale(closed_v2, (0.82, 1.10, 0.85)).save(
+        OUTPUT / "owl-wings-closed-v3.png", optimize=True
+    )
+
+    left_wing = open_wings.crop((97, 525, 397, 957))
+    right_wing = open_wings.crop((559, 530, 841, 951))
+    apply_rgb_scale(left_wing, (0.82, 1.10, 0.85)).save(
+        OUTPUT / "owl-wing-left-v3.png", optimize=True
+    )
+    apply_rgb_scale(right_wing, (0.82, 1.10, 0.85)).save(
+        OUTPUT / "owl-wing-right-v3.png", optimize=True
+    )
+
+
+def save_original_color_assets():
+    source = Image.open(OUTPUT / "owl-body-v2.png").convert("RGBA")
+    body = apply_hsv_grade(
+        source,
+        hue_shift=0.025,
+        saturation_scale=0.85,
+        value_base=0.94,
+        value_sat_drop=0.08,
+    )
+    darker_feathers = apply_hsv_grade(
+        source,
+        hue_shift=0.028,
+        saturation_scale=0.92,
+        value_base=0.86,
+        value_sat_drop=0.08,
+    )
+    feather_mask = Image.new("L", CANVAS_SIZE, 0)
+    draw = ImageDraw.Draw(feather_mask)
+    draw.ellipse((126, 578, 268, 650), fill=178)
+    draw.ellipse((126, 640, 268, 753), fill=150)
+    draw.ellipse((145, 600, 214, 681), fill=0)
+    draw.ellipse((204, 603, 270, 684), fill=0)
+    feather_mask = feather_mask.filter(ImageFilter.GaussianBlur(3))
+    feather_mask = ImageChops.multiply(feather_mask, source.getchannel("A"))
+    body = Image.composite(darker_feathers, body, feather_mask)
+    body.save(OUTPUT / "owl-body-v4.png", optimize=True)
+
+
 def main():
     OUTPUT.mkdir(parents=True, exist_ok=True)
     save_clean_background()
@@ -168,6 +246,8 @@ def main():
             },
         ],
     )
+    save_continuous_wing_assets()
+    save_original_color_assets()
     save_previews()
 
 

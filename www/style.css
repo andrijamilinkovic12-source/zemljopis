@@ -2219,64 +2219,108 @@ body[data-tema="zivotinja"] #main-menu > .zivotinja-owl-animation {
 }
 
 .zivotinja-owl-body {
-    z-index: 2;
-}
-
-.zivotinja-owl-wings-closed,
-.zivotinja-owl-wings-half,
-.zivotinja-owl-wings-open {
-    z-index: 1;
-    will-change: opacity;
-    animation-duration: 8.6s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
+    z-index: 3;
 }
 
 .zivotinja-owl-wings-closed {
+    z-index: 1;
     opacity: 1;
-    animation-name: zivotinjaOwlWingsClosed;
+    animation: zivotinjaOwlClosedRest 8.6s linear infinite;
 }
 
-.zivotinja-owl-wings-half {
+.zivotinja-owl-wing {
+    position: absolute;
+    z-index: 2;
+    display: block;
     opacity: 0;
-    animation-name: zivotinjaOwlWingsHalf;
+    object-fit: fill;
+    pointer-events: none;
+    backface-visibility: hidden;
+    animation-duration: 8.6s;
+    animation-timing-function: cubic-bezier(0.42, 0, 0.2, 1);
+    animation-iteration-count: infinite;
 }
 
-.zivotinja-owl-wings-open {
-    opacity: 0;
-    animation-name: zivotinjaOwlWingsOpen;
+.zivotinja-owl-wing-left {
+    left: 5.207%;
+    top: 32.356%;
+    width: 11.477%;
+    height: 9.33%;
+    transform-origin: 94.333% 77.546%;
+    animation-name: zivotinjaOwlWingLeftFlow;
 }
 
-@keyframes zivotinjaOwlWingsClosed {
-    0%, 67.99% { opacity: 1; }
-    68%, 85.99% { opacity: 0; }
-    86%, 100% { opacity: 1; }
+.zivotinja-owl-wing-right {
+    left: 25.08%;
+    top: 32.715%;
+    width: 10.84%;
+    height: 9.09%;
+    transform-origin: 6.028% 77.91%;
+    animation-name: zivotinjaOwlWingRightFlow;
 }
 
-@keyframes zivotinjaOwlWingsHalf {
-    0%, 67.99% { opacity: 0; }
-    68%, 72.99% { opacity: 1; }
-    73%, 80.99% { opacity: 0; }
-    81%, 85.99% { opacity: 1; }
-    86%, 100% { opacity: 0; }
+@keyframes zivotinjaOwlClosedRest {
+    0%, 60% { opacity: 1; }
+    62%, 98% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
-@keyframes zivotinjaOwlWingsOpen {
-    0%, 72.99% { opacity: 0; }
-    73%, 80.99% { opacity: 1; }
-    81%, 100% { opacity: 0; }
+@keyframes zivotinjaOwlWingLeftFlow {
+    0%, 60% {
+        opacity: 0;
+        transform: rotate(-104deg) scale(0.52);
+    }
+    62% {
+        opacity: 1;
+        transform: rotate(-104deg) scale(0.52);
+    }
+    70% { transform: rotate(-52deg) scale(0.78); }
+    78% { transform: rotate(3deg) scale(1.02); }
+    82%, 84% { transform: rotate(0deg) scale(1); }
+    92% { transform: rotate(-52deg) scale(0.78); }
+    98% {
+        opacity: 1;
+        transform: rotate(-104deg) scale(0.52);
+    }
+    100% {
+        opacity: 0;
+        transform: rotate(-104deg) scale(0.52);
+    }
+}
+
+@keyframes zivotinjaOwlWingRightFlow {
+    0%, 60% {
+        opacity: 0;
+        transform: rotate(104deg) scale(0.52);
+    }
+    62% {
+        opacity: 1;
+        transform: rotate(104deg) scale(0.52);
+    }
+    70% { transform: rotate(52deg) scale(0.78); }
+    78% { transform: rotate(-3deg) scale(1.02); }
+    82%, 84% { transform: rotate(0deg) scale(1); }
+    92% { transform: rotate(52deg) scale(0.78); }
+    98% {
+        opacity: 1;
+        transform: rotate(104deg) scale(0.52);
+    }
+    100% {
+        opacity: 0;
+        transform: rotate(104deg) scale(0.52);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .zivotinja-owl-wings-closed,
-    .zivotinja-owl-wings-half,
-    .zivotinja-owl-wings-open {
+    .zivotinja-owl-wing-left,
+    .zivotinja-owl-wing-right {
         animation: none;
     }
 
     .zivotinja-owl-wings-closed { opacity: 1; }
-    .zivotinja-owl-wings-half,
-    .zivotinja-owl-wings-open { opacity: 0; }
+    .zivotinja-owl-wing-left,
+    .zivotinja-owl-wing-right { opacity: 0; }
 }
 
 .ziv-flyer,

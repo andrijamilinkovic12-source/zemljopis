@@ -2326,14 +2326,17 @@ body[data-tema="zivotinja"] #main-menu > .zivotinja-owl-animation {
 /* Original-pixel fox tail, animated only by the local GSAP runtime. */
 #main-menu > .zivotinja-fox-gsap {
     position: absolute;
-    inset: 0;
-    z-index: 3;
+    left: 0;
+    right: 0;
+    top: calc(0px - env(safe-area-inset-top, 0px));
+    bottom: calc(0px - env(safe-area-inset-bottom, 0px));
+    z-index: 0;
     display: none;
     overflow: hidden;
     pointer-events: none;
 }
 
-body[data-tema="zivotinja"] #main-menu > .zivotinja-fox-gsap {
+body[data-tema="zivotinja"] #main-menu.active > .zivotinja-fox-gsap {
     display: block;
 }
 
@@ -2346,28 +2349,8 @@ body[data-tema="zivotinja"] #main-menu > .zivotinja-fox-gsap {
     height: 10.347%;
     object-fit: fill;
     transform: rotate(0deg);
-    transform-origin: 71.338% 23.699%;
+    transform-origin: 80.255% 23.699%;
     pointer-events: none;
-}
-
-.zivotinja-fox-gsap-tail-back {
-    z-index: 1;
-}
-
-.zivotinja-fox-gsap-occluder {
-    position: absolute;
-    left: 13.39%;
-    top: 61.483%;
-    z-index: 2;
-    display: block;
-    width: 9.564%;
-    height: 11.722%;
-    object-fit: fill;
-    pointer-events: none;
-}
-
-.zivotinja-fox-gsap-tail-tip {
-    z-index: 3;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -7189,7 +7172,7 @@ body[data-tema="okean"] { --theme-bg-image: url('assets/reka-soft-matte-bg-v3.pn
 body[data-tema="grad"] { --theme-bg-image: url('assets/grad-soft-matte-bg-reka-clean-v2.png'); }
 body[data-tema="planina"] { --theme-bg-image: url('assets/planina-soft-matte-bg-reka-clean-v2.png'); }
 body[data-tema="biljka"] { --theme-bg-image: url('assets/biljka-soft-matte-bg-reka-clean-v2.png'); }
-body[data-tema="zivotinja"] { --theme-bg-image: url('assets/zivotinja-fox-gsap/zivotinja-bg-fox-tail-clean.png'); }
+body[data-tema="zivotinja"] { --theme-bg-image: url('assets/zivotinja-fox-gsap/zivotinja-bg-fox-tail-clean-v2.png'); }
 body[data-tema="predmet"] { --theme-bg-image: url('assets/predmet-soft-matte-bg-reka-clean-v2.png'); }
 
 body[data-tema="drzava"],

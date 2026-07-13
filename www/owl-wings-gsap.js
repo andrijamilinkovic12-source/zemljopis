@@ -2,8 +2,8 @@
     'use strict';
 
     const gsapRuntime = window.gsap;
-    const leftWing = document.querySelector('.zivotinja-owl-wing-tip-left');
-    const rightWing = document.querySelector('.zivotinja-owl-wing-tip-right');
+    const leftWing = document.querySelector('.zivotinja-owl-wing-left');
+    const rightWing = document.querySelector('.zivotinja-owl-wing-right');
     const mainMenu = document.getElementById('main-menu');
     if (!gsapRuntime || !leftWing || !rightWing || !mainMenu) return;
 
@@ -13,28 +13,26 @@
 
     gsapRuntime.set(leftWing, {
         rotation: 0,
-        opacity: 0,
-        transformOrigin: '82.6923% 70.1754%',
+        opacity: 1,
+        transformOrigin: '66.6667% 16.3043%',
         force3D: false
     });
     gsapRuntime.set(rightWing, {
         rotation: 0,
-        opacity: 0,
-        transformOrigin: '12.1212% 83.7209%',
+        opacity: 1,
+        transformOrigin: '52.3810% 11.1111%',
         force3D: false
     });
 
     const timeline = gsapRuntime.timeline({ paused: true, repeat: -1 });
     timeline
-        .to(wings, { rotation: 0, opacity: 0, duration: 5.4, ease: 'none', force3D: false })
-        .to(leftWing, { rotation: 2.1, opacity: 0.42, duration: 0.42, ease: 'sine.inOut', force3D: false })
-        .to(rightWing, { rotation: -1.9, opacity: 0.38, duration: 0.42, ease: 'sine.inOut', force3D: false }, '<0.03')
-        .to(leftWing, { rotation: 4.2, opacity: 0.82, duration: 0.38, ease: 'sine.inOut', force3D: false })
-        .to(rightWing, { rotation: -3.9, opacity: 0.78, duration: 0.38, ease: 'sine.inOut', force3D: false }, '<0.02')
-        .to(leftWing, { rotation: 1.0, opacity: 0.30, duration: 0.44, ease: 'sine.inOut', force3D: false })
-        .to(rightWing, { rotation: -0.9, opacity: 0.27, duration: 0.44, ease: 'sine.inOut', force3D: false }, '<0.02')
-        .to(wings, { rotation: 0, opacity: 0, duration: 0.68, ease: 'sine.inOut', force3D: false })
-        .to(wings, { rotation: 0, opacity: 0, duration: 3.8, ease: 'none', force3D: false });
+        .to(wings, { rotation: 0, duration: 0.7, ease: 'none', force3D: false })
+        .to(leftWing, { rotation: 4.8, duration: 0.56, ease: 'sine.inOut', force3D: false })
+        .to(rightWing, { rotation: -4.5, duration: 0.56, ease: 'sine.inOut', force3D: false }, '<')
+        .to(leftWing, { rotation: 1.2, duration: 0.42, ease: 'sine.inOut', force3D: false })
+        .to(rightWing, { rotation: -1.1, duration: 0.42, ease: 'sine.inOut', force3D: false }, '<')
+        .to(wings, { rotation: 0, duration: 0.66, ease: 'sine.inOut', force3D: false })
+        .to(wings, { rotation: 0, duration: 2.1, ease: 'none', force3D: false });
 
     const shouldRun = () => (
         document.body.dataset.tema === 'zivotinja'
@@ -49,7 +47,7 @@
             timeline.restart(true);
         } else if (!nextRunning && isRunning) {
             timeline.pause(0);
-            gsapRuntime.set(wings, { rotation: 0, opacity: 0, force3D: false });
+            gsapRuntime.set(wings, { rotation: 0, opacity: 1, force3D: false });
         }
         isRunning = nextRunning;
     };

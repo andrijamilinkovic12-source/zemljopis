@@ -2209,33 +2209,33 @@ body[data-tema="zivotinja"] #main-menu.active > .zivotinja-owl-gsap {
     display: block;
 }
 
-.zivotinja-owl-wing-tip {
+.zivotinja-owl-wing {
     position: absolute;
     display: block;
-    opacity: 0;
+    opacity: 1;
     pointer-events: none;
     backface-visibility: hidden;
 }
 
-.zivotinja-owl-wing-tip-left {
-    left: 10.8395%;
-    top: 38.3373%;
-    width: 5.5260%;
-    height: 6.8182%;
-    transform-origin: 82.6923% 70.1754%;
+.zivotinja-owl-wing-left {
+    left: 11.0521%;
+    top: 38.2775%;
+    width: 7.6514%;
+    height: 5.5024%;
+    transform-origin: 66.6667% 16.3043%;
 }
 
-.zivotinja-owl-wing-tip-right {
-    left: 22.9543%;
-    top: 38.4569%;
-    width: 3.5079%;
-    height: 5.1435%;
-    transform-origin: 12.1212% 83.7209%;
+.zivotinja-owl-wing-right {
+    left: 22.4229%;
+    top: 39.4737%;
+    width: 4.4633%;
+    height: 4.3062%;
+    transform-origin: 52.3810% 11.1111%;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .zivotinja-owl-wing-tip {
-        opacity: 0 !important;
+    .zivotinja-owl-wing {
+        opacity: 1 !important;
         transform: rotate(0deg) !important;
     }
 }
@@ -7080,7 +7080,7 @@ body[data-tema="okean"] { --theme-bg-image: url('assets/reka-soft-matte-bg-v3.pn
 body[data-tema="grad"] { --theme-bg-image: url('assets/grad-soft-matte-bg-reka-clean-v2.png'); }
 body[data-tema="planina"] { --theme-bg-image: url('assets/planina-soft-matte-bg-reka-clean-v2.png'); }
 body[data-tema="biljka"] { --theme-bg-image: url('assets/biljka-soft-matte-bg-reka-clean-v2.png'); }
-body[data-tema="zivotinja"] { --theme-bg-image: url('assets/zivotinja-owl-gsap/zivotinja-bg-fox-tail-owl-static-v1.png'); }
+body[data-tema="zivotinja"] { --theme-bg-image: url('assets/zivotinja-owl-gsap/zivotinja-bg-fox-tail-owl-wings-isolated-v3.png'); }
 body[data-tema="predmet"] { --theme-bg-image: url('assets/predmet-soft-matte-bg-reka-clean-v2.png'); }
 
 body[data-tema="drzava"],

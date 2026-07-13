@@ -17,13 +17,13 @@
 
     const timeline = gsapRuntime.timeline({ paused: true, repeat: -1 });
     timeline
-        .to(tails, { rotation: 0, duration: 3.4, ease: 'none', force3D: false })
-        .to(tails, { rotation: -0.45, duration: 0.62, ease: 'sine.inOut', force3D: false })
-        .to(tails, { rotation: -0.96, duration: 0.74, ease: 'sine.inOut', force3D: false })
-        .to(tails, { rotation: -0.28, duration: 0.66, ease: 'sine.inOut', force3D: false })
-        .to(tails, { rotation: -0.72, duration: 0.63, ease: 'sine.inOut', force3D: false })
-        .to(tails, { rotation: 0, duration: 0.88, ease: 'sine.inOut', force3D: false })
-        .to(tails, { rotation: 0, duration: 3.1, ease: 'none', force3D: false });
+        .to(tails, { rotation: 0, duration: 0.7, ease: 'none', force3D: false })
+        .to(tails, { rotation: -1.2, duration: 0.5, ease: 'sine.inOut', force3D: false })
+        .to(tails, { rotation: -2.0, duration: 0.55, ease: 'sine.inOut', force3D: false })
+        .to(tails, { rotation: -0.5, duration: 0.6, ease: 'sine.inOut', force3D: false })
+        .to(tails, { rotation: -1.55, duration: 0.55, ease: 'sine.inOut', force3D: false })
+        .to(tails, { rotation: 0, duration: 0.8, ease: 'sine.inOut', force3D: false })
+        .to(tails, { rotation: 0, duration: 2.0, ease: 'none', force3D: false });
 
     const shouldRun = () => (
         document.body.dataset.tema === 'zivotinja'

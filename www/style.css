@@ -9189,3 +9189,122 @@ body[data-tema][data-tastatura] .kb-key:active {
     color: var(--theme-on-primary) !important;
     box-shadow: 0 0 14px rgba(var(--theme-primary-rgb), 0.34) !important;
 }
+
+/*
+ * Zajednicki prikaz za svih sedam tema.
+ * Ilustracija pozadine ostaje jedina razlika izmedju tema; kontrole i kartice
+ * koriste isti plavi spektar, bez promene tipografije ili njenih dimenzija.
+ */
+body[data-tema="drzava"],
+body[data-tema="okean"],
+body[data-tema="grad"],
+body[data-tema="planina"],
+body[data-tema="biljka"],
+body[data-tema="zivotinja"],
+body[data-tema="predmet"] {
+    --theme-text: #ffffff;
+    --theme-muted: rgba(235, 248, 255, 0.82);
+    --theme-primary: #b9e8ff;
+    --theme-primary-rgb: 185, 232, 255;
+    --theme-secondary: #65bfff;
+    --theme-secondary-rgb: 101, 191, 255;
+    --theme-accent: #e1f5ff;
+    --theme-accent-rgb: 225, 245, 255;
+    --theme-danger: #ff9eb3;
+    --theme-danger-rgb: 255, 158, 179;
+    --theme-panel: linear-gradient(145deg, rgba(5, 21, 48, 0.78), rgba(12, 43, 79, 0.68));
+    --theme-panel-strong: linear-gradient(145deg, rgba(3, 15, 37, 0.9), rgba(9, 37, 72, 0.82));
+    --theme-control-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(214, 241, 255, 0.1));
+    --theme-input-bg: rgba(3, 18, 43, 0.7);
+    --theme-pill-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(191, 231, 255, 0.1));
+    --theme-border: rgba(220, 244, 255, 0.4);
+    --theme-soft-border: rgba(174, 224, 255, 0.28);
+    --theme-shadow: 0 18px 38px rgba(1, 8, 24, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    --theme-control-shadow: 0 8px 20px rgba(1, 12, 31, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.36);
+    --theme-title-shadow: 0 2px 11px rgba(0, 23, 57, 0.86), 0 0 18px rgba(100, 191, 255, 0.3);
+    --theme-primary-gradient: linear-gradient(135deg, #0b6fb6, #329fe2 52%, #86d7ff);
+    --theme-on-primary: #ffffff;
+    --theme-primary-shadow: 0 10px 22px rgba(6, 102, 178, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    --theme-phone-shadow: 0 0 54px rgba(2, 14, 35, 0.44);
+}
+
+/* Tamne, sadrzajne kartice: jasno odvojeno staklo preko ilustracije teme. */
+body[data-tema] .game-header,
+body[data-tema] .stats-panel,
+body[data-tema] .settings-panel,
+body[data-tema] .profile-setup-card,
+body[data-tema] .profile-setup-picker,
+body[data-tema] .modal-content,
+body[data-tema] .tokeni-card,
+body[data-tema] .online-igrac-red,
+body[data-tema] .prijatelj-kartica,
+body[data-tema] .dnevni-aktivni-zadatak,
+body[data-tema] .profile-info-panel,
+body[data-tema] .toplista-shell,
+body[data-tema] #toplista-sadrzaj > div,
+body[data-tema] #kvartalni-nivo-sadrzaj > div,
+body[data-tema] .summary-card,
+body[data-tema] .solo-summary-card,
+body[data-tema] .final-ranking-player,
+body[data-tema] .final-bonus-panel,
+body[data-tema] .ad-preview-panel,
+body[data-tema] .tastatura-kartica,
+body[data-tema] .riznica-kartica,
+body[data-tema] #riznica-sadrzaj > div,
+body[data-tema] #trofeji-sadrzaj > div,
+body[data-tema] #podesavanja-screen > div > div,
+body[data-tema] #private-room-setup > div > div {
+    background: var(--theme-panel) !important;
+    border-color: var(--theme-border) !important;
+    box-shadow: var(--theme-shadow) !important;
+    backdrop-filter: blur(16px) saturate(1.16);
+    -webkit-backdrop-filter: blur(16px) saturate(1.16);
+}
+
+/* Svetle, providne kartice ostaju lake, ali na tamnoj podlozi cuvaju beli tekst. */
+body[data-tema] .menu-btn,
+body[data-tema] .status-pill,
+body[data-tema] .top-circle-btn,
+body[data-tema] .circle-btn,
+body[data-tema] .profile-choice,
+body[data-tema] .avatar-option,
+body[data-tema] .opponent-player,
+body[data-tema] .stat-box,
+body[data-tema] .bubble-btn,
+body[data-tema] .invite-btn,
+body[data-tema] .chat-msg.tudja,
+body[data-tema] .kb-key {
+    background: var(--theme-control-bg) !important;
+    border-color: var(--theme-border) !important;
+    box-shadow: var(--theme-control-shadow) !important;
+    color: var(--theme-text) !important;
+    backdrop-filter: blur(12px) saturate(1.1);
+    -webkit-backdrop-filter: blur(12px) saturate(1.1);
+}
+
+/* Beli tekst i plavi akcenti daju isti kontrast na svakom ekranu. */
+body[data-tema] :is(h1, h2, h3, h4, p, label, small, .sub-mode-label, .stat-value,
+    .dnevni-aktivni-pojam, .online-igrac-info, .prijatelj-ime, .modal-content p,
+    .settings-label, .settings-theme-label, .profile-choice-copy small,
+    .dnevni-aktivni-redni, .opponent-player, .stat-box span, .chat-tekst,
+    .chat-msg.tudja .chat-ime, .final-ranking-kicker, .final-ranking-stats span,
+    .final-ranking-effect-name, #final-bonus-status, .ad-preview-panel p) {
+    color: var(--theme-text) !important;
+    text-shadow: 0 2px 8px rgba(0, 13, 35, 0.72);
+}
+
+body[data-tema] :is(.btn-primary, .btn-finish, .dnevni-result-x2-btn,
+    .profile-setup-submit, .invite-btn.filled, .final-bonus-btn, .kb-enter) {
+    background: var(--theme-primary-gradient) !important;
+    color: var(--theme-on-primary) !important;
+    border-color: rgba(255, 255, 255, 0.46) !important;
+    box-shadow: var(--theme-primary-shadow) !important;
+}
+
+body[data-tema] :is(.btn-secondary, .solo-btn, .tournament-btn, .rank-btn,
+    .btn-prijatelj, .profile-choice.active, .avatar-option.active) {
+    color: var(--theme-primary) !important;
+    border-color: rgba(var(--theme-primary-rgb), 0.62) !important;
+    background: rgba(var(--theme-primary-rgb), 0.16) !important;
+    box-shadow: 0 0 18px rgba(var(--theme-primary-rgb), 0.2) !important;
+}

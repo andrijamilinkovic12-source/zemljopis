@@ -9350,16 +9350,14 @@ body[data-tema] .profile-info-panel {
     -webkit-backdrop-filter: none !important;
 }
 
+/* Statistike prijatelja su tri namenske kartice jer predstavljaju zasebne podatke. */
 body[data-tema] .prijatelj-kartica .stat-box {
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-}
-
-body[data-tema] .prijatelj-kartica .stat-box + .stat-box {
-    border-left: 1px solid var(--theme-soft-border) !important;
+    background: var(--theme-control-bg) !important;
+    border: 1px solid var(--theme-border) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--theme-control-shadow) !important;
+    backdrop-filter: blur(12px) saturate(1.1) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
 }
 
 /* Zelena je semanticka boja: samo aktivno, uzivo i uspesno stanje. */

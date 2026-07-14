@@ -9498,3 +9498,8 @@ body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn i {
 #main-menu > .icon-menu-row {
     transform: translateY(clamp(0.85rem, 2.5vh, 1.4rem));
 }
+
+/* Samo poslednjih pet ikona dodatno je spušteno proporcionalno 1–2 mm. */
+#main-menu > .icon-menu-row {
+    translate: 0 clamp(4px, 0.65vh, 6px);
+}

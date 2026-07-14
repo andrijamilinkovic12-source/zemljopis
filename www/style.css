@@ -9456,18 +9456,14 @@ body[data-tema] #toplista-sadrzaj {
     -webkit-backdrop-filter: blur(16px) saturate(1.16);
 }
 
-/* Pravila i Novosti su pomocne radnje podešavanja, ne zasebne kartice. */
+/* Pravila i Novosti su dve odvojene pomoćne akcije, bez kartice oko njihovog para. */
 body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn {
-    background: transparent !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
+    background: var(--theme-control-bg) !important;
+    border: 1px solid var(--theme-border) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--theme-control-shadow) !important;
     color: var(--theme-text) !important;
     text-shadow: none !important;
-}
-
-body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn + .menu-btn {
-    border-left: 1px solid var(--theme-soft-border) !important;
 }
 
 body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn i {

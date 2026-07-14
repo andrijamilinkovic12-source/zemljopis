@@ -9503,3 +9503,8 @@ body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn i {
 #main-menu > .icon-menu-row {
     translate: 0 clamp(4px, 0.65vh, 6px);
 }
+
+/* Samo gornji red od tri glavne ikone podignut je 3 mm. */
+#main-menu > .top-header-menu {
+    translate: 0 -3mm;
+}

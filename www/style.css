@@ -9214,13 +9214,13 @@ body[data-tema="predmet"] {
     --theme-danger-rgb: 255, 158, 179;
     --theme-panel: linear-gradient(145deg, rgba(5, 21, 48, 0.78), rgba(12, 43, 79, 0.68));
     --theme-panel-strong: linear-gradient(145deg, rgba(3, 15, 37, 0.9), rgba(9, 37, 72, 0.82));
-    --theme-control-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(214, 241, 255, 0.1));
+    --theme-control-bg: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7));
     --theme-input-bg: rgba(3, 18, 43, 0.7);
-    --theme-pill-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(191, 231, 255, 0.1));
+    --theme-pill-bg: linear-gradient(145deg, rgba(4, 18, 44, 0.78), rgba(8, 35, 70, 0.66));
     --theme-border: rgba(220, 244, 255, 0.4);
     --theme-soft-border: rgba(174, 224, 255, 0.28);
     --theme-shadow: 0 18px 38px rgba(1, 8, 24, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-    --theme-control-shadow: 0 8px 20px rgba(1, 12, 31, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.36);
+    --theme-control-shadow: 0 8px 20px rgba(1, 12, 31, 0.32), inset 0 1px 0 rgba(127, 198, 255, 0.12);
     --theme-title-shadow: 0 2px 11px rgba(0, 23, 57, 0.86), 0 0 18px rgba(100, 191, 255, 0.3);
     --theme-primary-gradient: linear-gradient(135deg, #0b6fb6, #329fe2 52%, #86d7ff);
     --theme-on-primary: #ffffff;
@@ -9261,7 +9261,7 @@ body[data-tema] #private-room-setup > div > div {
     -webkit-backdrop-filter: blur(16px) saturate(1.16);
 }
 
-/* Svetle, providne kartice ostaju lake, ali na tamnoj podlozi cuvaju beli tekst. */
+/* Sve pomocne kontrole su tamno staklo; nema svetlih providnih kartica. */
 body[data-tema] .menu-btn,
 body[data-tema] .status-pill,
 body[data-tema] .top-circle-btn,
@@ -9379,7 +9379,7 @@ body[data-tema] :is(.profile-choice.active .profile-choice-status, .btn-prijatel
     background: rgba(var(--theme-success-rgb), 0.14) !important;
 }
 
-/* Povratne akcije koriste istu svetlu staklenu kartu kao sekundarno dugme na splash ekranu. */
+/* Povratne akcije koriste isto tamno staklo kao sekundarno dugme na splash ekranu. */
 body[data-tema] :is(.settings-back-button, .close-overlay-btn) {
     background: var(--theme-control-bg) !important;
     border: 1px solid var(--theme-border) !important;

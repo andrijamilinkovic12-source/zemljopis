@@ -9410,10 +9410,30 @@ body[data-tema] :is(
 }
 
 body[data-tema] .page-title {
-    color: var(--theme-text) !important;
+    color: #102f59 !important;
     font-size: 1.6rem !important;
+    font-weight: 900;
     line-height: 1.15;
+    letter-spacing: 0.025em;
     text-align: center !important;
+    background: linear-gradient(
+        180deg,
+        #426d99 0%,
+        #234f7d 24%,
+        #123860 52%,
+        #0a274b 76%,
+        #061a35 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 0.35px rgba(4, 18, 40, 0.86);
+    text-shadow: none !important;
+    filter:
+        drop-shadow(0 -1px 0 rgba(126, 176, 214, 0.42))
+        drop-shadow(0 1px 0 rgba(4, 17, 37, 0.92))
+        drop-shadow(0 3px 1px rgba(2, 11, 27, 0.78))
+        drop-shadow(0 6px 8px rgba(0, 8, 24, 0.42));
     z-index: 10;
 }
 
@@ -9436,7 +9456,8 @@ body[data-tema] .page-title-icon {
 }
 
 body[data-tema] #global-chat-screen .global-chat-title {
-    justify-content: center;
+    display: block !important;
+    width: 100%;
 }
 
 /* Top lista ima jednu karticu: sama lista rezultata, bez kartice oko celog rasporeda. */
@@ -9476,7 +9497,7 @@ body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn {
     width: 100%;
     background: var(--theme-control-bg) !important;
     border: 1px solid var(--theme-border) !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
     box-shadow: var(--theme-control-shadow) !important;
     color: var(--theme-text) !important;
     text-shadow: none !important;

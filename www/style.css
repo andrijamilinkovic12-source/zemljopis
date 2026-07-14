@@ -9455,3 +9455,21 @@ body[data-tema] #toplista-sadrzaj {
     backdrop-filter: blur(16px) saturate(1.16);
     -webkit-backdrop-filter: blur(16px) saturate(1.16);
 }
+
+/* Pravila i Novosti su pomocne radnje podešavanja, ne zasebne kartice. */
+body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: var(--theme-text) !important;
+    text-shadow: none !important;
+}
+
+body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn + .menu-btn {
+    border-left: 1px solid var(--theme-soft-border) !important;
+}
+
+body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn i {
+    color: var(--theme-primary) !important;
+}

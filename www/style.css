@@ -9495,3 +9495,8 @@ body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn {
 body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn i {
     color: var(--theme-primary) !important;
 }
+
+/* Samo poslednji red od pet ikona na glavnom meniju pomeren je malo naniže. */
+#main-menu > .icon-menu-row {
+    transform: translateY(clamp(0.85rem, 2.5vh, 1.4rem));
+}

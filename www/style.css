@@ -9456,20 +9456,32 @@ body[data-tema] #toplista-sadrzaj {
     -webkit-backdrop-filter: blur(16px) saturate(1.16);
 }
 
-/* Pravila i Novosti su dve odvojene ravne akcije, bez unutrašnjih kartica. */
+/* Pravila i Novosti su dve zasebne kartice; njihov red i footer nisu kartice. */
+body[data-tema] #podesavanja-screen .settings-footer,
 body[data-tema] #podesavanja-screen .settings-secondary-actions {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-tema] #podesavanja-screen .settings-secondary-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: clamp(0.75rem, 3vw, 1rem);
 }
 
 body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn {
-    background: transparent !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
+    width: 100%;
+    background: var(--theme-control-bg) !important;
+    border: 1px solid var(--theme-border) !important;
+    border-radius: 10px !important;
+    box-shadow: var(--theme-control-shadow) !important;
     color: var(--theme-text) !important;
     text-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    backdrop-filter: blur(12px) saturate(1.1) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
 }
 
 body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn i {

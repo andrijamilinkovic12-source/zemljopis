@@ -9308,3 +9308,115 @@ body[data-tema] :is(.btn-secondary, .solo-btn, .tournament-btn, .rank-btn,
     background: rgba(var(--theme-primary-rgb), 0.16) !important;
     box-shadow: 0 0 18px rgba(var(--theme-primary-rgb), 0.2) !important;
 }
+
+/* Legacy green inline accents are folded into the shared blue/white system. */
+body[data-tema] :is([style*="#38ef7d"], [style*="#11998e"], [style*="#22c55e"], [style*="#16a34a"]) {
+    color: var(--theme-primary) !important;
+    border-color: rgba(var(--theme-primary-rgb), 0.56) !important;
+}
+
+body[data-tema] #anti-cheat-status span,
+body[data-tema] .dnevni-result-status,
+body[data-tema] .tastatura-opremljena,
+body[data-tema] .riznica-opremljeno {
+    color: var(--theme-text) !important;
+}
+
+body[data-tema] :is(.input-correct, .top-half i, .overlay-multi .bubble-btn,
+    .current-letter span, .opponent-player .player-score, .settings-avatar-preview,
+    .profile-choice-icon, .prijatelj-avatar) {
+    color: var(--theme-primary) !important;
+    border-color: rgba(var(--theme-primary-rgb), 0.56) !important;
+}
+
+/* Jedan nivo kartice je dovoljan: rasporedi, tabovi i pomocne informacije nisu paneli. */
+body[data-tema] :is(.riznica-grid, .tastature-grid, #toplista-sadrzaj > div,
+    .settings-secondary-actions, .kvartal-main-tabs, .kvartal-level-tabs,
+    .kvartal-legend-tabs, .kvartal-heading, .kvartal-empty-state) {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Informacije unutar vec postojece kartice citaju se kao njen sadrzaj, ne kao nova kartica. */
+body[data-tema] .profile-info-panel {
+    background: transparent !important;
+    border: 0 !important;
+    border-top: 1px solid var(--theme-soft-border) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-tema] .prijatelj-kartica .stat-box {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-tema] .prijatelj-kartica .stat-box + .stat-box {
+    border-left: 1px solid var(--theme-soft-border) !important;
+}
+
+/* Zelena je semanticka boja: samo aktivno, uzivo i uspesno stanje. */
+body[data-tema] {
+    --theme-success: #6ee7a5;
+    --theme-success-rgb: 110, 231, 165;
+}
+
+body[data-tema] :is(#anti-cheat-status span, .profile-choice.active .profile-choice-status,
+    .prijatelj-status.online, .btn-prijatelj.disabled, .riznica-opremljeno,
+    .tastatura-opremljena, .status-zavrseno) {
+    color: var(--theme-success) !important;
+    border-color: rgba(var(--theme-success-rgb), 0.5) !important;
+}
+
+body[data-tema] :is(.profile-choice.active .profile-choice-status, .btn-prijatelj.disabled) {
+    background: rgba(var(--theme-success-rgb), 0.14) !important;
+}
+
+/* Povratne akcije koriste istu svetlu staklenu kartu kao sekundarno dugme na splash ekranu. */
+body[data-tema] :is(.settings-back-button, .close-overlay-btn) {
+    background: var(--theme-control-bg) !important;
+    border: 1px solid var(--theme-border) !important;
+    color: var(--theme-text) !important;
+    box-shadow: var(--theme-control-shadow) !important;
+    backdrop-filter: blur(12px) saturate(1.1);
+    -webkit-backdrop-filter: blur(12px) saturate(1.1);
+}
+
+body[data-tema] :is(.settings-back-button, .close-overlay-btn):active {
+    background: rgba(var(--theme-primary-rgb), 0.2) !important;
+    border-color: var(--theme-primary) !important;
+}
+
+/* Naslovi običnih ekrana stoje odmah ispod safe zone tela aplikacije. */
+body[data-tema] :is(
+    #kvartalni-nivo-screen,
+    #online-igraci-screen,
+    #soba-prijatelja-screen,
+    #tokeni-screen,
+    #trofeji-main-screen,
+    #riznica-screen,
+    #toplista-screen,
+    #podesavanja-screen,
+    #global-chat-screen
+) {
+    padding-top: clamp(0.7rem, 1.8vh, 1rem) !important;
+}
+
+body[data-tema] .page-title {
+    color: var(--theme-text) !important;
+    font-size: 1.6rem !important;
+    line-height: 1.15;
+    text-align: center !important;
+    z-index: 10;
+}
+
+body[data-tema] #global-chat-screen .global-chat-title {
+    justify-content: center;
+}

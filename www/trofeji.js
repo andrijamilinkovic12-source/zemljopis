@@ -103,7 +103,7 @@ const TrofejiManager = {
             if (zavrsen && !trofej.preuzeto) {
                 akcijaHtml = `<button class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; background: #f5af19; font-weight: 800; color: #000;" onclick="TrofejiManager.preuzmiNagradu('${trofej.id}')">Pokupi +${trofej.nagrada}</button>`;
             } else if (trofej.preuzeto) {
-                akcijaHtml = `<span style="color: #38ef7d; font-size: 0.9rem; font-weight: 800;"><i class="fa-solid fa-check"></i> Završeno</span>`;
+                akcijaHtml = `<span class="status-zavrseno" style="font-size: 0.9rem; font-weight: 800;"><i class="fa-solid fa-check"></i> Završeno</span>`;
             } else {
                 akcijaHtml = `<span style="color: #f5af19; font-size: 0.8rem; font-weight: 600;"><i class="fa-solid fa-coins"></i> ${trofej.nagrada}</span>`;
             }

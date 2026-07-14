@@ -269,7 +269,7 @@ const KvartalniNivoManager = {
         const sadrzaj = document.getElementById('kvartalni-nivo-sadrzaj');
         
         let html = `
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+            <div class="kvartal-main-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
                 <button class="menu-btn" style="margin: 0; padding: 0.6rem; font-size: 0.8rem; flex: 1; transition: all 0.2s; ${this.aktivniTab === 'sezona' ? 'background: rgba(245, 175, 25, 0.2); border: 1px solid #f5af19; color: #f5af19;' : 'background: rgba(0,0,0,0.5);'}" onclick="KvartalniNivoManager.promeniTab('sezona')">Liga</button>
                 <button class="menu-btn" style="margin: 0; padding: 0.6rem; font-size: 0.8rem; flex: 1; transition: all 0.2s; ${this.aktivniTab === 'svaVremena' ? 'background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; color: #38bdf8;' : 'background: rgba(0,0,0,0.5);'}" onclick="KvartalniNivoManager.promeniTab('svaVremena')">Sva Vremena</button>
                 <button class="menu-btn" style="margin: 0; padding: 0.6rem; font-size: 0.8rem; flex: 1; transition: all 0.2s; ${this.aktivniTab === 'slavni' ? 'background: rgba(177, 34, 229, 0.2); border: 1px solid #b122e5; color: #b122e5;' : 'background: rgba(0,0,0,0.5);'}" onclick="KvartalniNivoManager.promeniTab('slavni')">Slavni</button>
@@ -298,7 +298,7 @@ const KvartalniNivoManager = {
             </div>
         `;
 
-        html += `<div style="display: flex; justify-content: space-between; gap: 0.3rem; margin-bottom: 1rem;">`;
+        html += `<div class="kvartal-level-tabs" style="display: flex; justify-content: space-between; gap: 0.3rem; margin-bottom: 1rem;">`;
         this.nivoi.forEach(nivo => {
             let aktivan = this.aktivniNivoTab === nivo.id;
             html += `
@@ -340,7 +340,7 @@ const KvartalniNivoManager = {
 
     renderSvaVremenaHTML: function() {
         let html = `
-            <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div class="kvartal-heading" style="text-align: center; margin-bottom: 1.5rem;">
                 <i class="fa-solid fa-infinity" style="font-size: 3rem; color: #38bdf8; filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.5)); margin-bottom: 0.5rem;"></i>
                 <h3 style="color: #38bdf8; font-size: 1.2rem; text-transform: uppercase;">Apsolutni Vladari</h3>
                 <p style="font-size: 0.75rem; color: #a0aec0;">Najviše pogođenih pojmova u istoriji igre.</p>
@@ -376,7 +376,7 @@ const KvartalniNivoManager = {
 
     renderSlavniHTML: function() {
         let html = `
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+            <div class="kvartal-legend-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
                 <button class="menu-btn" style="margin: 0; padding: 0.5rem; font-size: 0.8rem; flex: 1; border-radius: 8px; transition: all 0.2s; ${this.aktivniSlavniTab === 'medalje' ? 'background: rgba(177, 34, 229, 0.3); border: 1px solid #b122e5; color: #fff;' : 'background: rgba(255,255,255,0.05);'}" onclick="KvartalniNivoManager.promeniSlavniTab('medalje')">🏅 Kolekcija Medalja</button>
                 <button class="menu-btn" style="margin: 0; padding: 0.5rem; font-size: 0.8rem; flex: 1; border-radius: 8px; transition: all 0.2s; ${this.aktivniSlavniTab === 'sampioni' ? 'background: rgba(177, 34, 229, 0.3); border: 1px solid #b122e5; color: #fff;' : 'background: rgba(255,255,255,0.05);'}" onclick="KvartalniNivoManager.promeniSlavniTab('sampioni')">🏆 Šampioni Ciklusa</button>
             </div>
@@ -386,7 +386,7 @@ const KvartalniNivoManager = {
             html += `<p style="text-align: center; font-size: 0.75rem; color: #a0aec0; margin-bottom: 1rem;">Igrači koji su završili u TOP 3 u bilo kom kvartalnom ciklusu.</p>`;
             
             if (!this.serverPodaci.medalje || this.serverPodaci.medalje.length === 0) {
-                  html += `<div style="text-align: center; color: #a0aec0; font-size: 0.8rem;">Čekamo prve osvajače medalja...</div>`;
+                  html += `<div class="kvartal-empty-state" style="text-align: center; color: #a0aec0; font-size: 0.8rem;">Čekamo prve osvajače medalja...</div>`;
             } else {
                 this.serverPodaci.medalje.forEach((igrac, index) => {
                     html += `
@@ -411,7 +411,7 @@ const KvartalniNivoManager = {
             html += `<p style="text-align: center; font-size: 0.75rem; color: #a0aec0; margin-bottom: 1rem;">Osvajači prvog mesta na kraju svakog ciklusa lige.</p>`;
             
             if (!this.serverPodaci.sampioni || this.serverPodaci.sampioni.length === 0) {
-                  html += `<div style="text-align: center; color: #a0aec0; font-size: 0.8rem;">Čekamo prve šampione...</div>`;
+                  html += `<div class="kvartal-empty-state" style="text-align: center; color: #a0aec0; font-size: 0.8rem;">Čekamo prve šampione...</div>`;
             } else {
                 this.serverPodaci.sampioni.forEach(igrac => {
                     html += `

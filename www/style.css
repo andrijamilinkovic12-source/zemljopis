@@ -9417,6 +9417,41 @@ body[data-tema] .page-title {
     z-index: 10;
 }
 
+/* Svaki informativni ekran prepoznaje se istom ikonom koja ga otvara iz menija. */
+body[data-tema] .page-heading {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+body[data-tema] .page-title-icon {
+    width: clamp(2rem, 7.5vw, 2.6rem);
+    height: clamp(2rem, 7.5vw, 2.6rem);
+    margin-bottom: clamp(0.15rem, 0.5vh, 0.3rem);
+    object-fit: contain;
+    filter: drop-shadow(0 5px 8px rgba(0, 12, 32, 0.38));
+}
+
 body[data-tema] #global-chat-screen .global-chat-title {
     justify-content: center;
+}
+
+/* Top lista ima jednu karticu: sama lista rezultata, bez kartice oko celog rasporeda. */
+body[data-tema] .toplista-shell {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-tema] #toplista-sadrzaj {
+    background: var(--theme-panel) !important;
+    border-color: var(--theme-border) !important;
+    box-shadow: var(--theme-shadow) !important;
+    backdrop-filter: blur(16px) saturate(1.16);
+    -webkit-backdrop-filter: blur(16px) saturate(1.16);
 }

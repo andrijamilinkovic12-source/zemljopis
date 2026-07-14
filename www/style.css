@@ -9508,3 +9508,8 @@ body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn i {
 #main-menu > .top-header-menu {
     translate: 0 -3mm;
 }
+
+/* Samo tri male statusne ikone (Riznica, Tokeni, Igrači uživo) podignute su 4 mm. */
+#main-menu > .status-bar {
+    translate: 0 -4mm;
+}

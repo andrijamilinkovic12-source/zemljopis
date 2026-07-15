@@ -454,6 +454,13 @@ const DnevniIzazovManager = {
         });
     },
 
+    prikaziKosovoPorukuAkoTreba: function() {
+        if (typeof KosovoPorukaManager === 'undefined') return false;
+
+        const inputEl = document.querySelector('#dnevni-izazov-polja .game-input[data-kategorija="drzava"]');
+        return KosovoPorukaManager.ponoviURedu(inputEl);
+    },
+
     azurirajLokalneNagrade: function(odgovor) {
         if (typeof odgovor.dukati === 'number' && typeof RiznicaManager !== 'undefined') {
             RiznicaManager.dukati = RiznicaManager.normalizujDukate(odgovor.dukati, RiznicaManager.dukati);
@@ -497,8 +504,14 @@ const DnevniIzazovManager = {
             this.poslednjiRezultat = rezultat;
             this.obojiPoljaPoServeru(rezultat.provera);
             this.azurirajLokalneNagrade(odgovor);
+            const prikaziKosovoPoruku = this.prikaziKosovoPorukuAkoTreba();
 
-            setTimeout(() => this.prikaziRezultat(rezultat), 900);
+            setTimeout(
+                () => this.prikaziRezultat(rezultat),
+                prikaziKosovoPoruku && typeof KosovoPorukaManager !== 'undefined'
+                    ? KosovoPorukaManager.vremePreRezimea
+                    : 900
+            );
         } catch (error) {
             this.zavrsavanjeUToku = false;
             UIManager.prikaziObavestenje(

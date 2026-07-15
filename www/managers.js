@@ -531,6 +531,7 @@ const UIManager = {
             input.value = '';
             input.disabled = false;
             input.classList.remove('input-correct', 'input-wrong');
+            if (typeof KosovoPorukaManager !== 'undefined') KosovoPorukaManager.osveziZaUnos(input);
         });
     },
 

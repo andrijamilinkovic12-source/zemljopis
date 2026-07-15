@@ -1,5 +1,127 @@
 // bazapodataka.js - Služi isključivo za proveru tačnosti pojmova
 
+// Službeni popis Ministarstva pravosuđa, uprave i digitalne transformacije RH:
+// 127 gradova i Grad Zagreb, koji ima poseban status grada i županije.
+const GradoviHrvatske = [
+    "DUGO SELO", "IVANIĆ-GRAD", "JASTREBARSKO", "SAMOBOR", "SVETA NEDELJA", "SVETI IVAN ZELINA", "VELIKA GORICA", "VRBOVEC", "ZAPREŠIĆ",
+    "DONJA STUBICA", "KLANJEC", "KRAPINA", "OROSLAVJE", "PREGRADA", "ZABOK", "ZLATAR",
+    "GLINA", "HRVATSKA KOSTAJNICA", "KUTINA", "NOVSKA", "PETRINJA", "POPOVAČA", "SISAK",
+    "DUGA RESA", "KARLOVAC", "OGULIN", "OZALJ", "SLUNJ",
+    "GOSPIĆ", "NOVALJA", "OTOČAC", "SENJ",
+    "IVANEC", "LEPOGLAVA", "LUDBREG", "NOVI MAROF", "VARAŽDIN", "VARAŽDINSKE TOPLICE",
+    "ĐURĐEVAC", "KOPRIVNICA", "KRIŽEVCI",
+    "BJELOVAR", "ČAZMA", "DARUVAR", "GAREŠNICA", "GRUBIŠNO POLJE",
+    "BAKAR", "CRES", "CRIKVENICA", "ČABAR", "DELNICE", "KASTAV", "KRALJEVICA", "KRK", "MALI LOŠINJ", "NOVI VINODOLSKI", "OPATIJA", "RAB", "RIJEKA", "VRBOVSKO",
+    "ORAHOVICA", "SLATINA", "VIROVITICA",
+    "KUTJEVO", "LIPIK", "PAKRAC", "PLETERNICA", "POŽEGA",
+    "NOVA GRADIŠKA", "SLAVONSKI BROD",
+    "BENKOVAC", "BIOGRAD NA MORU", "NIN", "OBROVAC", "PAG", "ZADAR",
+    "BELI MANASTIR", "BELIŠĆE", "DONJI MIHOLJAC", "ĐAKOVO", "NAŠICE", "OSIJEK", "VALPOVO",
+    "DUBROVNIK", "KORČULA", "METKOVIĆ", "OPUZEN", "PLOČE",
+    "DRNIŠ", "KNIN", "SKRADIN", "ŠIBENIK", "VODICE",
+    "ILOK", "OTOK", "VINKOVCI", "VUKOVAR", "ŽUPANJA",
+    "HVAR", "IMOTSKI", "KAŠTELA", "KOMIŽA", "MAKARSKA", "OMIŠ", "SINJ", "SOLIN", "SPLIT", "STARI GRAD", "SUPETAR", "TRILJ", "TROGIR", "VIS", "VRGORAC", "VRLIKA",
+    "BUJE-BUIE", "BUZET", "LABIN", "NOVIGRAD-CITTANOVA", "PAZIN", "POREČ-PARENZO", "PULA-POLA", "ROVINJ-ROVIGNO", "UMAG-UMAGO", "VODNJAN-DIGNANO",
+    "ČAKOVEC", "MURSKO SREDIŠĆE", "PRELOG", "ZAGREB"
+];
+
+// Severna Makedonija nema zaseban pravni status grada osim Grada Skoplja.
+// Zato su ovde samo urbana opštinska sedišta sa najmanje 5.000 stanovnika (Popis 2021),
+// bez gradskih opština Skoplja, ruralnih opština i naziva planskih regiona.
+const GradoviSeverneMakedonije = [
+    "SKOPLJE", "KUMANOVO", "BITOLJ", "PRILEP", "TETOVO", "ŠTIP", "VELES", "OHRID", "STRUMICA",
+    "GOSTIVAR", "KAVADARCI", "KOČANI", "KIČEVO", "GEVGELIJA", "STRUGA", "RADOVIŠ", "KRIVA PALANKA",
+    "NEGOTINO", "DEBAR", "SVETI NIKOLE", "PROBIŠTIP", "DELČEVO", "VINICA", "RESEN", "BEROVO", "KRATOVO", "BOGDANCI"
+];
+
+// Crna Gora nema pravni status „Grad“: lokalne jedinice su opštine, Glavni grad i Prijestonica.
+// Zato su ovde samo veća stvarna urbana sedišta (najmanje 5.000 stanovnika u gradskoj celini,
+// Popis 2023), uključujući Podgoricu i Cetinje. Naselja koja čine iste gradske celine nisu posebni unosi.
+const GradoviCrneGore = [
+    "PODGORICA", "NIKŠIĆ", "PLJEVLJA", "BAR", "CETINJE", "ULCINJ", "TIVAT", "BERANE",
+    "BIJELO POLJE", "BUDVA", "HERCEG NOVI", "ROŽAJE", "KOTOR"
+];
+
+// Opštinski nazivi bez dovoljnog urbanog središta, gradski delovi i geografske celine
+// ne smeju proći kao grad ni preko tolerantne pretrage.
+const NaziviKojiNisuGradoviUCrnojGori = new Set([
+    "ANDRIJEVICA", "DANILOVGRAD", "GUSINJE", "KOLAŠIN", "MOJKOVAC", "PETNJICA", "PLAV", "PLUŽINE",
+    "ŠAVNIK", "TUZI", "ZETA", "ŽABLJAK", "GOLUBOVCI", "KLIČEVO", "DOBROTA", "IGALO", "SPUŽ",
+    "GLAVNI GRAD", "PRIJESTONICA", "BOKA KOTORSKA", "CRNOGORSKO PRIMORJE"
+]);
+
+// Slovenija ima 69 naselja sa zakonskim statusom mesta. Nazivi su dati na srpskom;
+// slovenački oblik Koper se standardizuje na srpski oblik Kopar.
+const GradoviSlovenije = [
+    "AJDOVŠČINA", "BLED", "BOVEC", "BREŽICE", "CELJE", "ČRNOMELJ", "DOMŽALE", "GORNJA RADGONA",
+    "HRASTNIK", "IDRIJA", "ILIRSKA BISTRICA", "IZOLA", "JESENICE", "KAMNIK", "KOČEVJE", "KOPAR",
+    "KOSTANJEVICA NA KRKI", "KRANJ", "KRŠKO", "LAŠKO", "LENDAVA", "LITIJA", "LJUBLJANA", "LJUTOMER",
+    "MARIBOR", "METLIKA", "MURSKA SOBOTA", "NOVA GORICA", "NOVO MESTO", "ORMOŽ", "PIRAN", "POSTOJNA",
+    "PTUJ", "RADEČE", "RADOVLJICA", "RAVNE NA KOROŠKEM", "SEVNICA", "SEŽANA", "SLOVENSKA BISTRICA",
+    "SLOVENJ GRADEC", "SLOVENSKE KONJICE", "ŠKOFJA LOKA", "ŠOŠTANJ", "TOLMIN", "TRBOVLJE", "TRŽIČ",
+    "VELENJE", "VIŠNJA GORA", "VRHNIKA", "ZAGORJE OB SAVI", "ŽALEC", "CERKNICA", "DRAVOGRAD", "GROSUPLJE",
+    "LOGATEC", "MEDVODE", "MENGEŠ", "MEŽICA", "PREVALJE", "RIBNICA", "ROGAŠKA SLATINA", "RUŠE",
+    "ŠEMPETER PRI GORICI", "ŠENTJUR", "TREBNJE", "ŽELEZNIKI", "ŽIRI", "LENART V SLOVENSKIH GORICAH", "ZREČE"
+];
+
+// Izabrani nazivi opština i regija bez statusa mesta, uključujući Ankaran koji bi inače
+// mogao da prođe kao slovna greška za Ankaru.
+const NaziviKojiNisuGradoviUSloveniji = new Set([
+    "ANKARAN", "BOHINJ", "DOBRNA", "DOLENJSKE TOPLICE", "GORNJA VAS-POLJANE", "HODOŠ", "HORJUL",
+    "JEZERSKO", "KOMEN", "KUZMA", "LOŠKI POTOK", "LUKOVICA", "MAJŠPERK", "MIREN-KOSTANJEVICA",
+    "MORAVSKE TOPLICE", "OSILNICA", "PODČETRTEK", "POLZELA", "RAČE-FRAM", "RADENCI", "RAZKRIŽJE",
+    "SREDIŠČE OB DRAVI", "ŠALOVCI", "ŠENČUR", "VERŽEJ", "ZAVRČ", "ŽETALE", "GORENJSKA",
+    "DOLENJSKA", "KOROŠKA", "PRIMORSKA", "ŠTAJERSKA", "POMURJE"
+]);
+
+// BiH nema jedinstven propis za lokalnu samoupravu: status grada određuju entiteti.
+// Ovde su samo zakonske jedinice lokalne samouprave sa statusom Grada, bez opština,
+// gradskih opština, kantona, regiona i Brčko distrikta.
+const GradoviFederacijeBiH = [
+    "BIHAĆ", "BOSANSKA KRUPA", "ČAPLJINA", "CAZIN", "GORAŽDE", "GRAČANICA", "GRADAČAC", "KONJIC",
+    "LIVNO", "LJUBUŠKI", "LUKAVAC", "MOSTAR", "NOVI TRAVNIK", "ORAŠJE", "SARAJEVO", "SREBRENIK",
+    "STOLAC", "ŠIROKI BRIJEG", "TUZLA", "VISOKO", "ZAVIDOVIĆI", "ZENICA", "ŽIVINICE"
+];
+
+const GradoviRepublikeSrpske = [
+    "BANJA LUKA", "BIJELJINA", "ISTOČNO SARAJEVO", "LAKTAŠI", "DOBOJ", "DERVENTA", "PRIJEDOR",
+    "PRNJAVOR", "TREBINJE", "ZVORNIK", "GRADIŠKA", "TESLIĆ"
+];
+
+const GradoviBosneIHercegovine = [
+    ...GradoviFederacijeBiH,
+    ...GradoviRepublikeSrpske
+];
+
+// Čuva da tolerantna pretraga ne prihvati opštinu ili administrativnu oblast BiH
+// kao sličan naziv nekog grada iz druge države (npr. Kakanj -> Kazanj).
+const NaziviKojiNisuGradoviUBiH = new Set([
+    // 57 opština Federacije BiH
+    "BANOVIĆI", "BOSANSKI PETROVAC", "BOSANSKO GRAHOVO", "BREZA", "BUGOJNO", "BUSOVAČA", "BUŽIM",
+    "CENTAR SARAJEVO", "ČELIĆ", "ČITLUK", "DOBOJ ISTOK", "DOBOJ JUG", "DOBRETIĆI", "DOMALJEVAC-ŠAMAC",
+    "DONJI VAKUF", "DRVAR", "FOČA U FBIH", "FOJNICA", "GORNJI VAKUF-USKOPLJE", "GLAMOČ", "GRUDE",
+    "HADŽIĆI", "ILIDŽA", "ILIJAŠ", "JABLANICA", "JAJCE", "KAKANJ", "KALESIJA", "KISELJAK", "KLADANJ",
+    "KLJUČ", "KREŠEVO", "KUPRES", "MAGLAJ", "NEUM", "NOVI GRAD SARAJEVO", "NOVO SARAJEVO", "ODŽAK",
+    "OLOVO", "PALE FBIH", "POSUŠJE", "PROZOR-RAMA", "RAVNO", "SANSKI MOST", "SAPNA", "STARI GRAD SARAJEVO",
+    "TEOČAK", "TEŠANJ", "TOMISLAVGRAD", "TRAVNIK", "TRNOVO", "USORA", "VAREŠ", "VELIKA KLADUŠA", "VITEZ",
+    "VOGOŠĆA", "ŽEPČE",
+
+    // 52 opštine Republike Srpske nakon što je Teslić dobio status Grada
+    "BERKOVIĆI", "BILEĆA", "BRATUNAC", "BROD", "VIŠEGRAD", "VLASENICA", "VUKOSAVLJE", "GACKO",
+    "DONJI ŽABAR", "ISTOČNA ILIDŽA", "ISTOČNI DRVAR", "ISTOČNI MOSTAR", "ISTOČNI STARI GRAD",
+    "ISTOČNO NOVO SARAJEVO", "JEZERO", "KALINOVIK", "KNEŽEVO", "KOZARSKA DUBICA", "KOSTAJNICA",
+    "KOTOR VAROŠ", "KRUPA NA UNI", "KUPRES", "LOPARE", "LJUBINJE", "MILIĆI", "MODRIČA", "MRKONJIĆ GRAD",
+    "NEVESINJE", "NOVI GRAD", "NOVO GORAŽDE", "OSMACI", "OŠTRA LUKA", "PALE", "PELAGIĆEVO", "PETROVAC",
+    "PETROVO", "RIBNIK", "ROGATICA", "RUDO", "SOKOLAC", "SRBAC", "SREBRENICA", "STANARI", "ŠAMAC",
+    "ŠEKOVIĆI", "ŠIPOVO", "TRNOVO", "UGLJEVIK", "FOČA", "HAN PIJESAK", "ČAJNIČE", "ČELINAC",
+
+    // Brčko i entitetsko/kantonalno uređenje nisu jedinice sa statusom Grada.
+    "BRČKO", "BRČKO DISTRIKT", "BRČKO DISTRIKT BIH", "FEDERACIJA BIH", "FEDERACIJA BOSNE I HERCEGOVINE",
+    "REPUBLIKA SRPSKA", "UNSKO-SANSKI KANTON", "POSAVSKI KANTON", "TUZLANSKI KANTON",
+    "ZENIČKO-DOBOJSKI KANTON", "BOSANSKO-PODRINJSKI KANTON GORAŽDE", "SREDNJOBOSANSKI KANTON",
+    "HERCEGOVAČKO-NERETVANSKI KANTON", "ZAPADNOHERCEGOVAČKI KANTON", "KANTON SARAJEVO", "KANTON 10"
+]);
+
 const BazaPodataka = {
     reci: {
         drzava: [
@@ -19,7 +141,7 @@ const BazaPodataka = {
             "JAMAJKA", "JAPAN", "JEMEN", "JERMENIJA", "JORDAN", "JUŽNA KOREJA", 
             "JUŽNI SUDAN", "JUŽNOAFRIČKA REPUBLIKA", "KAMBODŽA", "KAMERUN", "KANADA", 
             "KATAR", "KAZAHSTAN", "KENIJA", "KINA", "KIPAR", "KIRGISTAN", "KIRGIZIJA", 
-            "KIRIBATI", "KOLUMBIJA", "KOMORI", "KONGO", "KOSTARIKA", "KUBA", "KUVAJT", 
+            "KIRIBATI", "KOLUMBIJA", "KOMORI", "KONGO", "KOSTARIKA", "KUBA", "KUVAJT",
             "LAOS", "LESOTO", "LETONIJA", "LIBAN", "LIBERIJA", "LIBIJA", "LIHTENŠTAJN", 
             "LITVANIJA", "LUKSEMBURG", "MADAGASKAR", "MAĐARSKA", "MAKEDONIJA", 
             "MALAVI", "MALDIVI", "MALEZIJA", "MALI", "MALTA", "MAROKO", "MARŠALSKA OSTRVA", 
@@ -44,51 +166,56 @@ const BazaPodataka = {
         grad: [
             "ABIDŽAN", "ABU DABI", "ABUDŽA", "ADELEJD", "ADIS ABEBA", "AKRA", "ALEKSANDRIJA", 
             "ALMATI", "ALŽIR", "AMAN", "AMSTERDAM", "ANDORA LA VELJA", "ANKARA", "ANTANANARIVO", 
-            "ANTALIJA", "ANTVERPEN", "APIJA", "ARHUS", "ARILJE", "ASMARA", "ASTANA", "ASUNSION", 
+            "ANTALIJA", "ANTVERPEN", "APIJA", "ARHUS", "ASMARA", "ASTANA", "ASUNSION",
             "ATINA", "ATLANTA", "AŠHABAD", "BAGDAD", "BAKU", "BALTIMOR", "BAMAKO", "BANDAR SERI BEGAVAN", 
             "BANDŽUL", "BANGI", "BANGKOK", "BARI", "BARSELONA", "BASTER", "BAZEL", "BEIRA", "BEJRUT", 
             "BELMOPAN", "BENGUELA", "BENIN SITI", "BEOGRAD", "BERGEN", "BERLIN", "BERN", "BEČ", "BILBAO", 
-            "BIRMINGEM", "BISAU", "BIŠKEK", "BIZERTA", "BLANTAJER", "BOGOTA", "BOLONJA", "BORDO", "BOSTON", 
+            "BIRMINGEM", "BISAU", "BIŠKEK", "BIZERTA", "BLANTAJER", "BOGOTA", "BOLONJA", "BOR", "BORDO", "BOSTON",
             "BRATISLAVA", "BRAŠOV", "BRAZAVIL", "BRAZILIJA", "BREMEN", "BRIDŽTAUN", "BRISEL", "BRIZBEJN", 
             "BRNO", "BUDIMPEŠTA", "BUDŽUMBURA", "BUENOS AJRES", "BUKUREŠT", "BULAVAJO", "BURGAS", "CIRIH", 
-            "ČAČAK", "ČENAJ", "ČIKAGO", "ĆUPRIJA", "DABLIN", "DAKA", "DAKAR", "DALAS", "DAMASK", "DAR ES SALAM", 
+            "ČAČAK", "ČENAJ", "ČIKAGO", "DABLIN", "DAKA", "DAKAR", "DALAS", "DAMASK", "DAR ES SALAM",
             "DENVER", "DETROIT", "DILI", "DIRE DAUA", "DISELDORF", "DODOMA", "DOHA", "DORTMUND", "DREZDEN", 
-            "DUALA", "DUBAI", "DUBROVNIK", "DURBAN", "DUŠANBE", "ĐAKOVICA", "ĐENOVA", "DŽAKARTA", "DŽEDA", 
+            "DUALA", "DUBAI", "DURBAN", "DUŠANBE", "ĐENOVA", "DŽAKARTA", "DŽEDA",
             "DŽIBUTI", "DŽORDŽTAUN", "DŽUBA", "EDINBURG", "EDMONTON", "ENUGU", "FILADELFIJA", 
             "FINIKS", "FIRENCA", "FRANKFURT", "FRITAUN", "FUNAFUTI", "GABORONE", "GETEBORG", 
             "GITEGA", "GIZA", "GLAZGOV", "GRAC", "GUANGDŽOU", "GVADALAHARA", "GVATEMALA", "HAG", "HAIFA", 
             "HAMBURG", "HANOJ", "HANOVER", "HARARE", "HARKOV", "HAVANA", "HELSINKI", "HJUSTON", "HONGKONG", 
-            "HONIJARA", "HURGADA", "IBADAN", "INĐIJA", "INZBRUK", "ISLAMABAD", "JAMUSUKRO", "JAREN", "JAUNDE", 
+            "HONIJARA", "HURGADA", "IBADAN", "INZBRUK", "ISLAMABAD", "JAGODINA", "JAMUSUKRO", "JAREN", "JAUNDE",
             "JEKATERINBURG", "JEREVAN", "JERUSALIM", "JOHANESBURG", "JOKOHAMA", "JUŽNA TARAVA", "KABUL", 
-            "KAIRO", "KALI", "KALKUTA", "KAMPALA", "KANBERA", "KANO", "KARAČI", "KARAKAS", "KARTUM", "KASABLANKA", 
+            "KAIRO", "KALKUTA", "KAMPALA", "KANBERA", "KANO", "KARAČI", "KARAKAS", "KARTUM", "KASABLANKA",
             "KASTRI", "KATMANDU", "KAZABLANKA", "KAZANJ", "KEJPTAUN", "KELGARI", "KELN", "KIGALI", "KIJEV", 
-            "KINGSTAUN", "KINGSTON", "KINŠASA", "KISANGANI", "KITO", "KIŠINJEV", "KJOTO", "KLUŽ-NAPOKA", 
-            "KOLOMBO", "KONAKRI", "KOPENHAGEN", "KORDOBA", "KRAGUJEVAC", "KRAKOV", "KRUŠEVAC", "KUALA LUMPUR", 
+            "KIKINDA", "KINGSTAUN", "KINGSTON", "KINŠASA", "KISANGANI", "KITO", "KIŠINJEV", "KJOTO", "KLUŽ-NAPOKA",
+            "KOLOMBO", "KONAKRI", "KOPENHAGEN", "KORDOBA", "KRAGUJEVAC", "KRAKOV", "KRALJEVO", "KRUŠEVAC", "KUALA LUMPUR",
             "KUMASI", "KUVAJT", "LA PAZ", "LAGOS", "LAHOR", "LAJPCIG", "LAVOV", "LESKOVAC", "LIBERVIL", "LIDZ", 
-            "LIL", "LILONGVE", "LIMA", "LINC", "LION", "LISABON", "LIVERPUL", "LJUBLJANA", "LOME", "LONDON", 
-            "LOS ANĐELES", "LOZANA", "LUANDA", "LUBUMBAŠI", "LUCERN", "LUKSEMBURG", "LUSAKA", "MADRID", 
+            "LIL", "LILONGVE", "LIMA", "LINC", "LION", "LISABON", "LIVERPUL", "LOME", "LONDON",
+            "LOS ANĐELES", "LOZANA", "LOZNICA", "LUANDA", "LUBUMBAŠI", "LUCERN", "LUKSEMBURG", "LUSAKA", "MADRID",
             "MADŽURO", "MAJAMI", "MAKAO", "MALABO", "MALE", "MALME", "MANAGVA", "MANAMA", "MANČESTER", 
             "MANILA", "MAPUTO", "MARAKEŠ", "MARSELJ", "MASERU", "MASKAT", "MBABANE", "MBARE", "MEDELJIN", 
             "MEDINA", "MEKA", "MEKSIKO", "MELBURN", "MILANO", "MINHEN", "MINSK", "MOGADIŠ", "MOMBASA", 
-            "MONAKO", "MONROVIJA", "MONTEREJ", "MONTEVIDEO", "MONTREAL", "MORONI", "MOSKVA", "MOSTAR", 
+            "MONAKO", "MONROVIJA", "MONTEREJ", "MONTEVIDEO", "MONTREAL", "MORONI", "MOSKVA",
             "MUMBAJ", "NAJROBI", "NANT", "NAPULJ", "NASAU", "NDŽAMENA", "NEJPJIDO", "NGERULMUD", "NICA", 
             "NIJAMEJ", "NIKOZIJA", "NIRNBERG", "NIŠ", "NIŽNJI NOVGOROD", "NOVI PAZAR", "NOVI SAD", "NJU DELHI", 
             "NJU ORLEANS", "NJUJORK", "NUAKŠOT", "NUKUALOFA", "ODESA", "OKLAND", "ORAN", "ORLANDO", "OSAKA", 
-            "OSLO", "OTAVA", "PALERMO", "PALIKIR", "PANAMA", "PARAMARIBO", "PARIZ", "PEKING", "PERT", "PJONGJANG", 
-            "PLOVDIV", "PNOM PEN", "PODGORICA", "PORT ELIZABET", "PORT HARKORT", "PORT LUJ", "PORT MORZBI", 
-            "PORT O PRENS", "PORT OV SPEJN", "PORT VILA", "PORTLAND", "PORTO", "PORTO NOVO", "PRAG", "PRAJA", 
-            "PRETORIJA", "PRIŠTINA", "PRIZREN", "RABAT", "REJKJAVIK", "RIGA", "RIJAD", "RIM", "RIO DE ŽANEIRO", 
-            "ROSARIO", "ROTERDAM", "ROZO", "SALCBURG", "SALI", "SAN HOSE", "SAN MARINO", "SAN SALVADOR", "SANA", 
-            "SANKT PETERBURG", "SANTIJAGO", "SANTO DOMINGO", "SAO PAULO", "SAO TOME", "SAPORO", "SARAJEVO", 
-            "SENT DŽONS", "SENT DŽORDŽIZ", "SEUL", "SEVILJA", "SIDNEJ", "SIJETL", "SINGAPUR", "SKOPLJE", 
-            "SMEDEREVO", "SOFIJA", "SOLUN", "SOMBOR", "SPLIT", "STOKHOLM", "STRAZBUR", "SUBOTICA", "SUEC", 
+            "OSLO", "OTAVA", "PALERMO", "PALIKIR", "PANAMA", "PANČEVO", "PARAMARIBO", "PARIZ", "PEKING", "PIROT", "PERT", "PJONGJANG",
+            "PLOVDIV", "PNOM PEN", "PORT ELIZABET", "PORT HARKORT", "PORT LUJ", "PORT MORZBI",
+            "PORT O PRENS", "PORT OV SPEJN", "PORT VILA", "PORTLAND", "PORTO", "PORTO NOVO", "POŽAREVAC", "PRAG", "PRAJA",
+            "PRETORIJA", "PRIŠTINA", "PROKUPLJE", "RABAT", "REJKJAVIK", "RIGA", "RIJAD", "RIM", "RIO DE ŽANEIRO",
+            "ROSARIO", "ROTERDAM", "ROZO", "SALCBURG", "SAN HOSE", "SAN MARINO", "SAN SALVADOR", "SANA",
+            "SANKT PETERBURG", "SANTIJAGO", "SANTO DOMINGO", "SAO PAULO", "SAO TOME", "SAPORO",
+            "SENT DŽONS", "SENT DŽORDŽIZ", "SEUL", "SEVILJA", "SIDNEJ", "SIJETL", "SINGAPUR",
+            "SMEDEREVO", "SOFIJA", "SOLUN", "SOMBOR", "SREMSKA MITROVICA", "STOKHOLM", "STRAZBUR", "SUBOTICA", "SUEC",
             "SUVA", "ŠABAC", "ŠANGAJ", "ŠEFILD", "ŠENŽEN", "ŠRI DŽAJAVARDENEPURA KOTE", "ŠTUTGART", "TALIN", 
             "TAMAŠET", "TAMPERE", "TANGER", "TAŠKENT", "TBILISI", "TEGUSIGALPA", "TEHERAN", "TEL AVIV", 
             "TEMIŠVAR", "TETUAN", "TIMPU", "TIRANA", "TOKIO", "TORINO", "TORONTO", "TRIPOLI", "TRONDHAJM", 
-            "TULUZ", "TUNIS", "UAGADUGU", "ULAN BATOR", "UŽICE", "VADUC", "VALENSIJA", "VALETA", "VANKUVER", 
-            "VARNA", "VARŠAVA", "VATIKAN", "VAŠINGTON", "VELINGTON", "VENECIJA", "VERONA", "VIJENTIJAN", 
-            "VIKTORIJA", "VILNJUS", "VINDHUK", "VROCLAV", "ZADAR", "ZAGREB", "ZAJEČAR", "ZANZIBAR", "ZRENJANIN", 
-            "ŽENEVA"
+            "TULUZ", "TUNIS", "UAGADUGU", "ULAN BATOR", "UŽICE",
+            "VADUC", "VALENSIJA", "VALETA", "VALJEVO", "VANKUVER", "VARNA", "VARŠAVA", "VATIKAN", "VAŠINGTON", "VELINGTON", "VENECIJA", "VERONA", "VIJENTIJAN",
+            "VIKTORIJA", "VILNJUS", "VINDHUK", "VRANJE", "VROCLAV", "VRŠAC", "ZAJEČAR", "ZANZIBAR", "ZRENJANIN",
+            "ŽENEVA",
+            ...GradoviHrvatske,
+            ...GradoviSeverneMakedonije,
+            ...GradoviCrneGore,
+            ...GradoviSlovenije,
+            ...GradoviBosneIHercegovine
         ],
         reka: [
             "AMAZON", "AMU DARJA", "AMUR", "ARAKS", "ARKANZAS", "BANI", "BELI NIL", "BENUE", "BOJANA", "BOSNA", 
@@ -306,6 +433,35 @@ const BazaPodataka = {
         ]
     },
 
+    // Zakon o teritorijalnoj organizaciji RS, čl. 20 i Grad Beograd kao posebna teritorijalna jedinica.
+    // Ovaj spisak služi kao izvor istine: među srpskim unosima u kategoriji „Grad“ priznaju se samo ovi nazivi.
+    gradoviSaStatusomGradaUSrbiji: [
+        "BEOGRAD", "BOR", "VALJEVO", "VRANJE", "VRŠAC", "ZAJEČAR", "ZRENJANIN", "JAGODINA",
+        "KIKINDA", "KRAGUJEVAC", "KRALJEVO", "KRUŠEVAC", "LESKOVAC", "LOZNICA", "NIŠ", "NOVI PAZAR",
+        "NOVI SAD", "PANČEVO", "PIROT", "POŽAREVAC", "PRIŠTINA", "PROKUPLJE", "SMEDEREVO", "SOMBOR",
+        "SREMSKA MITROVICA", "SUBOTICA", "UŽICE", "ČAČAK", "ŠABAC"
+    ],
+
+    // Gradovi RH: 127 gradova + Grad Zagreb (poseban status grada i županije).
+    gradoviSaStatusomGradaUHrvatskoj: GradoviHrvatske,
+
+    // Veća urbana sedišta Severne Makedonije; ovo nije spisak pravnih „gradova“.
+    gradoviSeverneMakedonije: GradoviSeverneMakedonije,
+
+    // Veća urbana sedišta Crne Gore; ovo nije spisak pravnih „gradova“.
+    gradoviCrneGore: GradoviCrneGore,
+    naziviKojiNisuGradoviUCrnojGori: [...NaziviKojiNisuGradoviUCrnojGori],
+
+    // Slovenija: 69 naselja sa zakonskim statusom mesta, vođenih srpskim nazivima.
+    gradoviSaStatusomGradaUSloveniji: GradoviSlovenije,
+    naziviKojiNisuGradoviUSloveniji: [...NaziviKojiNisuGradoviUSloveniji],
+
+    // BiH: zakonski Gradovi iz FBiH i Republike Srpske; Brčko distrikt nije Grad.
+    gradoviSaStatusomGradaUBosniIHercegovini: GradoviBosneIHercegovine,
+    gradoviSaStatusomGradaUFBiH: GradoviFederacijeBiH,
+    gradoviSaStatusomGradaURepubliciSrpskoj: GradoviRepublikeSrpske,
+    naziviKojiNisuGradoviUBosniIHercegovini: [...NaziviKojiNisuGradoviUBiH],
+
     // REČNIK SINONIMA: Sve verzije usmeravamo na jedan glavni pojam radi lakšeg bodovanja
     alijasi: {
         drzava: {
@@ -334,7 +490,48 @@ const BazaPodataka = {
             "VIENNA": "BEČ",
             "MÜNCHEN": "MINHEN",
             "ZURICH": "CIRIH",
-            "FRANKFURT NA MAJNI": "FRANKFURT"
+            "FRANKFURT NA MAJNI": "FRANKFURT",
+            "BUJE": "BUJE-BUIE",
+            "POREČ": "POREČ-PARENZO",
+            "PULA": "PULA-POLA",
+            "ROVINJ": "ROVINJ-ROVIGNO",
+            "UMAG": "UMAG-UMAGO",
+            "VODNJAN": "VODNJAN-DIGNANO",
+            "SKOPJE": "SKOPLJE",
+            "BITOLA": "BITOLJ",
+            "STIP": "ŠTIP",
+            "SHTIP": "ŠTIP",
+            "KOCANI": "KOČANI",
+            "KOCHANI": "KOČANI",
+            "KICEVO": "KIČEVO",
+            "KICHEVO": "KIČEVO",
+            "RADOVIS": "RADOVIŠ",
+            "RADOVISH": "RADOVIŠ",
+            "PROBISTIP": "PROBIŠTIP",
+            "PROBISHTIP": "PROBIŠTIP",
+            "DELCEVO": "DELČEVO",
+            "DELCHEVO": "DELČEVO",
+            "NIKSIC": "NIKŠIĆ",
+            "BIJELOPOLJE": "BIJELO POLJE",
+            "BELO POLJE": "BIJELO POLJE",
+            "HERCEGNOVI": "HERCEG NOVI",
+            "ROZAJE": "ROŽAJE",
+            "KOPER": "KOPAR",
+            "BANJALUKA": "BANJA LUKA",
+            "BIHAC": "BIHAĆ",
+            "CAPLJINA": "ČAPLJINA",
+            "GORAZDE": "GORAŽDE",
+            "GRACANICA": "GRAČANICA",
+            "GRADACAC": "GRADAČAC",
+            "LJUBUSKI": "LJUBUŠKI",
+            "ORASJE": "ORAŠJE",
+            "SIROKI BRIJEG": "ŠIROKI BRIJEG",
+            "ZAVIDOVICI": "ZAVIDOVIĆI",
+            "ZIVINICE": "ŽIVINICE",
+            "ISTOCNO SARAJEVO": "ISTOČNO SARAJEVO",
+            "LAKTASI": "LAKTAŠI",
+            "GRADISKA": "GRADIŠKA",
+            "TESLIC": "TESLIĆ"
         },
         reka: {
             "HOANGHO": "ŽUTA REKA",
@@ -402,6 +599,20 @@ const BazaPodataka = {
     },
 
     /**
+     * Oblik za poređenje bez dijakritika. Tako unos bez kvačica može proći za
+     * odgovarajuće slovo (npr. C za Č, S za Š, Dz za Dž), ali se pri bodovanju
+     * uvek vraća izvorni kanonski naziv.
+     */
+    normalizujBezDijakritika: function(tekst) {
+        return this.presloviULatinicu(tekst.trim().toUpperCase())
+            .replace(/DŽ/g, "DZ")
+            .replace(/Đ/g, "DJ")
+            .replace(/[ČĆ]/g, "C")
+            .replace(/Š/g, "S")
+            .replace(/Ž/g, "Z");
+    },
+
+    /**
      * Algoritam za računanje broja grešaka (Damerau-Levenshtein distance)
      */
     izracunajUdaljenost: function(a, b) {
@@ -442,9 +653,22 @@ const BazaPodataka = {
     pronadjiPojamUBazi: function(kategorija, unetaRec, zadatoSlovo) {
         let rec = this.presloviULatinicu(unetaRec.trim().toUpperCase());
         let slovo = this.presloviULatinicu(zadatoSlovo.toUpperCase());
+        let normalizovanaRec = this.normalizujBezDijakritika(rec);
+        let normalizovanoSlovo = this.normalizujBezDijakritika(slovo);
 
-        // Početno slovo mora biti tačno (npr. ne može igrač za slovo B kucati AEOGRAD)
-        if (!rec.startsWith(slovo)) {
+        // Početno slovo mora biti tačno, uz toleranciju na izostavljene dijakritike
+        // (npr. Cacak je prihvatljiv odgovor za zadato slovo Č, ali AEOGRAD nije za B).
+        if (!normalizovanaRec.startsWith(normalizovanoSlovo)) {
+            return null;
+        }
+
+        // Pravilo za Sloveniju, Crnu Goru i BiH: isključeni administrativni nazivi ne mogu proći ni
+        // preko tolerantnog poređenja sa istoimenim ili sličnim gradom iz druge države.
+        if (kategorija === "grad" && (
+            NaziviKojiNisuGradoviUSloveniji.has(rec) ||
+            NaziviKojiNisuGradoviUCrnojGori.has(rec) ||
+            NaziviKojiNisuGradoviUBiH.has(rec)
+        )) {
             return null;
         }
 
@@ -458,7 +682,26 @@ const BazaPodataka = {
             return rec;
         }
 
-        // 3. Tolerancija na greške (Fuzzy search)
+        // 3. Direktna provera bez dijakritika, za ekavski/ijekavski i regionalne tastature.
+        if (this.reci[kategorija]) {
+            let pojamBezDijakritika = this.reci[kategorija].find(bazaRec => (
+                this.normalizujBezDijakritika(bazaRec) === normalizovanaRec
+            ));
+            if (pojamBezDijakritika) {
+                return pojamBezDijakritika;
+            }
+        }
+
+        if (this.alijasi[kategorija]) {
+            let alijasBezDijakritika = Object.keys(this.alijasi[kategorija]).find(alijas => (
+                this.normalizujBezDijakritika(alijas) === normalizovanaRec
+            ));
+            if (alijasBezDijakritika) {
+                return alijasBezDijakritika;
+            }
+        }
+
+        // 4. Tolerancija na greške (Fuzzy search)
         let najboljiKandidat = null;
         let najmanjaUdaljenost = Infinity;
 

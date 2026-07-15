@@ -1343,6 +1343,7 @@ const Game = {
 
         if (this.trenutniMod === 'solo') {
             let tacnihOveRunde = 0; 
+            let prikaziKosovoPoruku = false;
             let pregledIgraca = {
                 'ja': { ime: `👤 ${mojNadimak}`, ukupnoPoena: 0, ukupnoTacnih: 0, odgovori: [], isMe: true }
             };
@@ -1356,6 +1357,9 @@ const Game = {
                 UIManager.zakljucajIObojiPolje(input, isCorrect);
 
                 if (isCorrect) tacnihOveRunde++;
+                if (!prikaziKosovoPoruku && typeof KosovoPorukaManager !== 'undefined') {
+                    prikaziKosovoPoruku = KosovoPorukaManager.ponoviURedu(input);
+                }
                 pregledIgraca['ja'].odgovori.push({
                     kategorijaId: kategorija,
                     kategorija: nazivKategorije,
@@ -1385,7 +1389,9 @@ const Game = {
 
             setTimeout(() => {
                 this.prikaziRezimeRunde(pregledIgraca, tacnihOveRunde);
-            }, 1200);
+            }, prikaziKosovoPoruku && typeof KosovoPorukaManager !== 'undefined'
+                ? KosovoPorukaManager.vremePreRezimea
+                : 1200);
 
         } else {
             let mojiOdgovori = {};
@@ -1432,6 +1438,7 @@ const Game = {
         let pregledIgraca = {};
         let scoreOveRunde = {}; 
         let tacniOveRunde = {};
+        let prikaziKosovoPoruku = false;
 
         odgovoriSobeSaServera.forEach(p => {
             let isMe = p.idIgraca === this.socket.id;
@@ -1471,6 +1478,9 @@ const Game = {
 
                 if (p.idIgraca === this.socket.id) {
                     UIManager.zakljucajIObojiPolje(input, isCorrect);
+                    if (!prikaziKosovoPoruku && typeof KosovoPorukaManager !== 'undefined') {
+                        prikaziKosovoPoruku = KosovoPorukaManager.ponoviURedu(input);
+                    }
                 }
 
                 odgovoriZaKategoriju.push({
@@ -1573,7 +1583,9 @@ const Game = {
                 this.trenutnaRunda,
                 () => this.prikaziRezimeRunde(pregledIgraca, 0, vremenskiPlan)
             );
-        }, 900);
+        }, prikaziKosovoPoruku && typeof KosovoPorukaManager !== 'undefined'
+            ? KosovoPorukaManager.vremePreRezimea
+            : 900);
     },
 
     obracunajKategoriju: function(kategorija, odgovoriIgraca) {

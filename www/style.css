@@ -4992,7 +4992,61 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     }
 }
 
-/* --- EFEKAT PRVOG MESTA IZMEĐU ONLINE RUNDI --- */
+/* --- PORUKA U REDU ODGOVORA ZA KOSOVO --- */
+.kosovo-poruka-u-redu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.34rem;
+    height: 0;
+    margin-top: 0;
+    overflow: hidden;
+    opacity: 0;
+    color: #fff;
+    font-size: min(0.64rem, 1.3vh);
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.58);
+    pointer-events: none;
+    transition: height 0.2s ease, margin 0.2s ease, opacity 0.2s ease;
+}
+
+.input-group.ima-kosovo-poruku .kosovo-poruka-u-redu {
+    height: min(1.1rem, 2.2vh);
+    margin-top: 0.18rem;
+    opacity: 1;
+}
+
+.kosovo-poruka-u-redu.active {
+    animation: kosovoPorukaURedu 1.2s cubic-bezier(0.2, 0.78, 0.25, 1) both;
+}
+
+.kosovo-poruka-tekst {
+    white-space: nowrap;
+}
+
+.kosovo-srce-zastava {
+    width: 1.35rem;
+    aspect-ratio: 1 / 0.9;
+    flex: 0 0 auto;
+    clip-path: polygon(50% 100%, 4% 53%, 0 29%, 9% 9%, 26% 0, 50% 16%, 74% 0, 91% 9%, 100% 29%, 96% 53%);
+    background: linear-gradient(to bottom, #cf2e3b 0 33.333%, #174986 33.333% 66.666%, #fff 66.666% 100%);
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.42));
+}
+
+@keyframes kosovoPorukaURedu {
+    0% { transform: translateX(-1.25rem); filter: brightness(1.45); }
+    62% { transform: translateX(0.12rem); filter: brightness(1.1); }
+    100% { transform: translateX(0); filter: brightness(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kosovo-poruka-u-redu.active {
+        animation: none;
+    }
+}
+
 .round-winner-effect {
     position: absolute;
     inset: 0;

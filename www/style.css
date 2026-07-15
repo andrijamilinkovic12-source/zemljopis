@@ -4993,33 +4993,37 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 }
 
 /* --- PORUKA U REDU ODGOVORA ZA KOSOVO --- */
+.input-group {
+    position: relative;
+}
+
 .kosovo-poruka-u-redu {
+    position: absolute;
+    left: 0.8rem;
+    z-index: 8;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.34rem;
-    height: 0;
-    margin-top: 0;
-    overflow: hidden;
     opacity: 0;
     color: #fff;
-    font-size: min(0.64rem, 1.3vh);
+    font-size: min(0.72rem, 1.5vh);
     font-weight: 900;
     letter-spacing: 0.08em;
     line-height: 1;
-    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.58);
+    white-space: nowrap;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.72);
     pointer-events: none;
-    transition: height 0.2s ease, margin 0.2s ease, opacity 0.2s ease;
-}
-
-.input-group.ima-kosovo-poruku .kosovo-poruka-u-redu {
-    height: min(1.1rem, 2.2vh);
-    margin-top: 0.18rem;
-    opacity: 1;
+    transform: translate(var(--kosovo-let-x, 120px), -50%) scale(0.9);
 }
 
 .kosovo-poruka-u-redu.active {
-    animation: kosovoPorukaURedu 1.2s cubic-bezier(0.2, 0.78, 0.25, 1) both;
+    animation: kosovoPorukaKaReci 1.55s cubic-bezier(0.18, 0.76, 0.22, 1) both;
+}
+
+.kosovo-poruka-u-redu.kosovo-poruka-rtl {
+    right: 0.8rem;
+    left: auto;
+    flex-direction: row-reverse;
 }
 
 .kosovo-poruka-tekst {
@@ -5035,10 +5039,23 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.42));
 }
 
-@keyframes kosovoPorukaURedu {
-    0% { transform: translateX(-1.25rem); filter: brightness(1.45); }
-    62% { transform: translateX(0.12rem); filter: brightness(1.1); }
-    100% { transform: translateX(0); filter: brightness(1); }
+@keyframes kosovoPorukaKaReci {
+    0% {
+        opacity: 0;
+        transform: translate(var(--kosovo-let-x, 120px), -50%) scale(0.82);
+        filter: brightness(1.5);
+    }
+    18% { opacity: 1; }
+    72% {
+        opacity: 1;
+        transform: translate(0.2rem, -50%) scale(1);
+        filter: brightness(1.08);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(0, -50%) scale(0.96);
+        filter: brightness(1);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

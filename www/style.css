@@ -4999,7 +4999,6 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 
 .kosovo-poruka-u-redu {
     position: absolute;
-    left: 0.8rem;
     z-index: 8;
     display: flex;
     align-items: center;
@@ -5017,12 +5016,12 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 }
 
 .kosovo-poruka-u-redu.active {
-    animation: kosovoPorukaKaReci 1.55s cubic-bezier(0.18, 0.76, 0.22, 1) both;
+    opacity: 1;
+    transform: translate(0, -50%) scale(1);
+    animation: kosovoPorukaKaReci 0.9s cubic-bezier(0.18, 0.76, 0.22, 1) both;
 }
 
 .kosovo-poruka-u-redu.kosovo-poruka-rtl {
-    right: 0.8rem;
-    left: auto;
     flex-direction: row-reverse;
 }
 
@@ -5044,15 +5043,15 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
         transform: translate(var(--kosovo-let-x, 120px), -50%) scale(0.82);
         filter: brightness(1.5);
     }
-    18% { opacity: 1; }
+    22% { opacity: 1; }
     72% {
         opacity: 1;
         transform: translate(0.2rem, -50%) scale(1);
         filter: brightness(1.08);
     }
     100% {
-        opacity: 0;
-        transform: translate(0, -50%) scale(0.96);
+        opacity: 1;
+        transform: translate(0, -50%) scale(1);
         filter: brightness(1);
     }
 }

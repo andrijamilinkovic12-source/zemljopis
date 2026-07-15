@@ -63,6 +63,52 @@ const KosovoPorukaManager = {
         return this.normalizovaniOblici.has(this.normalizujNaziv(odgovor));
     },
 
+    izmeriUnosSaRazmakom: function(input, stil) {
+        if (typeof document === 'undefined' || !document.body) return String(input?.value || '').length * 9;
+
+        const merac = document.createElement('span');
+        merac.textContent = `${input.value} `;
+        Object.assign(merac.style, {
+            position: 'fixed',
+            left: '-9999px',
+            top: '-9999px',
+            visibility: 'hidden',
+            pointerEvents: 'none',
+            whiteSpace: 'pre',
+            font: stil.font,
+            letterSpacing: stil.letterSpacing,
+            textTransform: stil.textTransform
+        });
+        document.body.appendChild(merac);
+        const sirina = merac.getBoundingClientRect().width;
+        merac.remove();
+        return sirina;
+    },
+
+    postaviPosleUnosa: function(input, poruka, grupa, rtl) {
+        const stil = getComputedStyle(input);
+        const inputOkvir = input.getBoundingClientRect();
+        const grupaOkvir = grupa.getBoundingClientRect();
+        const unosIRazmak = this.izmeriUnosSaRazmakom(input, stil);
+        const broj = vrednost => Number.parseFloat(vrednost) || 0;
+
+        poruka.style.top = `${inputOkvir.top - grupaOkvir.top + (inputOkvir.height / 2)}px`;
+
+        if (rtl) {
+            const doDesneIviceSadrzaja = grupaOkvir.right - inputOkvir.right
+                + broj(stil.borderRightWidth)
+                + broj(stil.paddingRight);
+            poruka.style.left = 'auto';
+            poruka.style.right = `${doDesneIviceSadrzaja + unosIRazmak}px`;
+        } else {
+            const doLeveIviceSadrzaja = inputOkvir.left - grupaOkvir.left
+                + broj(stil.borderLeftWidth)
+                + broj(stil.paddingLeft);
+            poruka.style.right = 'auto';
+            poruka.style.left = `${doLeveIviceSadrzaja + unosIRazmak - input.scrollLeft}px`;
+        }
+    },
+
     napraviPoruku: function(input) {
         const grupa = input?.closest('.input-group');
         if (!grupa) return null;
@@ -118,13 +164,13 @@ const KosovoPorukaManager = {
             ? getComputedStyle(input).direction
             : 'ltr';
         const rtl = smerTeksta === 'rtl';
-        const duzinaPutanje = Math.max(90, Math.round(input.clientWidth * 0.55));
+        const duzinaPutanje = Math.min(64, Math.max(38, Math.round(input.clientWidth * 0.16)));
 
         grupa.classList.add('ima-kosovo-poruku');
         poruka.classList.toggle('kosovo-poruka-rtl', rtl);
-        poruka.style.top = `${input.offsetTop + (input.offsetHeight / 2)}px`;
+        this.postaviPosleUnosa(input, poruka, grupa, rtl);
         poruka.style.setProperty('--kosovo-let-x', `${rtl ? -duzinaPutanje : duzinaPutanje}px`);
-        poruka.setAttribute('aria-label', `${input.value.trim()} je Srbije`);
+        poruka.setAttribute('aria-label', 'je Srbije');
         poruka.classList.remove('active');
         void poruka.offsetWidth;
         poruka.classList.add('active');

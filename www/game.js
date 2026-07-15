@@ -1675,16 +1675,21 @@ const Game = {
             if (this.trenutniMod === 'solo') {
                 let soloListaHtml = '';
                 igrac.odgovori.forEach(odg => {
-                    const tacno = odg.boja === 'green';
+                    const jeKosovoRezime = odg.kategorijaId === 'drzava'
+                        && typeof KosovoPorukaManager !== 'undefined'
+                        && KosovoPorukaManager.jeKosovoOdgovor(odg.odgovor);
+                    const tacno = !jeKosovoRezime && odg.boja === 'green';
                     const kategorijaHtml = this.renderujKategoriju(odg.kategorijaId, odg.kategorija, 'category-label category-label--summary');
                     soloListaHtml += `
-                        <div class="solo-answer-row ${tacno ? 'is-correct' : 'is-wrong'}">
+                        <div class="solo-answer-row ${tacno ? 'is-correct' : 'is-wrong'} ${jeKosovoRezime ? 'is-kosovo-special' : ''}">
                             <span class="solo-answer-category">${kategorijaHtml}</span>
-                            <span class="solo-answer-value">${odg.odgovor}</span>
-                            <span class="solo-answer-status" aria-label="${tacno ? 'Tačno' : 'Netačno'}">
-                                <i class="fa-solid ${tacno ? 'fa-check' : 'fa-xmark'}" aria-hidden="true"></i>
-                                <span class="solo-answer-status-text">${tacno ? 'TAČNO' : 'NETAČNO'}</span>
-                            </span>
+                            <span class="solo-answer-value kosovo-rezime-vrednost" data-kategorija="${odg.kategorijaId}"><span class="kosovo-rezime-odgovor">${odg.odgovor}</span></span>
+                            ${jeKosovoRezime
+                                ? '<span class="solo-answer-status kosovo-zero-status" aria-label="0 poena"><span>0</span></span>'
+                                : `<span class="solo-answer-status" aria-label="${tacno ? 'Tačno' : 'Netačno'}">
+                                    <i class="fa-solid ${tacno ? 'fa-check' : 'fa-xmark'}" aria-hidden="true"></i>
+                                    <span class="solo-answer-status-text">${tacno ? 'TAČNO' : 'NETAČNO'}</span>
+                                </span>`}
                         </div>
                     `;
                 });
@@ -1706,19 +1711,24 @@ const Game = {
 
             let listHtml = '';
             igrac.odgovori.forEach(odg => {
+                const jeKosovoRezime = odg.kategorijaId === 'drzava'
+                    && typeof KosovoPorukaManager !== 'undefined'
+                    && KosovoPorukaManager.jeKosovoOdgovor(odg.odgovor);
                 let colorHex = '#ff416c'; 
                 if (odg.boja === 'green') colorHex = '#38ef7d'; 
                 else if (odg.boja === 'yellow') colorHex = '#f5af19'; 
 
-                const statusBadge = this.trenutniMod === 'solo'
+                const statusBadge = jeKosovoRezime
+                    ? 0
+                    : this.trenutniMod === 'solo'
                     ? (odg.boja === 'green' ? 'TAČNO' : 'NETAČNO')
                     : odg.poeni;
                 const kategorijaHtml = this.renderujKategoriju(odg.kategorijaId, odg.kategorija, 'category-label category-label--round');
                 listHtml += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: min(0.35rem, 0.7vh) 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <div class="round-answer-row ${jeKosovoRezime ? 'is-kosovo-special' : ''}" style="display: flex; justify-content: space-between; align-items: center; padding: min(0.35rem, 0.7vh) 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
                         <span class="round-answer-category" style="font-size: min(0.65rem, 1.3vh); color: #a0aec0; width: 30%; text-transform: uppercase;">${kategorijaHtml}</span>
-                        <span style="font-size: min(0.85rem, 1.7vh); font-weight: 800; color: ${colorHex}; flex: 1; text-align: left; padding-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">${odg.odgovor}</span>
-                        <span style="font-size: min(0.72rem, 1.45vh); font-weight: 800; color: ${colorHex}; background: rgba(0,0,0,0.3); padding: min(0.15rem, 0.3vh) min(0.3rem, 0.6vw); border-radius: 6px;">${statusBadge}</span>
+                        <span class="round-answer-value kosovo-rezime-vrednost" data-kategorija="${odg.kategorijaId}" style="font-size: min(0.85rem, 1.7vh); font-weight: 800; color: ${colorHex}; flex: 1; min-width: 0; text-align: left; padding-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden;"><span class="kosovo-rezime-odgovor">${odg.odgovor}</span></span>
+                        <span class="round-answer-status ${jeKosovoRezime ? 'kosovo-zero-status' : ''}" aria-label="${jeKosovoRezime ? '0 poena' : statusBadge}" style="font-size: min(0.72rem, 1.45vh); font-weight: 800; color: ${jeKosovoRezime ? '#f5af19' : colorHex}; background: ${jeKosovoRezime ? 'rgba(245,175,25,0.12)' : 'rgba(0,0,0,0.3)'}; padding: min(0.15rem, 0.3vh) min(0.3rem, 0.6vw); border-radius: 6px;">${statusBadge}</span>
                     </div>
                 `;
             });
@@ -1736,6 +1746,10 @@ const Game = {
             `;
             carousel.innerHTML += cardHtml;
         });
+
+        if (typeof KosovoPorukaManager !== 'undefined') {
+            KosovoPorukaManager.dodajURezime(carousel);
+        }
 
         const staroDugme = document.getElementById('btn-next-round');
         const btnNext = staroDugme.cloneNode(true);

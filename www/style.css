@@ -5062,6 +5062,52 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     }
 }
 
+.kosovo-poruka-rezime {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.24rem;
+    color: #fff;
+    font-size: min(0.64rem, 1.3vh);
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    white-space: nowrap;
+    vertical-align: middle;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    animation: kosovoPorukaURezime 0.9s cubic-bezier(0.18, 0.76, 0.22, 1) both;
+}
+
+.kosovo-poruka-rezime .kosovo-srce-zastava {
+    width: 1.3rem;
+}
+
+@keyframes kosovoPorukaURezime {
+    0% {
+        opacity: 0;
+        transform: translateX(2rem) scale(0.86);
+        filter: brightness(1.45);
+    }
+    72% {
+        opacity: 1;
+        transform: translateX(-0.12rem) scale(1.02);
+        filter: brightness(1.08);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        filter: brightness(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kosovo-poruka-rezime {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}
+
 .round-winner-effect {
     position: absolute;
     inset: 0;
@@ -6254,6 +6300,17 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 .solo-answer-row.is-wrong .solo-answer-status,
 .solo-answer-row.is-wrong .solo-answer-value {
     color: #ff416c;
+}
+
+.solo-answer-row.is-kosovo-special .kosovo-zero-status,
+.round-answer-row.is-kosovo-special .kosovo-zero-status {
+    color: #f5af19;
+    background: rgba(245, 175, 25, 0.12);
+    border: 1px solid rgba(245, 175, 25, 0.24);
+    border-radius: 6px;
+    min-width: 1.55rem;
+    padding: min(0.15rem, 0.3vh) min(0.3rem, 0.6vw);
+    text-align: center;
 }
 
 @media (max-width: 340px), (max-height: 640px) {

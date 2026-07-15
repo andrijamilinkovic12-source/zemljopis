@@ -63,6 +63,22 @@ const KosovoPorukaManager = {
         return this.normalizovaniOblici.has(this.normalizujNaziv(odgovor));
     },
 
+    dodajDelovePoruke: function(poruka) {
+        const prviDeo = document.createElement('span');
+        prviDeo.className = 'kosovo-poruka-tekst';
+        prviDeo.textContent = 'JE';
+
+        const srce = document.createElement('span');
+        srce.className = 'kosovo-srce-zastava';
+        srce.setAttribute('aria-hidden', 'true');
+
+        const drugiDeo = document.createElement('span');
+        drugiDeo.className = 'kosovo-poruka-tekst';
+        drugiDeo.textContent = 'SRBIJE';
+
+        poruka.append(prviDeo, srce, drugiDeo);
+    },
+
     izmeriUnosSaRazmakom: function(input, stil) {
         if (typeof document === 'undefined' || !document.body) return String(input?.value || '').length * 9;
 
@@ -119,22 +135,32 @@ const KosovoPorukaManager = {
         poruka = document.createElement('div');
         poruka.className = 'kosovo-poruka-u-redu';
         poruka.setAttribute('aria-live', 'polite');
-
-        const prviDeo = document.createElement('span');
-        prviDeo.className = 'kosovo-poruka-tekst';
-        prviDeo.textContent = 'JE';
-
-        const srce = document.createElement('span');
-        srce.className = 'kosovo-srce-zastava';
-        srce.setAttribute('aria-hidden', 'true');
-
-        const drugiDeo = document.createElement('span');
-        drugiDeo.className = 'kosovo-poruka-tekst';
-        drugiDeo.textContent = 'SRBIJE';
-
-        poruka.append(prviDeo, srce, drugiDeo);
+        this.dodajDelovePoruke(poruka);
         grupa.appendChild(poruka);
         return poruka;
+    },
+
+    dodajURezime: function(kontejner) {
+        if (!kontejner || typeof document === 'undefined') return 0;
+
+        let brojDodatih = 0;
+        kontejner.querySelectorAll('.kosovo-rezime-vrednost[data-kategorija="drzava"]').forEach(vrednost => {
+            if (vrednost.querySelector('.kosovo-poruka-rezime')) return;
+
+            const odgovor = vrednost.querySelector('.kosovo-rezime-odgovor')?.textContent || '';
+            if (!this.jeKosovoOdgovor(odgovor)) return;
+
+            const poruka = document.createElement('span');
+            poruka.className = 'kosovo-poruka-rezime';
+            poruka.setAttribute('aria-label', 'je Srbije');
+            this.dodajDelovePoruke(poruka);
+
+            // Tekstualni čvor daje tačno jedan normalan razmak posle odgovora.
+            vrednost.append(document.createTextNode(' '), poruka);
+            brojDodatih++;
+        });
+
+        return brojDodatih;
     },
 
     sakrijURedu: function(input) {

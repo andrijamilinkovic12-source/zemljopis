@@ -3535,8 +3535,12 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     gap: clamp(0.55rem, 1.35vh, 0.85rem);
 }
 
-.dnevni-potvrdi-unos {
-    margin-top: clamp(0.2rem, 0.75vh, 0.45rem);
+.btn-finish.dnevni-potvrdi-unos {
+    margin-top: clamp(0.1rem, 0.4vh, 0.25rem);
+    min-height: 0;
+    padding: clamp(0.5rem, 1vh, 0.62rem) 0.6rem;
+    border-radius: 10px;
+    font-size: clamp(0.78rem, 1.55vh, 0.88rem) !important;
     flex-shrink: 0;
 }
 

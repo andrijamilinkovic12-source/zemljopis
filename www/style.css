@@ -2122,6 +2122,10 @@ body[data-tema="zivotinja"] #main-menu::before {
     body[data-tema="zivotinja"] #main-menu::before {
         animation: none;
     }
+
+    #drzava-static-layer::before {
+        animation: none;
+    }
 }
 
 body[data-tema="okean"] #main-menu::after {
@@ -2545,6 +2549,26 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     overflow: hidden;
     pointer-events: none;
     transform: translateZ(0);
+}
+
+/* Isti oblačni sloj ide iza statičnih geografskih objekata na ostalim ekranima. */
+#drzava-static-layer::before {
+    content: "";
+    position: absolute;
+    inset: -4% -8%;
+    z-index: 0;
+    background: url('assets/drzava-clouds-without-russia-v1.png') center center / cover no-repeat;
+    opacity: 0.94;
+    transform-origin: 50% 15%;
+    will-change: transform, opacity;
+    animation: rekaCloudLayerDrift 24s ease-in-out infinite;
+}
+
+#drzava-static-layer .drzava-flags-layer,
+#drzava-static-layer .drzava-pins-layer,
+#drzava-static-layer .drzava-compass,
+#drzava-static-layer .drzava-globe {
+    z-index: 1;
 }
 
 body[data-tema="drzava"] :is(

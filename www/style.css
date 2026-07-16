@@ -7398,7 +7398,7 @@ body[data-tema="zivotinja"] :is(
     background:
         linear-gradient(180deg, rgba(233, 246, 255, 0.045) 0%, rgba(255, 247, 229, 0.02) 40%, rgba(217, 237, 215, 0.045) 100%),
         radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.02), transparent 48%),
-        url('assets/zivotinja-owl-gsap/zivotinja-bg-fox-tail-owl-static-v1.png') center center / 100% 100% no-repeat;
+        url('assets/zivotinja-bg-fox-tail-owl-complete-v2.png') center center / 100% 100% no-repeat;
 }
 
 body[data-tema] #splash-screen {

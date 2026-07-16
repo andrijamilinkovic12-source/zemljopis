@@ -2591,7 +2591,7 @@ body[data-tema="drzava"] :is(
 
 /* GSAP kadrovi crtaju jedinstveno platno zastavice preko čiste podloge. */
 body[data-tema="drzava"] #main-menu {
-    background-image: url('assets/drzava-static-geo-flags-open-v6.png');
+    background-image: url('assets/drzava-static-geo-flags-open-v7.png');
 }
 
 /* Na dodatnim ekranima oblaci su jedini pokretni sloj preko te podloge. */

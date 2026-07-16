@@ -2105,7 +2105,9 @@ body[data-tema="grad"] #main-menu::before {
 }
 
 body[data-tema="drzava"] #main-menu::before {
-    background-image: url('assets/drzava-clouds-layer-clean-v3.png');
+    /* Originalni raspored oblaka, bez donjeg desnog koji prelazi preko Rusije. */
+    background-image: url('assets/drzava-clouds-without-russia-v1.png');
+    clip-path: none;
 }
 
 body[data-tema="zivotinja"] #main-menu::before {
@@ -2533,6 +2535,47 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     display: block;
 }
 
+/* Informativni ekrani nemaju sloj glavnog menija. Zato koriste isti skup
+   elemenata, ali kao jedan nepomičan deo pozadine. */
+#drzava-static-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: none;
+    overflow: hidden;
+    pointer-events: none;
+    transform: translateZ(0);
+}
+
+body[data-tema="drzava"] :is(
+    #kvartalni-nivo-screen,
+    #online-igraci-screen,
+    #soba-prijatelja-screen,
+    #tokeni-screen,
+    #trofeji-main-screen,
+    #riznica-screen,
+    #toplista-screen,
+    #podesavanja-screen,
+    #global-chat-screen
+).active {
+    position: relative;
+    z-index: 1;
+}
+
+body[data-tema="drzava"] :is(
+    #kvartalni-nivo-screen,
+    #online-igraci-screen,
+    #soba-prijatelja-screen,
+    #tokeni-screen,
+    #trofeji-main-screen,
+    #riznica-screen,
+    #toplista-screen,
+    #podesavanja-screen,
+    #global-chat-screen
+).active ~ #drzava-static-layer {
+    display: block;
+}
+
 .drzava-flags-layer,
 .drzava-pins-layer {
     position: absolute;
@@ -2551,8 +2594,6 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     transform: translate(-50%, -92%) scale(var(--flag-scale));
     transform-origin: 50% 100%;
     filter: drop-shadow(0 8px 9px rgba(79, 102, 119, 0.2));
-    will-change: transform;
-    animation: drzavaFlagStemSway 3.7s ease-in-out infinite;
 }
 
 .drzava-flag::before {
@@ -2592,16 +2633,14 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     clip-path: polygon(0 0, 100% 11%, 86% 50%, 100% 88%, 0 100%);
     box-shadow: inset 0 -7px 12px rgba(78, 74, 70, 0.12), 0 7px 12px rgba(78, 82, 92, 0.14);
     transform-origin: 0 50%;
-    will-change: transform;
-    animation: drzavaFlagWave 1.35s ease-in-out infinite;
 }
 
-.drzava-flag-na { left: 11%; top: 40%; --flag-color: #a98dde; --flag-light: #c7b1f0; --flag-scale: 0.96; animation-delay: -0.6s; }
-.drzava-flag-eu { left: 63%; top: 31%; --flag-color: #f0a163; --flag-light: #ffc08a; --flag-scale: 0.9; animation-delay: -1.2s; }
-.drzava-flag-asia-n { left: 82%; top: 41%; --flag-color: #e87fa1; --flag-light: #f4a9bd; --flag-scale: 0.96; animation-delay: -0.25s; }
-.drzava-flag-asia { left: 74%; top: 51%; --flag-color: #86c889; --flag-light: #aae0a5; --flag-scale: 0.98; animation-delay: -1.7s; }
-.drzava-flag-africa { left: 62%; top: 66%; --flag-color: #84cbe2; --flag-light: #a7e2ef; --flag-scale: 0.94; animation-delay: -0.9s; }
-.drzava-flag-sa { left: 20%; top: 70%; --flag-color: #f19375; --flag-light: #ffb196; --flag-scale: 0.98; animation-delay: -1.45s; }
+.drzava-flag-na { left: 11%; top: 40%; --flag-color: #a98dde; --flag-light: #c7b1f0; --flag-scale: 0.96; }
+.drzava-flag-eu { left: 63%; top: 31%; --flag-color: #f0a163; --flag-light: #ffc08a; --flag-scale: 0.9; }
+.drzava-flag-asia-n { left: 82%; top: 41%; --flag-color: #e87fa1; --flag-light: #f4a9bd; --flag-scale: 0.96; }
+.drzava-flag-asia { left: 74%; top: 51%; --flag-color: #86c889; --flag-light: #aae0a5; --flag-scale: 0.98; }
+.drzava-flag-africa { left: 62%; top: 66%; --flag-color: #84cbe2; --flag-light: #a7e2ef; --flag-scale: 0.94; }
+.drzava-flag-sa { left: 20%; top: 70%; --flag-color: #f19375; --flag-light: #ffb196; --flag-scale: 0.98; }
 
 .drzava-pin {
     --pin-color: #f39c62;
@@ -2618,8 +2657,6 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     box-shadow: inset -5px -7px 13px rgba(104, 78, 57, 0.15), 0 10px 15px rgba(68, 91, 108, 0.18);
     rotate: -45deg;
     filter: saturate(1.04);
-    will-change: transform;
-    animation: drzavaPinFloat 3.8s ease-in-out infinite;
 }
 
 .drzava-pin::before {
@@ -2631,12 +2668,12 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     box-shadow: inset 0 3px 7px rgba(87, 88, 95, 0.14);
 }
 
-.drzava-pin-na { left: 18%; top: 39%; --pin-color: #ef7f8e; --pin-light: #ffabb6; --pin-dark: #c95b70; animation-delay: -0.4s; }
-.drzava-pin-eu { left: 52%; top: 37%; --pin-color: #78bde0; --pin-light: #a5dcf0; --pin-dark: #4e8fb4; animation-delay: -1.4s; }
-.drzava-pin-asia { left: 80%; top: 44%; --pin-color: #f08e57; --pin-light: #ffb281; --pin-dark: #c66c3f; animation-delay: -0.9s; }
-.drzava-pin-africa { left: 60%; top: 54%; --pin-color: #78c7a1; --pin-light: #a5dfbd; --pin-dark: #4f9d77; animation-delay: -2.1s; }
-.drzava-pin-sa { left: 17%; top: 63%; --pin-color: #b58de0; --pin-light: #d0b3f0; --pin-dark: #8b65bd; animation-delay: -1.8s; }
-.drzava-pin-aus { left: 88%; top: 70%; --pin-color: #f0c552; --pin-light: #ffe083; --pin-dark: #bf983a; animation-delay: -0.2s; }
+.drzava-pin-na { left: 18%; top: 39%; --pin-color: #ef7f8e; --pin-light: #ffabb6; --pin-dark: #c95b70; }
+.drzava-pin-eu { left: 52%; top: 37%; --pin-color: #78bde0; --pin-light: #a5dcf0; --pin-dark: #4e8fb4; }
+.drzava-pin-asia { left: 80%; top: 44%; --pin-color: #f08e57; --pin-light: #ffb281; --pin-dark: #c66c3f; }
+.drzava-pin-africa { left: 60%; top: 54%; --pin-color: #78c7a1; --pin-light: #a5dfbd; --pin-dark: #4f9d77; }
+.drzava-pin-sa { left: 17%; top: 63%; --pin-color: #b58de0; --pin-light: #d0b3f0; --pin-dark: #8b65bd; }
+.drzava-pin-aus { left: 88%; top: 70%; --pin-color: #f0c552; --pin-light: #ffe083; --pin-dark: #bf983a; }
 
 .drzava-compass {
     position: absolute;
@@ -2674,7 +2711,6 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     width: 70%;
     height: 70%;
     transform-origin: 50% 50%;
-    will-change: transform;
     filter: drop-shadow(0 5px 7px rgba(92, 78, 64, 0.2));
 }
 
@@ -2707,14 +2743,14 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
 }
 
 .drzava-compass-needle-main {
-    animation: drzavaCompassNeedleSeek 2.25s ease-in-out infinite;
+    transform: translate(-50%, -50%) rotate(-18deg);
 }
 
 .drzava-compass-needle-cross {
     width: 60%;
     height: 60%;
     opacity: 0.7;
-    animation: drzavaCompassNeedleCrossSeek 2.25s ease-in-out infinite;
+    transform: translate(-50%, -50%) rotate(72deg);
 }
 
 .drzava-compass-needle-cross::before {
@@ -2778,8 +2814,6 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     opacity: 0.94;
     filter: drop-shadow(0 3px 4px rgba(55, 86, 70, 0.16));
     mix-blend-mode: normal;
-    will-change: background-position;
-    animation: drzavaGlobeContinents 24s linear infinite;
 }
 
 .drzava-globe-grid {
@@ -2797,7 +2831,7 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     background:
         radial-gradient(ellipse at 28% 22%, rgba(255, 255, 255, 0.48), transparent 30%),
         linear-gradient(110deg, transparent 45%, rgba(255, 255, 255, 0.2) 47%, transparent 62%);
-    animation: drzavaGlobeBreath 5.6s ease-in-out infinite;
+    opacity: 0.78;
 }
 
 body[data-tema="glina"] #main-menu .menu-pattern {
@@ -2939,52 +2973,6 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     100% {
         opacity: 0;
     }
-}
-
-@keyframes drzavaFlagStemSway {
-    0%, 100% { transform: translate(-50%, -92%) scale(var(--flag-scale)) rotate(-2.4deg); }
-    45% { transform: translate(-50%, -94%) scale(var(--flag-scale)) rotate(2.8deg); }
-    70% { transform: translate(-50%, -91%) scale(var(--flag-scale)) rotate(0.9deg); }
-}
-
-@keyframes drzavaFlagWave {
-    0%, 100% { transform: rotateY(0deg) skewY(-1.5deg) scaleX(0.98); }
-    38% { transform: rotateY(18deg) skewY(3deg) scaleX(1.08); }
-    68% { transform: rotateY(-10deg) skewY(-2deg) scaleX(1.02); }
-}
-
-@keyframes drzavaPinFloat {
-    0%, 100% { transform: translate(-50%, -92%) translateY(0) scale(1); }
-    48% { transform: translate(-50%, -92%) translateY(-8px) scale(1.035); }
-    74% { transform: translate(-50%, -92%) translateY(-3px) scale(1.012); }
-}
-
-@keyframes drzavaCompassNeedleSeek {
-    0%, 100% { transform: translate(-50%, -50%) rotate(-18deg); }
-    18% { transform: translate(-50%, -50%) rotate(29deg); }
-    34% { transform: translate(-50%, -50%) rotate(-13deg); }
-    52% { transform: translate(-50%, -50%) rotate(17deg); }
-    72% { transform: translate(-50%, -50%) rotate(-7deg); }
-    88% { transform: translate(-50%, -50%) rotate(3deg); }
-}
-
-@keyframes drzavaCompassNeedleCrossSeek {
-    0%, 100% { transform: translate(-50%, -50%) rotate(72deg); }
-    18% { transform: translate(-50%, -50%) rotate(119deg); }
-    34% { transform: translate(-50%, -50%) rotate(77deg); }
-    52% { transform: translate(-50%, -50%) rotate(107deg); }
-    72% { transform: translate(-50%, -50%) rotate(83deg); }
-    88% { transform: translate(-50%, -50%) rotate(93deg); }
-}
-
-@keyframes drzavaGlobeContinents {
-    0% { background-position: 0% 50%; }
-    100% { background-position: -214% 50%; }
-}
-
-@keyframes drzavaGlobeBreath {
-    0%, 100% { opacity: 0.78; transform: translate3d(0, 0, 0) scale(1); }
-    50% { opacity: 0.96; transform: translate3d(-1.5%, -1%, 0) scale(1.025); }
 }
 
 @keyframes zivotinjaPerchedFlutter {

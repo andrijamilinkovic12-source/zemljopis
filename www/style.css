@@ -3417,7 +3417,7 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
 
 .dnevni-pattern-icon {
     opacity: var(--pattern-opacity);
-    filter: hue-rotate(285deg) saturate(1.25) brightness(1.08) drop-shadow(0 0 20px rgba(245, 175, 25, 0.24)) !important;
+    filter: drop-shadow(0 0 20px rgba(56, 239, 125, 0.24)) !important;
 }
 
 .dnevni-title {
@@ -3533,6 +3533,17 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     display: flex;
     flex-direction: column;
     gap: clamp(0.55rem, 1.35vh, 0.85rem);
+}
+
+.dnevni-potvrdi-unos {
+    margin-top: clamp(0.2rem, 0.75vh, 0.45rem);
+    flex-shrink: 0;
+}
+
+.dnevni-potvrdi-unos:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+    box-shadow: none;
 }
 
 .dnevni-input-group {

@@ -291,6 +291,11 @@ const DnevniIzazovManager = {
             </div>
             `;
         });
+        html += `
+            <button type="button" id="dnevni-potvrdi-unos" class="btn-finish dnevni-potvrdi-unos" disabled aria-disabled="true">
+                POTVRDI UNOS
+            </button>
+        `;
         kontejner.innerHTML = html;
         this.primeniPismoNaElement(kontejner);
         const skrolKontejner = kontejner.closest('.dnevni-izazov-inputs');
@@ -322,6 +327,7 @@ const DnevniIzazovManager = {
                     osveziAktivniPrikaz();
                 });
                 input.addEventListener('zemljopis:active-input', osveziAktivniPrikaz);
+                input.addEventListener('input', () => this.azurirajDugmePotvrde());
 
                 input.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
@@ -337,6 +343,12 @@ const DnevniIzazovManager = {
                     }
                 });
             });
+
+            const dugmePotvrde = document.getElementById('dnevni-potvrdi-unos');
+            if (dugmePotvrde) {
+                dugmePotvrde.addEventListener('click', () => this.potvrdiUnos());
+            }
+            this.azurirajDugmePotvrde();
 
             const prvoPolje = document.getElementById('dnevni-input-0');
             if (prvoPolje) {
@@ -437,10 +449,35 @@ const DnevniIzazovManager = {
         return odgovori;
     },
 
+    sviOdgovoriSuPopunjeni: function() {
+        const zadaci = this.dnevniPodaci ? this.dnevniPodaci.zadaci : [];
+        return zadaci.length > 0 && zadaci.every((zadatak, index) => {
+            const inputEl = document.getElementById(`dnevni-input-${index}`);
+            return Boolean(inputEl && inputEl.value.trim());
+        });
+    },
+
+    azurirajDugmePotvrde: function() {
+        const dugme = document.getElementById('dnevni-potvrdi-unos');
+        if (!dugme) return;
+
+        const omoguceno = this.izazovUToku
+            && !this.zavrsavanjeUToku
+            && this.sviOdgovoriSuPopunjeni();
+        dugme.disabled = !omoguceno;
+        dugme.setAttribute('aria-disabled', String(!omoguceno));
+    },
+
+    potvrdiUnos: function() {
+        if (!this.sviOdgovoriSuPopunjeni() || this.zavrsavanjeUToku) return;
+        this.zavrsiIzazov();
+    },
+
     zakljucajPolja: function() {
         document.querySelectorAll('#dnevni-izazov-polja .game-input').forEach(input => {
             input.disabled = true;
         });
+        this.azurirajDugmePotvrde();
     },
 
     obojiPoljaPoServeru: function(provera) {

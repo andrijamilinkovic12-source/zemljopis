@@ -3933,7 +3933,7 @@ body.keyboard-open .dnevni-input-group input {
 }
 
 .splash-clouds-gsap {
-    background: url('assets/splash-clouds-layer-v3.png') center center / cover no-repeat;
+    background: url('assets/splash-clouds-layer-clean-v4.png') center center / cover no-repeat;
 }
 
 .splash-sun-gsap {
@@ -3954,7 +3954,7 @@ body.keyboard-open .dnevni-input-group input {
 }
 
 .splash-sun-frame-warm {
-    background-image: url('assets/splash-sun-layer-master-warm-v6.png');
+    background-image: url('assets/splash-sun-layer-orange-v7.png');
     opacity: 0;
 }
 
@@ -3966,7 +3966,7 @@ body.keyboard-open .dnevni-input-group input {
 
 @media (orientation: landscape) {
     .splash-clouds-gsap {
-        background-image: url('assets/splash-clouds-layer-landscape-v3.png');
+        background-image: url('assets/splash-clouds-layer-landscape-clean-v4.png');
     }
 
     .splash-sun-gsap {

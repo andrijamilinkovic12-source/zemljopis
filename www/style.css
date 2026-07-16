@@ -2539,8 +2539,7 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     display: block;
 }
 
-/* Informativni ekrani nemaju sloj glavnog menija. Zato koriste isti skup
-   elemenata, ali kao jedan nepomičan deo pozadine. */
+/* Informativni ekrani koriste kompletan statični render Država teme. */
 #drzava-static-layer {
     position: absolute;
     inset: 0;
@@ -2549,9 +2548,10 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     overflow: hidden;
     pointer-events: none;
     transform: translateZ(0);
+    background: url('assets/drzava-static-geo-complete-v1.png') center center / 100% 100% no-repeat;
 }
 
-/* Isti oblačni sloj ide iza statičnih geografskih objekata na ostalim ekranima. */
+/* Oblaci su jedini pokretni sloj preko kompletne statične pozadine. */
 #drzava-static-layer::before {
     content: "";
     position: absolute;
@@ -2562,13 +2562,6 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
     transform-origin: 50% 15%;
     will-change: transform, opacity;
     animation: rekaCloudLayerDrift 24s ease-in-out infinite;
-}
-
-#drzava-static-layer .drzava-flags-layer,
-#drzava-static-layer .drzava-pins-layer,
-#drzava-static-layer .drzava-compass,
-#drzava-static-layer .drzava-globe {
-    z-index: 1;
 }
 
 body[data-tema="drzava"] :is(

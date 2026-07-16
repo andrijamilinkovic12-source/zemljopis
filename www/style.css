@@ -3916,71 +3916,46 @@ body.keyboard-open .dnevni-input-group input {
     overflow: hidden;
 }
 
-#splash-screen::before {
-    content: "";
+#splash-screen > .splash-atmosphere {
     position: absolute;
     inset: 0;
     z-index: 2;
+    overflow: hidden;
     pointer-events: none;
+}
+
+.splash-clouds-gsap,
+.splash-sun-gsap {
+    position: absolute;
+    inset: -8px;
+    pointer-events: none;
+    will-change: transform;
+}
+
+.splash-clouds-gsap {
     background: url('assets/splash-clouds-layer-v3.png') center center / cover no-repeat;
-    opacity: 1;
-    transform: none;
-    filter: none;
-    animation: splashCloudFloatSharp 12s step-end infinite;
 }
 
-@keyframes splashCloudFloatSharp {
-    0%, 100% {
-        background-position: 50% 50%;
-    }
-    18% {
-        background-position: 50% calc(50% - 1px);
-    }
-    36% {
-        background-position: 50% calc(50% - 2px);
-    }
-    58% {
-        background-position: 50% calc(50% + 1px);
-    }
-    80% {
-        background-position: 50% calc(50% - 2px);
-    }
+.splash-sun-gsap {
+    z-index: 1;
 }
 
-#splash-screen::after {
-    content: "";
+.splash-sun-frame {
     position: absolute;
     inset: 0;
-    z-index: 3;
+    background: center center / cover no-repeat;
     pointer-events: none;
-    background: url('assets/splash-sun-layer-master-clean-v6.png') center center / cover no-repeat;
+    will-change: opacity;
+}
+
+.splash-sun-frame-clean {
+    background-image: url('assets/splash-sun-layer-master-clean-v6.png');
     opacity: 1;
-    transform: none;
-    filter: none;
-    animation:
-        splashSunFloatSharp 5.8s step-end infinite,
-        splashSunWarmFrame 11.6s step-end infinite;
 }
 
-@keyframes splashSunFloatSharp {
-    0%, 100% {
-        background-position: 50% 50%;
-    }
-    25%, 75% {
-        background-position: 50% calc(50% - 1px);
-    }
-    50% {
-        background-position: 50% calc(50% - 2px);
-    }
-}
-
-@keyframes splashSunWarmFrame {
-    0%, 28%, 43%, 67%, 77%, 100% {
-        background-image: url('assets/splash-sun-layer-master-clean-v6.png');
-    }
-    29%, 42%, 68%, 76% {
-        background-image: url('assets/splash-sun-layer-master-warm-v6.png');
-    }
+.splash-sun-frame-warm {
+    background-image: url('assets/splash-sun-layer-master-warm-v6.png');
+    opacity: 0;
 }
 
 #splash-screen > .splash-content,
@@ -3990,19 +3965,19 @@ body.keyboard-open .dnevni-input-group input {
 }
 
 @media (orientation: landscape) {
-    #splash-screen::before {
+    .splash-clouds-gsap {
         background-image: url('assets/splash-clouds-layer-landscape-v3.png');
     }
 
-    #splash-screen::after {
+    .splash-sun-gsap {
         display: none;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    #splash-screen::before,
-    #splash-screen::after {
-        animation: none;
+    .splash-clouds-gsap,
+    .splash-sun-gsap {
+        transform: none !important;
     }
 }
 

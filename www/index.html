@@ -12,6 +12,13 @@
 <body>
 
     <div id="splash-screen" class="screen active">
+        <div class="splash-atmosphere" aria-hidden="true">
+            <div class="splash-clouds-gsap"></div>
+            <div class="splash-sun-gsap">
+                <div class="splash-sun-frame splash-sun-frame-clean"></div>
+                <div class="splash-sun-frame splash-sun-frame-warm"></div>
+            </div>
+        </div>
         <div class="splash-content">
             <div class="splash-brand-mark splash-brand-mark-3d" aria-hidden="true">
                 <canvas id="splash-logo-canvas" class="splash-logo-canvas"></canvas>
@@ -1022,6 +1029,7 @@
     <script src="fox-tail-gsap.js"></script>
     <script src="owl-wings-gsap.js"></script>
     <script src="animal-eyes-gsap.js"></script>
+    <script src="splash-atmosphere-gsap.js"></script>
     <script type="module" src="splash-logo-3d.js"></script>
     <script src="game.js"></script>
 

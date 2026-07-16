@@ -7,46 +7,19 @@
     if (!gsapRuntime || !mainMenu || flags.length !== 6) return;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    // Samo naginjanje iz tačke na koplju: nema sečenja, skale ni razvlačenja platna.
-    const gust = [-16, -15, -17, -15.5, -16.5, -15.5];
+    const frameSteps = 32;
     let isRunning = false;
 
     flags.forEach((flag) => {
-        gsapRuntime.set(flag, {
-            rotation: 0,
-            transformOrigin: flag.style.getPropertyValue('--flag-origin'),
-            force3D: false
-        });
+        gsapRuntime.set(flag, { backgroundPositionY: '0%' });
     });
 
     const timeline = gsapRuntime.timeline({ paused: true, repeat: -1 });
     timeline
         .to(flags, {
-            rotation: (index) => gust[index],
-            duration: 0.78,
-            stagger: 0.04,
-            ease: 'sine.inOut',
-            force3D: false
-        })
-        .to(flags, {
-            rotation: (index) => -gust[index] * 0.24,
-            duration: 0.5,
-            stagger: 0.025,
-            ease: 'sine.inOut',
-            force3D: false
-        })
-        .to(flags, {
-            rotation: 0,
-            duration: 1.1,
-            stagger: 0.03,
-            ease: 'sine.inOut',
-            force3D: false
-        })
-        .to(flags, {
-            rotation: 0,
-            duration: 2.8,
-            ease: 'none',
-            force3D: false
+            backgroundPositionY: '100%',
+            duration: 2.7,
+            ease: `steps(${frameSteps})`
         });
 
     const shouldRun = () => (
@@ -57,7 +30,7 @@
     );
 
     const reset = () => {
-        gsapRuntime.set(flags, { rotation: 0, force3D: false });
+        gsapRuntime.set(flags, { backgroundPositionY: '0%' });
     };
 
     const syncAnimation = () => {

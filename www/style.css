@@ -2551,18 +2551,21 @@ body[data-tema="drzava"] #main-menu > .drzava-flags-gsap {
 
 .drzava-flag-gsap-sprite {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-    transform-origin: var(--flag-origin);
-    will-change: transform;
+    left: var(--flag-left);
+    top: var(--flag-top);
+    width: var(--flag-width);
+    height: var(--flag-height);
+    background-image: var(--flag-sheet);
+    background-repeat: no-repeat;
+    background-size: 100% 3300%;
+    background-position: 0 0;
+    will-change: background-position;
     pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .drzava-flag-gsap-sprite {
-        transform: none !important;
+        background-position: 0 0 !important;
     }
 }
 
@@ -2586,9 +2589,9 @@ body[data-tema="drzava"] :is(
     background: url('assets/drzava-static-geo-complete-v1.png') center center / 100% 100% no-repeat;
 }
 
-/* Nepokretna zastavica ispod GSAP sloja čuva celinu platna pri naletu vetra. */
+/* GSAP kadrovi crtaju jedinstveno platno zastavice preko čiste podloge. */
 body[data-tema="drzava"] #main-menu {
-    background-image: url('assets/drzava-static-geo-complete-v1.png');
+    background-image: url('assets/drzava-static-geo-flags-open-v4.png');
 }
 
 /* Na dodatnim ekranima oblaci su jedini pokretni sloj preko te podloge. */

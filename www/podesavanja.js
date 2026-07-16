@@ -1448,6 +1448,8 @@ const PodesavanjaManager = {
     },
 
     primeniPostavkeGlobalno: function() {
+        this.azurirajSplashLogoPismo();
+
         const myPlayerName = document.getElementById('my-player-name');
         if (myPlayerName) {
             myPlayerName.innerHTML = "";
@@ -1457,6 +1459,18 @@ const PodesavanjaManager = {
             myPlayerName.appendChild(avatarMini);
             myPlayerName.appendChild(document.createTextNode(` ${this.postavke.nadimak}`));
         }
+    },
+
+    // Pseudo-elementi splash logotipa prikazuju vrednost iz data-letter,
+    // pa im je potrebno zasebno zadati izabrano pismo.
+    azurirajSplashLogoPismo: function() {
+        const pismo = this.postavke.pismo === "cirilica" ? "cirilica" : "latinica";
+        const atribut = `data-splash-letter-${pismo}`;
+
+        document.querySelectorAll('[data-splash-letter-latinica]').forEach(slovo => {
+            const prikazanoSlovo = slovo.getAttribute(atribut);
+            if (prikazanoSlovo) slovo.setAttribute('data-letter', prikazanoSlovo);
+        });
     },
 
     snimiULokalnuMemoriju: function() {

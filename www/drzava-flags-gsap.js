@@ -7,7 +7,7 @@
     if (!gsapRuntime || !mainMenu || flags.length !== 6) return;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const gust = [-2.9, -2.45, -3.05, -2.7, -2.8, -2.55];
+    const gust = [-1.9, -1.65, -2.0, -1.75, -1.85, -1.7];
     let isRunning = false;
 
     flags.forEach((flag) => {
@@ -24,18 +24,18 @@
     timeline
         .to(flags, {
             rotation: (index) => gust[index],
-            skewY: (index) => gust[index] * 0.32,
-            scaleX: 1.045,
-            duration: 0.72,
+            skewY: (index) => gust[index] * 0.2,
+            scaleX: 1.014,
+            duration: 0.9,
             stagger: 0.028,
             ease: 'sine.inOut',
             force3D: false
         })
         .to(flags, {
-            rotation: (index) => -gust[index] * 0.42,
-            skewY: (index) => -gust[index] * 0.12,
-            scaleX: 0.992,
-            duration: 0.46,
+            rotation: (index) => -gust[index] * 0.28,
+            skewY: (index) => -gust[index] * 0.07,
+            scaleX: 0.996,
+            duration: 0.54,
             stagger: 0.018,
             ease: 'sine.inOut',
             force3D: false
@@ -44,7 +44,7 @@
             rotation: 0,
             skewY: 0,
             scaleX: 1,
-            duration: 1.15,
+            duration: 1.35,
             stagger: 0.022,
             ease: 'sine.inOut',
             force3D: false
@@ -53,7 +53,7 @@
             rotation: 0,
             skewY: 0,
             scaleX: 1,
-            duration: 3.4,
+            duration: 4.2,
             ease: 'none',
             force3D: false
         });

@@ -2123,7 +2123,17 @@ body[data-tema="zivotinja"] #main-menu::before {
         animation: none;
     }
 
-    #drzava-static-layer::before {
+    body[data-tema="drzava"] :is(
+        #kvartalni-nivo-screen,
+        #online-igraci-screen,
+        #soba-prijatelja-screen,
+        #tokeni-screen,
+        #trofeji-main-screen,
+        #riznica-screen,
+        #toplista-screen,
+        #podesavanja-screen,
+        #global-chat-screen
+    )::before {
         animation: none;
     }
 }
@@ -2536,23 +2546,41 @@ body[data-tema="drzava"] #main-menu > .clay-theme-three {
 }
 
 body[data-tema="drzava"] #main-menu > .drzava-live-layer {
-    display: block;
+    display: none;
 }
 
-/* Informativni ekrani koriste kompletan statični render Država teme. */
-#drzava-static-layer {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
+body[data-tema="drzava"] #main-menu .menu-pattern {
     display: none;
-    overflow: hidden;
-    pointer-events: none;
-    transform: translateZ(0);
+}
+
+/* Kompletan statični render je podloga svih Država ekrana. */
+body[data-tema="drzava"] :is(
+    #main-menu,
+    #kvartalni-nivo-screen,
+    #online-igraci-screen,
+    #soba-prijatelja-screen,
+    #tokeni-screen,
+    #trofeji-main-screen,
+    #riznica-screen,
+    #toplista-screen,
+    #podesavanja-screen,
+    #global-chat-screen
+) {
     background: url('assets/drzava-static-geo-complete-v1.png') center center / 100% 100% no-repeat;
 }
 
-/* Oblaci su jedini pokretni sloj preko kompletne statične pozadine. */
-#drzava-static-layer::before {
+/* Na dodatnim ekranima oblaci su jedini pokretni sloj preko te podloge. */
+body[data-tema="drzava"] :is(
+    #kvartalni-nivo-screen,
+    #online-igraci-screen,
+    #soba-prijatelja-screen,
+    #tokeni-screen,
+    #trofeji-main-screen,
+    #riznica-screen,
+    #toplista-screen,
+    #podesavanja-screen,
+    #global-chat-screen
+)::before {
     content: "";
     position: absolute;
     inset: -4% -8%;
@@ -2565,6 +2593,7 @@ body[data-tema="drzava"] #main-menu > .drzava-live-layer {
 }
 
 body[data-tema="drzava"] :is(
+    #main-menu,
     #kvartalni-nivo-screen,
     #online-igraci-screen,
     #soba-prijatelja-screen,
@@ -2574,7 +2603,22 @@ body[data-tema="drzava"] :is(
     #toplista-screen,
     #podesavanja-screen,
     #global-chat-screen
-).active {
+) {
+    position: relative;
+    isolation: isolate;
+}
+
+body[data-tema="drzava"] :is(
+    #kvartalni-nivo-screen,
+    #online-igraci-screen,
+    #soba-prijatelja-screen,
+    #tokeni-screen,
+    #trofeji-main-screen,
+    #riznica-screen,
+    #toplista-screen,
+    #podesavanja-screen,
+    #global-chat-screen
+) > * {
     position: relative;
     z-index: 1;
 }
@@ -2589,8 +2633,8 @@ body[data-tema="drzava"] :is(
     #toplista-screen,
     #podesavanja-screen,
     #global-chat-screen
-).active ~ #drzava-static-layer {
-    display: block;
+) > .menu-pattern {
+    display: none;
 }
 
 .drzava-flags-layer,

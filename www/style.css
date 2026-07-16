@@ -2545,7 +2545,7 @@ body[data-tema="drzava"] #main-menu > .clay-theme-three {
     transform: translateZ(0);
 }
 
-body[data-tema="drzava"] #main-menu.active > .drzava-flags-gsap {
+body[data-tema="drzava"] #main-menu > .drzava-flags-gsap {
     display: block;
 }
 
@@ -2586,9 +2586,9 @@ body[data-tema="drzava"] :is(
     background: url('assets/drzava-static-geo-complete-v1.png') center center / 100% 100% no-repeat;
 }
 
-/* Samo glavni meni dobija izdvojena, GSAP-animirana platna zastavica. */
+/* Nepokretna zastavica ispod GSAP sloja čuva celinu platna pri naletu vetra. */
 body[data-tema="drzava"] #main-menu {
-    background-image: url('assets/drzava-static-geo-flags-open-v1.png');
+    background-image: url('assets/drzava-static-geo-complete-v1.png');
 }
 
 /* Na dodatnim ekranima oblaci su jedini pokretni sloj preko te podloge. */

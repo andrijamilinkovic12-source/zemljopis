@@ -7,14 +7,13 @@
     if (!gsapRuntime || !mainMenu || flags.length !== 6) return;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const gust = [-2.2, -1.95, -2.35, -2.05, -2.15, -2.0];
+    // Samo naginjanje iz tačke na koplju: nema sečenja, skale ni razvlačenja platna.
+    const gust = [-16, -15, -17, -15.5, -16.5, -15.5];
     let isRunning = false;
 
     flags.forEach((flag) => {
         gsapRuntime.set(flag, {
             rotation: 0,
-            skewY: 0,
-            scaleX: 1,
             transformOrigin: flag.style.getPropertyValue('--flag-origin'),
             force3D: false
         });
@@ -24,47 +23,41 @@
     timeline
         .to(flags, {
             rotation: (index) => gust[index],
-            scaleX: 1,
-            duration: 0.86,
-            stagger: 0.028,
+            duration: 0.78,
+            stagger: 0.04,
             ease: 'sine.inOut',
             force3D: false
         })
         .to(flags, {
             rotation: (index) => -gust[index] * 0.24,
-            scaleX: 1,
-            duration: 0.48,
-            stagger: 0.018,
+            duration: 0.5,
+            stagger: 0.025,
             ease: 'sine.inOut',
             force3D: false
         })
         .to(flags, {
             rotation: 0,
-            skewY: 0,
-            scaleX: 1,
-            duration: 1.2,
-            stagger: 0.022,
+            duration: 1.1,
+            stagger: 0.03,
             ease: 'sine.inOut',
             force3D: false
         })
         .to(flags, {
             rotation: 0,
-            skewY: 0,
-            scaleX: 1,
-            duration: 4.2,
+            duration: 2.8,
             ease: 'none',
             force3D: false
         });
 
     const shouldRun = () => (
         document.body.dataset.tema === 'drzava'
-        && mainMenu.classList.contains('active')
+        && mainMenu.getClientRects().length > 0
         && !document.hidden
         && !reducedMotion.matches
     );
 
     const reset = () => {
-        gsapRuntime.set(flags, { rotation: 0, skewY: 0, scaleX: 1, force3D: false });
+        gsapRuntime.set(flags, { rotation: 0, force3D: false });
     };
 
     const syncAnimation = () => {

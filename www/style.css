@@ -2549,6 +2549,22 @@ body[data-tema="drzava"] #main-menu > .drzava-flags-gsap {
     display: block;
 }
 
+/* Poslednje tačkice putanje ostaju cele iznad repa animirane zastavice. */
+#main-menu > .drzava-route-guard {
+    position: absolute;
+    left: 67.481%;
+    top: 61.722%;
+    width: 7.758%;
+    height: 2.572%;
+    z-index: 4;
+    display: none;
+    pointer-events: none;
+}
+
+body[data-tema="drzava"] #main-menu > .drzava-route-guard {
+    display: block;
+}
+
 .drzava-flag-gsap-sprite {
     position: absolute;
     left: var(--flag-left);
@@ -2586,12 +2602,12 @@ body[data-tema="drzava"] :is(
     #podesavanja-screen,
     #global-chat-screen
 ) {
-    background: url('assets/drzava-static-geo-complete-v1.png') center center / 100% 100% no-repeat;
+    background: url('assets/drzava-static-geo-coral-v3.png') center center / 100% 100% no-repeat;
 }
 
 /* GSAP kadrovi crtaju jedinstveno platno zastavice preko čiste podloge. */
 body[data-tema="drzava"] #main-menu {
-    background-image: url('assets/drzava-static-geo-flags-open-v8.png');
+    background-image: url('assets/drzava-static-geo-flags-open-v10.png');
 }
 
 /* Na dodatnim ekranima oblaci su jedini pokretni sloj preko te podloge. */

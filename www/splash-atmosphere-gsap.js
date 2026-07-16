@@ -36,15 +36,10 @@
 
     const sunWarmthTimeline = gsapRuntime.timeline({ paused: true, repeat: -1 });
     sunWarmthTimeline
-        .to(warmSun, { opacity: 0, duration: 3.25, ease: 'none', force3D: false })
-        .to(warmSun, { opacity: 1, duration: 0.18, ease: 'sine.inOut', force3D: false })
-        .to(warmSun, { opacity: 1, duration: 1.38, ease: 'none', force3D: false })
-        .to(warmSun, { opacity: 0, duration: 0.18, ease: 'sine.inOut', force3D: false })
-        .to(warmSun, { opacity: 0, duration: 2.78, ease: 'none', force3D: false })
-        .to(warmSun, { opacity: 1, duration: 0.18, ease: 'sine.inOut', force3D: false })
-        .to(warmSun, { opacity: 1, duration: 0.88, ease: 'none', force3D: false })
-        .to(warmSun, { opacity: 0, duration: 0.18, ease: 'sine.inOut', force3D: false })
-        .to(warmSun, { opacity: 0, duration: 2.61, ease: 'none', force3D: false });
+        .to(warmSun, { opacity: 0, duration: 1.25, ease: 'none', force3D: false })
+        .to(warmSun, { opacity: 0.72, duration: 3.4, ease: 'sine.inOut', force3D: false })
+        .to(warmSun, { opacity: 0, duration: 4.1, ease: 'sine.inOut', force3D: false })
+        .to(warmSun, { opacity: 0, duration: 6.25, ease: 'none', force3D: false });
 
     const timelines = [cloudsTimeline, sunTimeline, sunWarmthTimeline];
     const shouldRun = () => (

@@ -2549,16 +2549,21 @@ body[data-tema="drzava"] #main-menu > .drzava-flags-gsap {
     display: block;
 }
 
-/* Poslednje tačkice putanje ostaju cele iznad repa animirane zastavice. */
+/* Završna tačkica rute ostaje iznad repa animirane zastavice, bez PNG zakrpe u pozadini. */
 #main-menu > .drzava-route-guard {
     position: absolute;
-    left: 68.119%;
-    top: 62.919%;
-    width: 2.551%;
-    height: 1.376%;
-    z-index: 4;
+    left: 68.757%;
+    top: 63.098%;
+    width: 1.275%;
+    height: 0.658%;
+    z-index: 6;
     display: none;
     pointer-events: none;
+    border-radius: 50%;
+    background:
+        radial-gradient(ellipse at 35% 24%, rgba(255, 251, 230, 0.98) 0 11%, transparent 17%),
+        radial-gradient(ellipse at 50% 50%, #ffe6b6 0 38%, #efbf7d 66%, #b9753d 100%);
+    filter: drop-shadow(0 1px 1px rgba(12, 79, 106, 0.42));
 }
 
 body[data-tema="drzava"] #main-menu > .drzava-route-guard {

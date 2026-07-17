@@ -9,18 +9,25 @@ FLAGS = ASSETS / "drzava-flags-gsap"
 
 BASE_PATH = ASSETS / "drzava-static-geo-complete-v1.png"
 FILL_PATH = ASSETS / "drzava-static-geo-flags-open-v10.png"
-OUTPUT_PATH = ASSETS / "drzava-static-geo-flags-open-v12.png"
+OPEN_OUTPUT_PATH = ASSETS / "drzava-static-geo-flags-open-v12.png"
+STATIC_OUTPUT_PATH = ASSETS / "drzava-static-geo-coral-v5.png"
 
 # Pozicije i dimenzije su iste kao CSS promenljive u www/index.html.
 FLAG_SHEETS = (
-    (95, 497, FLAGS / "wind-sheets-v1" / "flag-na-wind-sheet-v1.png", 5),
-    (597, 411, FLAGS / "wind-sheets-v1" / "flag-eu-wind-sheet-v1.png", 5),
-    (743, 540, FLAGS / "wind-sheets-v1" / "flag-asia_n-wind-sheet-v1.png", 5),
-    (662, 694, FLAGS / "wind-sheets-v1" / "flag-asia-wind-sheet-v1.png", 5),
-    (255, 917, FLAGS / "wind-sheets-v1" / "flag-sa-wind-sheet-v1.png", 5),
+    (95, 497, FLAGS / "wind-sheets-v1" / "flag-na-wind-sheet-v1.png", FLAGS / "wind-sheets-v1" / "flag-na-wind-sheet-v1.png", 5),
+    (597, 411, FLAGS / "wind-sheets-v1" / "flag-eu-wind-sheet-v1.png", FLAGS / "wind-sheets-v1" / "flag-eu-wind-sheet-v1.png", 5),
+    (743, 540, FLAGS / "wind-sheets-v1" / "flag-asia_n-wind-sheet-v1.png", FLAGS / "wind-sheets-v1" / "flag-asia_n-wind-sheet-v1.png", 5),
+    (662, 694, FLAGS / "wind-sheets-v1" / "flag-asia-wind-sheet-v1.png", FLAGS / "wind-sheets-v1" / "flag-asia-wind-sheet-v1.png", 5),
+    (255, 917, FLAGS / "wind-sheets-v1" / "flag-sa-wind-sheet-v1.png", FLAGS / "wind-sheets-v1" / "flag-sa-wind-sheet-v1.png", 5),
     # Originalna podloga ima plavu afričku zastavu. Njena v1 maska je
     # geometrijski tačna; v2 koralna animacija ostaje aktivni prikaz u aplikaciji.
-    (598, 1016, FLAGS / "wind-sheets-v1" / "flag-africa-wind-sheet-v1.png", 1),
+    (
+        598,
+        1016,
+        FLAGS / "wind-sheets-v1" / "flag-africa-wind-sheet-v1.png",
+        FLAGS / "wind-sheets-v2" / "flag-africa-coral-wind-sheet-v1.png",
+        1,
+    ),
 )
 
 
@@ -34,7 +41,7 @@ def main() -> None:
     output = base.copy()
     changed_mask = Image.new("1", base.size, 0)
 
-    for left, top, sheet_path, mask_filter_size in FLAG_SHEETS:
+    for left, top, sheet_path, _display_sheet_path, mask_filter_size in FLAG_SHEETS:
         sheet = Image.open(sheet_path).convert("RGBA")
         if sheet.height % 33:
             raise ValueError(f"Unexpected sprite-sheet height: {sheet_path}")
@@ -76,7 +83,17 @@ def main() -> None:
         output.paste(fill_region, (left, top), exact_mask)
         changed_mask.paste(exact_mask, (left, top))
 
-    output.save(OUTPUT_PATH, optimize=True)
+    output.save(OPEN_OUTPUT_PATH, optimize=True)
+
+    # Dodatni ekrani nemaju GSAP sloj, pa dobijaju statičan prvi kadar
+    # istih zastavica preko iste ispravljene osnove.
+    static_output = output.copy()
+    for left, top, _mask_sheet_path, display_sheet_path, _mask_filter_size in FLAG_SHEETS:
+        display_sheet = Image.open(display_sheet_path).convert("RGBA")
+        frame_height = display_sheet.height // 33
+        first_frame = display_sheet.crop((0, 0, display_sheet.width, frame_height))
+        static_output.alpha_composite(first_frame, dest=(left, top))
+    static_output.save(STATIC_OUTPUT_PATH, optimize=True)
 
     # Garantuje da nijedan piksel van silueta zastavica nije promenjen.
     base_pixels = base.load()
@@ -91,7 +108,8 @@ def main() -> None:
     if outside_changes:
         raise RuntimeError(f"Changed {outside_changes} pixels outside flag masks")
 
-    print(f"Wrote {OUTPUT_PATH}")
+    print(f"Wrote {OPEN_OUTPUT_PATH}")
+    print(f"Wrote {STATIC_OUTPUT_PATH}")
     masked_pixels = sum(1 for value in changed_mask.get_flattened_data() if value)
     print(f"Masked pixels: {masked_pixels}")
     print("Pixels changed outside masks: 0")

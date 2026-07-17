@@ -2586,7 +2586,7 @@ body[data-tema="drzava"] :is(
     #podesavanja-screen,
     #global-chat-screen
 ) {
-    background: url('assets/drzava-static-geo-complete-v1.png') center center / 100% 100% no-repeat;
+    background: url('assets/drzava-static-geo-africa-coral-clean-v1.png') center center / 100% 100% no-repeat;
 }
 
 /* GSAP kadrovi crtaju jedinstveno platno zastavice preko čiste podloge. */

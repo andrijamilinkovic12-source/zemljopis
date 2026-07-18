@@ -9753,11 +9753,13 @@ body[data-tema] :is(
 
 body[data-tema] .page-title {
     color: #102f59 !important;
-    font-size: 1.6rem !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(1.5rem, 6.7vw, 1.7rem) !important;
     font-weight: 900;
-    line-height: 1.15;
-    letter-spacing: 0.025em;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
     text-align: center !important;
+    text-transform: uppercase;
     background: none;
     -webkit-text-fill-color: #102f59;
     -webkit-text-stroke: 0;
@@ -9777,9 +9779,9 @@ body[data-tema] .page-heading {
 }
 
 body[data-tema] .page-title-icon {
-    width: clamp(2rem, 7.5vw, 2.6rem);
-    height: clamp(2rem, 7.5vw, 2.6rem);
-    margin-bottom: clamp(0.15rem, 0.5vh, 0.3rem);
+    width: clamp(2.5rem, 10vw, 3.1rem);
+    height: clamp(2.5rem, 10vw, 3.1rem);
+    margin-bottom: clamp(0.22rem, 0.7vh, 0.38rem);
     object-fit: contain;
     filter: drop-shadow(0 5px 8px rgba(0, 12, 32, 0.38));
 }

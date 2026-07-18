@@ -111,12 +111,19 @@ const TopListaManager = {
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
 
+        const medalje = [
+            { src: 'assets/toplista-medalja-zlatna-clay-soft-3d.png', alt: 'Prvo mesto' },
+            { src: 'assets/toplista-medalja-srebrna-clay-soft-3d.png', alt: 'Drugo mesto' },
+            { src: 'assets/toplista-medalja-bronzana-clay-soft-3d.png', alt: 'Treće mesto' }
+        ];
+
         let html = '';
         lista.forEach((igrac, index) => {
             let medalja = "";
-            if (index === 0) medalja = "🥇";
-            else if (index === 1) medalja = "🥈";
-            else if (index === 2) medalja = "🥉";
+            if (index < medalje.length) {
+                const medaljaPodaci = medalje[index];
+                medalja = `<img class="toplista-medalja" src="${medaljaPodaci.src}" alt="${medaljaPodaci.alt}" decoding="async">`;
+            }
             else medalja = `<span style="display:inline-block; width:24px; text-align:center; color:#a0aec0; font-size: 0.9rem;">${index + 1}.</span>`;
 
             // Ako si to ti, sistem prepoznaje tvoj nadimak i boji te u zeleno!
@@ -128,7 +135,7 @@ const TopListaManager = {
             html += `
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); background: ${bgRed}; border-radius: 8px;">
                     <div style="display: flex; gap: 0.8rem; align-items: center;">
-                        <span style="font-size: 1.2rem;">${medalja}</span>
+                        <span class="toplista-medalja-slot">${medalja}</span>
                         <span style="color: ${bojaIme}; font-weight: ${fontIme}; font-size: 0.95rem;">${escapeHtml(igrac.ime)}</span>
                     </div>
                     <span style="color: #f5af19; font-weight: 800; font-size: 0.95rem;">

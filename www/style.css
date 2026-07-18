@@ -10300,3 +10300,59 @@ body[data-tema] #toplista-screen .toplista-poeni-oznaka {
     font-size: 0.7rem;
     font-weight: 600;
 }
+
+/* Providno teget staklo — ista čitljivost kao splash kartice, uz vidljivu temu. */
+body[data-tema] :is(
+    #soba-prijatelja-screen .soba-prijatelja-add-card,
+    #soba-prijatelja-screen .prijatelj-kartica,
+    #soba-prijatelja-screen .online-igrac-red,
+    #soba-prijatelja-screen .soba-prijatelja-empty,
+    #riznica-screen .riznica-kartica,
+    #riznica-screen .tastatura-kartica,
+    #toplista-screen #toplista-sadrzaj
+) {
+    background: linear-gradient(145deg, rgba(7, 29, 67, 0.68), rgba(10, 48, 91, 0.56)) !important;
+    border-color: rgba(255, 255, 255, 0.24) !important;
+    box-shadow: 0 10px 22px rgba(0, 15, 44, 0.2) !important;
+    backdrop-filter: blur(12px) saturate(1.1);
+    -webkit-backdrop-filter: blur(12px) saturate(1.1);
+}
+
+body[data-tema] :is(
+    #soba-prijatelja-screen .soba-prijatelja-tab,
+    #riznica-screen .riznica-tab,
+    #toplista-screen .toplista-tab,
+    #toplista-screen .toplista-period-tab
+) {
+    background: rgba(8, 35, 78, 0.58) !important;
+    box-shadow: 0 6px 14px rgba(0, 14, 43, 0.16) !important;
+    backdrop-filter: blur(12px) saturate(1.1);
+    -webkit-backdrop-filter: blur(12px) saturate(1.1);
+}
+
+body[data-tema] :is(
+    #soba-prijatelja-screen .soba-prijatelja-tab.active,
+    #riznica-screen .riznica-tab.active,
+    #toplista-screen .toplista-tab.active,
+    #toplista-screen .toplista-period-tab.active
+) {
+    background: linear-gradient(145deg, rgba(22, 73, 128, 0.76), rgba(11, 45, 87, 0.68)) !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .prijatelj-kartica .stat-box {
+    background: rgba(1, 17, 50, 0.4) !important;
+}
+
+body[data-tema] #riznica-screen :is(.riznica-kartica.opremljena, .tastatura-kartica.opremljena) {
+    background: linear-gradient(145deg, rgba(7, 39, 70, 0.72), rgba(9, 52, 86, 0.64)) !important;
+}
+
+body[data-tema] #riznica-screen :is(.riznica-akcija, .tastatura-akcija) {
+    background: rgba(26, 84, 140, 0.24) !important;
+    backdrop-filter: blur(10px) saturate(1.08);
+    -webkit-backdrop-filter: blur(10px) saturate(1.08);
+}
+
+body[data-tema] #riznica-screen :is(.riznica-kupi, .tastatura-akcija.kupi) {
+    background: rgba(171, 111, 15, 0.24) !important;
+}

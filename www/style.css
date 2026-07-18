@@ -10053,10 +10053,10 @@ body[data-tema] #soba-prijatelja-screen .prijatelj-status.online {
 }
 
 body[data-tema] #soba-prijatelja-screen .prijatelj-kartica .stat-box {
-    background: transparent !important;
-    border: 0 !important;
+    background: rgba(1, 17, 50, 0.58) !important;
+    border: 1px solid rgba(255, 255, 255, 0.13) !important;
     box-shadow: none !important;
-    border-radius: 0 !important;
+    border-radius: 8px !important;
 }
 
 body[data-tema] #soba-prijatelja-screen .stat-box span {
@@ -10066,7 +10066,7 @@ body[data-tema] #soba-prijatelja-screen .stat-box span {
 
 body[data-tema] #soba-prijatelja-screen .stat-box strong {
     color: #fff !important;
-    text-shadow: none !important;
+    text-shadow: 0 1px 2px rgba(0, 8, 28, 0.72) !important;
 }
 
 body[data-tema] #soba-prijatelja-screen .soba-prijatelja-zahtev-kartica {

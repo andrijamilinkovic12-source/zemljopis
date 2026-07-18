@@ -10008,10 +10008,16 @@ body[data-tema] #soba-prijatelja-screen .soba-prijatelja-lista {
 }
 
 body[data-tema] #soba-prijatelja-screen .soba-prijatelja-empty {
-    margin-top: 2rem;
-    color: rgba(255, 255, 255, 0.86) !important;
+    max-width: 21rem;
+    margin: 2rem auto 0;
+    color: #102f59 !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(1.5rem, 6.7vw, 1.7rem);
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: 0.015em;
     text-align: center;
-    text-shadow: 0 2px 8px rgba(0, 13, 35, 0.72);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.62), 0 4px 10px rgba(4, 27, 63, 0.22);
 }
 
 body[data-tema] #soba-prijatelja-screen .prijatelj-avatar {

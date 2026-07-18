@@ -58,6 +58,10 @@ app.use(express.static(WEB_ROOT, {
     setHeaders: (res, filePath) => {
         if (filePath.endsWith('index.html')) {
             res.setHeader('Cache-Control', 'no-store');
+        } else if (/\.(png|jpe?g|webp|svg|gif|ico)$/i.test(filePath)) {
+            // Vizuelni fajlovi se ne menjaju između svakog otvaranja: koristi lokalni keš
+            // odmah, pa proveri noviju verziju u pozadini bez kočenja interfejsa.
+            res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=604800');
         } else {
             res.setHeader('Cache-Control', 'no-cache');
         }

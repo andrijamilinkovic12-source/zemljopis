@@ -16,12 +16,12 @@ const RiznicaManager = {
             { id: 'tema_predmet', naziv: 'Predmet', cena: 850, kupljeno: false, opremljeno: false, ikona: 'fa-box-open', slika: 'assets/riznica-tema-predmet-clay-soft-3d.png' }
         ],
         efekti: [
-            { id: 'ef_nista', naziv: 'Bez efekta', cena: 0, kupljeno: true, opremljeno: true, ikona: 'fa-ban' },
-            { id: 'ef_konfete', naziv: 'Konfete pobede', cena: 300, kupljeno: false, opremljeno: false, ikona: 'fa-wand-magic-sparkles' },
-            { id: 'ef_vatromet', naziv: 'Vatromet', cena: 800, kupljeno: false, opremljeno: false, ikona: 'fa-fire' },
-            { id: 'ef_zvezdana_prasina', naziv: 'Zvezdana prašina', cena: 600, kupljeno: false, opremljeno: false, ikona: 'fa-star' },
-            { id: 'ef_snezna_mecava', naziv: 'Snežna mećava', cena: 750, kupljeno: false, opremljeno: false, ikona: 'fa-snowflake' },
-            { id: 'ef_munje', naziv: 'Električne munje', cena: 1000, kupljeno: false, opremljeno: false, ikona: 'fa-bolt' }
+            { id: 'ef_nista', naziv: 'Bez efekta', cena: 0, kupljeno: true, opremljeno: true, ikona: 'fa-ban', slika: 'assets/riznica-efekat-nista-clay-soft-3d.png' },
+            { id: 'ef_konfete', naziv: 'Konfete pobede', cena: 300, kupljeno: false, opremljeno: false, ikona: 'fa-wand-magic-sparkles', slika: 'assets/riznica-efekat-konfete-clay-soft-3d.png' },
+            { id: 'ef_vatromet', naziv: 'Vatromet', cena: 800, kupljeno: false, opremljeno: false, ikona: 'fa-fire', slika: 'assets/riznica-efekat-vatromet-clay-soft-3d.png' },
+            { id: 'ef_zvezdana_prasina', naziv: 'Zvezdana prašina', cena: 600, kupljeno: false, opremljeno: false, ikona: 'fa-star', slika: 'assets/riznica-efekat-zvezdana-prasina-clay-soft-3d.png' },
+            { id: 'ef_snezna_mecava', naziv: 'Snežna mećava', cena: 750, kupljeno: false, opremljeno: false, ikona: 'fa-snowflake', slika: 'assets/riznica-efekat-snezna-mecava-clay-soft-3d.png' },
+            { id: 'ef_munje', naziv: 'Električne munje', cena: 1000, kupljeno: false, opremljeno: false, ikona: 'fa-bolt', slika: 'assets/riznica-efekat-munje-clay-soft-3d.png' }
         ],
         tastature: [
             { id: 'tastatura_izvorna', naziv: 'Izvorna', cena: 0, kupljeno: true, opremljeno: true, skin: 'izvorna', boje: ['#12351f', '#38ef7d', '#11998e'] },
@@ -201,7 +201,7 @@ const RiznicaManager = {
             }
 
             const ikonaHtml = artikal.slika
-                ? `<img class="riznica-artikal-ikona riznica-tema-ikona" src="${artikal.slika}" alt="" aria-hidden="true" decoding="async">`
+                ? `<img class="riznica-artikal-ikona riznica-artikal-slika" src="${artikal.slika}" alt="" aria-hidden="true" decoding="async">`
                 : `<i class="fa-solid ${artikal.ikona} riznica-artikal-ikona"></i>`;
 
             html += `

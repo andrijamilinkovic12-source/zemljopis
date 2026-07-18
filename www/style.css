@@ -8859,6 +8859,15 @@ body[data-tema="svetla"] .stat-box span { color: #4a5568; }
 /* ========================================================
    RIZNICA - SKINOVI ZA TASTATURU
    ======================================================== */
+.riznica-tab-ikona {
+    width: clamp(32px, 9vw, 42px);
+    height: clamp(32px, 9vw, 42px);
+    display: block;
+    margin: -0.15rem auto 0.18rem;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.24));
+}
+
 .riznica-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;

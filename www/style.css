@@ -3566,7 +3566,9 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     font-size: min(0.95rem, 2vh);
     font-weight: 800;
     min-width: 0;
-    overflow: hidden;
+    /* The category 3D mount extends a little past its slot.  Do not clip it
+       here; the label text itself already handles truncation. */
+    overflow: visible;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -3646,7 +3648,8 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     display: flex;
     align-items: center;
     min-width: 0;
-    overflow: hidden;
+    /* Keep the complete category medallion visible, matching game modes. */
+    overflow: visible;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: min(0.88rem, 1.8vh);

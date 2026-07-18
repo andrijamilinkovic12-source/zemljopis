@@ -10008,8 +10008,9 @@ body[data-tema] #soba-prijatelja-screen .soba-prijatelja-lista {
 }
 
 body[data-tema] #soba-prijatelja-screen .soba-prijatelja-empty {
-    max-width: 21rem;
-    margin: 2rem auto 0;
+    width: 100%;
+    max-width: none;
+    margin: 2rem 0 0;
     padding: 1.05rem 1rem;
     border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 12px;
@@ -10018,7 +10019,7 @@ body[data-tema] #soba-prijatelja-screen .soba-prijatelja-empty {
     color: #fff !important;
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
-    font-weight: 800;
+    font-weight: 500;
     line-height: 1.35;
     letter-spacing: 0.01em;
     text-align: center;

@@ -10301,7 +10301,7 @@ body[data-tema] #toplista-screen .toplista-poeni-oznaka {
     font-weight: 600;
 }
 
-/* Providno teget staklo — ista čitljivost kao splash kartice, uz vidljivu temu. */
+/* Splash-staklo — sve kartice u sobama koriste istu providnu površinu kao prijava. */
 body[data-tema] :is(
     #soba-prijatelja-screen .soba-prijatelja-add-card,
     #soba-prijatelja-screen .prijatelj-kartica,
@@ -10311,11 +10311,11 @@ body[data-tema] :is(
     #riznica-screen .tastatura-kartica,
     #toplista-screen #toplista-sadrzaj
 ) {
-    background: linear-gradient(145deg, rgba(7, 29, 67, 0.68), rgba(10, 48, 91, 0.56)) !important;
-    border-color: rgba(255, 255, 255, 0.24) !important;
-    box-shadow: 0 10px 22px rgba(0, 15, 44, 0.2) !important;
-    backdrop-filter: blur(12px) saturate(1.1);
-    -webkit-backdrop-filter: blur(12px) saturate(1.1);
+    background: var(--theme-control-bg) !important;
+    border-color: var(--theme-border) !important;
+    box-shadow: var(--theme-control-shadow) !important;
+    backdrop-filter: blur(12px) saturate(1.1) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
 }
 
 body[data-tema] :is(
@@ -10324,10 +10324,11 @@ body[data-tema] :is(
     #toplista-screen .toplista-tab,
     #toplista-screen .toplista-period-tab
 ) {
-    background: rgba(8, 35, 78, 0.58) !important;
-    box-shadow: 0 6px 14px rgba(0, 14, 43, 0.16) !important;
-    backdrop-filter: blur(12px) saturate(1.1);
-    -webkit-backdrop-filter: blur(12px) saturate(1.1);
+    background: var(--theme-control-bg) !important;
+    border-color: var(--theme-border) !important;
+    box-shadow: var(--theme-control-shadow) !important;
+    backdrop-filter: blur(12px) saturate(1.1) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
 }
 
 body[data-tema] :is(
@@ -10336,23 +10337,49 @@ body[data-tema] :is(
     #toplista-screen .toplista-tab.active,
     #toplista-screen .toplista-period-tab.active
 ) {
-    background: linear-gradient(145deg, rgba(22, 73, 128, 0.76), rgba(11, 45, 87, 0.68)) !important;
+    background: rgba(var(--theme-primary-rgb), 0.16) !important;
+    border-color: rgba(var(--theme-primary-rgb), 0.52) !important;
 }
 
 body[data-tema] #soba-prijatelja-screen .prijatelj-kartica .stat-box {
-    background: rgba(1, 17, 50, 0.4) !important;
+    background: var(--theme-control-bg) !important;
+    border-color: var(--theme-border) !important;
+    box-shadow: var(--theme-control-shadow) !important;
+    backdrop-filter: blur(12px) saturate(1.1) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
 }
 
 body[data-tema] #riznica-screen :is(.riznica-kartica.opremljena, .tastatura-kartica.opremljena) {
-    background: linear-gradient(145deg, rgba(7, 39, 70, 0.72), rgba(9, 52, 86, 0.64)) !important;
+    background: var(--theme-control-bg) !important;
+    border-color: rgba(var(--theme-success-rgb), 0.62) !important;
 }
 
 body[data-tema] #riznica-screen :is(.riznica-akcija, .tastatura-akcija) {
-    background: rgba(26, 84, 140, 0.24) !important;
-    backdrop-filter: blur(10px) saturate(1.08);
-    -webkit-backdrop-filter: blur(10px) saturate(1.08);
+    background: var(--theme-control-bg) !important;
+    border-color: var(--theme-border) !important;
+    box-shadow: var(--theme-control-shadow) !important;
+    backdrop-filter: blur(12px) saturate(1.1) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
 }
 
 body[data-tema] #riznica-screen :is(.riznica-kupi, .tastatura-akcija.kupi) {
-    background: rgba(171, 111, 15, 0.24) !important;
+    background: var(--theme-control-bg) !important;
+    border-color: var(--theme-accent, #f5af19) !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-input {
+    background: var(--theme-control-bg) !important;
+    border-color: var(--theme-border) !important;
+    box-shadow: var(--theme-control-shadow) !important;
+    backdrop-filter: blur(12px) saturate(1.1) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
+}
+
+/* Omotač je samo raspored; providne su pojedinačne kartice unutar njega. */
+body[data-tema] #toplista-screen .toplista-shell {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }

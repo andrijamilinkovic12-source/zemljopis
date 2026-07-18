@@ -10053,9 +10053,10 @@ body[data-tema] #soba-prijatelja-screen .prijatelj-status.online {
 }
 
 body[data-tema] #soba-prijatelja-screen .prijatelj-kartica .stat-box {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(255, 255, 255, 0.13) !important;
+    background: transparent !important;
+    border: 0 !important;
     box-shadow: none !important;
+    border-radius: 0 !important;
 }
 
 body[data-tema] #soba-prijatelja-screen .stat-box span {

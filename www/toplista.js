@@ -59,13 +59,8 @@ const TopListaManager = {
         const tabPrijatelji = document.getElementById('tab-prijatelji');
         const tabGlobalno = document.getElementById('tab-globalno');
 
-        if(tabPrijatelji && tabGlobalno) {
-            tabPrijatelji.style.background = (novaGrupa === 'prijatelji') ? 'rgba(56,239,125,0.3)' : 'rgba(255,255,255,0.08)';
-            tabPrijatelji.style.color = (novaGrupa === 'prijatelji') ? '#38ef7d' : '#fff';
-            
-            tabGlobalno.style.background = (novaGrupa === 'globalno') ? 'rgba(56,239,125,0.3)' : 'rgba(255,255,255,0.08)';
-            tabGlobalno.style.color = (novaGrupa === 'globalno') ? '#38ef7d' : '#fff';
-        }
+        if (tabPrijatelji) tabPrijatelji.classList.toggle('active', novaGrupa === 'prijatelji');
+        if (tabGlobalno) tabGlobalno.classList.toggle('active', novaGrupa === 'globalno');
 
         this.osveziPrikaz();
     },
@@ -76,17 +71,7 @@ const TopListaManager = {
         const kategorije = ['nedeljni', 'mesecni', 'svaVremena'];
         kategorije.forEach(kat => {
             const btn = document.getElementById('subtab-' + kat);
-            if (btn) {
-                if (kat === novaKat) {
-                    btn.style.background = 'rgba(56,239,125,0.2)';
-                    btn.style.borderColor = '#38ef7d';
-                    btn.style.color = '#38ef7d';
-                } else {
-                    btn.style.background = 'rgba(255,255,255,0.05)';
-                    btn.style.borderColor = 'transparent';
-                    btn.style.color = '#a0aec0';
-                }
-            }
+            if (btn) btn.classList.toggle('active', kat === novaKat);
         });
 
         this.osveziPrikaz();
@@ -100,7 +85,7 @@ const TopListaManager = {
         let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
 
         if (!lista || lista.length === 0) {
-            kontejner.innerHTML = '<div style="text-align:center; color:#a0aec0; margin-top:2rem;">Još uvek nema podataka. Odigraj partiju i upiši se prvi na listu!</div>';
+            kontejner.innerHTML = '<div class="toplista-empty">Još uvek nema podataka. Odigraj partiju i upiši se prvi na listu!</div>';
             return;
         }
 
@@ -124,22 +109,18 @@ const TopListaManager = {
                 const medaljaPodaci = medalje[index];
                 medalja = `<img class="toplista-medalja" src="${medaljaPodaci.src}" alt="${medaljaPodaci.alt}" decoding="async">`;
             }
-            else medalja = `<span style="display:inline-block; width:24px; text-align:center; color:#a0aec0; font-size: 0.9rem;">${index + 1}.</span>`;
+            else medalja = `<span class="toplista-redni-broj">${index + 1}.</span>`;
 
             // Ako si to ti, sistem prepoznaje tvoj nadimak i boji te u zeleno!
             let isMe = (igrac.ime === mojNadimak);
-            let bojaIme = isMe ? "#38ef7d" : "#fff";
-            let fontIme = isMe ? "800" : "600";
-            let bgRed = isMe ? "rgba(56,239,125,0.05)" : "transparent";
-
             html += `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); background: ${bgRed}; border-radius: 8px;">
-                    <div style="display: flex; gap: 0.8rem; align-items: center;">
+                <div class="toplista-red${isMe ? ' ja' : ''}">
+                    <div class="toplista-red-levo">
                         <span class="toplista-medalja-slot">${medalja}</span>
-                        <span style="color: ${bojaIme}; font-weight: ${fontIme}; font-size: 0.95rem;">${escapeHtml(igrac.ime)}</span>
+                        <span class="toplista-igrac">${escapeHtml(igrac.ime)}</span>
                     </div>
-                    <span style="color: #f5af19; font-weight: 800; font-size: 0.95rem;">
-                        ${igrac.poeni} <span style="font-size:0.7rem; color:#a0aec0; font-weight:600;">pts</span>
+                    <span class="toplista-poeni">
+                        ${igrac.poeni} <span class="toplista-poeni-oznaka">pts</span>
                     </span>
                 </div>
             `;

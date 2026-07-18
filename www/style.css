@@ -10112,3 +10112,191 @@ body[data-tema] #soba-prijatelja-screen .btn-prihvati-zahtev {
     border-color: rgba(116, 232, 172, 0.62) !important;
     background: rgba(116, 232, 172, 0.14) !important;
 }
+
+/* ========================================================
+   RIZNICA I TOP LISTA — referentni obrazac Sobe prijatelja
+   ======================================================== */
+body[data-tema] #riznica-screen .riznica-content {
+    z-index: 5;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding: 0 1rem;
+    overflow: hidden;
+}
+
+body[data-tema] #riznica-screen .riznica-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.3rem;
+    flex-shrink: 0;
+    margin-bottom: 1rem;
+}
+
+body[data-tema] #riznica-screen .riznica-tab,
+body[data-tema] #toplista-screen .toplista-tab,
+body[data-tema] #toplista-screen .toplista-period-tab {
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background: rgba(8, 35, 78, 0.9) !important;
+    color: #fff !important;
+    text-shadow: none !important;
+    box-shadow: 0 6px 14px rgba(0, 14, 43, 0.2) !important;
+}
+
+body[data-tema] #riznica-screen .riznica-tab {
+    min-height: 4.55rem;
+    padding: 0.42rem 0.18rem;
+    border-radius: 10px !important;
+    font-size: 0.75rem;
+}
+
+body[data-tema] #riznica-screen .riznica-tab.active,
+body[data-tema] #toplista-screen .toplista-tab.active,
+body[data-tema] #toplista-screen .toplista-period-tab.active {
+    border-color: rgba(123, 205, 255, 0.92) !important;
+    background: linear-gradient(145deg, rgba(22, 73, 128, 0.96), rgba(11, 45, 87, 0.98)) !important;
+    box-shadow: 0 0 16px rgba(87, 187, 255, 0.26) !important;
+}
+
+body[data-tema] #riznica-screen .riznica-tab:active,
+body[data-tema] #toplista-screen .toplista-tab:active,
+body[data-tema] #toplista-screen .toplista-period-tab:active {
+    transform: scale(0.97);
+}
+
+body[data-tema] #riznica-screen .riznica-kartica,
+body[data-tema] #riznica-screen .tastatura-kartica {
+    background: linear-gradient(145deg, rgba(7, 29, 67, 0.97), rgba(10, 48, 91, 0.95)) !important;
+    border-color: rgba(255, 255, 255, 0.22) !important;
+    box-shadow: 0 10px 22px rgba(0, 15, 44, 0.28) !important;
+    color: #fff !important;
+}
+
+body[data-tema] #riznica-screen .riznica-kartica.opremljena,
+body[data-tema] #riznica-screen .tastatura-kartica.opremljena {
+    background: linear-gradient(145deg, rgba(7, 39, 70, 0.98), rgba(9, 52, 86, 0.96)) !important;
+    border-color: rgba(116, 232, 172, 0.64) !important;
+    box-shadow: 0 10px 22px rgba(0, 15, 44, 0.28) !important;
+}
+
+body[data-tema] #riznica-screen .riznica-artikal-naziv,
+body[data-tema] #riznica-screen .tastatura-kartica h4 {
+    color: #fff !important;
+    text-shadow: none !important;
+}
+
+body[data-tema] #riznica-screen .riznica-akcija,
+body[data-tema] #riznica-screen .tastatura-akcija {
+    border: 1px solid rgba(123, 205, 255, 0.62) !important;
+    background: rgba(26, 84, 140, 0.36) !important;
+    color: #fff !important;
+    box-shadow: none !important;
+}
+
+body[data-tema] #riznica-screen .riznica-kupi,
+body[data-tema] #riznica-screen .tastatura-akcija.kupi {
+    border-color: rgba(255, 208, 111, 0.76) !important;
+    background: rgba(171, 111, 15, 0.34) !important;
+    color: #fff4ca !important;
+}
+
+body[data-tema] #riznica-screen :is(.riznica-opremljeno, .tastatura-opremljena) {
+    color: #74e8ac !important;
+}
+
+body[data-tema] #toplista-screen .toplista-tab {
+    min-height: 3.35rem;
+    border-radius: 10px !important;
+}
+
+body[data-tema] #toplista-screen .toplista-period-tab {
+    min-height: 2.6rem;
+    border-radius: 8px !important;
+    font-size: 0.72rem;
+}
+
+body[data-tema] #toplista-screen #toplista-sadrzaj {
+    background: linear-gradient(145deg, rgba(7, 29, 67, 0.97), rgba(10, 48, 91, 0.95)) !important;
+    border-color: rgba(255, 255, 255, 0.22) !important;
+    box-shadow: 0 10px 22px rgba(0, 15, 44, 0.28) !important;
+}
+
+body[data-tema] #toplista-screen .toplista-empty {
+    margin: 2rem auto 0;
+    padding: 0 0.5rem;
+    color: #fff !important;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.35;
+    text-align: center;
+    text-shadow: none !important;
+}
+
+body[data-tema] #toplista-screen .toplista-red {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 8px;
+    color: #fff;
+}
+
+body[data-tema] #toplista-screen .toplista-red.ja {
+    background: rgba(116, 232, 172, 0.1);
+}
+
+body[data-tema] #toplista-screen .toplista-red-levo {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-width: 0;
+}
+
+body[data-tema] #toplista-screen .toplista-red:last-child {
+    border-bottom: 0;
+}
+
+body[data-tema] #toplista-screen .toplista-redni-broj {
+    display: inline-block;
+    width: 1.5rem;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+body[data-tema] #toplista-screen .toplista-igrac,
+body[data-tema] #toplista-screen .toplista-poeni {
+    color: #fff !important;
+    font-size: 0.95rem;
+    text-shadow: none !important;
+}
+
+body[data-tema] #toplista-screen .toplista-igrac {
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body[data-tema] #toplista-screen .toplista-red.ja .toplista-igrac {
+    color: #74e8ac !important;
+    font-weight: 800;
+}
+
+body[data-tema] #toplista-screen .toplista-poeni {
+    flex-shrink: 0;
+    font-weight: 800;
+}
+
+body[data-tema] #toplista-screen .toplista-poeni-oznaka {
+    color: rgba(255, 255, 255, 0.66) !important;
+    font-size: 0.7rem;
+    font-weight: 600;
+}

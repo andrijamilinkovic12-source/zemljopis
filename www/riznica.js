@@ -156,17 +156,7 @@ const RiznicaManager = {
         const tabovi = ['teme', 'efekti', 'tastature'];
         tabovi.forEach(tab => {
             const btn = document.getElementById('tab-' + tab);
-            if (btn) {
-                if (tab === novaKategorija) {
-                    btn.style.background = 'rgba(245, 175, 25, 0.2)'; 
-                    btn.style.borderColor = '#f5af19';
-                    btn.style.color = '#f5af19';
-                } else {
-                    btn.style.background = 'rgba(255,255,255,0.05)';
-                    btn.style.borderColor = 'transparent';
-                    btn.style.color = '#a0aec0';
-                }
-            }
+            if (btn) btn.classList.toggle('active', tab === novaKategorija);
         });
         this.osveziPrikaz();
     },

@@ -10301,7 +10301,8 @@ body[data-tema] #toplista-screen .toplista-poeni-oznaka {
     font-weight: 600;
 }
 
-/* Splash-staklo — sve kartice u sobama koriste istu providnu površinu kao prijava. */
+/* Teget kartice koriste istu providnost kao podrazumevane splash kartice.
+   Boja je namerno fiksna: tema ne sme da ih pretvori u bele površine. */
 body[data-tema] :is(
     #soba-prijatelja-screen .soba-prijatelja-add-card,
     #soba-prijatelja-screen .prijatelj-kartica,
@@ -10311,11 +10312,11 @@ body[data-tema] :is(
     #riznica-screen .tastatura-kartica,
     #toplista-screen #toplista-sadrzaj
 ) {
-    background: var(--theme-control-bg) !important;
-    border-color: var(--theme-border) !important;
-    box-shadow: var(--theme-control-shadow) !important;
-    backdrop-filter: blur(12px) saturate(1.1) !important;
-    -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
+    background: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7)) !important;
+    border-color: rgba(220, 244, 255, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(1, 12, 31, 0.32), inset 0 1px 0 rgba(127, 198, 255, 0.12) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 body[data-tema] :is(
@@ -10324,11 +10325,11 @@ body[data-tema] :is(
     #toplista-screen .toplista-tab,
     #toplista-screen .toplista-period-tab
 ) {
-    background: var(--theme-control-bg) !important;
-    border-color: var(--theme-border) !important;
-    box-shadow: var(--theme-control-shadow) !important;
-    backdrop-filter: blur(12px) saturate(1.1) !important;
-    -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
+    background: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7)) !important;
+    border-color: rgba(220, 244, 255, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(1, 12, 31, 0.32), inset 0 1px 0 rgba(127, 198, 255, 0.12) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 body[data-tema] :is(
@@ -10337,45 +10338,35 @@ body[data-tema] :is(
     #toplista-screen .toplista-tab.active,
     #toplista-screen .toplista-period-tab.active
 ) {
-    background: rgba(var(--theme-primary-rgb), 0.16) !important;
-    border-color: rgba(var(--theme-primary-rgb), 0.52) !important;
+    background: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7)) !important;
+    border-color: rgba(123, 205, 255, 0.92) !important;
+    box-shadow: 0 0 16px rgba(87, 187, 255, 0.26) !important;
 }
 
 body[data-tema] #soba-prijatelja-screen .prijatelj-kartica .stat-box {
-    background: var(--theme-control-bg) !important;
-    border-color: var(--theme-border) !important;
-    box-shadow: var(--theme-control-shadow) !important;
-    backdrop-filter: blur(12px) saturate(1.1) !important;
-    -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
+    background: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7)) !important;
+    border-color: rgba(220, 244, 255, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(1, 12, 31, 0.32), inset 0 1px 0 rgba(127, 198, 255, 0.12) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 body[data-tema] #riznica-screen :is(.riznica-kartica.opremljena, .tastatura-kartica.opremljena) {
-    background: var(--theme-control-bg) !important;
-    border-color: rgba(var(--theme-success-rgb), 0.62) !important;
+    background: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7)) !important;
+    border-color: rgba(116, 232, 172, 0.64) !important;
 }
 
 body[data-tema] #riznica-screen :is(.riznica-akcija, .tastatura-akcija) {
-    background: var(--theme-control-bg) !important;
-    border-color: var(--theme-border) !important;
-    box-shadow: var(--theme-control-shadow) !important;
-    backdrop-filter: blur(12px) saturate(1.1) !important;
-    -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
+    background: rgba(26, 84, 140, 0.24) !important;
+    backdrop-filter: blur(10px) saturate(1.08);
+    -webkit-backdrop-filter: blur(10px) saturate(1.08);
 }
 
 body[data-tema] #riznica-screen :is(.riznica-kupi, .tastatura-akcija.kupi) {
-    background: var(--theme-control-bg) !important;
-    border-color: var(--theme-accent, #f5af19) !important;
+    background: rgba(171, 111, 15, 0.24) !important;
 }
 
-body[data-tema] #soba-prijatelja-screen .soba-prijatelja-input {
-    background: var(--theme-control-bg) !important;
-    border-color: var(--theme-border) !important;
-    box-shadow: var(--theme-control-shadow) !important;
-    backdrop-filter: blur(12px) saturate(1.1) !important;
-    -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
-}
-
-/* Omotač je samo raspored; providne su pojedinačne kartice unutar njega. */
+/* Top-lista shell je samo raspored, da se providnost glavne kartice vidi preko teme. */
 body[data-tema] #toplista-screen .toplista-shell {
     background: transparent !important;
     border-color: transparent !important;

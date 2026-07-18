@@ -6411,6 +6411,15 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     margin-block: -0.12em;
 }
 
+/* The city artwork has a visibly larger outer rim than the other medallions. */
+.category-icon--grad .category-icon-img {
+    transform: translateY(-0.5px) scale(0.9);
+}
+
+.category-icon--grad.three-category-ready .category-icon-three {
+    transform: translateY(-0.5px) scale(0.9);
+}
+
 .solo-answer-value {
     min-width: 0;
     overflow: hidden;

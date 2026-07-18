@@ -6,22 +6,15 @@ from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "www" / "assets"
-FLAGS = ASSETS / "drzava-flags-gsap"
 
 BASE_PATH = ASSETS / "drzava-static-geo-complete-v1.png"
-CORAL_SHEET_PATH = (
-    FLAGS / "wind-sheets-v2" / "flag-africa-coral-wind-sheet-v1.png"
-)
-OUTPUT_PATH = ASSETS / "drzava-static-geo-africa-coral-clean-v1.png"
-
-FLAG_LEFT = 598
-FLAG_TOP = 1016
-FRAME_COUNT = 33
+MASK_REFERENCE_PATH = ASSETS / "drzava-static-geo-flags-open-v10.png"
+OUTPUT_PATH = ASSETS / "drzava-static-geo-africa-coral-clean-v2.png"
 
 REGION_BOX = (585, 1000, 690, 1100)
-TEXTURE_SOURCE_DY = 80
+DIFFERENCE_THRESHOLD = 20
 
-# Ručno potvrđen obris velikog plavog platna i njegove donje senke.
+# Ograničava izbor boje na stvarno plavo platno i njegovu antialiasing ivicu.
 BLUE_CLOTH_POLYGON = (
     (620, 1028),
     (640, 1027),
@@ -41,13 +34,9 @@ BLUE_CLOTH_POLYGON = (
 FIRST_ROUTE_BEAD_BOX = (669, 1045, 684, 1062)
 POLE_PROTECTION_BOX = (606, 1018, 621, 1088)
 
-
-def first_frame(sheet_path: Path) -> Image.Image:
-    sheet = Image.open(sheet_path).convert("RGBA")
-    if sheet.height % FRAME_COUNT:
-        raise ValueError(f"Unexpected sprite-sheet height: {sheet_path}")
-    frame_height = sheet.height // FRAME_COUNT
-    return sheet.crop((0, 0, sheet.width, frame_height))
+CORAL_HUE = 6
+CORAL_SATURATION_SCALE = 1.08
+CORAL_VALUE_SCALE = 1.02
 
 
 def local_box(global_box: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
@@ -63,18 +52,50 @@ def local_box(global_box: tuple[int, int, int, int]) -> tuple[int, int, int, int
 
 def main() -> None:
     base = Image.open(BASE_PATH).convert("RGBA")
-    coral_frame = first_frame(CORAL_SHEET_PATH)
+    mask_reference = Image.open(MASK_REFERENCE_PATH).convert("RGBA")
+    if base.size != mask_reference.size:
+        raise ValueError("Base and mask-reference images must have equal dimensions")
 
     region_left, region_top, region_right, region_bottom = REGION_BOX
     region = base.crop(REGION_BOX)
+    reference_region = mask_reference.crop(REGION_BOX)
     region_pixels = np.asarray(region)
+    reference_pixels = np.asarray(reference_region)
 
-    hard_mask_image = Image.new("L", region.size, 0)
+    polygon_image = Image.new("L", region.size, 0)
     polygon_local = tuple(
         (x - region_left, y - region_top) for x, y in BLUE_CLOTH_POLYGON
     )
-    ImageDraw.Draw(hard_mask_image).polygon(polygon_local, fill=255)
-    hard_mask_image = hard_mask_image.filter(ImageFilter.MaxFilter(5))
+    ImageDraw.Draw(polygon_image).polygon(polygon_local, fill=255)
+    polygon_mask = np.asarray(polygon_image) > 0
+
+    difference = np.max(
+        np.abs(
+            region_pixels[..., :3].astype(np.int16)
+            - reference_pixels[..., :3].astype(np.int16)
+        ),
+        axis=2,
+    )
+    rgb = region_pixels[..., :3]
+    hsv_image = region.convert("RGB").convert("HSV")
+    hsv = np.asarray(hsv_image).copy()
+
+    blue_colour = (
+        (hsv[..., 0] >= 110)
+        & (hsv[..., 0] <= 175)
+        & (rgb[..., 0] > 70)
+    )
+    raw_mask = polygon_mask & (difference > DIFFERENCE_THRESHOLD) & blue_colour
+
+    # Zatvara samo sitne rupe unutar platna; završni presek sa blue_colour
+    # garantuje da nijedan piksel okeana ne može da bude prebojen.
+    raw_mask_image = Image.fromarray((raw_mask * 255).astype(np.uint8), mode="L")
+    closed_mask = np.asarray(
+        raw_mask_image.filter(ImageFilter.MaxFilter(3)).filter(
+            ImageFilter.MinFilter(3)
+        )
+    ) > 0
+    recolour_mask = (raw_mask | closed_mask) & blue_colour & polygon_mask
 
     bead_image = Image.new("L", region.size, 0)
     ImageDraw.Draw(bead_image).ellipse(local_box(FIRST_ROUTE_BEAD_BOX), fill=255)
@@ -88,122 +109,63 @@ def main() -> None:
     )
     pole_mask = np.asarray(pole_image) > 0
 
-    # Mekana organska ivica uklanja vidljiv šav; stub i kuglica su izuzeti.
-    soft_mask_image = hard_mask_image.filter(ImageFilter.GaussianBlur(3))
-    soft_alpha = np.asarray(soft_mask_image, dtype=np.float32) / 255.0
-    soft_alpha[bead_mask | pole_mask] = 0.0
+    recolour_mask &= ~(bead_mask | pole_mask)
 
-    texture_region = base.crop(
-        (
-            region_left,
-            region_top + TEXTURE_SOURCE_DY,
-            region_right,
-            region_bottom + TEXTURE_SOURCE_DY,
-        )
-    ).convert("RGB")
-    texture_rgb = np.asarray(texture_region, dtype=np.float32)
-    target_rgb = region_pixels[..., :3].astype(np.float32)
+    recoloured_hsv = hsv.copy()
+    recoloured_hsv[..., 0][recolour_mask] = CORAL_HUE
+    recoloured_hsv[..., 1][recolour_mask] = np.clip(
+        np.rint(
+            hsv[..., 1][recolour_mask].astype(np.float32)
+            * CORAL_SATURATION_SCALE
+        ),
+        0,
+        255,
+    ).astype(np.uint8)
+    recoloured_hsv[..., 2][recolour_mask] = np.clip(
+        np.rint(
+            hsv[..., 2][recolour_mask].astype(np.float32) * CORAL_VALUE_SCALE
+        ),
+        0,
+        255,
+    ).astype(np.uint8)
 
-    # Lokalna ravan boje koristi samo čiste okeanske piksele oko maske;
-    # objekti, stub, zastavica i kuglice ne ulaze u račun.
-    outer_mask = np.asarray(
-        hard_mask_image.filter(ImageFilter.MaxFilter(17))
-    ) > 0
-    hard_mask = np.asarray(hard_mask_image) > 0
-    ring = outer_mask & ~hard_mask & ~bead_mask & ~pole_mask
-    target_ocean = (
-        (target_rgb[..., 2] > target_rgb[..., 1] + 12)
-        & (target_rgb[..., 1] > target_rgb[..., 0] + 35)
-        & (target_rgb[..., 0] < 110)
+    recoloured_rgb = np.asarray(
+        Image.fromarray(recoloured_hsv, mode="HSV").convert("RGB")
     )
-    colour_samples = ring & target_ocean
-    if np.count_nonzero(colour_samples) < 30:
-        raise RuntimeError("Not enough clean ocean samples for colour fitting")
-
-    height, width = hard_mask.shape
-    yy, xx = np.mgrid[0:height, 0:width]
-    sample_design = np.column_stack(
-        (
-            xx[colour_samples],
-            yy[colour_samples],
-            np.ones(np.count_nonzero(colour_samples)),
-        )
-    )
-    plane_design = np.column_stack(
-        (xx.ravel(), yy.ravel(), np.ones(width * height))
-    )
-    colour_plane = np.empty_like(target_rgb)
-    for channel in range(3):
-        coefficients, *_ = np.linalg.lstsq(
-            sample_design,
-            target_rgb[..., channel][colour_samples],
-            rcond=None,
-        )
-        colour_plane[..., channel] = (
-            plane_design @ coefficients
-        ).reshape(height, width)
-
-    texture_low = np.asarray(
-        texture_region.filter(ImageFilter.GaussianBlur(7)),
-        dtype=np.float32,
-    )
-    texture_detail = texture_rgb - texture_low
-    matched_texture = np.clip(colour_plane + texture_detail * 0.8, 0, 255)
-
-    alpha = soft_alpha[..., None]
-    cleaned_rgb = target_rgb * (1.0 - alpha) + matched_texture * alpha
-    cleaned_pixels = region_pixels.copy()
-    cleaned_pixels[..., :3] = np.clip(np.rint(cleaned_rgb), 0, 255).astype(
-        np.uint8
-    )
-
-    # Vraćaju se originalna kuglica i zlatni stub tačno piksel-po-piksel.
-    cleaned_pixels[bead_mask | pole_mask] = region_pixels[bead_mask | pole_mask]
-    cleaned_region = Image.fromarray(cleaned_pixels, mode="RGBA")
-    cleaned_region.alpha_composite(
-        coral_frame,
-        dest=(FLAG_LEFT - region_left, FLAG_TOP - region_top),
-    )
+    output_region_pixels = region_pixels.copy()
+    output_region_pixels[..., :3][recolour_mask] = recoloured_rgb[recolour_mask]
 
     output = base.copy()
-    output.paste(cleaned_region, (region_left, region_top))
+    output.paste(
+        Image.fromarray(output_region_pixels, mode="RGBA"),
+        (region_left, region_top),
+    )
 
     base_pixels = np.asarray(base)
     output_pixels = np.asarray(output)
     changed = np.any(base_pixels != output_pixels, axis=2)
 
     allowed = np.zeros(changed.shape, dtype=bool)
-    allowed[region_top:region_bottom, region_left:region_right] = soft_alpha > 0
-    coral_support = np.asarray(coral_frame.getchannel("A")) > 0
-    allowed[
-        FLAG_TOP : FLAG_TOP + coral_frame.height,
-        FLAG_LEFT : FLAG_LEFT + coral_frame.width,
-    ] |= coral_support
-
+    allowed[region_top:region_bottom, region_left:region_right] = recolour_mask
     protected = np.zeros(changed.shape, dtype=bool)
     protected[region_top:region_bottom, region_left:region_right] = (
         bead_mask | pole_mask
     )
-    # Koralni sprite namerno prekriva samo gornji deo stuba; zato se iz zaštite
-    # izuzima tačno njegova alfa-silueta, ali kuglica rute ostaje zaključana.
-    protected[
-        FLAG_TOP : FLAG_TOP + coral_frame.height,
-        FLAG_LEFT : FLAG_LEFT + coral_frame.width,
-    ] &= ~coral_support
 
     outside_changes = int(np.count_nonzero(changed & ~allowed))
     protected_changes = int(np.count_nonzero(changed & protected))
+    ocean_changes = int(np.count_nonzero(changed & ~allowed))
     if outside_changes:
-        raise RuntimeError(f"Changed {outside_changes} pixels outside Africa masks")
+        raise RuntimeError(f"Changed {outside_changes} pixels outside blue cloth")
     if protected_changes:
         raise RuntimeError(f"Changed {protected_changes} protected pixels")
 
     output.save(OUTPUT_PATH, optimize=True)
     print(f"Wrote {OUTPUT_PATH}")
-    print(f"Soft organic-mask pixels: {int(np.count_nonzero(soft_alpha > 0))}")
+    print(f"Recoloured blue-cloth pixels: {int(np.count_nonzero(recolour_mask))}")
     print(f"Actually changed pixels: {int(np.count_nonzero(changed))}")
-    print("Pixels changed outside Africa cloth/coral masks: 0")
-    print("Protected bead/pole pixels changed outside coral alpha: 0")
+    print(f"Ocean/background pixels changed: {ocean_changes}")
+    print("Protected route/pole pixels changed: 0")
 
 
 if __name__ == "__main__":

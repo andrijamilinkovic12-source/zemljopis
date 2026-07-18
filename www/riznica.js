@@ -7,13 +7,13 @@ const RiznicaManager = {
 
     podaci: {
         teme: [
-            { id: 'tema_drzava', naziv: 'Država', cena: 0, kupljeno: true, opremljeno: true, ikona: 'fa-map-location-dot' },
-            { id: 'tema_okean', naziv: 'Reka', cena: 800, kupljeno: false, opremljeno: false, ikona: 'fa-water' },
-            { id: 'tema_grad', naziv: 'Grad', cena: 1000, kupljeno: false, opremljeno: false, ikona: 'fa-city' },
-            { id: 'tema_planina', naziv: 'Planina', cena: 900, kupljeno: false, opremljeno: false, ikona: 'fa-mountain' },
-            { id: 'tema_biljka', naziv: 'Biljka', cena: 850, kupljeno: false, opremljeno: false, ikona: 'fa-leaf' },
-            { id: 'tema_zivotinja', naziv: 'Životinja', cena: 0, kupljeno: true, opremljeno: false, ikona: 'fa-paw' },
-            { id: 'tema_predmet', naziv: 'Predmet', cena: 850, kupljeno: false, opremljeno: false, ikona: 'fa-box-open' }
+            { id: 'tema_drzava', naziv: 'Država', cena: 0, kupljeno: true, opremljeno: true, ikona: 'fa-map-location-dot', slika: 'assets/riznica-tema-drzava-clay-soft-3d.png' },
+            { id: 'tema_grad', naziv: 'Grad', cena: 1000, kupljeno: false, opremljeno: false, ikona: 'fa-city', slika: 'assets/riznica-tema-grad-clay-soft-3d.png' },
+            { id: 'tema_okean', naziv: 'Reka', cena: 800, kupljeno: false, opremljeno: false, ikona: 'fa-water', slika: 'assets/riznica-tema-reka-clay-soft-3d.png' },
+            { id: 'tema_planina', naziv: 'Planina', cena: 900, kupljeno: false, opremljeno: false, ikona: 'fa-mountain', slika: 'assets/riznica-tema-planina-clay-soft-3d.png' },
+            { id: 'tema_biljka', naziv: 'Biljka', cena: 850, kupljeno: false, opremljeno: false, ikona: 'fa-leaf', slika: 'assets/riznica-tema-biljka-clay-soft-3d.png' },
+            { id: 'tema_zivotinja', naziv: 'Životinja', cena: 0, kupljeno: true, opremljeno: false, ikona: 'fa-paw', slika: 'assets/riznica-tema-zivotinja-clay-soft-3d.png' },
+            { id: 'tema_predmet', naziv: 'Predmet', cena: 850, kupljeno: false, opremljeno: false, ikona: 'fa-box-open', slika: 'assets/riznica-tema-predmet-clay-soft-3d.png' }
         ],
         efekti: [
             { id: 'ef_nista', naziv: 'Bez efekta', cena: 0, kupljeno: true, opremljeno: true, ikona: 'fa-ban' },
@@ -63,7 +63,7 @@ const RiznicaManager = {
     },
 
     normalizujTeme: function() {
-        const redosledTema = ['tema_drzava', 'tema_okean', 'tema_grad', 'tema_planina', 'tema_biljka', 'tema_zivotinja', 'tema_predmet'];
+        const redosledTema = ['tema_drzava', 'tema_grad', 'tema_okean', 'tema_planina', 'tema_biljka', 'tema_zivotinja', 'tema_predmet'];
         this.podaci.teme = redosledTema
             .map(id => this.podaci.teme.find(tema => tema.id === id))
             .filter(Boolean);
@@ -200,10 +200,14 @@ const RiznicaManager = {
                 statusHtml = `<button class="menu-btn riznica-akcija" onclick="RiznicaManager.opremiPredmet('${kategorija}', '${artikal.id}')">Opremi</button>`;
             }
 
+            const ikonaHtml = artikal.slika
+                ? `<img class="riznica-artikal-ikona riznica-tema-ikona" src="${artikal.slika}" alt="" aria-hidden="true" decoding="async">`
+                : `<i class="fa-solid ${artikal.ikona} riznica-artikal-ikona"></i>`;
+
             html += `
                 <div class="riznica-kartica${artikal.opremljeno ? ' opremljena' : ''}${!otkljucano ? ' zakljucana' : ''}">
                     <div>
-                        <i class="fa-solid ${artikal.ikona} riznica-artikal-ikona"></i>
+                        ${ikonaHtml}
                         <h4 class="riznica-artikal-naziv">${artikal.naziv}</h4>
                     </div>
                     ${statusHtml}

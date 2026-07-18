@@ -8901,6 +8901,15 @@ body[data-tema="svetla"] .stat-box span { color: #4a5568; }
     font-size: 2rem;
 }
 
+.riznica-tema-ikona {
+    width: clamp(4.45rem, 20vw, 5.6rem);
+    height: clamp(4.45rem, 20vw, 5.6rem);
+    display: block;
+    margin: -0.35rem auto 0.35rem;
+    object-fit: contain;
+    filter: drop-shadow(0 0.35rem 0.48rem rgba(0, 10, 25, 0.32));
+}
+
 .riznica-kartica.zakljucana .riznica-artikal-ikona {
     color: var(--theme-muted, #a0aec0);
 }

@@ -6356,9 +6356,16 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     align-items: center;
     gap: 0.45rem;
     padding: min(0.34rem, 0.7vh) 0.55rem;
+    /* Extra vertical room keeps the larger 3D category medallions inside. */
+    padding-block: calc(min(0.34rem, 0.7vh) + 1mm);
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(255, 255, 255, 0.045);
+}
+
+.round-answer-row {
+    /* The multiplayer row has inline padding, so override only its height. */
+    padding-block: calc(min(0.35rem, 0.7vh) + 1mm) !important;
 }
 
 .solo-answer-row.is-correct {

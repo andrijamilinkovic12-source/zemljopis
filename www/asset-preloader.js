@@ -38,7 +38,8 @@
             '#podesavanja-screen .screen-pattern-icon',
             '#podesavanja-screen .page-title-icon',
             '#podesavanja-screen .settings-page-tab-icon',
-            '#podesavanja-screen .settings-theme-icon'
+            '#podesavanja-screen .settings-theme-icon',
+            '#podesavanja-screen .settings-footer-action-icon'
         ],
         'kvartalni-nivo-screen': [
             '#kvartalni-nivo-screen .screen-pattern-icon',
@@ -47,6 +48,23 @@
         'trofeji-main-screen': [
             '#trofeji-main-screen .screen-pattern-icon',
             '#trofeji-main-screen .page-title-icon'
+        ]
+    };
+
+    const EKRAN_DODATNI_ASSETI = {
+        'podesavanja-screen': [
+            'assets/avatars/atlas-clay-soft-matte-3d.png',
+            'assets/avatars/luna-clay-soft-matte-3d.png',
+            'assets/avatars/orion-clay-soft-matte-3d.png',
+            'assets/avatars/tara-clay-soft-matte-3d.png',
+            'assets/avatars/niko-clay-soft-matte-3d.png',
+            'assets/avatars/mila-clay-soft-matte-3d.png',
+            'assets/avatars/sava-clay-soft-matte-3d.png',
+            'assets/avatars/zara-clay-soft-matte-3d.png',
+            'assets/avatars/vuk-clay-soft-matte-3d.png',
+            'assets/avatars/iris-clay-soft-matte-3d.png',
+            'assets/avatars/leo-clay-soft-matte-3d.png',
+            'assets/avatars/nova-clay-soft-matte-3d.png'
         ]
     };
 
@@ -172,7 +190,12 @@
 
     function pripremiEkran(ekranId) {
         const slike = slikeZaSelektore(EKRAN_SELEKTORI[ekranId]);
-        return obradiURedovima(slike.map(slika => () => dekodirajSliku(slika)), 2);
+        const dodatniAsseti = EKRAN_DODATNI_ASSETI[ekranId] || [];
+        const zadaci = [
+            ...slike.map(slika => () => dekodirajSliku(slika)),
+            ...dodatniAsseti.map(url => () => dekodirajUrl(url))
+        ];
+        return obradiURedovima(zadaci, 2);
     }
 
     function pokreni() {
@@ -187,15 +210,19 @@
             await obradiURedovima(tematskiVizuali.map(url => () => dekodirajUrl(url)), 2);
 
             // Sledeći ekrani se pripremaju posle menija, dok korisnik još bira sledeću akciju.
-            const sledeceSlike = [
+            const sledeciEkrani = [
                 'soba-prijatelja-screen',
                 'toplista-screen',
                 'riznica-screen',
                 'podesavanja-screen',
                 'kvartalni-nivo-screen',
                 'trofeji-main-screen'
-            ].flatMap(ekranId => slikeZaSelektore(EKRAN_SELEKTORI[ekranId]));
-            await obradiURedovima(sledeceSlike.map(slika => () => dekodirajSliku(slika)), 2);
+            ];
+            const sledeciZadaci = sledeciEkrani.flatMap(ekranId => [
+                ...slikeZaSelektore(EKRAN_SELEKTORI[ekranId]).map(slika => () => dekodirajSliku(slika)),
+                ...(EKRAN_DODATNI_ASSETI[ekranId] || []).map(url => () => dekodirajUrl(url))
+            ]);
+            await obradiURedovima(sledeciZadaci, 2);
         })();
 
         return STANJE.pokretanje;

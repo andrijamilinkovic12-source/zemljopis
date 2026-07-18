@@ -28,6 +28,21 @@ const PodesavanjaManager = {
         'predmet': 'Predmet'
     },
 
+    avatarClaySlike: {
+        atlas: 'assets/avatars/atlas-clay-soft-matte-3d.png',
+        luna: 'assets/avatars/luna-clay-soft-matte-3d.png',
+        orion: 'assets/avatars/orion-clay-soft-matte-3d.png',
+        tara: 'assets/avatars/tara-clay-soft-matte-3d.png',
+        niko: 'assets/avatars/niko-clay-soft-matte-3d.png',
+        mila: 'assets/avatars/mila-clay-soft-matte-3d.png',
+        sava: 'assets/avatars/sava-clay-soft-matte-3d.png',
+        zara: 'assets/avatars/zara-clay-soft-matte-3d.png',
+        vuk: 'assets/avatars/vuk-clay-soft-matte-3d.png',
+        iris: 'assets/avatars/iris-clay-soft-matte-3d.png',
+        leo: 'assets/avatars/leo-clay-soft-matte-3d.png',
+        nova: 'assets/avatars/nova-clay-soft-matte-3d.png'
+    },
+
     // NAŠI NOVI VIRTUALNI DJ PLEJERI ZA CROSSFADE (NEPRIMETAN PRELAZ)
     audio1: null,
     audio2: null,
@@ -914,6 +929,10 @@ const PodesavanjaManager = {
 
     napraviAvatarSvg: function(avatar) {
         const a = avatar || this.avatari[0];
+        const claySlika = this.avatarClaySlike[a.id];
+        if (claySlika) {
+            return `<img class="avatar-svg avatar-clay-portrait" src="${claySlika}" alt="" aria-hidden="true" decoding="async">`;
+        }
         const kosa = a.kosa || "#243044";
         const koza = a.koza || "#ffd0a8";
         const kozaSenka = a.kozaSenka || "#c47e59";

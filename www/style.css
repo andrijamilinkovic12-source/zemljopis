@@ -10636,6 +10636,33 @@ body[data-tema] #podesavanja-screen .settings-back-button i {
     color: #fff !important;
 }
 
+body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn {
+    min-height: 3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.42rem;
+}
+
+body[data-tema] #podesavanja-screen .settings-footer-action-icon {
+    width: 1.72rem;
+    height: 1.72rem;
+    flex: 0 0 1.72rem;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 4px rgba(0, 9, 29, 0.38));
+}
+
+.avatar-clay-portrait {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+body[data-tema] #podesavanja-screen .avatar-option .avatar-clay-portrait {
+    transform: scale(1.14);
+}
+
 body[data-tema] #podesavanja-screen .settings-swipe-hint {
     color: #102f59 !important;
     font-weight: 700;

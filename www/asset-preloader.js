@@ -34,6 +34,12 @@
             '#riznica-screen .page-title-icon',
             '#riznica-screen .riznica-tab-ikona'
         ],
+        'podesavanja-screen': [
+            '#podesavanja-screen .screen-pattern-icon',
+            '#podesavanja-screen .page-title-icon',
+            '#podesavanja-screen .settings-page-tab-icon',
+            '#podesavanja-screen .settings-theme-icon'
+        ],
         'kvartalni-nivo-screen': [
             '#kvartalni-nivo-screen .screen-pattern-icon',
             '#kvartalni-nivo-screen .page-title-icon'
@@ -185,6 +191,7 @@
                 'soba-prijatelja-screen',
                 'toplista-screen',
                 'riznica-screen',
+                'podesavanja-screen',
                 'kvartalni-nivo-screen',
                 'trofeji-main-screen'
             ].flatMap(ekranId => slikeZaSelektore(EKRAN_SELEKTORI[ekranId]));

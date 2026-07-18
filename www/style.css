@@ -10374,3 +10374,274 @@ body[data-tema] #toplista-screen .toplista-shell {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
 }
+
+/* ========================================================
+   SOBA PODEŠAVANJA — referentni obrazac usklađenih soba
+   ======================================================== */
+body[data-tema] #podesavanja-screen {
+    --settings-room-card-bg: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7));
+    --settings-room-card-border: rgba(220, 244, 255, 0.4);
+    --settings-room-card-shadow: 0 8px 20px rgba(1, 12, 31, 0.32), inset 0 1px 0 rgba(127, 198, 255, 0.12);
+}
+
+body[data-tema] #podesavanja-screen .settings-pager {
+    width: calc(100% - 2rem);
+    max-width: 328px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin: 0 auto clamp(0.55rem, 1vh, 0.8rem);
+}
+
+body[data-tema] #podesavanja-screen .settings-page-tab {
+    min-height: 3.15rem;
+    margin: 0;
+    padding: 0.38rem 0.55rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border: 1px solid var(--settings-room-card-border);
+    border-radius: 10px;
+    background: var(--settings-room-card-bg);
+    box-shadow: var(--settings-room-card-shadow);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+body[data-tema] #podesavanja-screen .settings-page-tab.active {
+    border-color: rgba(123, 205, 255, 0.92);
+    box-shadow: 0 0 16px rgba(87, 187, 255, 0.26);
+}
+
+body[data-tema] #podesavanja-screen .settings-page-tab:active {
+    transform: scale(0.97);
+}
+
+body[data-tema] #podesavanja-screen .settings-page-tab-icon {
+    width: 1.78rem;
+    height: 1.78rem;
+    flex: 0 0 1.78rem;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 4px rgba(0, 9, 29, 0.38));
+}
+
+body[data-tema] #podesavanja-screen .settings-panel {
+    background: var(--settings-room-card-bg) !important;
+    border-color: var(--settings-room-card-border) !important;
+    box-shadow: var(--settings-room-card-shadow) !important;
+    color: #fff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-tema] #podesavanja-screen :is(.settings-label, .settings-theme-label) {
+    color: #fff !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    text-shadow: none !important;
+}
+
+body[data-tema] #podesavanja-screen .settings-label i {
+    color: #fff !important;
+}
+
+body[data-tema] #podesavanja-screen :is(
+    .profile-choice,
+    .settings-system-panel .menu-btn,
+    .settings-theme-tile,
+    .settings-secondary-actions .menu-btn,
+    .settings-back-button,
+    .settings-avatar-preview,
+    .avatar-picker,
+    .avatar-option
+) {
+    background: var(--settings-room-card-bg) !important;
+    border-color: var(--settings-room-card-border) !important;
+    box-shadow: var(--settings-room-card-shadow) !important;
+    color: #fff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-tema] #podesavanja-screen .profile-choice.active,
+body[data-tema] #podesavanja-screen .avatar-option.active,
+body[data-tema] #podesavanja-screen .settings-theme-tile.active,
+body[data-tema] #podesavanja-screen #btn-zvuk.is-on {
+    border-color: rgba(116, 232, 172, 0.72) !important;
+    box-shadow: 0 0 16px rgba(116, 232, 172, 0.2) !important;
+}
+
+body[data-tema] #podesavanja-screen #btn-zvuk.is-off {
+    border-color: rgba(255, 145, 169, 0.72) !important;
+    box-shadow: 0 0 16px rgba(255, 145, 169, 0.16) !important;
+}
+
+body[data-tema] #podesavanja-screen #btn-pismo.is-cyrillic {
+    border-color: rgba(123, 205, 255, 0.76) !important;
+    box-shadow: 0 0 16px rgba(87, 187, 255, 0.18) !important;
+}
+
+body[data-tema] #podesavanja-screen .profile-choice-icon {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #fff !important;
+}
+
+body[data-tema] #podesavanja-screen .profile-choice.google .profile-choice-icon {
+    color: #8ab4f8 !important;
+}
+
+body[data-tema] #podesavanja-screen .profile-choice-copy :is(b, small),
+body[data-tema] #podesavanja-screen .profile-info-panel :is(small, b, p),
+body[data-tema] #podesavanja-screen .settings-system-panel .menu-btn span {
+    color: #fff !important;
+    text-shadow: none !important;
+}
+
+body[data-tema] #podesavanja-screen .profile-choice-status {
+    box-shadow: none !important;
+}
+
+body[data-tema] #podesavanja-screen .profile-choice-status.soon {
+    color: #f5d061 !important;
+    border-color: rgba(245, 208, 97, 0.62) !important;
+    background: rgba(171, 111, 15, 0.24) !important;
+}
+
+body[data-tema] #podesavanja-screen .profile-info-panel {
+    border-color: transparent !important;
+    border-top-color: rgba(220, 244, 255, 0.26) !important;
+}
+
+body[data-tema] #podesavanja-screen #postavke-nadimak {
+    background: rgba(2, 15, 42, 0.68) !important;
+    border-color: rgba(220, 244, 255, 0.4) !important;
+    color: #fff !important;
+    box-shadow: none !important;
+}
+
+body[data-tema] #podesavanja-screen #postavke-nadimak::placeholder {
+    color: rgba(255, 255, 255, 0.66) !important;
+}
+
+body[data-tema] #podesavanja-screen #postavke-nadimak:focus {
+    border-color: rgba(123, 205, 255, 0.92) !important;
+    box-shadow: 0 0 0 3px rgba(87, 187, 255, 0.14) !important;
+}
+
+body[data-tema] #podesavanja-screen .settings-avatar-preview {
+    width: 48px;
+    min-width: 48px;
+}
+
+body[data-tema] #podesavanja-screen .avatar-picker {
+    border-radius: 10px;
+}
+
+body[data-tema] #podesavanja-screen .avatar-option.active {
+    color: #fff !important;
+}
+
+body[data-tema] #podesavanja-screen .settings-system-panel .menu-btn {
+    color: #fff !important;
+}
+
+body[data-tema] #podesavanja-screen :is(#zvuk-status, #pismo-status) {
+    color: #fff !important;
+}
+
+body[data-tema] #podesavanja-screen #btn-zvuk.is-on #zvuk-status {
+    color: #74e8ac !important;
+}
+
+body[data-tema] #podesavanja-screen #btn-zvuk.is-off #zvuk-status {
+    color: #ff91a9 !important;
+}
+
+body[data-tema] #podesavanja-screen #btn-pismo.is-cyrillic #pismo-status {
+    color: #7bcfff !important;
+}
+
+body[data-tema] #podesavanja-screen .settings-theme-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 0.38rem !important;
+    margin-top: 0.15rem;
+}
+
+body[data-tema] #podesavanja-screen .settings-theme-tile {
+    position: relative;
+    min-width: 0;
+    min-height: 4.4rem;
+    margin: 0;
+    padding: 0.28rem 0.16rem 0.3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.08rem;
+    border: 1px solid var(--settings-room-card-border);
+    border-radius: 9px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+body[data-tema] #podesavanja-screen .settings-theme-tile:active {
+    transform: scale(0.96);
+}
+
+body[data-tema] #podesavanja-screen .settings-theme-icon {
+    width: 2.15rem;
+    height: 2.15rem;
+    object-fit: contain;
+    filter: drop-shadow(0 0.16rem 0.22rem rgba(0, 10, 25, 0.3));
+}
+
+body[data-tema] #podesavanja-screen .settings-theme-tile-label {
+    max-width: 100%;
+    overflow: hidden;
+    color: #fff;
+    font-size: 0.58rem;
+    font-weight: 700;
+    line-height: 1.05;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body[data-tema] #podesavanja-screen .settings-theme-lock {
+    position: absolute;
+    top: 0.24rem;
+    right: 0.24rem;
+    color: #f5d061;
+    font-size: 0.55rem;
+}
+
+body[data-tema] #podesavanja-screen .settings-theme-tile.locked {
+    opacity: 0.68;
+}
+
+body[data-tema] #podesavanja-screen .settings-theme-tile.locked .settings-theme-icon {
+    filter: grayscale(0.35) drop-shadow(0 0.16rem 0.22rem rgba(0, 10, 25, 0.3));
+}
+
+body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn i,
+body[data-tema] #podesavanja-screen .settings-back-button i {
+    color: #fff !important;
+}
+
+body[data-tema] #podesavanja-screen .settings-swipe-hint {
+    color: #102f59 !important;
+    font-weight: 700;
+    text-shadow: none !important;
+}
+
+body[data-tema] #podesavanja-screen .settings-swipe-hint i {
+    color: #102f59 !important;
+}

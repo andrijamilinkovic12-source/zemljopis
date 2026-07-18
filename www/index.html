@@ -545,8 +545,14 @@
         </div>
 
         <div class="settings-pager" role="tablist" aria-label="Stranice podešavanja">
-            <button type="button" class="settings-page-dot active" data-settings-page-dot="0" role="tab" aria-label="Profil" aria-selected="true" onclick="PodesavanjaManager.idiNaStranicuPodesavanja(0)"></button>
-            <button type="button" class="settings-page-dot" data-settings-page-dot="1" role="tab" aria-label="Sistem" aria-selected="false" onclick="PodesavanjaManager.idiNaStranicuPodesavanja(1)"></button>
+            <button type="button" class="settings-page-tab active" data-settings-page-dot="0" role="tab" aria-label="Profil" aria-selected="true" onclick="PodesavanjaManager.idiNaStranicuPodesavanja(0)">
+                <img class="settings-page-tab-icon" src="assets/podesavanja-profil-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async">
+                <span>Profil</span>
+            </button>
+            <button type="button" class="settings-page-tab" data-settings-page-dot="1" role="tab" aria-label="Sistem" aria-selected="false" onclick="PodesavanjaManager.idiNaStranicuPodesavanja(1)">
+                <img class="settings-page-tab-icon" src="assets/podesavanja-sistem-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async">
+                <span>Sistem</span>
+            </button>
         </div>
         
         <div class="settings-content" aria-label="Podešavanja, prevuci ulevo ili udesno" tabindex="0">
@@ -624,13 +630,13 @@
 
                 <label class="settings-theme-label" style="display: block; font-size: min(0.7rem, 1.4vh); color: #a0aec0; margin-top: 4px; margin-bottom: 2px; text-transform: uppercase; font-weight: 600;">Izgled aplikacije</label>
                 <div class="settings-theme-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;">
-                    <button class="menu-btn" id="btn-tema-drzava" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('drzava')">Država</button>
-                    <button class="menu-btn" id="btn-tema-okean" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('okean')">Reka</button>
-                    <button class="menu-btn" id="btn-tema-grad" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('grad')">Grad</button>
-                    <button class="menu-btn" id="btn-tema-planina" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('planina')">Planina</button>
-                    <button class="menu-btn" id="btn-tema-biljka" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('biljka')">Biljka</button>
-                    <button class="menu-btn" id="btn-tema-zivotinja" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('zivotinja')">Životinja</button>
-                    <button class="menu-btn" id="btn-tema-predmet" style="margin-bottom: 0; padding: min(0.5rem, 1vh); font-size: min(0.75rem, 1.5vh); border: 1px solid transparent; border-radius: 8px;" onclick="PodesavanjaManager.promeniTemu('predmet')">Predmet</button>
+                    <button class="settings-theme-tile active" id="btn-tema-drzava" data-theme-tile="drzava" type="button" onclick="PodesavanjaManager.promeniTemu('drzava')"><img class="settings-theme-icon" src="assets/riznica-tema-drzava-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async"><span class="settings-theme-tile-label">Država</span><i class="fa-solid fa-lock settings-theme-lock" aria-hidden="true"></i></button>
+                    <button class="settings-theme-tile" id="btn-tema-grad" data-theme-tile="grad" type="button" onclick="PodesavanjaManager.promeniTemu('grad')"><img class="settings-theme-icon" src="assets/riznica-tema-grad-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async"><span class="settings-theme-tile-label">Grad</span><i class="fa-solid fa-lock settings-theme-lock" aria-hidden="true"></i></button>
+                    <button class="settings-theme-tile" id="btn-tema-okean" data-theme-tile="okean" type="button" onclick="PodesavanjaManager.promeniTemu('okean')"><img class="settings-theme-icon" src="assets/riznica-tema-reka-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async"><span class="settings-theme-tile-label">Reka</span><i class="fa-solid fa-lock settings-theme-lock" aria-hidden="true"></i></button>
+                    <button class="settings-theme-tile" id="btn-tema-planina" data-theme-tile="planina" type="button" onclick="PodesavanjaManager.promeniTemu('planina')"><img class="settings-theme-icon" src="assets/riznica-tema-planina-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async"><span class="settings-theme-tile-label">Planina</span><i class="fa-solid fa-lock settings-theme-lock" aria-hidden="true"></i></button>
+                    <button class="settings-theme-tile" id="btn-tema-biljka" data-theme-tile="biljka" type="button" onclick="PodesavanjaManager.promeniTemu('biljka')"><img class="settings-theme-icon" src="assets/riznica-tema-biljka-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async"><span class="settings-theme-tile-label">Biljka</span><i class="fa-solid fa-lock settings-theme-lock" aria-hidden="true"></i></button>
+                    <button class="settings-theme-tile" id="btn-tema-zivotinja" data-theme-tile="zivotinja" type="button" onclick="PodesavanjaManager.promeniTemu('zivotinja')"><img class="settings-theme-icon" src="assets/riznica-tema-zivotinja-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async"><span class="settings-theme-tile-label">Životinja</span><i class="fa-solid fa-lock settings-theme-lock" aria-hidden="true"></i></button>
+                    <button class="settings-theme-tile" id="btn-tema-predmet" data-theme-tile="predmet" type="button" onclick="PodesavanjaManager.promeniTemu('predmet')"><img class="settings-theme-icon" src="assets/riznica-tema-predmet-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async"><span class="settings-theme-tile-label">Predmet</span><i class="fa-solid fa-lock settings-theme-lock" aria-hidden="true"></i></button>
                 </div>
             </div>
 
@@ -642,7 +648,7 @@
                 <button class="menu-btn btn-secondary" style="flex: 1; margin-bottom: 0; font-size: min(0.85rem, 1.8vh); padding: min(0.7rem, 1.4vh);" onclick="PodesavanjaManager.prikaziPravila()">
                     <i class="fa-solid fa-book"></i> Pravila
                 </button>
-                <button class="menu-btn" style="flex: 1; background: #11998e; margin-bottom: 0; font-size: min(0.85rem, 1.8vh); padding: min(0.7rem, 1.4vh);" onclick="PodesavanjaManager.prikaziObavestenja()">
+                <button class="menu-btn" style="flex: 1; margin-bottom: 0; font-size: min(0.85rem, 1.8vh); padding: min(0.7rem, 1.4vh);" onclick="PodesavanjaManager.prikaziObavestenja()">
                     <i class="fa-solid fa-bell"></i> Novosti
                 </button>
             </div>

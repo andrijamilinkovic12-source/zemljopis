@@ -1245,20 +1245,17 @@ const PodesavanjaManager = {
         const btn = document.getElementById('btn-zvuk');
         const statusTekst = document.getElementById('zvuk-status');
         const ikona = document.getElementById('ikona-zvuk');
-        const boje = this.tematskeBoje();
 
         if (btn && statusTekst && ikona) {
-            if (this.postavke.zvuk) {
+            const ukljucen = Boolean(this.postavke.zvuk);
+            btn.classList.toggle('is-on', ukljucen);
+            btn.classList.toggle('is-off', !ukljucen);
+
+            if (ukljucen) {
                 statusTekst.innerText = this.formatirajTekst("UKLJ");
-                statusTekst.style.color = boje.primary;
-                btn.style.borderColor = `rgba(${boje.primaryRgb}, 0.42)`;
-                btn.style.background = `rgba(${boje.primaryRgb}, 0.1)`;
                 ikona.className = "fa-solid fa-volume-high";
             } else {
                 statusTekst.innerText = this.formatirajTekst("ISKLJ");
-                statusTekst.style.color = boje.danger;
-                btn.style.borderColor = `rgba(${boje.dangerRgb}, 0.42)`;
-                btn.style.background = `rgba(${boje.dangerRgb}, 0.1)`;
                 ikona.className = "fa-solid fa-volume-xmark";
             }
         }
@@ -1276,11 +1273,12 @@ const PodesavanjaManager = {
     },
 
     azurirajDugmePismo: function() {
+        const btn = document.getElementById('btn-pismo');
         const statusTekst = document.getElementById('pismo-status');
-        const boje = this.tematskeBoje();
+        const cirilica = this.postavke.pismo === "cirilica";
+        if (btn) btn.classList.toggle('is-cyrillic', cirilica);
         if (statusTekst) {
-            statusTekst.innerText = this.formatirajTekst(this.postavke.pismo === "cirilica" ? "ĆIRILICA" : "LATINICA");
-            statusTekst.style.color = this.postavke.pismo === "cirilica" ? boje.primary : boje.muted;
+            statusTekst.innerText = this.formatirajTekst(cirilica ? "ĆIRILICA" : "LATINICA");
         }
     },
 
@@ -1418,7 +1416,6 @@ const PodesavanjaManager = {
     azurirajDugmadTeme: function() {
         const naziviTema = this.naziviTema;
         const teme = this.dozvoljeneTeme;
-        const boje = this.tematskeBoje();
         
         teme.forEach(tema => {
             const btn = document.getElementById(`btn-tema-${tema}`);
@@ -1429,20 +1426,15 @@ const PodesavanjaManager = {
                     if (temaPodaci) kupljeno = RiznicaManager.jeOtkljucano(temaPodaci);
                 }
 
-                // Dodavanje ikonice katanca ako tema nije otključana
-                btn.innerHTML = naziviTema[tema] + (!kupljeno ? ' <i class="fa-solid fa-lock" style="font-size:0.7rem; margin-left:4px;"></i>' : '');
+                const aktivna = this.postavke.tema === tema;
+                const naziv = btn.querySelector('.settings-theme-tile-label');
+                const katanac = btn.querySelector('.settings-theme-lock');
 
-                if (this.postavke.tema === tema) {
-                    btn.style.background = `rgba(${boje.primaryRgb}, 0.18)`;
-                    btn.style.borderColor = boje.primary;
-                    btn.style.color = boje.primary;
-                    btn.style.fontWeight = "800";
-                } else {
-                    btn.style.background = boje.controlBg;
-                    btn.style.borderColor = boje.border;
-                    btn.style.color = !kupljeno ? `rgba(${boje.primaryRgb}, 0.45)` : boje.muted;
-                    btn.style.fontWeight = "600";
-                }
+                if (naziv) naziv.textContent = this.formatirajTekst(naziviTema[tema]);
+                if (katanac) katanac.hidden = kupljeno;
+                btn.classList.toggle('active', aktivna);
+                btn.classList.toggle('locked', !kupljeno);
+                btn.setAttribute('aria-pressed', aktivna ? 'true' : 'false');
             }
         });
     },

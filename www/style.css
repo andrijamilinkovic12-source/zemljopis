@@ -8868,26 +8868,6 @@ body[data-tema="svetla"] .stat-box span { color: #4a5568; }
     filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.24));
 }
 
-.riznica-dukati-prikaz {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.28rem;
-}
-
-.riznica-dukati-ikona {
-    width: 1.7rem;
-    height: 1.7rem;
-    display: block;
-    object-fit: contain;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.22));
-}
-
-#riznica-dukati-stanje {
-    font-family: inherit;
-    font-weight: inherit;
-    text-shadow: none;
-}
-
 .riznica-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;

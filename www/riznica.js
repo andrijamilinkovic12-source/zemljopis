@@ -146,8 +146,6 @@ const RiznicaManager = {
     },
 
     azurirajPrikazDukata: function() {
-        const el = document.getElementById('riznica-dukati-stanje');
-        if (el) el.innerText = this.dukati;
         const meniDukati = document.getElementById('meni-dukati');
         if (meniDukati) meniDukati.innerText = this.dukati;
     },

@@ -6254,6 +6254,66 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     color: #f5af19;
 }
 
+.dnevni-rezime-header {
+    justify-content: center;
+    padding: min(0.5rem, 1vh) 1rem;
+}
+
+.dnevni-rezime-header span {
+    color: #f5af19;
+    font-size: min(1rem, 2vh);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.dnevni-rezime-sadrzaj {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    padding: min(0.65rem, 1.25vh) 1.2rem;
+}
+
+.dnevni-rezime-kartica {
+    width: 100%;
+    min-height: 0 !important;
+    animation: dailySummaryCardIn 0.42s ease-out both;
+}
+
+/* Dnevni rezime ima svoj slot: 3D medaljon nije odsečen kao u sažetku runde. */
+.dnevni-rezime-kartica .solo-answer-category {
+    overflow: visible;
+    font-size: min(0.78rem, 1.55vh);
+}
+
+.category-label--daily-summary .category-icon {
+    width: 1.88em;
+    height: 1.52em;
+    margin-block: -0.12em;
+}
+
+.dnevni-rezime-footer {
+    padding: min(0.8rem, 1.6vh) 1.2rem;
+    padding-bottom: calc(min(0.8rem, 1.6vh) + env(safe-area-inset-bottom, 10px));
+    background: linear-gradient(to top, #091317 85%, transparent);
+}
+
+@keyframes dailySummaryCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(1rem) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dnevni-rezime-kartica {
+        animation-duration: 0.2s;
+    }
+}
+
 .solo-summary-count {
     display: flex;
     align-items: center;
@@ -6313,12 +6373,18 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 
 .solo-answer-category {
     color: #a0aec0;
-    font-size: min(0.66rem, 1.3vh);
+    font-size: min(0.78rem, 1.55vh);
     font-weight: 800;
     text-transform: uppercase;
     white-space: nowrap;
-    overflow: hidden;
+    /* The 3D category medallion extends outside its inner slot. */
+    overflow: visible;
     text-overflow: ellipsis;
+}
+
+.round-answer-category {
+    font-size: min(0.78rem, 1.55vh) !important;
+    overflow: visible;
 }
 
 .solo-answer-category .category-label,
@@ -6333,8 +6399,9 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 
 .category-label--summary .category-icon,
 .category-label--round .category-icon {
-    width: 1.72em;
-    height: 1.42em;
+    width: 1.88em;
+    height: 1.52em;
+    margin-block: -0.12em;
 }
 
 .solo-answer-value {

@@ -544,7 +544,7 @@ const DnevniIzazovManager = {
             const prikaziKosovoPoruku = this.prikaziKosovoPorukuAkoTreba();
 
             setTimeout(
-                () => this.prikaziRezultat(rezultat),
+                () => this.prikaziRezimeDnevnogIzazova(rezultat),
                 prikaziKosovoPoruku && typeof KosovoPorukaManager !== 'undefined'
                     ? KosovoPorukaManager.vremePreRezimea
                     : 900
@@ -697,6 +697,64 @@ const DnevniIzazovManager = {
             this.x2PreuzimanjeUToku = false;
             this.postaviDnevniX2Status("Nagrađena reklama trenutno nije dostupna.", false);
         }
+    },
+
+    prikaziRezimeDnevnogIzazova: function(rezultat) {
+        this.poslednjiRezultat = rezultat || {};
+        const kartica = document.getElementById('dnevni-rezime-kartica');
+        const dugmeDalje = document.getElementById('dnevni-rezime-dalje');
+        const zadaci = this.dnevniPodaci && Array.isArray(this.dnevniPodaci.zadaci)
+            ? this.dnevniPodaci.zadaci
+            : [];
+        const proveraPoIndeksu = new Map(
+            (Array.isArray(this.poslednjiRezultat.provera) ? this.poslednjiRezultat.provera : [])
+                .map(stavka => [Number(stavka.index), stavka])
+        );
+        const ukupnoTacnih = Math.max(0, Number(this.poslednjiRezultat.tacniPojmovi) || 0);
+
+        if (kartica) {
+            const redovi = zadaci.map((zadatak, index) => {
+                const stavka = proveraPoIndeksu.get(index) || {};
+                const tacno = Boolean(stavka.tacno);
+                const odgovor = this.formatirajTekst(stavka.odgovor || '—');
+                const kategorijaHtml = this.renderujKategoriju(
+                    zadatak,
+                    'category-label category-label--daily-summary'
+                );
+
+                return `
+                    <div class="solo-answer-row ${tacno ? 'is-correct' : 'is-wrong'}">
+                        <span class="solo-answer-category">${kategorijaHtml}</span>
+                        <span class="solo-answer-value">${this.escapeHtml(odgovor)}</span>
+                        <span class="solo-answer-status" aria-label="${tacno ? 'Tačno' : 'Netačno'}">
+                            <i class="fa-solid ${tacno ? 'fa-check' : 'fa-xmark'}" aria-hidden="true"></i>
+                            <span class="solo-answer-status-text">${tacno ? 'TAČNO' : 'NETAČNO'}</span>
+                        </span>
+                    </div>
+                `;
+            }).join('');
+
+            const opis = this.poslednjiRezultat.razlog === 'isteklo_vreme'
+                ? 'Vreme je isteklo'
+                : 'Odgovori su provereni';
+            kartica.innerHTML = `
+                <h3>DNEVNI IZAZOV</h3>
+                <p class="solo-summary-count">
+                    <span>${opis}</span>
+                    <span>Tačno: <b>${ukupnoTacnih}/${zadaci.length || 4}</b></span>
+                </p>
+                <div class="solo-answer-review">${redovi}</div>
+            `;
+            this.primeniPismoNaElement(kartica);
+        }
+
+        if (dugmeDalje) {
+            const novoDugme = dugmeDalje.cloneNode(true);
+            dugmeDalje.replaceWith(novoDugme);
+            novoDugme.addEventListener('click', () => this.prikaziRezultat(this.poslednjiRezultat));
+        }
+
+        UIManager.prikaziEkran('dnevni-rezime-screen');
     },
 
     prikaziRezultat: function(rezultat) {

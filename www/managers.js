@@ -17,6 +17,10 @@ const UIManager = {
         const ekran = document.getElementById(ekranId);
         if (!ekran) return;
         ekran.classList.add('active');
+
+        if (typeof AssetPreloader !== 'undefined') {
+            AssetPreloader.pripremiEkran(ekranId);
+        }
         
         // Uvek sakrij tastaturu kada se menja ekran da ne bi blokirala UI
         if (typeof KeyboardManager !== 'undefined') {

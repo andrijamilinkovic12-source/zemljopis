@@ -21,7 +21,8 @@
     const EKRAN_SELEKTORI = {
         'soba-prijatelja-screen': [
             '#soba-prijatelja-screen .screen-pattern-icon',
-            '#soba-prijatelja-screen .page-title-icon'
+            '#soba-prijatelja-screen .page-title-icon',
+            '#soba-prijatelja-screen .soba-prijatelja-tab-icon'
         ],
         'toplista-screen': [
             '#toplista-screen .screen-pattern-icon',

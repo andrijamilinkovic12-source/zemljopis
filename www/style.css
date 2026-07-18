@@ -9857,3 +9857,238 @@ body[data-tema] #podesavanja-screen .settings-secondary-actions .menu-btn i {
 #main-menu > .status-bar {
     translate: 0 -4mm;
 }
+
+/* ========================================================
+   SOBA PRIJATELJA — Clay Soft Matte 3D
+   ======================================================== */
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-content {
+    z-index: 5;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding: 0 1rem;
+    overflow: hidden;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-title {
+    margin-bottom: 1rem;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-title-icon {
+    filter: drop-shadow(0 5px 8px rgba(5, 25, 58, 0.52)) !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-pattern-icon {
+    opacity: 0.11;
+    filter: grayscale(0.18) drop-shadow(0 10px 18px rgba(5, 25, 58, 0.24));
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-add-card,
+body[data-tema] #soba-prijatelja-screen .prijatelj-kartica,
+body[data-tema] #soba-prijatelja-screen .online-igrac-red {
+    background: linear-gradient(145deg, rgba(7, 29, 67, 0.97), rgba(10, 48, 91, 0.95)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    box-shadow: 0 10px 22px rgba(0, 15, 44, 0.28) !important;
+    color: #fff !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-add-card {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    border-radius: 12px;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.6rem;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius: 8px;
+    background: rgba(0, 14, 41, 0.62) !important;
+    color: #fff !important;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-input::placeholder {
+    color: rgba(255, 255, 255, 0.64);
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-input:focus {
+    border-color: rgba(123, 205, 255, 0.88) !important;
+    box-shadow: 0 0 0 3px rgba(72, 176, 255, 0.14);
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-add-btn {
+    border: 0;
+    border-radius: 8px;
+    padding: 0 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-tab {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 3.15rem;
+    margin: 0;
+    padding: 0.45rem 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 10px !important;
+    background: rgba(8, 35, 78, 0.88) !important;
+    color: #fff !important;
+    font-size: 0.9rem;
+    text-shadow: none !important;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-tab.active {
+    border-color: rgba(123, 205, 255, 0.92) !important;
+    background: linear-gradient(145deg, rgba(22, 73, 128, 0.96), rgba(11, 45, 87, 0.98)) !important;
+    box-shadow: 0 0 16px rgba(87, 187, 255, 0.26) !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-tab:active {
+    transform: scale(0.97);
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-tab-icon {
+    width: 1.7rem;
+    height: 1.7rem;
+    flex: 0 0 1.7rem;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 4px rgba(0, 9, 29, 0.38));
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-badge {
+    display: none;
+    position: absolute;
+    top: -0.32rem;
+    right: -0.25rem;
+    min-width: 1.25rem;
+    padding: 0.13rem 0.34rem;
+    border: 1px solid rgba(255, 255, 255, 0.68);
+    border-radius: 999px;
+    background: #e65376;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 900;
+    line-height: 1.1;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-lista {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 0;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-empty {
+    margin-top: 2rem;
+    color: rgba(255, 255, 255, 0.86) !important;
+    text-align: center;
+    text-shadow: 0 2px 8px rgba(0, 13, 35, 0.72);
+}
+
+body[data-tema] #soba-prijatelja-screen .prijatelj-avatar {
+    overflow: hidden;
+    color: #fff !important;
+    border-color: rgba(255, 255, 255, 0.46) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .prijatelj-avatar .avatar-svg,
+body[data-tema] #soba-prijatelja-screen .prijatelj-avatar > img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+body[data-tema] #soba-prijatelja-screen .prijatelj-ime,
+body[data-tema] #soba-prijatelja-screen .online-igrac-info {
+    color: #fff !important;
+    text-shadow: none !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .prijatelj-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #ff98ad !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .prijatelj-status-dot {
+    width: 0.48rem;
+    height: 0.48rem;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 7px currentColor;
+}
+
+body[data-tema] #soba-prijatelja-screen .prijatelj-status.online {
+    color: #74e8ac !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .prijatelj-kartica .stat-box {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.13) !important;
+    box-shadow: none !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .stat-box span {
+    color: rgba(255, 255, 255, 0.68) !important;
+    text-shadow: none !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .stat-box strong {
+    color: #fff !important;
+    text-shadow: none !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-zahtev-kartica {
+    margin-bottom: 0;
+}
+
+body[data-tema] #soba-prijatelja-screen .soba-prijatelja-zahtev-ikona {
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 2rem;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 4px rgba(0, 9, 29, 0.42));
+}
+
+body[data-tema] #soba-prijatelja-screen .btn-obrisi-prijatelja,
+body[data-tema] #soba-prijatelja-screen .btn-odbij-zahtev {
+    color: #ff91a9 !important;
+    border-color: rgba(255, 145, 169, 0.64) !important;
+    background: rgba(255, 82, 122, 0.14) !important;
+}
+
+body[data-tema] #soba-prijatelja-screen .btn-prihvati-zahtev {
+    color: #74e8ac !important;
+    border-color: rgba(116, 232, 172, 0.62) !important;
+    background: rgba(116, 232, 172, 0.14) !important;
+}

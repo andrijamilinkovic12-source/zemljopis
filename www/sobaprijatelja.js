@@ -28,6 +28,18 @@ const SobaPrijateljaManager = {
         }
     },
 
+    napraviAvatar: function(avatarId) {
+        if (typeof PodesavanjaManager !== 'undefined'
+            && Array.isArray(PodesavanjaManager.avatari)
+            && typeof PodesavanjaManager.napraviAvatarSvg === 'function') {
+            const avatar = PodesavanjaManager.avatari.find(stavka => stavka.id === avatarId)
+                || PodesavanjaManager.avatari[0];
+            if (avatar) return PodesavanjaManager.napraviAvatarSvg(avatar);
+        }
+
+        return '<img src="assets/soba-prijatelja-prijatelji-clay-soft-3d.png" alt="" aria-hidden="true">';
+    },
+
     otvoriEkran: function() {
         if (!Game.socket || !Game.socket.connected) {
             UIManager.prikaziObavestenje("Nema konekcije", "Moraš biti povezan na server.", null, "U redu");
@@ -40,11 +52,10 @@ const SobaPrijateljaManager = {
 
     promeniTab: function(tab) {
         this.aktivniTab = tab;
-        document.getElementById('tab-lista-prijatelja').style.background = tab === 'lista' ? 'rgba(56, 239, 125, 0.2)' : 'rgba(255,255,255,0.05)';
-        document.getElementById('tab-lista-prijatelja').style.color = tab === 'lista' ? '#38ef7d' : '#a0aec0';
-        
-        document.getElementById('tab-zahtevi-prijatelja').style.background = tab === 'zahtevi' ? 'rgba(245, 175, 25, 0.2)' : 'rgba(255,255,255,0.05)';
-        document.getElementById('tab-zahtevi-prijatelja').style.color = tab === 'zahtevi' ? '#f5af19' : '#a0aec0';
+        const listaTab = document.getElementById('tab-lista-prijatelja');
+        const zahteviTab = document.getElementById('tab-zahtevi-prijatelja');
+        if (listaTab) listaTab.classList.toggle('active', tab === 'lista');
+        if (zahteviTab) zahteviTab.classList.toggle('active', tab === 'zahtevi');
         
         this.osveziPrikaz();
     },
@@ -64,15 +75,17 @@ const SobaPrijateljaManager = {
 
         if (this.aktivniTab === 'lista') {
             if (this.prijatelji.length === 0) {
-                html = '<p style="text-align:center; color:#a0aec0; margin-top:2rem;">Još uvek nemaš dodatih prijatelja. Potraži ih po nadimku!</p>';
+                html = '<p class="soba-prijatelja-empty">Još uvek nemaš dodatih prijatelja. Potraži ih po nadimku!</p>';
             } else {
                 this.prijatelji.forEach(p => {
-                    let isOnline = p.online ? '<span class="prijatelj-status online">🟢 Na mreži</span>' : '<span class="prijatelj-status">🔴 Van mreže</span>';
+                    let isOnline = p.online
+                        ? '<span class="prijatelj-status online"><span class="prijatelj-status-dot"></span>Na mreži</span>'
+                        : '<span class="prijatelj-status"><span class="prijatelj-status-dot"></span>Van mreže</span>';
                     const brisanje = this.brisanjeUToku.has(p.playerId);
                     html += `
                         <div class="prijatelj-kartica">
                             <div class="prijatelj-header">
-                                <div class="prijatelj-avatar"><i class="fa-solid fa-user-ninja"></i></div>
+                                <div class="prijatelj-avatar">${this.napraviAvatar(p.avatar)}</div>
                                 <div style="flex:1;">
                                      <div class="prijatelj-ime">${p.ime}</div>
                                      ${isOnline}
@@ -98,19 +111,19 @@ const SobaPrijateljaManager = {
             }
         } else {
             if (this.zahtevi.length === 0) {
-                html = '<p style="text-align:center; color:#a0aec0; margin-top:2rem;">Nemaš novih zahteva na čekanju.</p>';
+                html = '<p class="soba-prijatelja-empty">Nemaš novih zahteva na čekanju.</p>';
             } else {
                 this.zahtevi.forEach((sacuvaniZahtev, indeks) => {
                     const zahtev = this.normalizujZahtev(sacuvaniZahtev);
                     html += `
-                        <div class="online-igrac-red" style="margin-bottom:0.8rem; background:rgba(245,175,25,0.1); border-color:rgba(245,175,25,0.3);">
+                        <div class="online-igrac-red soba-prijatelja-zahtev-kartica">
                             <div class="online-igrac-info">
-                                <i class="fa-solid fa-user-clock" style="color:#f5af19;"></i>
+                                <img class="soba-prijatelja-zahtev-ikona" src="assets/soba-prijatelja-zahtevi-clay-soft-3d.png" alt="" aria-hidden="true">
                                 <span>${zahtev.ime}</span>
                             </div>
                             <div style="display:flex; gap:0.5rem;">
-                                <button class="btn-prijatelj" style="color:#ff416c; border-color:#ff416c; background:rgba(255,65,108,0.1);" onclick="SobaPrijateljaManager.odgovoriNaZahtev(${indeks}, false)"><i class="fa-solid fa-xmark"></i></button>
-                                <button class="btn-prijatelj" style="color:#38ef7d; border-color:#38ef7d; background:rgba(56,239,125,0.1);" onclick="SobaPrijateljaManager.odgovoriNaZahtev(${indeks}, true)"><i class="fa-solid fa-check"></i></button>
+                                <button class="btn-prijatelj btn-odbij-zahtev" onclick="SobaPrijateljaManager.odgovoriNaZahtev(${indeks}, false)"><i class="fa-solid fa-xmark"></i></button>
+                                <button class="btn-prijatelj btn-prihvati-zahtev" onclick="SobaPrijateljaManager.odgovoriNaZahtev(${indeks}, true)"><i class="fa-solid fa-check"></i></button>
                             </div>
                         </div>
                     `;

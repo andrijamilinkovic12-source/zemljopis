@@ -308,7 +308,7 @@
             </button>
 
             <button class="circle-btn friend-room-btn" onclick="SobaPrijateljaManager.otvoriEkran()" title="Soba prijatelja" aria-label="Soba prijatelja" style="position: relative;">
-                <img class="menu-action-icon friend-room-icon" src="assets/soba-prijatelja-clay-3d-navy-v2.png" alt="" aria-hidden="true" decoding="async">
+                <img class="menu-action-icon friend-room-icon" src="assets/soba-prijatelja-menu-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async">
                 <span id="main-badge-zahtevi" style="display:none; position:absolute; top:-5px; right:-5px; background:#ff416c; color:white; font-size:0.6rem; font-weight:bold; padding:2px 6px; border-radius:50%;">0</span>
             </button>
             
@@ -369,32 +369,36 @@
 
     <div id="soba-prijatelja-screen" class="screen">
         <div class="menu-pattern">
-            <img class="pattern-icon pattern-img screen-pattern-icon" src="assets/menu-soba-prijatelja.svg" alt="" aria-hidden="true" decoding="async" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);">
+            <img class="pattern-icon pattern-img screen-pattern-icon soba-prijatelja-pattern-icon" src="assets/soba-prijatelja-prijatelji-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async" style="top: 20%; left: 50%; font-size: 6rem; transform: translateX(-50%);">
         </div>
         
         <div class="page-heading">
-            <img class="page-title-icon" src="assets/soba-prijatelja-clay-3d-navy-v2.png" alt="" aria-hidden="true" decoding="async">
-            <h2 class="page-title" style="color: #38ef7d; margin-bottom: 1rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Soba Prijatelja</h2>
+            <img class="page-title-icon soba-prijatelja-title-icon" src="assets/soba-prijatelja-prijatelji-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async">
+            <h2 class="page-title soba-prijatelja-title">Soba Prijatelja</h2>
         </div>
         
-        <div style="z-index: 5; width: 100%; max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 0 1rem; overflow: hidden;">
+        <div class="soba-prijatelja-content">
             
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; background: rgba(0,0,0,0.5); padding: 0.8rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                <input type="text" id="unos-novog-prijatelja" placeholder="Unesi nadimak igrača..." style="flex: 1; min-width: 0; padding: 0.6rem; border-radius: 8px; border: 2px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.3); color: #fff; outline: none; font-size: 0.9rem;" autocomplete="off" autocorrect="off" spellcheck="false">
-                <button class="btn-primary" style="border: none; border-radius: 8px; padding: 0 1rem; font-weight: 800; cursor: pointer;" onclick="SobaPrijateljaManager.posaljiZahtevPoImenu()">
+            <div class="soba-prijatelja-add-card">
+                <input class="soba-prijatelja-input" type="text" id="unos-novog-prijatelja" placeholder="Unesi nadimak igrača..." autocomplete="off" autocorrect="off" spellcheck="false">
+                <button class="btn-primary soba-prijatelja-add-btn" onclick="SobaPrijateljaManager.posaljiZahtevPoImenu()">
                     <i class="fa-solid fa-user-plus"></i> Dodaj
                 </button>
             </div>
 
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                <button class="menu-btn" id="tab-lista-prijatelja" style="margin: 0; padding: 0.7rem; font-size: 0.9rem; flex: 1; transition: all 0.2s;" onclick="SobaPrijateljaManager.promeniTab('lista')">👥 Lista</button>
-                <button class="menu-btn" id="tab-zahtevi-prijatelja" style="margin: 0; padding: 0.7rem; font-size: 0.9rem; flex: 1; transition: all 0.2s; position: relative;" onclick="SobaPrijateljaManager.promeniTab('zahtevi')">
-                    📩 Zahtevi
-                    <span id="broj-zahteva" style="display:none; position:absolute; top:-5px; right:-5px; background:#ff416c; color:white; font-size:0.65rem; font-weight:bold; padding:2px 6px; border-radius:50%;">0</span>
+            <div class="soba-prijatelja-tabs">
+                <button class="menu-btn soba-prijatelja-tab active" id="tab-lista-prijatelja" onclick="SobaPrijateljaManager.promeniTab('lista')">
+                    <img class="soba-prijatelja-tab-icon" src="assets/soba-prijatelja-prijatelji-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async">
+                    <span>Lista</span>
+                </button>
+                <button class="menu-btn soba-prijatelja-tab" id="tab-zahtevi-prijatelja" onclick="SobaPrijateljaManager.promeniTab('zahtevi')">
+                    <img class="soba-prijatelja-tab-icon" src="assets/soba-prijatelja-zahtevi-clay-soft-3d.png" alt="" aria-hidden="true" decoding="async">
+                    <span>Zahtevi</span>
+                    <span id="broj-zahteva" class="soba-prijatelja-badge">0</span>
                 </button>
             </div>
 
-            <div id="prijatelji-sadrzaj" style="flex: 1; overflow-y: auto; margin-bottom: 1rem; scrollbar-width: none; padding-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            <div id="prijatelji-sadrzaj" class="soba-prijatelja-lista">
             </div>
 
         </div>

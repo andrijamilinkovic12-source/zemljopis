@@ -77,6 +77,8 @@
             'assets/kvartalni-nivo-zlato-clay-soft-3d-v1.png',
             'assets/kvartalni-nivo-legenda-clay-soft-3d-v1.png',
             'assets/kvartalni-nivo-apsolutni-vladari-clay-soft-3d-v1.png',
+            'assets/kvartalni-nivo-slavni-medalje-clay-soft-3d-v1.png',
+            'assets/kvartalni-nivo-slavni-sampioni-clay-soft-3d-v1.png',
             'assets/toplista-medalja-zlatna-clay-soft-3d.png',
             'assets/toplista-medalja-srebrna-clay-soft-3d.png',
             'assets/toplista-medalja-bronzana-clay-soft-3d.png'

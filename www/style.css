@@ -11118,6 +11118,22 @@ body[data-tema] #kvartalni-nivo-screen .kvartal-tab i {
     color: #fff !important;
 }
 
+body[data-tema] #kvartalni-nivo-screen .kvartal-legend-tabs .kvartal-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.28rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-legend-tab-icon {
+    display: block;
+    flex: 0 0 auto;
+    width: 1.78rem;
+    height: 1.78rem;
+    object-fit: contain;
+    pointer-events: none;
+}
+
 body[data-tema] #kvartalni-nivo-screen .kvartal-summary-card {
     display: flex;
     align-items: center;

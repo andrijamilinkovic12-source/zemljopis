@@ -384,8 +384,8 @@ const KvartalniNivoManager = {
     renderSlavniHTML: function() {
         let html = `
             <div class="kvartal-legend-tabs" role="tablist" aria-label="Slavni igrači">
-                <button type="button" class="menu-btn kvartal-tab ${this.aktivniSlavniTab === 'medalje' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniSlavniTab('medalje')"><i class="fa-solid fa-medal" aria-hidden="true"></i> Medalje</button>
-                <button type="button" class="menu-btn kvartal-tab ${this.aktivniSlavniTab === 'sampioni' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniSlavniTab('sampioni')"><i class="fa-solid fa-trophy" aria-hidden="true"></i> Šampioni</button>
+                <button type="button" class="menu-btn kvartal-tab ${this.aktivniSlavniTab === 'medalje' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniSlavniTab('medalje')"><img class="kvartal-legend-tab-icon" src="assets/kvartalni-nivo-slavni-medalje-clay-soft-3d-v1.png" alt="" aria-hidden="true" decoding="async"> Medalje</button>
+                <button type="button" class="menu-btn kvartal-tab ${this.aktivniSlavniTab === 'sampioni' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniSlavniTab('sampioni')"><img class="kvartal-legend-tab-icon" src="assets/kvartalni-nivo-slavni-sampioni-clay-soft-3d-v1.png" alt="" aria-hidden="true" decoding="async"> Šampioni</button>
             </div>
         `;
 

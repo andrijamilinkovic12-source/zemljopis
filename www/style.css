@@ -11007,3 +11007,483 @@ body[data-tema] #trofeji-main-screen .trofeji-back-button {
 body[data-tema] #trofeji-main-screen .trofeji-back-button i {
     color: #fff !important;
 }
+
+/* ========================================================
+   SOBA KVARTALNI NIVO — referentni obrazac usklađenih soba
+   ======================================================== */
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-title {
+    margin-bottom: clamp(0.55rem, 1vh, 0.8rem);
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-content {
+    z-index: 5;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    width: 100%;
+    max-width: 360px;
+    min-height: 0;
+    margin: 0 auto;
+    padding: 0 1rem;
+    overflow: hidden;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-lista {
+    flex: 1;
+    min-height: 0;
+    margin-bottom: 0.65rem;
+    padding-bottom: 0.25rem;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-lista::-webkit-scrollbar {
+    display: none;
+}
+
+body[data-tema] #kvartalni-nivo-screen #kvartalni-nivo-sadrzaj > .kvartal-main-tabs,
+body[data-tema] #kvartalni-nivo-screen :is(.kvartal-level-tabs, .kvartal-legend-tabs, .kvartal-heading) {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen :is(.kvartal-summary-card, .kvartal-ranking-card, .kvartal-medal-card, .kvartal-champion-card, .kvartal-empty-card, .kvartalni-nivo-back-button) {
+    background: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7)) !important;
+    border: 1px solid rgba(220, 244, 255, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(1, 12, 31, 0.32), inset 0 1px 0 rgba(127, 198, 255, 0.12) !important;
+    color: #fff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen :is(.kvartal-main-tabs, .kvartal-legend-tabs) {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0 0 0.75rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-tab {
+    flex: 1;
+    min-height: 2.3rem;
+    margin: 0;
+    padding: 0.48rem 0.3rem;
+    border: 1px solid rgba(220, 244, 255, 0.3) !important;
+    border-radius: 8px;
+    background: linear-gradient(145deg, rgba(4, 18, 44, 0.78), rgba(8, 35, 70, 0.64)) !important;
+    box-shadow: 0 5px 12px rgba(1, 12, 31, 0.22), inset 0 1px 0 rgba(127, 198, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.86) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.1;
+    text-shadow: none !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-tab.active {
+    border-color: rgba(134, 215, 255, 0.88) !important;
+    background: linear-gradient(145deg, rgba(13, 83, 137, 0.86), rgba(19, 119, 185, 0.7)) !important;
+    box-shadow: 0 6px 14px rgba(5, 64, 116, 0.32), inset 0 1px 0 rgba(225, 248, 255, 0.24) !important;
+    color: #fff !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-tab i {
+    margin-right: 0.28rem;
+    color: #fff !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-summary-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.7rem;
+    margin-bottom: 0.7rem;
+    padding: 0.82rem;
+    border-radius: 12px;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-summary-copy {
+    display: grid;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-eyebrow {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-shadow: none !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-current-level {
+    overflow: hidden;
+    color: var(--kvartal-nivo-boja) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    text-shadow: none !important;
+    white-space: nowrap;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-summary-score {
+    display: grid;
+    flex-shrink: 0;
+    justify-items: end;
+    gap: 0.05rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-summary-score strong {
+    color: #fff !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.08rem;
+    font-weight: 800;
+    line-height: 1;
+    text-shadow: none !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-summary-score span {
+    color: rgba(255, 255, 255, 0.68) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.63rem;
+    font-weight: 700;
+    text-shadow: none !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-summary-score i {
+    color: #74e8ac !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-level-tabs {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.35rem;
+    margin: 0 0 0.7rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-level-tab {
+    display: grid;
+    min-width: 0;
+    min-height: 2.55rem;
+    place-items: center;
+    padding: 0.35rem;
+    border: 1px solid rgba(220, 244, 255, 0.28);
+    border-radius: 8px;
+    background: linear-gradient(145deg, rgba(4, 18, 44, 0.78), rgba(8, 35, 70, 0.64));
+    box-shadow: 0 5px 12px rgba(1, 12, 31, 0.2), inset 0 1px 0 rgba(127, 198, 255, 0.1);
+    cursor: pointer;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-level-tab i {
+    color: var(--kvartal-nivo-boja) !important;
+    font-size: 1.05rem;
+    text-shadow: none !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-level-tab.active {
+    border-color: rgba(134, 215, 255, 0.88);
+    background: linear-gradient(145deg, rgba(13, 83, 137, 0.86), rgba(19, 119, 185, 0.7));
+    box-shadow: 0 6px 14px rgba(5, 64, 116, 0.32), inset 0 1px 0 rgba(225, 248, 255, 0.24);
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-level-tab.active i {
+    font-size: 1.22rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-ranking-card,
+body[data-tema] #kvartalni-nivo-screen .kvartal-empty-card {
+    margin: 0 0 0.62rem;
+    padding: 0.55rem;
+    border-radius: 12px;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-ranking-title {
+    margin: 0.28rem 0 0.48rem;
+    color: #fff !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-align: center;
+    text-shadow: none !important;
+    text-transform: uppercase;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-ranking-title span {
+    color: var(--kvartal-nivo-boja, #86d7ff) !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-ranking-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.55rem;
+    min-height: 3.1rem;
+    padding: 0.42rem 0.32rem;
+    border-top: 1px solid rgba(220, 244, 255, 0.12);
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-ranking-player,
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-player,
+body[data-tema] #kvartalni-nivo-screen .kvartal-champion-player {
+    display: flex;
+    align-items: center;
+    gap: 0.52rem;
+    min-width: 0;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-ranking-position,
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-position {
+    flex: 0 0 1.45rem;
+    color: rgba(255, 255, 255, 0.66) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.77rem;
+    font-weight: 800;
+    text-align: right;
+    text-shadow: none !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-ranking-position.top-three,
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-position {
+    color: #86d7ff !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-avatar {
+    position: relative;
+    display: grid;
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    overflow: visible;
+    place-items: center;
+    border: 1px solid rgba(220, 244, 255, 0.42);
+    border-radius: 50%;
+    background: rgba(2, 15, 42, 0.58);
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-avatar :is(.avatar-svg, .avatar-clay-portrait) {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-avatar-level {
+    border-color: var(--kvartal-nivo-boja);
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-avatar-all-time {
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-avatar-all-time.top-three {
+    border: 2px solid #86d7ff;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-crown {
+    position: absolute;
+    top: -0.55rem;
+    right: -0.42rem;
+    color: #f5d061 !important;
+    font-size: 0.78rem;
+    transform: rotate(15deg);
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-player-name {
+    overflow: hidden;
+    color: #fff !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.84rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    text-shadow: none !important;
+    white-space: nowrap;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-row-score {
+    flex: 0 0 auto;
+    color: #74e8ac !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 800;
+    text-shadow: none !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-row-score.all-time {
+    color: #86d7ff !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-all-time-row.first-place {
+    background: rgba(75, 170, 230, 0.11);
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-heading {
+    margin: 0.15rem 0 0.75rem;
+    text-align: center;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-heading > i {
+    display: block;
+    margin-bottom: 0.15rem;
+    color: #86d7ff !important;
+    font-size: 2.25rem;
+    text-shadow: 0 0 14px rgba(86, 196, 255, 0.42) !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-heading h3 {
+    margin: 0;
+    color: #86d7ff !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-shadow: none !important;
+    text-transform: uppercase;
+}
+
+body[data-tema] #kvartalni-nivo-screen :is(.kvartal-heading p, .kvartal-info-copy) {
+    margin: 0.26rem 0 0;
+    color: #d5f1ff !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.32;
+    text-align: center;
+    text-shadow: 0 2px 8px rgba(0, 23, 57, 0.62) !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-info-copy {
+    margin: 0 0 0.72rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-empty-state {
+    padding: 0.85rem 0.45rem;
+    color: rgba(255, 255, 255, 0.72) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: center;
+    text-shadow: none !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-card,
+body[data-tema] #kvartalni-nivo-screen .kvartal-champion-card {
+    margin: 0 0 0.62rem;
+    padding: 0.72rem;
+    border-radius: 12px;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-player {
+    padding-bottom: 0.58rem;
+    border-bottom: 1px solid rgba(220, 244, 255, 0.12);
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-avatar-medal {
+    width: 2.35rem;
+    height: 2.35rem;
+    border: 2px solid #86d7ff;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-counts {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 0.58rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-count {
+    display: grid;
+    justify-items: center;
+    gap: 0.08rem;
+    min-width: 2.2rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-count i {
+    font-size: 1.28rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-count b {
+    color: #fff !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.86rem;
+    text-shadow: none !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-count.gold i { color: #f5d061 !important; }
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-count.silver i { color: #dbe4f0 !important; }
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-count.bronze i { color: #e1a35d !important; }
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-champion-card {
+    display: flex;
+    align-items: center;
+    gap: 0.72rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-champion-trophy {
+    display: grid;
+    flex: 0 0 2.15rem;
+    place-items: center;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-champion-trophy i {
+    color: #f5d061 !important;
+    font-size: 1.75rem;
+    text-shadow: 0 0 11px rgba(245, 208, 97, 0.36) !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-champion-copy {
+    min-width: 0;
+    flex: 1;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-champion-cycle {
+    margin-bottom: 0.22rem;
+    color: #86d7ff !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-shadow: none !important;
+    text-transform: uppercase;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-avatar-champion {
+    width: 1.7rem;
+    height: 1.7rem;
+    border-color: rgba(220, 244, 255, 0.5);
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-champion-score {
+    margin-top: 0.28rem;
+    color: #74e8ac !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-shadow: none !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-footer {
+    padding-top: 0.45rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-back-button {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: min(0.55rem, 1vh) 0.45rem;
+    border-radius: 8px;
+    color: #fff !important;
+    font-size: min(0.78rem, 1.45vh);
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-back-button i {
+    color: #fff !important;
+}

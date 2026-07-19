@@ -11470,6 +11470,14 @@ body[data-tema] #kvartalni-nivo-screen .kvartal-medal-count i {
     font-size: 1.28rem;
 }
 
+body[data-tema] #kvartalni-nivo-screen .kvartal-medal-count-icon {
+    display: block;
+    width: 1.48rem;
+    height: 1.48rem;
+    object-fit: contain;
+    filter: drop-shadow(0 0.12rem 0.18rem rgba(0, 10, 25, 0.3));
+}
+
 body[data-tema] #kvartalni-nivo-screen .kvartal-medal-count b {
     color: #fff !important;
     font-family: 'Poppins', sans-serif;
@@ -11489,7 +11497,7 @@ body[data-tema] #kvartalni-nivo-screen .kvartal-champion-card {
 
 body[data-tema] #kvartalni-nivo-screen .kvartal-champion-trophy {
     display: grid;
-    flex: 0 0 2.15rem;
+    flex: 0 0 2.45rem;
     place-items: center;
 }
 
@@ -11497,6 +11505,14 @@ body[data-tema] #kvartalni-nivo-screen .kvartal-champion-trophy i {
     color: #f5d061 !important;
     font-size: 1.75rem;
     text-shadow: 0 0 11px rgba(245, 208, 97, 0.36) !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-champion-trophy-icon {
+    display: block;
+    width: 2.45rem;
+    height: 2.45rem;
+    object-fit: contain;
+    filter: drop-shadow(0 0.14rem 0.2rem rgba(0, 10, 25, 0.3));
 }
 
 body[data-tema] #kvartalni-nivo-screen .kvartal-champion-copy {

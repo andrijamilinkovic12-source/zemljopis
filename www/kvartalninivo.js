@@ -404,9 +404,9 @@ const KvartalniNivoManager = {
                                 <span class="kvartal-player-name">${igrac.ime}</span>
                             </div>
                             <div class="kvartal-medal-counts">
-                                <div class="kvartal-medal-count gold"><i class="fa-solid fa-medal" aria-hidden="true"></i><b>${igrac.zlato || 0}</b></div>
-                                <div class="kvartal-medal-count silver"><i class="fa-solid fa-medal" aria-hidden="true"></i><b>${igrac.srebro || 0}</b></div>
-                                <div class="kvartal-medal-count bronze"><i class="fa-solid fa-medal" aria-hidden="true"></i><b>${igrac.bronza || 0}</b></div>
+                                <div class="kvartal-medal-count gold"><img class="kvartal-medal-count-icon" src="assets/toplista-medalja-zlatna-clay-soft-3d.png" alt="Zlatna medalja" decoding="async"><b>${igrac.zlato || 0}</b></div>
+                                <div class="kvartal-medal-count silver"><img class="kvartal-medal-count-icon" src="assets/toplista-medalja-srebrna-clay-soft-3d.png" alt="Srebrna medalja" decoding="async"><b>${igrac.srebro || 0}</b></div>
+                                <div class="kvartal-medal-count bronze"><img class="kvartal-medal-count-icon" src="assets/toplista-medalja-bronzana-clay-soft-3d.png" alt="Bronzana medalja" decoding="async"><b>${igrac.bronza || 0}</b></div>
                             </div>
                         </article>
                     `;
@@ -422,7 +422,7 @@ const KvartalniNivoManager = {
                     html += `
                         <article class="kvartal-champion-card">
                             <div class="kvartal-champion-trophy">
-                                <i class="fa-solid fa-trophy" aria-hidden="true"></i>
+                                <img class="kvartal-champion-trophy-icon" src="assets/kvartalni-nivo-slavni-sampioni-clay-soft-3d-v1.png" alt="Pehar šampiona" decoding="async">
                             </div>
                             <div class="kvartal-champion-copy">
                                 <div class="kvartal-champion-cycle">${igrac.ciklus}</div>

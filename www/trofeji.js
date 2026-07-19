@@ -101,30 +101,30 @@ const TrofejiManager = {
             
             let akcijaHtml = '';
             if (zavrsen && !trofej.preuzeto) {
-                akcijaHtml = `<button class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; background: #f5af19; font-weight: 800; color: #000;" onclick="TrofejiManager.preuzmiNagradu('${trofej.id}')">Pokupi +${trofej.nagrada}</button>`;
+                akcijaHtml = `<button type="button" class="trofej-preuzmi" onclick="TrofejiManager.preuzmiNagradu('${trofej.id}')"><i class="fa-solid fa-coins"></i> Pokupi +${trofej.nagrada}</button>`;
             } else if (trofej.preuzeto) {
-                akcijaHtml = `<span class="status-zavrseno" style="font-size: 0.9rem; font-weight: 800;"><i class="fa-solid fa-check"></i> Završeno</span>`;
+                akcijaHtml = `<span class="status-zavrseno trofej-status-zavrsen"><i class="fa-solid fa-check"></i> Završeno</span>`;
             } else {
-                akcijaHtml = `<span style="color: #f5af19; font-size: 0.8rem; font-weight: 600;"><i class="fa-solid fa-coins"></i> ${trofej.nagrada}</span>`;
+                akcijaHtml = `<span class="trofej-nagrada"><i class="fa-solid fa-coins"></i> ${trofej.nagrada}</span>`;
             }
 
             html += `
-                <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 1rem; margin-bottom: 0.8rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
-                        <div>
-                            <h4 style="color: #fff; margin-bottom: 0.2rem; font-size: 0.95rem;">${trofej.naziv}</h4>
-                            <p style="color: #a0aec0; font-size: 0.75rem;">${trofej.opis}</p>
+                <article class="trofej-kartica${zavrsen ? ' je-otkljucan' : ''}${trofej.preuzeto ? ' je-preuzet' : ''}">
+                    <div class="trofej-kartica-zaglavlje">
+                        <div class="trofej-kartica-info">
+                            <h4 class="trofej-naziv">${trofej.naziv}</h4>
+                            <p class="trofej-opis">${trofej.opis}</p>
                         </div>
-                        <div>${akcijaHtml}</div>
+                        <div class="trofej-akcija">${akcijaHtml}</div>
                     </div>
                     
-                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.8rem;">
-                        <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
-                            <div style="width: ${procenat}%; height: 100%; background: ${zavrsen ? '#38ef7d' : '#f5af19'}; transition: width 0.5s;"></div>
+                    <div class="trofej-napredak-red">
+                        <div class="trofej-napredak" role="progressbar" aria-label="Napredak: ${trofej.naziv}" aria-valuemin="0" aria-valuemax="${trofej.uslov}" aria-valuenow="${trofej.napredak}">
+                            <span class="trofej-napredak-popuna${zavrsen ? ' zavrsen' : ''}" style="width: ${procenat}%;"></span>
                         </div>
-                        <span style="font-size: 0.7rem; color: #a0aec0; min-width: 40px; text-align: right;">${trofej.napredak}/${trofej.uslov}</span>
+                        <span class="trofej-napredak-vrednost">${trofej.napredak}/${trofej.uslov}</span>
                     </div>
-                </div>
+                </article>
             `;
         });
         kontejner.innerHTML = html;

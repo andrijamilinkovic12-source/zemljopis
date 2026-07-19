@@ -10823,3 +10823,187 @@ body[data-tema] #global-chat-screen .global-chat-back-button {
 body[data-tema] #global-chat-screen .global-chat-back-button i {
     color: #fff !important;
 }
+
+/* ========================================================
+   SOBA TROFEJA — referentni obrazac usklađenih soba
+   ======================================================== */
+body[data-tema] #trofeji-main-screen .trofeji-title {
+    margin-bottom: clamp(0.55rem, 1vh, 0.8rem);
+}
+
+body[data-tema] #trofeji-main-screen .trofeji-content {
+    z-index: 5;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+body[data-tema] #trofeji-main-screen .trofeji-lista {
+    flex: 1;
+    min-height: 0;
+    margin-bottom: 0.65rem;
+    padding-bottom: 0.25rem;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+body[data-tema] #trofeji-main-screen .trofeji-lista::-webkit-scrollbar {
+    display: none;
+}
+
+body[data-tema] #trofeji-main-screen :is(.trofej-kartica, .trofeji-back-button) {
+    background: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7)) !important;
+    border: 1px solid rgba(220, 244, 255, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(1, 12, 31, 0.32), inset 0 1px 0 rgba(127, 198, 255, 0.12) !important;
+    color: #fff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-kartica {
+    margin: 0 0 0.62rem;
+    padding: 0.82rem;
+    border-radius: 12px;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-kartica.je-otkljucan {
+    border-color: rgba(245, 208, 97, 0.72) !important;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-kartica.je-preuzet {
+    border-color: rgba(116, 232, 172, 0.66) !important;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-kartica-zaglavlje {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.6rem;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-kartica-info {
+    min-width: 0;
+    flex: 1;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-naziv {
+    margin: 0 0 0.16rem;
+    color: #fff !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-shadow: none !important;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-opis {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.72) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.75rem;
+    line-height: 1.32;
+    text-shadow: none !important;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-akcija {
+    flex-shrink: 0;
+    min-height: 1.6rem;
+    display: flex;
+    align-items: center;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-preuzmi {
+    border: 1px solid rgba(245, 208, 97, 0.76) !important;
+    border-radius: 7px;
+    background: rgba(171, 111, 15, 0.34) !important;
+    box-shadow: none !important;
+    color: #fff4ca !important;
+    padding: 0.38rem 0.55rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-preuzmi:active {
+    transform: scale(0.96);
+}
+
+body[data-tema] #trofeji-main-screen .trofej-nagrada {
+    color: #f5d061 !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-status-zavrsen {
+    color: #74e8ac !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-napredak-red {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.7rem;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-napredak {
+    flex: 1;
+    height: 0.42rem;
+    overflow: hidden;
+    border: 1px solid rgba(220, 244, 255, 0.22);
+    border-radius: 999px;
+    background: rgba(2, 15, 42, 0.68);
+}
+
+body[data-tema] #trofeji-main-screen .trofej-napredak-popuna {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #4ea9e6, #7bcfff);
+    transition: width 0.5s ease;
+}
+
+body[data-tema] #trofeji-main-screen .trofej-napredak-popuna.zavrsen {
+    background: linear-gradient(90deg, #49c982, #74e8ac);
+}
+
+body[data-tema] #trofeji-main-screen .trofej-napredak-vrednost {
+    min-width: 3rem;
+    color: rgba(255, 255, 255, 0.72) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-align: right;
+    text-shadow: none !important;
+}
+
+body[data-tema] #trofeji-main-screen .trofeji-footer {
+    padding-top: 0.45rem;
+}
+
+body[data-tema] #trofeji-main-screen .trofeji-back-button {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: min(0.55rem, 1vh) 0.45rem;
+    border-radius: 8px;
+    font-size: min(0.78rem, 1.45vh);
+}
+
+body[data-tema] #trofeji-main-screen .trofeji-back-button i {
+    color: #fff !important;
+}

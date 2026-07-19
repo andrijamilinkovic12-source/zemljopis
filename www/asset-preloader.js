@@ -69,6 +69,13 @@
             'assets/avatars/iris-clay-soft-matte-3d.png',
             'assets/avatars/leo-clay-soft-matte-3d.png',
             'assets/avatars/nova-clay-soft-matte-3d.png'
+        ],
+        'kvartalni-nivo-screen': [
+            'assets/kvartalni-nivo-istrazivac-clay-soft-3d-v1.png',
+            'assets/kvartalni-nivo-bronza-clay-soft-3d-v1.png',
+            'assets/kvartalni-nivo-srebro-clay-soft-3d-v1.png',
+            'assets/kvartalni-nivo-zlato-clay-soft-3d-v1.png',
+            'assets/kvartalni-nivo-legenda-clay-soft-3d-v1.png'
         ]
     };
 

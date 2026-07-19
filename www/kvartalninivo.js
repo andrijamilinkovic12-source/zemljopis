@@ -8,11 +8,11 @@ const KvartalniNivoManager = {
     },
 
     nivoi: [
-        { id: 0, ime: "Istraživač", min: 0, max: 999, ikona: "fa-compass", boja: "#a0aec0" },
-        { id: 1, ime: "Bronza", min: 1000, max: 2499, ikona: "fa-medal", boja: "#cd7f32" },
-        { id: 2, ime: "Srebro", min: 2500, max: 4999, ikona: "fa-trophy", boja: "#c0c0c0" },
-        { id: 3, ime: "Zlato", min: 5000, max: 8999, ikona: "fa-crown", boja: "#f5af19" },
-        { id: 4, ime: "Legenda", min: 9000, max: Infinity, ikona: "fa-gem", boja: "#38bdf8" }
+        { id: 0, ime: "Istraživač", min: 0, max: 999, ikona: "assets/kvartalni-nivo-istrazivac-clay-soft-3d-v1.png", boja: "#a0aec0" },
+        { id: 1, ime: "Bronza", min: 1000, max: 2499, ikona: "assets/kvartalni-nivo-bronza-clay-soft-3d-v1.png", boja: "#cd7f32" },
+        { id: 2, ime: "Srebro", min: 2500, max: 4999, ikona: "assets/kvartalni-nivo-srebro-clay-soft-3d-v1.png", boja: "#c0c0c0" },
+        { id: 3, ime: "Zlato", min: 5000, max: 8999, ikona: "assets/kvartalni-nivo-zlato-clay-soft-3d-v1.png", boja: "#f5af19" },
+        { id: 4, ime: "Legenda", min: 9000, max: Infinity, ikona: "assets/kvartalni-nivo-legenda-clay-soft-3d-v1.png", boja: "#38bdf8" }
     ],
 
     aktivniTab: 'sezona',
@@ -303,7 +303,7 @@ const KvartalniNivoManager = {
             const aktivan = this.aktivniNivoTab === nivo.id;
             html += `
                 <button type="button" class="kvartal-level-tab ${aktivan ? 'active' : ''}" style="--kvartal-nivo-boja: ${nivo.boja};" onclick="KvartalniNivoManager.promeniNivoTab(${nivo.id})" aria-label="${nivo.ime}" title="${nivo.ime}">
-                    <i class="fa-solid ${nivo.ikona}" aria-hidden="true"></i>
+                    <img class="kvartal-level-icon" src="${nivo.ikona}" alt="" aria-hidden="true" decoding="async">
                 </button>
             `;
         });

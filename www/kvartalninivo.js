@@ -280,6 +280,7 @@ const KvartalniNivoManager = {
         else if (this.aktivniTab === 'svaVremena') html += this.renderSvaVremenaHTML();
         else if (this.aktivniTab === 'slavni') html += this.renderSlavniHTML();
 
+        sadrzaj.className = `kvartalni-nivo-lista kvartalni-nivo-${this.aktivniTab}`;
         sadrzaj.innerHTML = html;
     },
 
@@ -349,13 +350,22 @@ const KvartalniNivoManager = {
         if (!this.serverPodaci.svaVremena || this.serverPodaci.svaVremena.length === 0) {
             html += `<div class="kvartal-empty-state">${this.ucitavanje ? 'Učitavanje podataka sa servera...' : 'Još nema upisanih rezultata.'}</div>`;
         } else {
+            const medalje = [
+                { src: 'assets/toplista-medalja-zlatna-clay-soft-3d.png', alt: 'Prvo mesto' },
+                { src: 'assets/toplista-medalja-srebrna-clay-soft-3d.png', alt: 'Drugo mesto' },
+                { src: 'assets/toplista-medalja-bronzana-clay-soft-3d.png', alt: 'Treće mesto' }
+            ];
+
             this.serverPodaci.svaVremena.forEach((igrac, index) => {
                 const kruna = index === 0 ? `<i class="fa-solid fa-crown kvartal-crown" aria-label="Prvo mesto"></i>` : '';
+                const medalja = index < medalje.length
+                    ? `<img class="kvartal-all-time-medal" src="${medalje[index].src}" alt="${medalje[index].alt}" decoding="async">`
+                    : `<b class="kvartal-ranking-position">${index + 1}.</b>`;
 
                 html += `
                     <article class="kvartal-ranking-row kvartal-all-time-row ${index === 0 ? 'first-place' : ''}">
                         <div class="kvartal-ranking-player">
-                            <b class="kvartal-ranking-position ${index < 3 ? 'top-three' : ''}">${index + 1}.</b>
+                            <span class="kvartal-all-time-medal-slot">${medalja}</span>
                             <div class="kvartal-avatar kvartal-avatar-all-time ${index < 3 ? 'top-three' : ''}">
                                 ${this.napraviAvatarHTML(igrac.avatar)}
                                 ${kruna}

@@ -11041,6 +11041,30 @@ body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-lista::-webkit-scrollbar 
     display: none;
 }
 
+/* Sva vremena: tabovi i naslov ostaju mirni, skroluje se samo kartica rang-liste. */
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-lista.kvartalni-nivo-svaVremena {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-bottom: 0;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-svaVremena :is(.kvartal-main-tabs, .kvartal-heading) {
+    flex: 0 0 auto;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-svaVremena .kvartal-all-time-card {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin-bottom: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-svaVremena .kvartal-all-time-card::-webkit-scrollbar {
+    display: none;
+}
+
 body[data-tema] #kvartalni-nivo-screen #kvartalni-nivo-sadrzaj > .kvartal-main-tabs,
 body[data-tema] #kvartalni-nivo-screen :is(.kvartal-level-tabs, .kvartal-legend-tabs, .kvartal-heading) {
     background: transparent !important;
@@ -11255,6 +11279,23 @@ body[data-tema] #kvartalni-nivo-screen .kvartal-medal-position {
 body[data-tema] #kvartalni-nivo-screen .kvartal-ranking-position.top-three,
 body[data-tema] #kvartalni-nivo-screen .kvartal-medal-position {
     color: #86d7ff !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-all-time-medal-slot {
+    display: inline-flex;
+    flex: 0 0 2rem;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-all-time-medal {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0.13rem 0.2rem rgba(0, 10, 25, 0.34));
 }
 
 body[data-tema] #kvartalni-nivo-screen .kvartal-avatar {

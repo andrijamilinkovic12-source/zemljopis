@@ -41,6 +41,10 @@
             '#podesavanja-screen .settings-theme-icon',
             '#podesavanja-screen .settings-footer-action-icon'
         ],
+        'global-chat-screen': [
+            '#global-chat-screen .screen-pattern-icon',
+            '#global-chat-screen .page-title-icon'
+        ],
         'kvartalni-nivo-screen': [
             '#kvartalni-nivo-screen .screen-pattern-icon',
             '#kvartalni-nivo-screen .page-title-icon'
@@ -215,6 +219,7 @@
                 'toplista-screen',
                 'riznica-screen',
                 'podesavanja-screen',
+                'global-chat-screen',
                 'kvartalni-nivo-screen',
                 'trofeji-main-screen'
             ];

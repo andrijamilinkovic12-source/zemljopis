@@ -26,6 +26,10 @@ const GlobalChatManager = {
             const container = document.getElementById('chat-messages');
             if(!container) return;
             container.innerHTML = ''; // Očisti pre učitavanja
+            if (!Array.isArray(poruke) || poruke.length === 0) {
+                container.innerHTML = '<p class="global-chat-empty">Još uvek nema poruka. Započni razgovor!</p>';
+                return;
+            }
             poruke.forEach(p => this.prikaziPorukuUUI(p));
             this.skrolujDole();
         });
@@ -98,6 +102,9 @@ const GlobalChatManager = {
     prikaziPorukuUUI: function(poruka) {
         const container = document.getElementById('chat-messages');
         if (!container) return;
+
+        const praznoStanje = container.querySelector('.global-chat-empty');
+        if (praznoStanje) praznoStanje.remove();
 
         const jeMoja = poruka.id === Game.socket.id; 
         

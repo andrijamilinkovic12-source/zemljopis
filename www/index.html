@@ -769,21 +769,25 @@
             <img class="pattern-icon pattern-img screen-pattern-icon" src="assets/menu-global-chat.svg" alt="" aria-hidden="true" decoding="async" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);">
         </div>
         
-        <div class="game-header" style="justify-content: center; position: relative; z-index: 10;">
-            <div class="page-heading">
-                <img class="page-title-icon" src="assets/global-chat-clay-3d-navy-v3.png" alt="" aria-hidden="true" decoding="async">
-                <span class="page-title global-chat-title" style="font-size: 1.2rem; font-weight: 800; color: #38bdf8; display: inline-flex; align-items: center; gap: 0.45rem;">GLOBAL CHAT</span>
-            </div>
-            <button class="btn-close" style="position: absolute; right: 1rem; z-index: 20;" onclick="UIManager.prikaziEkran('main-menu')"><i class="fa-solid fa-xmark"></i></button>
+        <div class="page-heading">
+            <img class="page-title-icon global-chat-title-icon" src="assets/global-chat-clay-3d-navy-v3.png" alt="" aria-hidden="true" decoding="async">
+            <h2 class="page-title global-chat-title">GLOBAL CHAT</h2>
         </div>
         
-        <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.8rem; scrollbar-width: none; z-index: 5;">
-            </div>
+        <div class="global-chat-content">
+            <div id="chat-messages" class="global-chat-messages" aria-live="polite"></div>
 
-        <div style="padding: 1rem; padding-bottom: calc(1rem + env(safe-area-inset-bottom, 10px)); background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); border-top: 1px solid rgba(56, 189, 248, 0.3); display: flex; gap: 0.5rem; z-index: 5;">
-            <input type="text" id="chat-input" placeholder="Unesi poruku..." maxlength="150" style="flex: 1; padding: 0.8rem 1rem; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.5); color: #fff; font-size: 0.95rem; outline: none; transition: border-color 0.3s;" autocomplete="off">
-            <button class="btn-primary" style="border: none; border-radius: 12px; padding: 0 1.2rem; cursor: pointer; background: linear-gradient(45deg, #0284c7, #38bdf8); color: #000; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);" onclick="GlobalChatManager.posaljiPoruku()">
-                <i class="fa-solid fa-paper-plane"></i>
+            <div class="global-chat-composer">
+                <input type="text" id="chat-input" class="global-chat-input" placeholder="Unesi poruku..." maxlength="150" autocomplete="off" autocorrect="off" spellcheck="false">
+                <button type="button" class="btn-primary global-chat-send" aria-label="Pošalji poruku" onclick="GlobalChatManager.posaljiPoruku()">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="settings-footer global-chat-footer">
+            <button class="menu-btn settings-back-button global-chat-back-button" onclick="UIManager.prikaziEkran('main-menu')">
+                <i class="fa-solid fa-arrow-left"></i> Nazad u Meni
             </button>
         </div>
     </div>

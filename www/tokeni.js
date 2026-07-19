@@ -61,24 +61,18 @@ const TokeniManager = {
         // Ažuriranje dugmeta za gledanje reklame
         const btnReklama = document.getElementById('btn-gledaj-reklamu');
         if (btnReklama) {
+            btnReklama.classList.remove('is-loading', 'is-maxed');
             if (this.reklamaUToku) {
                 btnReklama.disabled = true;
                 btnReklama.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> Reklama se prikazuje...';
-                btnReklama.style.background = 'rgba(255,255,255,0.1)';
-                btnReklama.style.color = '#a0aec0';
-                btnReklama.style.boxShadow = 'none';
+                btnReklama.classList.add('is-loading');
             } else if (this.tokeni >= this.maxTokena) {
                 btnReklama.disabled = true;
                 btnReklama.innerHTML = '<i class="fa-solid fa-check"></i> Maksimalan broj tokena';
-                btnReklama.style.background = 'rgba(255,255,255,0.1)';
-                btnReklama.style.color = '#a0aec0';
-                btnReklama.style.boxShadow = 'none';
+                btnReklama.classList.add('is-maxed');
             } else {
                 btnReklama.disabled = false;
                 btnReklama.innerHTML = '<i class="fa-solid fa-play"></i> Gledaj reklamu (+1)';
-                btnReklama.style.background = 'linear-gradient(45deg, #11998e, #38ef7d)';
-                btnReklama.style.color = '#000';
-                btnReklama.style.boxShadow = '0 4px 15px rgba(56, 239, 125, 0.4)';
             }
         }
     },

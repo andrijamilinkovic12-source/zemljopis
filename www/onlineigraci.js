@@ -23,7 +23,7 @@ const OnlineIgraciManager = {
         kontejner.innerHTML = '';
 
         if (igraci.length === 0) {
-            kontejner.innerHTML = '<p style="text-align:center; color:#a0aec0; margin-top:2rem;">Trenutno si jedini igrač na mreži.</p>';
+            kontejner.innerHTML = '<p class="online-igraci-empty">Trenutno si jedini igrač na mreži.</p>';
             return;
         }
 
@@ -49,10 +49,15 @@ const OnlineIgraciManager = {
                 actionHtml = `<button class="btn-prijatelj" id="btn-add-${igrac.id}" onclick="OnlineIgraciManager.posaljiZahtev('${igrac.id}', '${igrac.ime}')" title="Dodaj za prijatelja"><i class="fa-solid fa-user-plus"></i></button>`;
             }
 
+            const avatarHtml = typeof SobaPrijateljaManager !== 'undefined'
+                && typeof SobaPrijateljaManager.napraviAvatar === 'function'
+                ? SobaPrijateljaManager.napraviAvatar(igrac.avatar)
+                : '<i class="fa-solid fa-circle-user" aria-hidden="true"></i>';
+
             kontejner.innerHTML += `
                 <div class="online-igrac-red">
                     <div class="online-igrac-info">
-                        <i class="fa-solid fa-circle-user"></i>
+                        <div class="online-igrac-avatar">${avatarHtml}</div>
                         <span>${igrac.ime}</span>
                     </div>
                     ${actionHtml}

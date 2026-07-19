@@ -341,24 +341,23 @@
 
     <div id="online-igraci-screen" class="screen">
         <div class="menu-pattern">
-            <i class="fa-solid fa-users pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+            <img class="pattern-icon pattern-img screen-pattern-icon online-igraci-pattern-icon" src="assets/status-igraci-uzivo-clay-3d.png" alt="" aria-hidden="true" decoding="async" style="top: 20%; left: 50%; transform: translateX(-50%);">
         </div>
         
         <div class="page-heading">
-            <img class="page-title-icon" src="assets/status-igraci-uzivo-clay-3d.png" alt="" aria-hidden="true" decoding="async">
-            <h2 class="page-title" style="color: #38bdf8; margin-bottom: 1.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 189, 248, 0.3); text-align: center;">Igrači uživo</h2>
+            <img class="page-title-icon online-igraci-title-icon" src="assets/status-igraci-uzivo-clay-3d.png" alt="" aria-hidden="true" decoding="async">
+            <h2 class="page-title online-igraci-title">IGRAČI UŽIVO</h2>
         </div>
         
-        <div style="z-index: 5; width: 100%; max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; overflow: hidden;">
-            <p style="text-align: center; color: #a0aec0; font-size: 0.8rem; margin-bottom: 1rem;">Ovo su igrači koji su trenutno u igri. Pošalji im zahtev za prijateljstvo!</p>
+        <div class="online-igraci-content">
+            <p class="online-igraci-info-card">Ovo su igrači koji su trenutno u igri. Pošalji im zahtev za prijateljstvo!</p>
             
-            <div id="online-igraci-lista" style="flex: 1; overflow-y: auto; margin-bottom: 1rem; scrollbar-width: none; padding-bottom: 1rem;">
-                </div>
+            <div id="online-igraci-lista" class="online-igraci-lista"></div>
             
         </div>
 
         <div class="settings-footer">
-            <button class="menu-btn settings-back-button" onclick="UIManager.prikaziEkran('main-menu')">
+            <button class="menu-btn settings-back-button online-igraci-back-button" onclick="UIManager.prikaziEkran('main-menu')">
                 <i class="fa-solid fa-arrow-left"></i> Nazad u Meni
             </button>
         </div>
@@ -409,34 +408,34 @@
 
     <div id="tokeni-screen" class="screen">
         <div class="menu-pattern">
-            <i class="fa-solid fa-ticket pattern-icon" style="top: 20%; left: 50%; font-size: 6rem; opacity: 0.15; transform: translateX(-50%);"></i>
+            <img class="pattern-icon pattern-img screen-pattern-icon tokeni-pattern-icon" src="assets/status-tokeni-clay-3d.png" alt="" aria-hidden="true" decoding="async" style="top: 20%; left: 50%; transform: translateX(-50%);">
         </div>
         
         <div class="page-heading">
-            <img class="page-title-icon" src="assets/status-tokeni-clay-3d.png" alt="" aria-hidden="true" decoding="async">
-            <h2 class="page-title" style="color: #38ef7d; margin-bottom: 0.5rem; z-index: 5; font-size: 1.6rem; text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 239, 125, 0.3); text-align: center;">Tokeni za Igru</h2>
+            <img class="page-title-icon tokeni-title-icon" src="assets/status-tokeni-clay-3d.png" alt="" aria-hidden="true" decoding="async">
+            <h2 class="page-title tokeni-title">TOKENI ZA IGRU</h2>
         </div>
         
-        <div style="z-index: 5; width: 100%; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; padding: 0 1rem; align-items: center; justify-content: center;">
+        <div class="tokeni-content">
             
             <div class="tokeni-card">
-                <i class="fa-solid fa-ticket" style="font-size: 4rem; color: #38ef7d; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(56, 239, 125, 0.5);"></i>
-                <div style="font-size: 3rem; font-weight: 800; color: #fff; line-height: 1;"><span id="tokeni-stanje-veliko">3</span><span style="font-size: 1.5rem; color: #a0aec0;">/3</span></div>
-                <p style="font-size: 0.85rem; margin-top: 1rem; color: #a0aec0;">Svaka partija košta 1 token.<br>Svakog dana dobijaš 3 besplatna tokena.</p>
+                <img class="tokeni-main-icon" src="assets/status-tokeni-clay-3d.png" alt="" aria-hidden="true" decoding="async">
+                <div class="tokeni-stanje"><span id="tokeni-stanje-veliko">3</span><span class="tokeni-maksimum">/3</span></div>
+                <p class="tokeni-card-copy">Svaka partija košta 1 token.<br>Svakog dana dobijaš 3 besplatna tokena.</p>
             </div>
 
-            <button id="btn-gledaj-reklamu" class="btn-primary" style="width: 100%; padding: 1.2rem; border-radius: 15px; font-weight: 800; font-size: 1.1rem; border: none; cursor: pointer; transition: transform 0.2s;" onclick="TokeniManager.pogledajReklamu()">
+            <button id="btn-gledaj-reklamu" class="btn-primary tokeni-ad-button" onclick="TokeniManager.pogledajReklamu()">
                 <i class="fa-solid fa-play"></i> Gledaj reklamu (+1)
             </button>
 
-            <p style="color: #cbd5e0; font-size: 0.75rem; margin-top: 1rem; text-align: center; max-width: 250px;">
+            <p class="tokeni-info-card">
                 Prazan si? Nema problema! Pogledaj kratku reklamu i odmah preuzmi novi token za igru. Možeš dopuniti uvek do maksimum 3.
             </p>
 
         </div>
 
         <div class="settings-footer">
-            <button class="menu-btn settings-back-button" onclick="UIManager.prikaziEkran('main-menu')">
+            <button class="menu-btn settings-back-button tokeni-back-button" onclick="UIManager.prikaziEkran('main-menu')">
                 <i class="fa-solid fa-arrow-left"></i> Nazad u Meni
             </button>
         </div>

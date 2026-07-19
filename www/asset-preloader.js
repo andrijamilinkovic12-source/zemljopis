@@ -52,6 +52,15 @@
         'trofeji-main-screen': [
             '#trofeji-main-screen .screen-pattern-icon',
             '#trofeji-main-screen .page-title-icon'
+        ],
+        'online-igraci-screen': [
+            '#online-igraci-screen .screen-pattern-icon',
+            '#online-igraci-screen .page-title-icon'
+        ],
+        'tokeni-screen': [
+            '#tokeni-screen .screen-pattern-icon',
+            '#tokeni-screen .page-title-icon',
+            '#tokeni-screen .tokeni-main-icon'
         ]
     };
 
@@ -233,6 +242,8 @@
                 'riznica-screen',
                 'podesavanja-screen',
                 'global-chat-screen',
+                'online-igraci-screen',
+                'tokeni-screen',
                 'kvartalni-nivo-screen',
                 'trofeji-main-screen'
             ];

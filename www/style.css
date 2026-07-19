@@ -11563,3 +11563,280 @@ body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-back-button {
 body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-back-button i {
     color: #fff !important;
 }
+
+/* ========================================================
+   TOKENI ZA IGRU I IGRAČI UŽIVO — referentni obrazac soba
+   ======================================================== */
+body[data-tema] #online-igraci-screen .online-igraci-title,
+body[data-tema] #tokeni-screen .tokeni-title {
+    margin-bottom: 0.85rem;
+}
+
+body[data-tema] #online-igraci-screen :is(.online-igraci-pattern-icon, .tokeni-pattern-icon),
+body[data-tema] #tokeni-screen :is(.online-igraci-pattern-icon, .tokeni-pattern-icon) {
+    width: 7rem;
+    height: 7rem;
+    opacity: 0.11;
+    filter: grayscale(0.14) drop-shadow(0 10px 18px rgba(5, 25, 58, 0.24));
+}
+
+body[data-tema] #online-igraci-screen .online-igraci-content,
+body[data-tema] #tokeni-screen .tokeni-content {
+    z-index: 5;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    padding: 0 1rem;
+}
+
+body[data-tema] #online-igraci-screen .online-igraci-content {
+    max-width: 360px;
+    overflow: hidden;
+}
+
+body[data-tema] #tokeni-screen .tokeni-content {
+    max-width: 340px;
+    align-items: center;
+    justify-content: center;
+}
+
+body[data-tema] #online-igraci-screen :is(.online-igraci-info-card, .online-igraci-empty, .online-igrac-red),
+body[data-tema] #tokeni-screen :is(.tokeni-card, .tokeni-info-card, .tokeni-ad-button, .tokeni-back-button),
+body[data-tema] #online-igraci-screen .online-igraci-back-button {
+    background: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7)) !important;
+    border: 1px solid rgba(220, 244, 255, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(1, 12, 31, 0.32), inset 0 1px 0 rgba(127, 198, 255, 0.12) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-tema] #online-igraci-screen .online-igraci-info-card,
+body[data-tema] #online-igraci-screen .online-igraci-empty,
+body[data-tema] #tokeni-screen .tokeni-info-card {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 0 0.8rem;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    color: #fff !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.79rem;
+    font-weight: 500;
+    line-height: 1.38;
+    text-align: center;
+    text-shadow: none !important;
+}
+
+body[data-tema] #online-igraci-screen .online-igraci-lista {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-height: 0;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+body[data-tema] #online-igraci-screen .online-igraci-empty {
+    margin-top: 1.2rem;
+}
+
+body[data-tema] #online-igraci-screen .online-igrac-red {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0.72rem 0.78rem;
+    border-radius: 12px;
+    color: #fff !important;
+}
+
+body[data-tema] #online-igraci-screen .online-igrac-info {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.7rem;
+    color: #fff !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-shadow: none !important;
+}
+
+body[data-tema] #online-igraci-screen .online-igrac-info > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body[data-tema] #online-igraci-screen .online-igrac-avatar {
+    position: relative;
+    display: grid;
+    flex: 0 0 2.45rem;
+    width: 2.45rem;
+    height: 2.45rem;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid rgba(220, 244, 255, 0.48);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body[data-tema] #online-igraci-screen .online-igrac-avatar::after {
+    position: absolute;
+    right: 0.04rem;
+    bottom: 0.04rem;
+    width: 0.56rem;
+    height: 0.56rem;
+    content: '';
+    border: 1px solid rgba(3, 21, 49, 0.85);
+    border-radius: 50%;
+    background: #74e8ac;
+    box-shadow: 0 0 7px rgba(116, 232, 172, 0.9);
+}
+
+body[data-tema] #online-igraci-screen .online-igrac-avatar :is(.avatar-svg, img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+body[data-tema] #online-igraci-screen .online-igrac-avatar > i {
+    color: #fff !important;
+    font-size: 1.65rem;
+}
+
+body[data-tema] #online-igraci-screen .btn-prijatelj {
+    display: grid;
+    flex: 0 0 2.45rem;
+    width: 2.45rem;
+    height: 2.45rem;
+    place-items: center;
+    border: 1px solid rgba(123, 205, 255, 0.7) !important;
+    border-radius: 9px;
+    background: rgba(26, 84, 140, 0.36) !important;
+    color: #fff !important;
+    box-shadow: none !important;
+}
+
+body[data-tema] #online-igraci-screen .btn-prijatelj:active {
+    transform: scale(0.95);
+    background: rgba(48, 133, 201, 0.55) !important;
+}
+
+body[data-tema] #online-igraci-screen .btn-prijatelj.disabled {
+    border-color: rgba(116, 232, 172, 0.64) !important;
+    background: rgba(116, 232, 172, 0.14) !important;
+    color: #74e8ac !important;
+}
+
+body[data-tema] #online-igraci-screen .btn-prijatelj.pending {
+    border-color: rgba(245, 208, 97, 0.68) !important;
+    background: rgba(171, 111, 15, 0.24) !important;
+    color: #fff2b6 !important;
+}
+
+body[data-tema] #tokeni-screen .tokeni-card {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 0 0.8rem;
+    padding: 1.3rem 1rem 1.1rem;
+    border-radius: 16px;
+    color: #fff !important;
+    text-align: center;
+}
+
+body[data-tema] #tokeni-screen .tokeni-main-icon {
+    display: block;
+    width: 4.9rem;
+    height: 4.9rem;
+    margin: 0 auto 0.65rem;
+    object-fit: contain;
+    filter: drop-shadow(0 0.28rem 0.42rem rgba(0, 9, 29, 0.36));
+}
+
+body[data-tema] #tokeni-screen .tokeni-stanje {
+    color: #fff !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    line-height: 1;
+    text-shadow: 0 1px 2px rgba(0, 8, 28, 0.72) !important;
+}
+
+body[data-tema] #tokeni-screen .tokeni-maksimum {
+    margin-left: 0.12rem;
+    color: rgba(255, 255, 255, 0.68) !important;
+    font-size: 1.36rem;
+    font-weight: 700;
+}
+
+body[data-tema] #tokeni-screen .tokeni-card-copy {
+    margin: 0.75rem 0 0;
+    color: rgba(255, 255, 255, 0.82) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.42;
+    text-shadow: none !important;
+}
+
+body[data-tema] #tokeni-screen .tokeni-ad-button {
+    width: 100%;
+    min-height: 3.25rem;
+    margin: 0;
+    border: 1px solid rgba(166, 222, 255, 0.78) !important;
+    border-radius: 12px;
+    background: var(--theme-primary-gradient) !important;
+    color: #fff !important;
+    box-shadow: var(--theme-primary-shadow) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 800;
+    text-shadow: none !important;
+}
+
+body[data-tema] #tokeni-screen .tokeni-ad-button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+body[data-tema] #tokeni-screen .tokeni-ad-button:is(.is-loading, .is-maxed) {
+    border-color: rgba(220, 244, 255, 0.4) !important;
+    background: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7)) !important;
+    box-shadow: 0 8px 20px rgba(1, 12, 31, 0.32), inset 0 1px 0 rgba(127, 198, 255, 0.12) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    cursor: default;
+}
+
+body[data-tema] #tokeni-screen .tokeni-ad-button.is-maxed i {
+    color: #74e8ac !important;
+}
+
+body[data-tema] #tokeni-screen .tokeni-info-card {
+    margin: 0.8rem 0 0;
+}
+
+body[data-tema] :is(#online-igraci-screen, #tokeni-screen) .settings-footer {
+    padding-top: 0.45rem;
+}
+
+body[data-tema] :is(#online-igraci-screen .online-igraci-back-button, #tokeni-screen .tokeni-back-button) {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: min(0.55rem, 1vh) 0.45rem;
+    border-radius: 8px;
+    color: #fff !important;
+    font-size: min(0.78rem, 1.45vh);
+}
+
+body[data-tema] :is(#online-igraci-screen .online-igraci-back-button, #tokeni-screen .tokeni-back-button) i {
+    color: #fff !important;
+}

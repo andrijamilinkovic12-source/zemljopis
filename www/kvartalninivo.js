@@ -339,7 +339,7 @@ const KvartalniNivoManager = {
     renderSvaVremenaHTML: function() {
         let html = `
             <div class="kvartal-heading">
-                <i class="fa-solid fa-infinity" aria-hidden="true"></i>
+                <img class="kvartal-all-time-icon" src="assets/kvartalni-nivo-apsolutni-vladari-clay-soft-3d-v1.png" alt="" aria-hidden="true" decoding="async">
                 <h3>Apsolutni Vladari</h3>
                 <p>Najviše pogođenih pojmova u istoriji igre.</p>
             </div>

@@ -75,7 +75,8 @@
             'assets/kvartalni-nivo-bronza-clay-soft-3d-v1.png',
             'assets/kvartalni-nivo-srebro-clay-soft-3d-v1.png',
             'assets/kvartalni-nivo-zlato-clay-soft-3d-v1.png',
-            'assets/kvartalni-nivo-legenda-clay-soft-3d-v1.png'
+            'assets/kvartalni-nivo-legenda-clay-soft-3d-v1.png',
+            'assets/kvartalni-nivo-apsolutni-vladari-clay-soft-3d-v1.png'
         ]
     };
 

@@ -5,6 +5,10 @@ const SobaPrijateljaManager = {
     prijatelji: [], 
     zahtevi: [], 
     brisanjeUToku: new Set(),
+    introTrajanjeMs: 5200,
+    introTajmer: null,
+    ulazakTajmer: null,
+    otvaranjeUToku: false,
 
     normalizujZahtev: function(zahtev) {
         if (typeof zahtev === "string") {
@@ -45,9 +49,59 @@ const SobaPrijateljaManager = {
             UIManager.prikaziObavestenje("Nema konekcije", "Moraš biti povezan na server.", null, "U redu");
             return;
         }
-        UIManager.prikaziEkran('soba-prijatelja-screen');
-        this.promeniTab('lista');
-        Game.socket.emit('traziOsvezenjePrijatelja'); 
+        if (this.otvaranjeUToku) return;
+        this.otvaranjeUToku = true;
+
+        if (typeof KeyboardManager !== 'undefined') {
+            KeyboardManager.hideKeyboard();
+        }
+
+        // Podaci se učitavaju dok traje uvod, da ekran bude spreman pri ulasku.
+        Game.socket.emit('traziOsvezenjePrijatelja');
+        this.prikaziIntro(() => {
+            UIManager.prikaziEkran('soba-prijatelja-screen');
+            this.promeniTab('lista');
+            this.pokreniBlagiUlazakUSobu();
+            this.otvaranjeUToku = false;
+        });
+    },
+
+    prikaziIntro: function(callback) {
+        const overlay = document.getElementById('soba-prijatelja-intro-overlay');
+        const smanjeniPokret = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const trajanje = smanjeniPokret ? 420 : this.introTrajanjeMs;
+        const trajanjeZatvaranja = smanjeniPokret ? 160 : Math.min(420, trajanje);
+
+        if (!overlay) {
+            setTimeout(callback, trajanje);
+            return;
+        }
+
+        clearTimeout(this.introTajmer);
+        overlay.style.setProperty('--soba-prijatelja-intro-ms', `${trajanje}ms`);
+        overlay.classList.remove('closing');
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        this.introTajmer = setTimeout(() => {
+            overlay.classList.add('closing');
+            setTimeout(() => {
+                overlay.classList.remove('active', 'closing');
+                overlay.setAttribute('aria-hidden', 'true');
+                callback();
+            }, trajanjeZatvaranja);
+        }, Math.max(0, trajanje - trajanjeZatvaranja));
+    },
+
+    pokreniBlagiUlazakUSobu: function() {
+        const ekran = document.getElementById('soba-prijatelja-screen');
+        if (!ekran) return;
+
+        clearTimeout(this.ulazakTajmer);
+        ekran.classList.remove('soba-prijatelja-entering');
+        void ekran.offsetWidth;
+        ekran.classList.add('soba-prijatelja-entering');
+        this.ulazakTajmer = setTimeout(() => ekran.classList.remove('soba-prijatelja-entering'), 720);
     },
 
     promeniTab: function(tab) {

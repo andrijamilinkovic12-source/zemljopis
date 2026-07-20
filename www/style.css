@@ -4554,6 +4554,329 @@ body.keyboard-open .dnevni-input-group input {
     }
 }
 
+/* Soba prijatelja: mekani 3D uvod koristi boje centralne ikone prijateljstva. */
+.soba-prijatelja-intro-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9995;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 50% 39%, rgba(247, 64, 121, 0.25), transparent 25%),
+        radial-gradient(circle at 50% 61%, rgba(151, 91, 224, 0.2), transparent 40%),
+        linear-gradient(155deg, #10183d 0%, #251b50 50%, #142850 100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+    .soba-prijatelja-intro-overlay {
+        --soba-prijatelja-intro-placement: translate(-50%, -50%);
+        top: 50%;
+        right: auto;
+        bottom: auto;
+        left: 50%;
+        width: 464px;
+        height: min(calc(90dvh - 16px), 884px);
+        transform: var(--soba-prijatelja-intro-placement);
+        border-radius: 27px;
+    }
+}
+
+.soba-prijatelja-intro-overlay.active {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+    animation: sobaPrijateljaIntroFade var(--soba-prijatelja-intro-ms, 5200ms) ease both;
+}
+
+.soba-prijatelja-intro-overlay.closing {
+    animation: sobaPrijateljaIntroClose 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.soba-prijatelja-intro-overlay::before,
+.soba-prijatelja-intro-overlay::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: min(88vw, 460px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(255, 228, 201, 0.16);
+    border-radius: 55% 45% 52% 48% / 47% 55% 45% 53%;
+    box-shadow: inset 0 0 42px rgba(255, 229, 203, 0.04), 0 0 48px rgba(200, 96, 216, 0.1);
+    animation: sobaPrijateljaIntroHalo var(--soba-prijatelja-intro-ms, 5200ms) ease both;
+}
+
+.soba-prijatelja-intro-overlay::before { transform: rotate(-12deg); }
+
+.soba-prijatelja-intro-overlay::after {
+    width: min(69vw, 350px);
+    border-color: rgba(246, 91, 143, 0.26);
+    transform: rotate(17deg);
+    animation-delay: 100ms;
+}
+
+.soba-prijatelja-intro-stage {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 390px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.soba-prijatelja-intro-kicker {
+    padding: 0.36rem 0.7rem;
+    border: 1px solid rgba(255, 224, 195, 0.28);
+    border-radius: 999px;
+    background: rgba(255, 230, 201, 0.08);
+    color: #fff0dc;
+    font-size: 0.58rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 8px 18px rgba(10, 7, 33, 0.26);
+    animation: sobaPrijateljaIntroKicker var(--soba-prijatelja-intro-ms, 5200ms) ease both;
+}
+
+.soba-prijatelja-intro-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    margin-top: 0.74rem;
+}
+
+.soba-prijatelja-intro-word {
+    color: #fff0dc;
+    font-size: clamp(1.38rem, 6.1vw, 1.92rem);
+    font-weight: 950;
+    letter-spacing: 0.035em;
+    line-height: 1;
+    text-shadow: 0 3px 0 rgba(84, 24, 68, 0.36), 0 0 22px rgba(246, 77, 139, 0.4);
+    animation: sobaPrijateljaIntroWord var(--soba-prijatelja-intro-ms, 5200ms) cubic-bezier(0.18, 0.86, 0.26, 1) both;
+}
+
+.soba-prijatelja-intro-plus {
+    width: 1.28rem;
+    height: 1.28rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #ff5a91, #dd2663);
+    color: #fff7e8;
+    font-size: 1.14rem;
+    font-weight: 900;
+    line-height: 1;
+    box-shadow: 0 0 0 3px rgba(255, 232, 204, 0.14), 0 0 16px rgba(255, 77, 139, 0.46);
+    animation: sobaPrijateljaIntroPlus var(--soba-prijatelja-intro-ms, 5200ms) ease both;
+}
+
+.soba-prijatelja-intro-hero {
+    position: relative;
+    width: 9.2rem;
+    height: 8.8rem;
+    display: grid;
+    place-items: center;
+    margin: 0.15rem 0 -0.45rem;
+}
+
+.soba-prijatelja-intro-icon {
+    position: relative;
+    z-index: 1;
+    width: 8.25rem;
+    height: 8.25rem;
+    object-fit: contain;
+    filter: drop-shadow(0 15px 20px rgba(9, 5, 33, 0.54)) drop-shadow(0 0 20px rgba(247, 83, 142, 0.22));
+    animation: sobaPrijateljaIntroHero var(--soba-prijatelja-intro-ms, 5200ms) cubic-bezier(0.18, 0.88, 0.26, 1) both;
+}
+
+.soba-prijatelja-intro-orbit {
+    position: absolute;
+    width: 0.68rem;
+    height: 0.68rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffe8cc 0 15%, #f75c98 35%, #ad2d75 100%);
+    box-shadow: 0 0 0 3px rgba(255, 235, 203, 0.12), 0 0 16px rgba(250, 91, 155, 0.42);
+    animation: sobaPrijateljaIntroOrbit var(--soba-prijatelja-intro-ms, 5200ms) ease both;
+}
+
+.soba-prijatelja-intro-orbit-left { left: 0.1rem; top: 54%; }
+.soba-prijatelja-intro-orbit-right { right: 0.1rem; top: 31%; animation-delay: 140ms; }
+
+.soba-prijatelja-intro-actions {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.58rem;
+    margin-top: -0.15rem;
+}
+
+.soba-prijatelja-intro-action {
+    width: 4.15rem;
+    display: grid;
+    justify-items: center;
+    gap: 0.15rem;
+    padding: 0.28rem 0.22rem 0.24rem;
+    border: 1px solid rgba(255, 230, 200, 0.2);
+    border-radius: 0.78rem;
+    background: linear-gradient(145deg, rgba(255, 239, 221, 0.15), rgba(150, 80, 196, 0.18));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.17), 0 7px 14px rgba(12, 6, 36, 0.3);
+    animation: sobaPrijateljaIntroAction var(--soba-prijatelja-intro-ms, 5200ms) cubic-bezier(0.2, 0.86, 0.25, 1) both;
+}
+
+.soba-prijatelja-intro-action:nth-child(2) { animation-delay: 130ms; }
+
+.soba-prijatelja-intro-action img {
+    width: 1.5rem;
+    height: 1.5rem;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 3px rgba(22, 10, 45, 0.24));
+}
+
+.soba-prijatelja-intro-action small {
+    color: #fff1dc;
+    font-size: 0.46rem;
+    font-weight: 900;
+    letter-spacing: 0.07em;
+}
+
+.soba-prijatelja-intro-copy {
+    margin: 0.56rem 0 0;
+    color: rgba(255, 240, 220, 0.92);
+    font-size: 0.54rem;
+    font-weight: 850;
+    letter-spacing: 0.105em;
+    animation: sobaPrijateljaIntroCopy var(--soba-prijatelja-intro-ms, 5200ms) ease both;
+}
+
+.soba-prijatelja-intro-copy span {
+    padding: 0 0.18rem;
+    color: #ff83b2;
+}
+
+.soba-prijatelja-intro-line {
+    width: min(72%, 240px);
+    height: 3px;
+    margin-top: 0.54rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, #ffe2b7 18%, #f65a96 50%, #9a6de5 82%, transparent);
+    box-shadow: 0 0 12px rgba(239, 92, 156, 0.36);
+    animation: sobaPrijateljaIntroLine var(--soba-prijatelja-intro-ms, 5200ms) ease both;
+}
+
+@keyframes sobaPrijateljaIntroFade {
+    0% { opacity: 0; }
+    9% { opacity: 1; }
+    89% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+@keyframes sobaPrijateljaIntroClose {
+    to { opacity: 0; transform: var(--soba-prijatelja-intro-placement, translate(0, 0)) scale(1.018); }
+}
+
+@keyframes sobaPrijateljaIntroHalo {
+    0% { opacity: 0; }
+    17% { opacity: 0.84; }
+    75% { opacity: 0.7; }
+    100% { opacity: 0.18; }
+}
+
+@keyframes sobaPrijateljaIntroKicker {
+    0%, 9% { opacity: 0; transform: translateY(-12px) scale(0.92); }
+    23%, 78% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.9; transform: translateY(0) scale(0.98); }
+}
+
+@keyframes sobaPrijateljaIntroWord {
+    0%, 8% { opacity: 0; transform: translateY(-18px) scale(0.88); }
+    25%, 78% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 1; transform: translateY(0) scale(0.98); }
+}
+
+@keyframes sobaPrijateljaIntroPlus {
+    0%, 13% { opacity: 0; transform: rotate(-45deg) scale(0.2); }
+    29%, 76% { opacity: 1; transform: rotate(0deg) scale(1); }
+    100% { opacity: 0.86; transform: rotate(20deg) scale(0.84); }
+}
+
+@keyframes sobaPrijateljaIntroHero {
+    0%, 12% { opacity: 0; transform: translateY(28px) scale(0.7) rotate(-4deg); }
+    28% { opacity: 1; transform: translateY(-3px) scale(1.03) rotate(1deg); }
+    48%, 76% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 1; transform: translateY(-4px) scale(1.015) rotate(0deg); }
+}
+
+@keyframes sobaPrijateljaIntroOrbit {
+    0%, 18% { opacity: 0; transform: translateY(8px) scale(0.25); }
+    34%, 76% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.65; transform: translateY(-5px) scale(0.9); }
+}
+
+@keyframes sobaPrijateljaIntroAction {
+    0%, 25% { opacity: 0; transform: translateY(13px) scale(0.72); }
+    41%, 77% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.86; transform: translateY(-2px) scale(0.96); }
+}
+
+@keyframes sobaPrijateljaIntroCopy {
+    0%, 35% { opacity: 0; transform: translateY(5px); }
+    50%, 78% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0.72; transform: translateY(0); }
+}
+
+@keyframes sobaPrijateljaIntroLine {
+    0%, 35% { opacity: 0; transform: scaleX(0.18); }
+    51%, 79% { opacity: 0.95; transform: scaleX(1); }
+    100% { opacity: 0.62; transform: scaleX(0.84); }
+}
+
+#soba-prijatelja-screen.soba-prijatelja-entering .page-heading,
+#soba-prijatelja-screen.soba-prijatelja-entering .soba-prijatelja-content,
+#soba-prijatelja-screen.soba-prijatelja-entering .settings-footer {
+    animation: sobaPrijateljaRoomEnter 680ms cubic-bezier(0.18, 0.82, 0.28, 1) both;
+}
+
+#soba-prijatelja-screen.soba-prijatelja-entering .soba-prijatelja-content { animation-delay: 75ms; }
+#soba-prijatelja-screen.soba-prijatelja-entering .settings-footer { animation-delay: 135ms; }
+
+@keyframes sobaPrijateljaRoomEnter {
+    from { opacity: 0; transform: translateY(15px) scale(0.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 340px), (max-height: 620px) {
+    .soba-prijatelja-intro-hero { width: 7.7rem; height: 7.5rem; }
+    .soba-prijatelja-intro-icon { width: 6.95rem; height: 6.95rem; }
+    .soba-prijatelja-intro-title { margin-top: 0.54rem; }
+    .soba-prijatelja-intro-copy { margin-top: 0.34rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .soba-prijatelja-intro-overlay.active,
+    .soba-prijatelja-intro-overlay.closing,
+    .soba-prijatelja-intro-overlay::before,
+    .soba-prijatelja-intro-overlay::after,
+    .soba-prijatelja-intro-kicker,
+    .soba-prijatelja-intro-word,
+    .soba-prijatelja-intro-plus,
+    .soba-prijatelja-intro-icon,
+    .soba-prijatelja-intro-orbit,
+    .soba-prijatelja-intro-action,
+    .soba-prijatelja-intro-copy,
+    .soba-prijatelja-intro-line,
+    #soba-prijatelja-screen.soba-prijatelja-entering .page-heading,
+    #soba-prijatelja-screen.soba-prijatelja-entering .soba-prijatelja-content,
+    #soba-prijatelja-screen.soba-prijatelja-entering .settings-footer {
+        animation-duration: 1ms !important;
+    }
+}
+
 .action-footer { 
     position: absolute; bottom: 0; left: 0; width: 100%; 
     padding: 0.6rem 1.2rem calc(0.5rem + env(safe-area-inset-bottom, 10px)); 

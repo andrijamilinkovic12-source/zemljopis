@@ -1260,7 +1260,7 @@ const Game = {
             tabla.classList.remove('game-mode-entry-soft');
             void tabla.offsetWidth;
             tabla.classList.add('game-mode-entry-soft');
-            setTimeout(() => tabla.classList.remove('game-mode-entry-soft'), 820);
+            setTimeout(() => tabla.classList.remove('game-mode-entry-soft'), 1180);
         };
 
         const rundaIdPriZakazivanju = this.aktivnaRundaId;

@@ -131,7 +131,7 @@ const UIManager = {
         void overlay.offsetWidth;
         overlay.classList.add('active', 'closing');
 
-        cekajTransformaciju(levaVrata, 1980, () => {
+        cekajTransformaciju(levaVrata, 2140, () => {
             overlay.classList.remove('closing');
             overlay.classList.add('holding');
 
@@ -146,7 +146,7 @@ const UIManager = {
                 overlay.classList.add('opening');
                 overlay.classList.remove('active', 'holding');
 
-                cekajTransformaciju(levaVrata, 1980, () => {
+                cekajTransformaciju(levaVrata, 2140, () => {
                     overlay.classList.remove('opening');
                     overlay.dataset.tranzicijaUToku = 'false';
                     overlay.setAttribute('aria-hidden', 'true');
@@ -155,7 +155,7 @@ const UIManager = {
                         callbackPoOtvaranju();
                     }
                 });
-            }, 2000);
+            }, 2200);
         });
     },
 

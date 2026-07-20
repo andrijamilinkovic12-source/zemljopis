@@ -4877,6 +4877,313 @@ body.keyboard-open .dnevni-input-group input {
     }
 }
 
+/* Podešavanja: mekani 3D uvod koristi boje glavne ikone i njenih kartica. */
+.podesavanja-intro-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9995;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 50% 37%, rgba(249, 79, 143, 0.26), transparent 25%),
+        radial-gradient(circle at 51% 63%, rgba(126, 94, 229, 0.22), transparent 42%),
+        linear-gradient(155deg, #071a36 0%, #182858 49%, #21183f 100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+    .podesavanja-intro-overlay {
+        --podesavanja-intro-placement: translate(-50%, -50%);
+        top: 50%;
+        right: auto;
+        bottom: auto;
+        left: 50%;
+        width: 464px;
+        height: min(calc(90dvh - 16px), 884px);
+        transform: var(--podesavanja-intro-placement);
+        border-radius: 27px;
+    }
+}
+
+.podesavanja-intro-overlay.active {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+    animation: podesavanjaIntroFade var(--podesavanja-intro-ms, 5200ms) ease both;
+}
+
+.podesavanja-intro-overlay.closing {
+    animation: podesavanjaIntroClose 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.podesavanja-intro-overlay::before,
+.podesavanja-intro-overlay::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: min(88vw, 460px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(255, 231, 207, 0.17);
+    border-radius: 55% 45% 52% 48% / 47% 55% 45% 53%;
+    box-shadow: inset 0 0 42px rgba(255, 231, 207, 0.04), 0 0 48px rgba(138, 95, 228, 0.12);
+    animation: podesavanjaIntroHalo var(--podesavanja-intro-ms, 5200ms) ease both;
+}
+
+.podesavanja-intro-overlay::before { transform: rotate(-12deg); }
+
+.podesavanja-intro-overlay::after {
+    width: min(69vw, 350px);
+    border-color: rgba(248, 91, 151, 0.26);
+    transform: rotate(17deg);
+    animation-delay: 100ms;
+}
+
+.podesavanja-intro-stage {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 390px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.podesavanja-intro-kicker {
+    padding: 0.36rem 0.7rem;
+    border: 1px solid rgba(255, 229, 204, 0.28);
+    border-radius: 999px;
+    background: rgba(255, 238, 219, 0.08);
+    color: #fff0dc;
+    font-size: 0.58rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 8px 18px rgba(5, 10, 35, 0.28);
+    animation: podesavanjaIntroKicker var(--podesavanja-intro-ms, 5200ms) ease both;
+}
+
+.podesavanja-intro-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.34rem;
+    margin-top: 0.74rem;
+}
+
+.podesavanja-intro-word {
+    color: #fff0dc;
+    font-size: clamp(1.36rem, 5.95vw, 1.88rem);
+    font-weight: 950;
+    letter-spacing: 0.025em;
+    line-height: 1;
+    text-shadow: 0 3px 0 rgba(53, 24, 92, 0.42), 0 0 22px rgba(246, 77, 140, 0.42);
+    animation: podesavanjaIntroWord var(--podesavanja-intro-ms, 5200ms) cubic-bezier(0.18, 0.86, 0.26, 1) both;
+}
+
+.podesavanja-intro-gear {
+    width: 1.3rem;
+    height: 1.3rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #aa7cf1, #6247bc);
+    color: #fff4e4;
+    font-size: 1.02rem;
+    font-weight: 900;
+    line-height: 1;
+    box-shadow: 0 0 0 3px rgba(255, 232, 204, 0.14), 0 0 16px rgba(139, 92, 232, 0.46);
+    animation: podesavanjaIntroGear var(--podesavanja-intro-ms, 5200ms) ease both;
+}
+
+.podesavanja-intro-hero {
+    position: relative;
+    width: 8.85rem;
+    height: 8.25rem;
+    display: grid;
+    place-items: center;
+    margin: 0.08rem 0 -0.45rem;
+}
+
+.podesavanja-intro-icon {
+    position: relative;
+    z-index: 1;
+    width: 7.75rem;
+    height: 7.75rem;
+    object-fit: contain;
+    filter: drop-shadow(0 15px 20px rgba(4, 9, 34, 0.56)) drop-shadow(0 0 20px rgba(245, 86, 148, 0.24));
+    animation: podesavanjaIntroHero var(--podesavanja-intro-ms, 5200ms) cubic-bezier(0.18, 0.88, 0.26, 1) both;
+}
+
+.podesavanja-intro-orbit {
+    position: absolute;
+    width: 0.68rem;
+    height: 0.68rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff0d8 0 15%, #f85a98 35%, #a83283 100%);
+    box-shadow: 0 0 0 3px rgba(255, 235, 203, 0.12), 0 0 16px rgba(247, 92, 156, 0.42);
+    animation: podesavanjaIntroOrbit var(--podesavanja-intro-ms, 5200ms) ease both;
+}
+
+.podesavanja-intro-orbit-left { left: 0.04rem; top: 57%; }
+.podesavanja-intro-orbit-right { right: 0.04rem; top: 27%; animation-delay: 140ms; }
+
+.podesavanja-intro-sections {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.3rem;
+    margin-top: -0.1rem;
+}
+
+.podesavanja-intro-section {
+    width: 3.02rem;
+    display: grid;
+    justify-items: center;
+    gap: 0.12rem;
+    padding: 0.26rem 0.14rem 0.22rem;
+    border: 1px solid rgba(255, 230, 200, 0.2);
+    border-radius: 0.72rem;
+    background: linear-gradient(145deg, rgba(255, 238, 219, 0.15), rgba(118, 82, 194, 0.2));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.17), 0 7px 14px rgba(5, 7, 36, 0.3);
+    animation: podesavanjaIntroSection var(--podesavanja-intro-ms, 5200ms) cubic-bezier(0.2, 0.86, 0.25, 1) both;
+}
+
+.podesavanja-intro-section:nth-child(2) { animation-delay: 90ms; }
+.podesavanja-intro-section:nth-child(3) { animation-delay: 180ms; }
+.podesavanja-intro-section:nth-child(4) { animation-delay: 270ms; }
+
+.podesavanja-intro-section img {
+    width: 1.42rem;
+    height: 1.42rem;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 3px rgba(15, 8, 48, 0.28));
+}
+
+.podesavanja-intro-section small {
+    color: #fff1dc;
+    font-size: 0.39rem;
+    font-weight: 900;
+    letter-spacing: 0.035em;
+}
+
+.podesavanja-intro-line {
+    width: min(72%, 240px);
+    height: 3px;
+    margin-top: 0.56rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, #ffe0b8 18%, #f65a96 50%, #9a73ea 82%, transparent);
+    box-shadow: 0 0 12px rgba(238, 92, 157, 0.36);
+    animation: podesavanjaIntroLine var(--podesavanja-intro-ms, 5200ms) ease both;
+}
+
+@keyframes podesavanjaIntroFade {
+    0% { opacity: 0; }
+    9% { opacity: 1; }
+    89% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+@keyframes podesavanjaIntroClose {
+    to { opacity: 0; transform: var(--podesavanja-intro-placement, translate(0, 0)) scale(1.018); }
+}
+
+@keyframes podesavanjaIntroHalo {
+    0% { opacity: 0; }
+    17% { opacity: 0.84; }
+    75% { opacity: 0.7; }
+    100% { opacity: 0.18; }
+}
+
+@keyframes podesavanjaIntroKicker {
+    0%, 9% { opacity: 0; transform: translateY(-12px) scale(0.92); }
+    23%, 78% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.9; transform: translateY(0) scale(0.98); }
+}
+
+@keyframes podesavanjaIntroWord {
+    0%, 8% { opacity: 0; transform: translateY(-18px) scale(0.88); }
+    25%, 78% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 1; transform: translateY(0) scale(0.98); }
+}
+
+@keyframes podesavanjaIntroGear {
+    0%, 13% { opacity: 0; transform: rotate(-50deg) scale(0.2); }
+    29%, 76% { opacity: 1; transform: rotate(0deg) scale(1); }
+    100% { opacity: 0.86; transform: rotate(32deg) scale(0.84); }
+}
+
+@keyframes podesavanjaIntroHero {
+    0%, 12% { opacity: 0; transform: translateY(28px) scale(0.7) rotate(-4deg); }
+    28% { opacity: 1; transform: translateY(-3px) scale(1.03) rotate(1deg); }
+    48%, 76% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 1; transform: translateY(-4px) scale(1.015) rotate(0deg); }
+}
+
+@keyframes podesavanjaIntroOrbit {
+    0%, 18% { opacity: 0; transform: translateY(8px) scale(0.25); }
+    34%, 76% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.65; transform: translateY(-5px) scale(0.9); }
+}
+
+@keyframes podesavanjaIntroSection {
+    0%, 25% { opacity: 0; transform: translateY(13px) scale(0.72); }
+    41%, 77% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.86; transform: translateY(-2px) scale(0.96); }
+}
+
+@keyframes podesavanjaIntroLine {
+    0%, 35% { opacity: 0; transform: scaleX(0.18); }
+    51%, 79% { opacity: 0.95; transform: scaleX(1); }
+    100% { opacity: 0.62; transform: scaleX(0.84); }
+}
+
+#podesavanja-screen.podesavanja-entering .page-heading,
+#podesavanja-screen.podesavanja-entering .settings-pager,
+#podesavanja-screen.podesavanja-entering .settings-content,
+#podesavanja-screen.podesavanja-entering .settings-footer {
+    animation: podesavanjaRoomEnter 680ms cubic-bezier(0.18, 0.82, 0.28, 1) both;
+}
+
+#podesavanja-screen.podesavanja-entering .settings-pager { animation-delay: 45ms; }
+#podesavanja-screen.podesavanja-entering .settings-content { animation-delay: 85ms; }
+#podesavanja-screen.podesavanja-entering .settings-footer { animation-delay: 145ms; }
+
+@keyframes podesavanjaRoomEnter {
+    from { opacity: 0; transform: translateY(15px) scale(0.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 340px), (max-height: 620px) {
+    .podesavanja-intro-hero { width: 7.55rem; height: 7.15rem; }
+    .podesavanja-intro-icon { width: 6.7rem; height: 6.7rem; }
+    .podesavanja-intro-title { margin-top: 0.54rem; }
+    .podesavanja-intro-section { width: 2.75rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .podesavanja-intro-overlay.active,
+    .podesavanja-intro-overlay.closing,
+    .podesavanja-intro-overlay::before,
+    .podesavanja-intro-overlay::after,
+    .podesavanja-intro-kicker,
+    .podesavanja-intro-word,
+    .podesavanja-intro-gear,
+    .podesavanja-intro-icon,
+    .podesavanja-intro-orbit,
+    .podesavanja-intro-section,
+    .podesavanja-intro-line,
+    #podesavanja-screen.podesavanja-entering .page-heading,
+    #podesavanja-screen.podesavanja-entering .settings-pager,
+    #podesavanja-screen.podesavanja-entering .settings-content,
+    #podesavanja-screen.podesavanja-entering .settings-footer {
+        animation-duration: 1ms !important;
+    }
+}
+
 .action-footer { 
     position: absolute; bottom: 0; left: 0; width: 100%; 
     padding: 0.6rem 1.2rem calc(0.5rem + env(safe-area-inset-bottom, 10px)); 

@@ -16,6 +16,11 @@ const PodesavanjaManager = {
         pismo: "latinica" // Podrazumevano pismo
     },
 
+    introTrajanjeMs: 5200,
+    introTajmer: null,
+    ulazakTajmer: null,
+    otvaranjeUToku: false,
+
     dozvoljeneTeme: ['drzava', 'okean', 'grad', 'planina', 'biljka', 'zivotinja', 'predmet'],
 
     naziviTema: {
@@ -561,6 +566,17 @@ const PodesavanjaManager = {
     },
 
     otvoriEkran: function() {
+        if (!this.profilKompletan()) {
+            this.prikaziObavezniProfil();
+            return;
+        }
+        if (this.otvaranjeUToku) return;
+        this.otvaranjeUToku = true;
+
+        if (typeof KeyboardManager !== 'undefined') {
+            KeyboardManager.hideKeyboard();
+        }
+
         const inputNadimak = document.getElementById('postavke-nadimak');
         if (inputNadimak) {
             inputNadimak.value = this.postavke.nadimak || "";
@@ -575,11 +591,52 @@ const PodesavanjaManager = {
         this.azurirajDugmeZvuk();
         this.azurirajDugmadTeme();
         this.azurirajDugmePismo();
-        
-        UIManager.prikaziEkran('podesavanja-screen');
 
-        this.poveziStranicePodesavanja();
-        requestAnimationFrame(() => this.idiNaStranicuPodesavanja(0, false));
+        this.prikaziIntro(() => {
+            UIManager.prikaziEkran('podesavanja-screen');
+            this.poveziStranicePodesavanja();
+            requestAnimationFrame(() => this.idiNaStranicuPodesavanja(0, false));
+            this.pokreniBlagiUlazakUSobu();
+            this.otvaranjeUToku = false;
+        });
+    },
+
+    prikaziIntro: function(callback) {
+        const overlay = document.getElementById('podesavanja-intro-overlay');
+        const smanjeniPokret = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const trajanje = smanjeniPokret ? 420 : this.introTrajanjeMs;
+        const trajanjeZatvaranja = smanjeniPokret ? 160 : Math.min(420, trajanje);
+
+        if (!overlay) {
+            setTimeout(callback, trajanje);
+            return;
+        }
+
+        clearTimeout(this.introTajmer);
+        overlay.style.setProperty('--podesavanja-intro-ms', `${trajanje}ms`);
+        overlay.classList.remove('closing');
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        this.introTajmer = setTimeout(() => {
+            overlay.classList.add('closing');
+            setTimeout(() => {
+                overlay.classList.remove('active', 'closing');
+                overlay.setAttribute('aria-hidden', 'true');
+                callback();
+            }, trajanjeZatvaranja);
+        }, Math.max(0, trajanje - trajanjeZatvaranja));
+    },
+
+    pokreniBlagiUlazakUSobu: function() {
+        const ekran = document.getElementById('podesavanja-screen');
+        if (!ekran) return;
+
+        clearTimeout(this.ulazakTajmer);
+        ekran.classList.remove('podesavanja-entering');
+        void ekran.offsetWidth;
+        ekran.classList.add('podesavanja-entering');
+        this.ulazakTajmer = setTimeout(() => ekran.classList.remove('podesavanja-entering'), 720);
     },
 
     poveziStranicePodesavanja: function() {

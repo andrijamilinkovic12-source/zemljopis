@@ -4,6 +4,10 @@ const RiznicaManager = {
     dukati: 500, // Početni poklon dukati za testiranje
     aktivnaKategorija: 'teme', // Defaultna je sada teme
     besplatanTestRezim: true,
+    introTrajanjeMs: 5200,
+    introTajmer: null,
+    ulazakTajmer: null,
+    otvaranjeUToku: false,
 
     podaci: {
         teme: [
@@ -140,9 +144,58 @@ const RiznicaManager = {
     },
 
     otvoriEkran: function() {
-        UIManager.prikaziEkran('riznica-screen');
-        this.azurirajPrikazDukata();
-        this.promeniKategoriju('teme'); 
+        if (this.otvaranjeUToku) return;
+        this.otvaranjeUToku = true;
+
+        if (typeof KeyboardManager !== 'undefined') {
+            KeyboardManager.hideKeyboard();
+        }
+
+        this.prikaziIntro(() => {
+            UIManager.prikaziEkran('riznica-screen');
+            this.azurirajPrikazDukata();
+            this.promeniKategoriju('teme');
+            this.pokreniBlagiUlazakUSobu();
+            this.otvaranjeUToku = false;
+        });
+    },
+
+    prikaziIntro: function(callback) {
+        const overlay = document.getElementById('riznica-intro-overlay');
+        const smanjeniPokret = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const trajanje = smanjeniPokret ? 420 : this.introTrajanjeMs;
+        const trajanjeZatvaranja = smanjeniPokret ? 160 : Math.min(420, trajanje);
+
+        if (!overlay) {
+            setTimeout(callback, trajanje);
+            return;
+        }
+
+        clearTimeout(this.introTajmer);
+        overlay.style.setProperty('--riznica-intro-ms', `${trajanje}ms`);
+        overlay.classList.remove('closing');
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        this.introTajmer = setTimeout(() => {
+            overlay.classList.add('closing');
+            setTimeout(() => {
+                overlay.classList.remove('active', 'closing');
+                overlay.setAttribute('aria-hidden', 'true');
+                callback();
+            }, trajanjeZatvaranja);
+        }, Math.max(0, trajanje - trajanjeZatvaranja));
+    },
+
+    pokreniBlagiUlazakUSobu: function() {
+        const ekran = document.getElementById('riznica-screen');
+        if (!ekran) return;
+
+        clearTimeout(this.ulazakTajmer);
+        ekran.classList.remove('riznica-entering');
+        void ekran.offsetWidth;
+        ekran.classList.add('riznica-entering');
+        this.ulazakTajmer = setTimeout(() => ekran.classList.remove('riznica-entering'), 720);
     },
 
     azurirajPrikazDukata: function() {

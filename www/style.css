@@ -9306,26 +9306,27 @@ body[data-tema] #ad-preview-time {
     border-color: rgba(var(--theme-secondary-rgb), 0.35) !important;
 }
 
-body[data-tema][data-tastatura] #custom-keyboard {
+/* Izvorna tastatura prati aktivnu temu; ostali skinovi zadržavaju svoje boje. */
+body[data-tema][data-tastatura="izvorna"] #custom-keyboard {
     background: var(--theme-panel) !important;
     border-top-color: var(--theme-border) !important;
     box-shadow: 0 -12px 28px rgba(72, 96, 118, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.52) !important;
 }
 
-body[data-tema][data-tastatura] .kb-key {
+body[data-tema][data-tastatura="izvorna"] .kb-key {
     background: rgba(var(--theme-primary-rgb), 0.08) !important;
     color: var(--theme-primary) !important;
     border-color: rgba(var(--theme-primary-rgb), 0.22) !important;
     box-shadow: var(--theme-control-shadow) !important;
 }
 
-body[data-tema][data-tastatura] .kb-special {
+body[data-tema][data-tastatura="izvorna"] .kb-special {
     background: rgba(var(--theme-secondary-rgb), 0.12) !important;
     color: var(--theme-secondary) !important;
     border-color: rgba(var(--theme-secondary-rgb), 0.28) !important;
 }
 
-body[data-tema][data-tastatura] .kb-enter {
+body[data-tema][data-tastatura="izvorna"] .kb-enter {
     background: var(--theme-primary-gradient) !important;
     color: var(--theme-on-primary) !important;
     border-color: rgba(255, 255, 255, 0.42) !important;
@@ -9512,7 +9513,7 @@ body[data-tema][data-tastatura] .kb-enter {
     }
 }
 
-body[data-tema][data-tastatura] .kb-key:active {
+body[data-tema][data-tastatura="izvorna"] .kb-key:active {
     background: var(--theme-primary) !important;
     color: var(--theme-on-primary) !important;
     box-shadow: 0 0 14px rgba(var(--theme-primary-rgb), 0.34) !important;

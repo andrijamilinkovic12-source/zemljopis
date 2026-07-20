@@ -10,6 +10,10 @@ const TopListaManager = {
     aktivnaGrupa: 'globalno',
     aktivnaKategorija: 'svaVremena', // Početna kategorija
     listenerPostavljen: false,
+    introTrajanjeMs: 5200,
+    introTajmer: null,
+    ulazakTajmer: null,
+    otvaranjeUToku: false,
 
     init: function() {
         console.log("TopListaManager je učitan.");
@@ -17,6 +21,21 @@ const TopListaManager = {
 
     // Prikazuje glavni ekran za top listu i povlači podatke iz baze
     otvoriEkran: function() {
+        if (this.otvaranjeUToku) return;
+        this.otvaranjeUToku = true;
+
+        if (typeof KeyboardManager !== 'undefined') {
+            KeyboardManager.hideKeyboard();
+        }
+
+        this.prikaziIntro(() => {
+            this.otvoriSadrzaj();
+            this.pokreniBlagiUlazakUSobu();
+            this.otvaranjeUToku = false;
+        });
+    },
+
+    otvoriSadrzaj: function() {
         UIManager.prikaziEkran('toplista-screen');
 
         // --- TRAŽENJE NOVIH PODATAKA SA SERVERA ---
@@ -51,6 +70,44 @@ const TopListaManager = {
 
         this.promeniGrupu('globalno');
         this.promeniKategoriju('svaVremena');
+    },
+
+    prikaziIntro: function(callback) {
+        const overlay = document.getElementById('toplista-intro-overlay');
+        const smanjeniPokret = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const trajanje = smanjeniPokret ? 420 : this.introTrajanjeMs;
+        const trajanjeZatvaranja = smanjeniPokret ? 160 : Math.min(420, trajanje);
+
+        if (!overlay) {
+            setTimeout(callback, trajanje);
+            return;
+        }
+
+        clearTimeout(this.introTajmer);
+        overlay.style.setProperty('--toplista-intro-ms', `${trajanje}ms`);
+        overlay.classList.remove('closing');
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        this.introTajmer = setTimeout(() => {
+            overlay.classList.add('closing');
+            setTimeout(() => {
+                overlay.classList.remove('active', 'closing');
+                overlay.setAttribute('aria-hidden', 'true');
+                callback();
+            }, trajanjeZatvaranja);
+        }, Math.max(0, trajanje - trajanjeZatvaranja));
+    },
+
+    pokreniBlagiUlazakUSobu: function() {
+        const ekran = document.getElementById('toplista-screen');
+        if (!ekran) return;
+
+        clearTimeout(this.ulazakTajmer);
+        ekran.classList.remove('toplista-entering');
+        void ekran.offsetWidth;
+        ekran.classList.add('toplista-entering');
+        this.ulazakTajmer = setTimeout(() => ekran.classList.remove('toplista-entering'), 720);
     },
 
     promeniGrupu: function(novaGrupa) {

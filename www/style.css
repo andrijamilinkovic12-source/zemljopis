@@ -4231,6 +4231,329 @@ body.keyboard-open .dnevni-input-group input {
     }
 }
 
+/* Top lista: soft-matte uvod prati boje 3D podijuma i medalja. */
+.toplista-intro-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9995;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 50% 37%, rgba(244, 58, 113, 0.22), transparent 25%),
+        radial-gradient(circle at 50% 61%, rgba(122, 87, 224, 0.2), transparent 39%),
+        linear-gradient(155deg, #071b38 0%, #102d57 49%, #17153c 100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+    .toplista-intro-overlay {
+        --toplista-intro-placement: translate(-50%, -50%);
+        top: 50%;
+        right: auto;
+        bottom: auto;
+        left: 50%;
+        width: 464px;
+        height: min(calc(90dvh - 16px), 884px);
+        transform: var(--toplista-intro-placement);
+        border-radius: 27px;
+    }
+}
+
+.toplista-intro-overlay.active {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+    animation: toplistaIntroFade var(--toplista-intro-ms, 5200ms) ease both;
+}
+
+.toplista-intro-overlay.closing {
+    animation: toplistaIntroClose 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.toplista-intro-overlay::before,
+.toplista-intro-overlay::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: min(88vw, 460px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(254, 224, 174, 0.17);
+    border-radius: 49% 51% 44% 56% / 57% 43% 57% 43%;
+    box-shadow: inset 0 0 42px rgba(255, 235, 196, 0.04), 0 0 48px rgba(127, 91, 230, 0.1);
+    animation: toplistaIntroHalo var(--toplista-intro-ms, 5200ms) ease both;
+}
+
+.toplista-intro-overlay::before { transform: rotate(12deg); }
+
+.toplista-intro-overlay::after {
+    width: min(69vw, 350px);
+    border-color: rgba(245, 77, 132, 0.25);
+    transform: rotate(-17deg);
+    animation-delay: 100ms;
+}
+
+.toplista-intro-stage {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 390px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.toplista-intro-kicker {
+    padding: 0.36rem 0.72rem;
+    border: 1px solid rgba(255, 228, 181, 0.28);
+    border-radius: 999px;
+    background: rgba(255, 232, 195, 0.08);
+    color: #fff0d7;
+    font-size: 0.61rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 8px 18px rgba(2, 10, 30, 0.24);
+    animation: toplistaIntroKicker var(--toplista-intro-ms, 5200ms) ease both;
+}
+
+.toplista-intro-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.42rem;
+    margin-top: 0.72rem;
+}
+
+.toplista-intro-word {
+    color: #fff0d7;
+    font-size: clamp(1.7rem, 7.2vw, 2.3rem);
+    font-weight: 950;
+    letter-spacing: 0.045em;
+    line-height: 1;
+    text-shadow: 0 3px 0 rgba(78, 29, 72, 0.35), 0 0 22px rgba(244, 73, 130, 0.38);
+    animation: toplistaIntroWord var(--toplista-intro-ms, 5200ms) cubic-bezier(0.18, 0.86, 0.26, 1) both;
+}
+
+.toplista-intro-star {
+    color: #ffce62;
+    font-size: 1.28rem;
+    line-height: 1;
+    text-shadow: 0 0 15px rgba(255, 204, 92, 0.72);
+    animation: toplistaIntroStar var(--toplista-intro-ms, 5200ms) ease both;
+}
+
+.toplista-intro-podium {
+    position: relative;
+    width: 9rem;
+    height: 8.8rem;
+    display: grid;
+    place-items: center;
+    margin: 0.22rem 0 -0.58rem;
+}
+
+.toplista-intro-icon {
+    position: relative;
+    z-index: 1;
+    width: 8.25rem;
+    height: 8.25rem;
+    object-fit: contain;
+    filter: drop-shadow(0 15px 20px rgba(1, 8, 28, 0.52)) drop-shadow(0 0 20px rgba(246, 85, 142, 0.22));
+    animation: toplistaIntroPodium var(--toplista-intro-ms, 5200ms) cubic-bezier(0.18, 0.88, 0.26, 1) both;
+}
+
+.toplista-intro-orbit {
+    position: absolute;
+    width: 0.66rem;
+    height: 0.66rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff2d4 0 15%, #ef4c83 35%, #a72c68 100%);
+    box-shadow: 0 0 0 3px rgba(255, 234, 203, 0.12), 0 0 16px rgba(250, 91, 155, 0.42);
+    animation: toplistaIntroOrbit var(--toplista-intro-ms, 5200ms) ease both;
+}
+
+.toplista-intro-orbit-left { left: 0.1rem; top: 52%; }
+.toplista-intro-orbit-right { right: 0.1rem; top: 29%; animation-delay: 150ms; }
+
+.toplista-intro-scopes {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.58rem;
+    margin-top: -0.25rem;
+}
+
+.toplista-intro-scope {
+    width: 4.1rem;
+    display: grid;
+    justify-items: center;
+    gap: 0.16rem;
+    padding: 0.28rem 0.22rem 0.24rem;
+    border: 1px solid rgba(255, 231, 201, 0.2);
+    border-radius: 0.78rem;
+    background: linear-gradient(145deg, rgba(255, 246, 230, 0.15), rgba(104, 75, 185, 0.17));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.17), 0 7px 14px rgba(1, 11, 33, 0.28);
+    animation: toplistaIntroScope var(--toplista-intro-ms, 5200ms) cubic-bezier(0.2, 0.86, 0.25, 1) both;
+}
+
+.toplista-intro-scope:nth-child(2) { animation-delay: 130ms; }
+
+.toplista-intro-scope img {
+    width: 1.5rem;
+    height: 1.5rem;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 3px rgba(9, 19, 45, 0.24));
+}
+
+.toplista-intro-scope small {
+    color: #fff0d8;
+    font-size: 0.44rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+}
+
+.toplista-intro-medals {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0.16rem;
+    height: 1.65rem;
+    margin-top: 0.27rem;
+}
+
+.toplista-intro-medals img {
+    width: 1.48rem;
+    height: 1.48rem;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 4px rgba(4, 11, 31, 0.3));
+    animation: toplistaIntroMedal var(--toplista-intro-ms, 5200ms) cubic-bezier(0.2, 0.86, 0.25, 1) both;
+}
+
+.toplista-intro-medals img:nth-child(1) { animation-delay: 110ms; }
+.toplista-intro-medals img:nth-child(2) { width: 1.65rem; height: 1.65rem; animation-delay: 190ms; }
+.toplista-intro-medals img:nth-child(3) { animation-delay: 270ms; }
+
+.toplista-intro-line {
+    width: min(72%, 240px);
+    height: 3px;
+    margin-top: 0.52rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, #ffcf6d 18%, #f0528a 50%, #8d6bef 82%, transparent);
+    box-shadow: 0 0 12px rgba(238, 100, 163, 0.34);
+    animation: toplistaIntroLine var(--toplista-intro-ms, 5200ms) ease both;
+}
+
+@keyframes toplistaIntroFade {
+    0% { opacity: 0; }
+    9% { opacity: 1; }
+    89% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+@keyframes toplistaIntroClose {
+    to { opacity: 0; transform: var(--toplista-intro-placement, translate(0, 0)) scale(1.018); }
+}
+
+@keyframes toplistaIntroHalo {
+    0% { opacity: 0; }
+    17% { opacity: 0.85; }
+    75% { opacity: 0.72; }
+    100% { opacity: 0.18; }
+}
+
+@keyframes toplistaIntroKicker {
+    0%, 9% { opacity: 0; transform: translateY(-12px) scale(0.92); }
+    23%, 78% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.9; transform: translateY(0) scale(0.98); }
+}
+
+@keyframes toplistaIntroWord {
+    0%, 8% { opacity: 0; transform: translateY(-18px) scale(0.88); }
+    25%, 78% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 1; transform: translateY(0) scale(0.98); }
+}
+
+@keyframes toplistaIntroStar {
+    0%, 13% { opacity: 0; transform: rotate(-35deg) scale(0.2); }
+    29%, 76% { opacity: 1; transform: rotate(0deg) scale(1); }
+    100% { opacity: 0.86; transform: rotate(25deg) scale(0.84); }
+}
+
+@keyframes toplistaIntroPodium {
+    0%, 12% { opacity: 0; transform: translateY(28px) scale(0.7) rotate(4deg); }
+    28% { opacity: 1; transform: translateY(-3px) scale(1.03) rotate(-1deg); }
+    48%, 76% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 1; transform: translateY(-4px) scale(1.015) rotate(0deg); }
+}
+
+@keyframes toplistaIntroOrbit {
+    0%, 18% { opacity: 0; transform: translateY(8px) scale(0.25); }
+    34%, 76% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.65; transform: translateY(-5px) scale(0.9); }
+}
+
+@keyframes toplistaIntroScope {
+    0%, 25% { opacity: 0; transform: translateY(13px) scale(0.72); }
+    41%, 77% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.86; transform: translateY(-2px) scale(0.96); }
+}
+
+@keyframes toplistaIntroMedal {
+    0%, 34% { opacity: 0; transform: translateY(10px) scale(0.5); }
+    50%, 77% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.84; transform: translateY(-2px) scale(0.92); }
+}
+
+@keyframes toplistaIntroLine {
+    0%, 35% { opacity: 0; transform: scaleX(0.18); }
+    51%, 79% { opacity: 0.95; transform: scaleX(1); }
+    100% { opacity: 0.62; transform: scaleX(0.84); }
+}
+
+#toplista-screen.toplista-entering .page-heading,
+#toplista-screen.toplista-entering .toplista-shell,
+#toplista-screen.toplista-entering .settings-footer {
+    animation: toplistaRoomEnter 680ms cubic-bezier(0.18, 0.82, 0.28, 1) both;
+}
+
+#toplista-screen.toplista-entering .toplista-shell { animation-delay: 75ms; }
+#toplista-screen.toplista-entering .settings-footer { animation-delay: 135ms; }
+
+@keyframes toplistaRoomEnter {
+    from { opacity: 0; transform: translateY(15px) scale(0.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 340px), (max-height: 620px) {
+    .toplista-intro-podium { width: 7.7rem; height: 7.5rem; }
+    .toplista-intro-icon { width: 6.95rem; height: 6.95rem; }
+    .toplista-intro-title { margin-top: 0.54rem; }
+    .toplista-intro-medals { margin-top: 0.1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toplista-intro-overlay.active,
+    .toplista-intro-overlay.closing,
+    .toplista-intro-overlay::before,
+    .toplista-intro-overlay::after,
+    .toplista-intro-kicker,
+    .toplista-intro-word,
+    .toplista-intro-star,
+    .toplista-intro-icon,
+    .toplista-intro-orbit,
+    .toplista-intro-scope,
+    .toplista-intro-medals img,
+    .toplista-intro-line,
+    #toplista-screen.toplista-entering .page-heading,
+    #toplista-screen.toplista-entering .toplista-shell,
+    #toplista-screen.toplista-entering .settings-footer {
+        animation-duration: 1ms !important;
+    }
+}
+
 .action-footer { 
     position: absolute; bottom: 0; left: 0; width: 100%; 
     padding: 0.6rem 1.2rem calc(0.5rem + env(safe-area-inset-bottom, 10px)); 

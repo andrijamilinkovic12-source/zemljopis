@@ -284,11 +284,12 @@ const KvartalniNivoManager = {
         overlay.setAttribute('aria-hidden', 'false');
 
         this.introTajmer = setTimeout(() => {
-            overlay.classList.add('closing');
+            // Ciljni ekran se priprema iza uvoda, bez međukadra glavnog menija.
+            callback();
+            requestAnimationFrame(() => overlay.classList.add('closing'));
             setTimeout(() => {
                 overlay.classList.remove('active', 'closing');
                 overlay.setAttribute('aria-hidden', 'true');
-                callback();
             }, trajanjeZatvaranja);
         }, Math.max(0, trajanje - trajanjeZatvaranja));
     },

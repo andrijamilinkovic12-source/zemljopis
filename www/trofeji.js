@@ -86,11 +86,12 @@ const TrofejiManager = {
         overlay.setAttribute('aria-hidden', 'false');
 
         this.introTajmer = setTimeout(() => {
-            overlay.classList.add('closing');
+            // Soba se aktivira iza zatamnjenog završetka uvoda, nikad preko menija.
+            callback();
+            requestAnimationFrame(() => overlay.classList.add('closing'));
             setTimeout(() => {
                 overlay.classList.remove('active', 'closing');
                 overlay.setAttribute('aria-hidden', 'true');
-                callback();
             }, trajanjeZatvaranja);
         }, Math.max(0, trajanje - trajanjeZatvaranja));
     },

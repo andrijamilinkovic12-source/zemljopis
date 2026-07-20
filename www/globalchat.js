@@ -102,11 +102,12 @@ const GlobalChatManager = {
         overlay.setAttribute('aria-hidden', 'false');
 
         this.introTajmer = setTimeout(() => {
-            overlay.classList.add('closing');
+            // Soba postaje aktivna dok je uvod još potpuno iznad nje.
+            callback();
+            requestAnimationFrame(() => overlay.classList.add('closing'));
             setTimeout(() => {
                 overlay.classList.remove('active', 'closing');
                 overlay.setAttribute('aria-hidden', 'true');
-                callback();
             }, trajanjeZatvaranja);
         }, Math.max(0, trajanje - trajanjeZatvaranja));
     },

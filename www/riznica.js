@@ -178,11 +178,12 @@ const RiznicaManager = {
         overlay.setAttribute('aria-hidden', 'false');
 
         this.introTajmer = setTimeout(() => {
-            overlay.classList.add('closing');
+            // Soba se priprema ispod neprozirnog završetka uvoda, bez kratkog povratka na meni.
+            callback();
+            requestAnimationFrame(() => overlay.classList.add('closing'));
             setTimeout(() => {
                 overlay.classList.remove('active', 'closing');
                 overlay.setAttribute('aria-hidden', 'true');
-                callback();
             }, trajanjeZatvaranja);
         }, Math.max(0, trajanje - trajanjeZatvaranja));
     },

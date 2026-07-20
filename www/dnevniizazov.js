@@ -227,7 +227,11 @@ const DnevniIzazovManager = {
                 : 0;
 
             if (!odgovor.nastavak && preostaloDoStarta > 700) {
-                this.prikaziIntro(preostaloDoStarta, () => this.pokreniIgruIzServera());
+                this.prikaziIntro(
+                    preostaloDoStarta,
+                    () => this.prikaziSobuIspodUvoda(),
+                    () => this.pokreniTajmerIUnos()
+                );
             } else {
                 this.pokreniIgruIzServera();
             }
@@ -243,13 +247,16 @@ const DnevniIzazovManager = {
         }
     },
 
-    prikaziIntro: function(preostaloDoStarta, callback) {
+    prikaziIntro: function(preostaloDoStarta, callback, callbackPoZatvaranju = null) {
         const overlay = document.getElementById('dnevni-intro-overlay');
         const trajanje = Math.max(4200, Math.min(6000, Math.ceil(preostaloDoStarta) || this.introTrajanjeMs));
         const trajanjeZatvaranja = Math.min(420, trajanje);
 
         if (!overlay) {
-            setTimeout(callback, trajanje);
+            setTimeout(() => {
+                callback();
+                if (typeof callbackPoZatvaranju === 'function') callbackPoZatvaranju();
+            }, trajanje);
             return;
         }
 
@@ -260,24 +267,34 @@ const DnevniIzazovManager = {
         overlay.setAttribute('aria-hidden', 'false');
 
         this.introTajmer = setTimeout(() => {
-            overlay.classList.add('closing');
+            // Soba je već spremna ispod završnog fade-a, pa se meni nikada ne pojavi između.
+            callback();
+            requestAnimationFrame(() => overlay.classList.add('closing'));
             setTimeout(() => {
                 overlay.classList.remove('active', 'closing');
                 overlay.setAttribute('aria-hidden', 'true');
-                callback();
+                if (typeof callbackPoZatvaranju === 'function') callbackPoZatvaranju();
             }, trajanjeZatvaranja);
         }, Math.max(0, trajanje - trajanjeZatvaranja));
+    },
+
+    prikaziSobuIspodUvoda: function() {
+        UIManager.prikaziEkran('dnevni-izazov-screen');
+        this.pokreniBlagiUlazakUSobu();
+    },
+
+    pokreniTajmerIUnos: function() {
+        this.pokreniTajmerDoRoka(this.rokAt || (this.sadaServer() + 60000));
+
+        clearTimeout(this.aktivacijaUnosaTajmer);
+        this.aktivacijaUnosaTajmer = setTimeout(() => this.aktivirajPrviUnos(), 240);
     },
 
     pokreniIgruIzServera: function() {
         if (!this.dnevniPodaci || !Array.isArray(this.dnevniPodaci.zadaci)) return;
 
-        UIManager.prikaziEkran('dnevni-izazov-screen');
-        this.pokreniTajmerDoRoka(this.rokAt || (this.sadaServer() + 60000));
-        this.pokreniBlagiUlazakUSobu();
-
-        clearTimeout(this.aktivacijaUnosaTajmer);
-        this.aktivacijaUnosaTajmer = setTimeout(() => this.aktivirajPrviUnos(), 240);
+        this.prikaziSobuIspodUvoda();
+        this.pokreniTajmerIUnos();
     },
 
     pripremiPrikazIgre: function() {

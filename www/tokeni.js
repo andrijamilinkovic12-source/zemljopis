@@ -233,12 +233,13 @@ const TokeniManager = {
         overlay.classList.add('active');
 
         this.introTajmer = setTimeout(() => {
-            overlay.classList.add('closing');
+            // Pripremi ciljnu sobu ispod završnog fade-a, bez bljeska menija.
+            callback();
+            requestAnimationFrame(() => overlay.classList.add('closing'));
 
             setTimeout(() => {
                 overlay.classList.remove('active', 'closing');
                 overlay.setAttribute('aria-hidden', 'true');
-                callback();
             }, trajanje === 1 ? 1 : 420);
         }, trajanje === 1 ? 1 : trajanje - 420);
     },

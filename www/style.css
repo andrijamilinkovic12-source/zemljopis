@@ -15454,3 +15454,111 @@ body[data-tema] :is(#online-igraci-screen .online-igraci-back-button, #tokeni-sc
 body[data-tema] :is(#online-igraci-screen .online-igraci-back-button, #tokeni-screen .tokeni-back-button) i {
     color: #fff !important;
 }
+
+/* Glavni izbor igre ostaje kao providna clay kartica, da motiv pozadine diše kroz nju. */
+#main-menu .big-circle,
+body[data-tema] #main-menu .big-circle {
+    background: linear-gradient(145deg, rgba(8, 33, 67, 0.26), rgba(16, 55, 96, 0.13)) !important;
+    border-color: rgba(220, 244, 255, 0.34) !important;
+    box-shadow:
+        0 12px 28px rgba(3, 13, 31, 0.24),
+        inset 0 1px 0 rgba(235, 249, 255, 0.2),
+        inset 0 -1px 0 rgba(1, 12, 31, 0.14) !important;
+    backdrop-filter: blur(5px) saturate(1.06);
+    -webkit-backdrop-filter: blur(5px) saturate(1.06);
+}
+
+#main-menu .top-half,
+body[data-tema] #main-menu .top-half {
+    background: linear-gradient(to bottom, rgba(29, 90, 145, 0.22), rgba(7, 36, 75, 0.06)) !important;
+}
+
+#main-menu .bottom-half,
+body[data-tema] #main-menu .bottom-half {
+    background: linear-gradient(to top, rgba(27, 79, 133, 0.22), rgba(7, 36, 75, 0.06)) !important;
+}
+
+#main-menu .circle-half:active,
+body[data-tema] #main-menu .circle-half:active {
+    background: linear-gradient(145deg, rgba(4, 25, 60, 0.64), rgba(13, 54, 98, 0.47)) !important;
+    transition-duration: 120ms;
+}
+
+/* Odabir režima se skuplja u dublji teget sloj, bez zatvaranja pozadine. */
+#main-menu .circle-overlay,
+body[data-tema] #main-menu .circle-overlay {
+    background: radial-gradient(circle at 31% 19%, rgba(30, 85, 142, 0.76), rgba(5, 28, 65, 0.72) 58%, rgba(2, 16, 43, 0.78)) !important;
+    border: 1px solid rgba(211, 239, 255, 0.4);
+    box-shadow:
+        0 12px 30px rgba(1, 10, 29, 0.42),
+        inset 0 1px 0 rgba(226, 246, 255, 0.2),
+        inset 0 -8px 18px rgba(0, 9, 30, 0.18);
+    backdrop-filter: blur(10px) saturate(1.08);
+    -webkit-backdrop-filter: blur(10px) saturate(1.08);
+    clip-path: circle(0% at 50% 50%);
+    transform: scale(0.72);
+    transition: clip-path 360ms ease-out, transform 360ms cubic-bezier(0.22, 0.9, 0.32, 1), opacity 180ms ease-out;
+}
+
+#main-menu .circle-overlay.active,
+body[data-tema] #main-menu .circle-overlay.active {
+    clip-path: circle(75% at 50% 50%);
+    transform: scale(1);
+    opacity: 1;
+    animation: modeSelectNavyIn 520ms cubic-bezier(0.2, 0.9, 0.28, 1.12) both;
+}
+
+@keyframes modeSelectNavyIn {
+    0% {
+        clip-path: circle(0% at 50% 50%);
+        opacity: 0;
+        transform: scale(0.68);
+    }
+    68% {
+        clip-path: circle(78% at 50% 50%);
+        opacity: 1;
+        transform: scale(1.025);
+    }
+    100% {
+        clip-path: circle(75% at 50% 50%);
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Samostalna clay strelica: bez teksta i blago odmaknuta od ruba kruga. */
+#main-menu .close-overlay-btn {
+    top: clamp(12px, 3vw, 16px);
+    left: 50%;
+    width: clamp(34px, 9.5vw, 40px);
+    height: clamp(34px, 9.5vw, 40px);
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(220, 244, 255, 0.48) !important;
+    border-radius: 50%;
+    background: linear-gradient(145deg, rgba(69, 124, 178, 0.72), rgba(12, 43, 83, 0.7)) !important;
+    box-shadow: 0 5px 11px rgba(1, 11, 30, 0.32), inset 0 1px 0 rgba(244, 253, 255, 0.28), inset 0 -2px 4px rgba(0, 11, 31, 0.18) !important;
+    color: #f8efd8 !important;
+    transform: translateX(-50%);
+    transition: transform 160ms ease, filter 160ms ease, background 160ms ease;
+}
+
+#main-menu .close-overlay-btn i {
+    color: inherit !important;
+    font-size: clamp(0.92rem, 2.8vw, 1.08rem);
+    filter: drop-shadow(0 1px 1px rgba(0, 8, 25, 0.72));
+    transform: translateX(-1px);
+}
+
+#main-menu .close-overlay-btn:active {
+    background: linear-gradient(145deg, rgba(18, 55, 100, 0.84), rgba(4, 25, 59, 0.78)) !important;
+    border-color: rgba(244, 253, 255, 0.62) !important;
+    transform: translateX(-50%) translateY(2px) scale(0.92);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #main-menu .circle-overlay.active {
+        animation: none;
+    }
+}

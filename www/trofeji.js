@@ -1,6 +1,11 @@
 // trofeji.js - Menadžer za praćenje dostignuća i trofeja
 
 const TrofejiManager = {
+    introTrajanjeMs: 5200,
+    introTajmer: null,
+    ulazakTajmer: null,
+    otvaranjeUToku: false,
+
     podaci: [
         // KATEGORIJA: Odigrane partije
         { id: 't1', tip: 'partije', naziv: 'Prvi koraci', opis: 'Odigraj svoju prvu igru.', uslov: 1, napredak: 0, preuzeto: false, nagrada: 50 },
@@ -46,9 +51,59 @@ const TrofejiManager = {
     },
 
     otvoriEkran: function() {
-        UIManager.prikaziEkran('trofeji-main-screen');
-        this.proveriDukate(); // Osveži dukate pre prikaza
+        if (this.otvaranjeUToku) return;
+        this.otvaranjeUToku = true;
+
+        if (typeof KeyboardManager !== 'undefined') {
+            KeyboardManager.hideKeyboard();
+        }
+
+        // Trofeji se pripremaju dok traje uvod.
+        this.proveriDukate();
         this.osveziPrikaz();
+        this.prikaziIntro(() => {
+            UIManager.prikaziEkran('trofeji-main-screen');
+            this.pokreniBlagiUlazakUSobu();
+            this.otvaranjeUToku = false;
+        });
+    },
+
+    prikaziIntro: function(callback) {
+        const overlay = document.getElementById('trofeji-intro-overlay');
+        const smanjeniPokret = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const trajanje = smanjeniPokret ? 420 : this.introTrajanjeMs;
+        const trajanjeZatvaranja = smanjeniPokret ? 160 : Math.min(420, trajanje);
+
+        if (!overlay) {
+            setTimeout(callback, trajanje);
+            return;
+        }
+
+        clearTimeout(this.introTajmer);
+        overlay.style.setProperty('--trofeji-intro-ms', `${trajanje}ms`);
+        overlay.classList.remove('closing');
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        this.introTajmer = setTimeout(() => {
+            overlay.classList.add('closing');
+            setTimeout(() => {
+                overlay.classList.remove('active', 'closing');
+                overlay.setAttribute('aria-hidden', 'true');
+                callback();
+            }, trajanjeZatvaranja);
+        }, Math.max(0, trajanje - trajanjeZatvaranja));
+    },
+
+    pokreniBlagiUlazakUSobu: function() {
+        const ekran = document.getElementById('trofeji-main-screen');
+        if (!ekran) return;
+
+        clearTimeout(this.ulazakTajmer);
+        ekran.classList.remove('trofeji-entering');
+        void ekran.offsetWidth;
+        ekran.classList.add('trofeji-entering');
+        this.ulazakTajmer = setTimeout(() => ekran.classList.remove('trofeji-entering'), 720);
     },
 
     azurirajNapredak: function(tip, kolicina) {

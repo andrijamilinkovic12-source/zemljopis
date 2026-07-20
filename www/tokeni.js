@@ -5,6 +5,10 @@ const TokeniManager = {
     maxTokena: 3,
     reklamaUToku: false,
     adapterReklama: null,
+    introTrajanjeMs: 5200,
+    introTajmer: null,
+    ulazakTajmer: null,
+    otvaranjeUToku: false,
     
     init: function() {
         this.proveriDnevniReset();
@@ -196,8 +200,58 @@ const TokeniManager = {
     },
     
     otvoriEkran: function() {
+        if (this.otvaranjeUToku) return;
+
+        this.otvaranjeUToku = true;
+        if (typeof KeyboardManager !== 'undefined') KeyboardManager.hideKeyboard();
         this.proveriDnevniReset();
-        UIManager.prikaziEkran('tokeni-screen');
+        this.azurirajPrikaz();
+
+        this.prikaziIntro(() => {
+            UIManager.prikaziEkran('tokeni-screen');
+            this.pokreniBlagiUlazakUSobu();
+            this.otvaranjeUToku = false;
+        });
+    },
+
+    prikaziIntro: function(callback) {
+        const overlay = document.getElementById('tokeni-intro-overlay');
+        const trajanje = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            ? 1
+            : this.introTrajanjeMs;
+
+        if (!overlay) {
+            callback();
+            return;
+        }
+
+        clearTimeout(this.introTajmer);
+        overlay.style.setProperty('--tokeni-intro-ms', `${trajanje}ms`);
+        overlay.classList.remove('closing');
+        overlay.setAttribute('aria-hidden', 'false');
+        void overlay.offsetWidth;
+        overlay.classList.add('active');
+
+        this.introTajmer = setTimeout(() => {
+            overlay.classList.add('closing');
+
+            setTimeout(() => {
+                overlay.classList.remove('active', 'closing');
+                overlay.setAttribute('aria-hidden', 'true');
+                callback();
+            }, trajanje === 1 ? 1 : 420);
+        }, trajanje === 1 ? 1 : trajanje - 420);
+    },
+
+    pokreniBlagiUlazakUSobu: function() {
+        const ekran = document.getElementById('tokeni-screen');
+        if (!ekran) return;
+
+        clearTimeout(this.ulazakTajmer);
+        ekran.classList.remove('tokeni-entering');
+        void ekran.offsetWidth;
+        ekran.classList.add('tokeni-entering');
+        this.ulazakTajmer = setTimeout(() => ekran.classList.remove('tokeni-entering'), 720);
     },
     
     pogledajReklamu: function() {

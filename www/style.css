@@ -4925,6 +4925,681 @@ body.keyboard-open .dnevni-input-group input {
     }
 }
 
+/* Soba trofeja: mekani 3D uvod koristi zlatnu, tirkiznu i ružičastu paletu pehara. */
+.trofeji-intro-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9995;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 50% 38%, rgba(245, 181, 66, 0.24), transparent 25%),
+        radial-gradient(circle at 50% 64%, rgba(238, 75, 138, 0.2), transparent 42%),
+        linear-gradient(155deg, #071a36 0%, #172957 49%, #21183f 100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+    .trofeji-intro-overlay {
+        --trofeji-intro-placement: translate(-50%, -50%);
+        top: 50%;
+        right: auto;
+        bottom: auto;
+        left: 50%;
+        width: 464px;
+        height: min(calc(90dvh - 16px), 884px);
+        transform: var(--trofeji-intro-placement);
+        border-radius: 27px;
+    }
+}
+
+.trofeji-intro-overlay.active {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+    animation: trofejiIntroFade var(--trofeji-intro-ms, 5200ms) ease both;
+}
+
+.trofeji-intro-overlay.closing {
+    animation: trofejiIntroClose 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.trofeji-intro-overlay::before,
+.trofeji-intro-overlay::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: min(88vw, 460px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(255, 238, 207, 0.17);
+    border-radius: 55% 45% 52% 48% / 47% 55% 45% 53%;
+    box-shadow: inset 0 0 42px rgba(255, 238, 207, 0.04), 0 0 48px rgba(246, 180, 66, 0.12);
+    animation: trofejiIntroHalo var(--trofeji-intro-ms, 5200ms) ease both;
+}
+
+.trofeji-intro-overlay::before { transform: rotate(-12deg); }
+
+.trofeji-intro-overlay::after {
+    width: min(69vw, 350px);
+    border-color: rgba(237, 86, 145, 0.26);
+    transform: rotate(17deg);
+    animation-delay: 100ms;
+}
+
+.trofeji-intro-stage {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 390px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.trofeji-intro-kicker {
+    padding: 0.36rem 0.7rem;
+    border: 1px solid rgba(255, 239, 209, 0.28);
+    border-radius: 999px;
+    background: rgba(255, 239, 219, 0.08);
+    color: #fff0dc;
+    font-size: 0.58rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 8px 18px rgba(5, 10, 35, 0.28);
+    animation: trofejiIntroKicker var(--trofeji-intro-ms, 5200ms) ease both;
+}
+
+.trofeji-intro-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.32rem;
+    margin-top: 0.74rem;
+}
+
+.trofeji-intro-word {
+    color: #fff0dc;
+    font-size: clamp(1.26rem, 5.55vw, 1.74rem);
+    font-weight: 950;
+    letter-spacing: 0.015em;
+    line-height: 1;
+    text-shadow: 0 3px 0 rgba(53, 24, 92, 0.42), 0 0 22px rgba(245, 181, 67, 0.42);
+    animation: trofejiIntroWord var(--trofeji-intro-ms, 5200ms) cubic-bezier(0.18, 0.86, 0.26, 1) both;
+}
+
+.trofeji-intro-cup {
+    width: 1.3rem;
+    height: 1.3rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #f4c266, #d78337);
+    color: #fff8df;
+    font-size: 0.7rem;
+    line-height: 1;
+    box-shadow: 0 0 0 3px rgba(255, 232, 204, 0.14), 0 0 16px rgba(242, 177, 66, 0.46);
+    animation: trofejiIntroCup var(--trofeji-intro-ms, 5200ms) ease both;
+}
+
+.trofeji-intro-hero {
+    position: relative;
+    width: 8.85rem;
+    height: 8.25rem;
+    display: grid;
+    place-items: center;
+    margin: 0.08rem 0 -0.45rem;
+}
+
+.trofeji-intro-icon {
+    position: relative;
+    z-index: 1;
+    width: 7.75rem;
+    height: 7.75rem;
+    object-fit: contain;
+    filter: drop-shadow(0 15px 20px rgba(4, 9, 34, 0.56)) drop-shadow(0 0 20px rgba(246, 180, 66, 0.24));
+    animation: trofejiIntroHero var(--trofeji-intro-ms, 5200ms) cubic-bezier(0.18, 0.88, 0.26, 1) both;
+}
+
+.trofeji-intro-orbit {
+    position: absolute;
+    width: 0.68rem;
+    height: 0.68rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff0d8 0 15%, #f4bb56 35%, #cf7635 100%);
+    box-shadow: 0 0 0 3px rgba(255, 235, 203, 0.12), 0 0 16px rgba(244, 179, 66, 0.42);
+    animation: trofejiIntroOrbit var(--trofeji-intro-ms, 5200ms) ease both;
+}
+
+.trofeji-intro-orbit-left { left: 0.04rem; top: 57%; }
+.trofeji-intro-orbit-right { right: 0.04rem; top: 27%; animation-delay: 140ms; }
+
+.trofeji-intro-medals {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.35rem;
+    margin-top: -0.08rem;
+}
+
+.trofeji-intro-medal {
+    width: 3.58rem;
+    display: grid;
+    justify-items: center;
+    gap: 0.12rem;
+    padding: 0.26rem 0.14rem 0.22rem;
+    border: 1px solid rgba(255, 230, 200, 0.2);
+    border-radius: 0.72rem;
+    background: linear-gradient(145deg, rgba(255, 238, 219, 0.15), rgba(118, 82, 194, 0.2));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.17), 0 7px 14px rgba(5, 7, 36, 0.3);
+    animation: trofejiIntroMedal var(--trofeji-intro-ms, 5200ms) cubic-bezier(0.2, 0.86, 0.25, 1) both;
+}
+
+.trofeji-intro-medal:nth-child(2) { animation-delay: 110ms; }
+.trofeji-intro-medal:nth-child(3) { animation-delay: 220ms; }
+
+.trofeji-intro-medal img {
+    width: 1.42rem;
+    height: 1.42rem;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 3px rgba(15, 8, 48, 0.28));
+}
+
+.trofeji-intro-medal small {
+    color: #fff1dc;
+    font-size: 0.39rem;
+    font-weight: 900;
+    letter-spacing: 0.03em;
+}
+
+.trofeji-intro-copy {
+    margin: 0.52rem 0 0;
+    color: rgba(255, 240, 220, 0.92);
+    font-size: 0.51rem;
+    font-weight: 850;
+    letter-spacing: 0.1em;
+    animation: trofejiIntroCopy var(--trofeji-intro-ms, 5200ms) ease both;
+}
+
+.trofeji-intro-copy span {
+    padding: 0 0.18rem;
+    color: #f5c464;
+}
+
+.trofeji-intro-line {
+    width: min(72%, 240px);
+    height: 3px;
+    margin-top: 0.54rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, #ffe0b8 18%, #f2b84f 50%, #ec659a 82%, transparent);
+    box-shadow: 0 0 12px rgba(242, 182, 75, 0.36);
+    animation: trofejiIntroLine var(--trofeji-intro-ms, 5200ms) ease both;
+}
+
+@keyframes trofejiIntroFade {
+    0% { opacity: 0; }
+    9% { opacity: 1; }
+    89% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+@keyframes trofejiIntroClose {
+    to { opacity: 0; transform: var(--trofeji-intro-placement, translate(0, 0)) scale(1.018); }
+}
+
+@keyframes trofejiIntroHalo {
+    0% { opacity: 0; }
+    17% { opacity: 0.84; }
+    75% { opacity: 0.7; }
+    100% { opacity: 0.18; }
+}
+
+@keyframes trofejiIntroKicker {
+    0%, 9% { opacity: 0; transform: translateY(-12px) scale(0.92); }
+    23%, 78% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.9; transform: translateY(0) scale(0.98); }
+}
+
+@keyframes trofejiIntroWord {
+    0%, 8% { opacity: 0; transform: translateY(-18px) scale(0.88); }
+    25%, 78% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 1; transform: translateY(0) scale(0.98); }
+}
+
+@keyframes trofejiIntroCup {
+    0%, 13% { opacity: 0; transform: rotate(-45deg) scale(0.2); }
+    29%, 76% { opacity: 1; transform: rotate(0deg) scale(1); }
+    100% { opacity: 0.86; transform: rotate(20deg) scale(0.84); }
+}
+
+@keyframes trofejiIntroHero {
+    0%, 12% { opacity: 0; transform: translateY(28px) scale(0.7) rotate(-4deg); }
+    28% { opacity: 1; transform: translateY(-3px) scale(1.03) rotate(1deg); }
+    48%, 76% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 1; transform: translateY(-4px) scale(1.015) rotate(0deg); }
+}
+
+@keyframes trofejiIntroOrbit {
+    0%, 18% { opacity: 0; transform: translateY(8px) scale(0.25); }
+    34%, 76% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.65; transform: translateY(-5px) scale(0.9); }
+}
+
+@keyframes trofejiIntroMedal {
+    0%, 25% { opacity: 0; transform: translateY(13px) scale(0.72); }
+    41%, 77% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.86; transform: translateY(-2px) scale(0.96); }
+}
+
+@keyframes trofejiIntroCopy {
+    0%, 35% { opacity: 0; transform: translateY(5px); }
+    50%, 78% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0.72; transform: translateY(0); }
+}
+
+@keyframes trofejiIntroLine {
+    0%, 35% { opacity: 0; transform: scaleX(0.18); }
+    51%, 79% { opacity: 0.95; transform: scaleX(1); }
+    100% { opacity: 0.62; transform: scaleX(0.84); }
+}
+
+#trofeji-main-screen.trofeji-entering .page-heading,
+#trofeji-main-screen.trofeji-entering .trofeji-content,
+#trofeji-main-screen.trofeji-entering .trofeji-footer {
+    animation: trofejiRoomEnter 680ms cubic-bezier(0.18, 0.82, 0.28, 1) both;
+}
+
+#trofeji-main-screen.trofeji-entering .trofeji-content { animation-delay: 75ms; }
+#trofeji-main-screen.trofeji-entering .trofeji-footer { animation-delay: 135ms; }
+
+@keyframes trofejiRoomEnter {
+    from { opacity: 0; transform: translateY(15px) scale(0.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 340px), (max-height: 620px) {
+    .trofeji-intro-hero { width: 7.55rem; height: 7.15rem; }
+    .trofeji-intro-icon { width: 6.7rem; height: 6.7rem; }
+    .trofeji-intro-title { margin-top: 0.54rem; }
+    .trofeji-intro-medal { width: 3.22rem; }
+    .trofeji-intro-medal small { font-size: 0.35rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .trofeji-intro-overlay.active,
+    .trofeji-intro-overlay.closing,
+    .trofeji-intro-overlay::before,
+    .trofeji-intro-overlay::after,
+    .trofeji-intro-kicker,
+    .trofeji-intro-word,
+    .trofeji-intro-cup,
+    .trofeji-intro-icon,
+    .trofeji-intro-orbit,
+    .trofeji-intro-medal,
+    .trofeji-intro-copy,
+    .trofeji-intro-line,
+    #trofeji-main-screen.trofeji-entering .page-heading,
+    #trofeji-main-screen.trofeji-entering .trofeji-content,
+    #trofeji-main-screen.trofeji-entering .trofeji-footer {
+        animation-duration: 1ms !important;
+    }
+}
+
+/* Tokeni za igru: mint, tamnoplava i zlatna paleta prati glavnu 3D ikonu tokena. */
+.tokeni-intro-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    isolation: isolate;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at 50% 36%, rgba(104, 229, 166, 0.26), transparent 27%),
+        radial-gradient(circle at 50% 67%, rgba(245, 185, 70, 0.18), transparent 31%),
+        linear-gradient(155deg, #071a36 0%, #103b55 54%, #173744 100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+    .tokeni-intro-overlay {
+        --tokeni-intro-placement: translate(-50%, -50%);
+        top: 50%;
+        right: auto;
+        bottom: auto;
+        left: 50%;
+        width: 464px;
+        height: min(calc(90dvh - 16px), 884px);
+        transform: var(--tokeni-intro-placement);
+        border-radius: 27px;
+    }
+}
+
+.tokeni-intro-overlay.active {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+    animation: tokeniIntroFade var(--tokeni-intro-ms, 5200ms) ease both;
+}
+
+.tokeni-intro-overlay.closing {
+    animation: tokeniIntroClose 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.tokeni-intro-overlay::before,
+.tokeni-intro-overlay::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    box-sizing: border-box;
+    width: min(76vw, 390px);
+    height: min(76vw, 390px);
+    border: 1px solid rgba(179, 255, 218, 0.18);
+    border-radius: 42% 58% 61% 39% / 40% 43% 57% 60%;
+    box-shadow: inset 0 0 34px rgba(104, 229, 166, 0.08), 0 0 70px rgba(104, 229, 166, 0.1);
+    animation: tokeniIntroHalo var(--tokeni-intro-ms, 5200ms) ease both;
+}
+
+.tokeni-intro-overlay::before { transform: rotate(-14deg); }
+
+.tokeni-intro-overlay::after {
+    width: min(66vw, 340px);
+    height: min(66vw, 340px);
+    border-color: rgba(255, 225, 170, 0.2);
+    transform: rotate(19deg);
+}
+
+.tokeni-intro-stage {
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    width: min(100%, 380px);
+    min-height: 100%;
+    padding: clamp(30px, 7vh, 58px) 22px clamp(27px, 6vh, 52px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff3df;
+    text-align: center;
+}
+
+.tokeni-intro-kicker {
+    display: block;
+    margin-bottom: 8px;
+    color: #b9f7d2;
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(0.62rem, 1.8vw, 0.74rem);
+    font-weight: 800;
+    letter-spacing: 0.19em;
+    opacity: 0;
+    animation: tokeniIntroKicker var(--tokeni-intro-ms, 5200ms) ease both;
+}
+
+.tokeni-intro-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 2.35rem;
+}
+
+.tokeni-intro-word {
+    color: #fff2dc;
+    font-family: 'Baloo 2', 'Poppins', sans-serif;
+    font-size: clamp(1.5rem, 5.6vw, 2.05rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-shadow: 0 3px 0 rgba(3, 18, 41, 0.25), 0 12px 24px rgba(1, 14, 31, 0.24);
+    opacity: 0;
+    animation: tokeniIntroWord var(--tokeni-intro-ms, 5200ms) cubic-bezier(0.2, 0.8, 0.25, 1) both;
+}
+
+.tokeni-intro-bolt {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 1px solid rgba(255, 244, 211, 0.62);
+    border-radius: 0.72rem 0.88rem 0.74rem 0.95rem;
+    background: linear-gradient(145deg, #7ae0a7, #2ba977);
+    box-shadow: 0 5px 0 rgba(18, 106, 76, 0.62), 0 10px 20px rgba(0, 13, 33, 0.22);
+    color: #fff1aa;
+    font-size: 0.95rem;
+    opacity: 0;
+    transform: rotate(-11deg) scale(0.5);
+    animation: tokeniIntroBolt var(--tokeni-intro-ms, 5200ms) cubic-bezier(0.2, 1.3, 0.35, 1) both;
+}
+
+.tokeni-intro-hero {
+    position: relative;
+    display: grid;
+    width: min(49vw, 184px);
+    height: min(49vw, 184px);
+    margin: clamp(15px, 3vh, 25px) 0 clamp(8px, 1.4vh, 13px);
+    place-items: center;
+}
+
+.tokeni-intro-icon {
+    position: relative;
+    z-index: 2;
+    display: block;
+    width: 77%;
+    height: auto;
+    filter: drop-shadow(0 14px 10px rgba(0, 15, 35, 0.3)) drop-shadow(0 0 20px rgba(112, 236, 174, 0.22));
+    opacity: 0;
+    transform: translateY(22px) scale(0.64) rotate(-7deg);
+    animation: tokeniIntroHero var(--tokeni-intro-ms, 5200ms) cubic-bezier(0.18, 0.9, 0.25, 1) both;
+}
+
+.tokeni-intro-orbit {
+    position: absolute;
+    z-index: 1;
+    width: 1.08rem;
+    height: 1.08rem;
+    border: 2px solid rgba(255, 247, 219, 0.72);
+    border-radius: 50%;
+    background: linear-gradient(145deg, #fff1b0, #66dca0);
+    box-shadow: 0 4px 0 rgba(18, 112, 80, 0.55), 0 8px 14px rgba(0, 17, 36, 0.25);
+    opacity: 0;
+    animation: tokeniIntroOrbit var(--tokeni-intro-ms, 5200ms) ease-in-out both;
+}
+
+.tokeni-intro-orbit-left { top: 22%; left: 3%; }
+.tokeni-intro-orbit-right { right: 4%; bottom: 18%; animation-delay: 100ms; }
+
+.tokeni-intro-actions {
+    display: grid;
+    width: min(100%, 282px);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+    margin-top: 2px;
+}
+
+.tokeni-intro-action {
+    display: flex;
+    min-height: 3.75rem;
+    padding: 8px 4px 6px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: 1px solid rgba(236, 255, 245, 0.34);
+    border-radius: 0.85rem 1rem 0.9rem 1.05rem;
+    background: linear-gradient(145deg, rgba(219, 255, 237, 0.23), rgba(10, 47, 64, 0.46));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 8px 15px rgba(0, 12, 31, 0.18);
+    color: #e7fff1;
+    opacity: 0;
+    transform: translateY(15px) scale(0.88);
+    animation: tokeniIntroAction var(--tokeni-intro-ms, 5200ms) cubic-bezier(0.22, 0.9, 0.28, 1) both;
+}
+
+.tokeni-intro-action:nth-child(2) { animation-delay: 80ms; }
+.tokeni-intro-action:nth-child(3) { animation-delay: 150ms; }
+
+.tokeni-intro-action i {
+    display: grid;
+    width: 1.52rem;
+    height: 1.52rem;
+    place-items: center;
+    border-radius: 0.5rem 0.6rem 0.48rem 0.64rem;
+    background: linear-gradient(145deg, #84e6ad, #34af7a);
+    box-shadow: 0 3px 0 rgba(18, 108, 76, 0.55);
+    color: #fff5cc;
+    font-size: 0.72rem;
+}
+
+.tokeni-intro-action:nth-child(2) i {
+    background: linear-gradient(145deg, #7bd8d6, #248aa0);
+    box-shadow: 0 3px 0 rgba(12, 83, 96, 0.58);
+}
+
+.tokeni-intro-action:nth-child(3) i {
+    background: linear-gradient(145deg, #f5d276, #d99a3d);
+    box-shadow: 0 3px 0 rgba(153, 91, 29, 0.58);
+}
+
+.tokeni-intro-action small {
+    color: #f4fff8;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.47rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.tokeni-intro-copy {
+    margin: clamp(17px, 3vh, 24px) 0 8px;
+    color: #dfffee;
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(0.52rem, 1.6vw, 0.62rem);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    opacity: 0;
+    animation: tokeniIntroCopy var(--tokeni-intro-ms, 5200ms) ease both;
+}
+
+.tokeni-intro-copy span { color: #f4c66b; }
+
+.tokeni-intro-line {
+    width: min(57vw, 220px);
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, #f3c167 22%, #70e0a3 50%, #f3c167 78%, transparent);
+    box-shadow: 0 0 11px rgba(114, 228, 168, 0.56);
+    opacity: 0;
+    transform: scaleX(0.15);
+    animation: tokeniIntroLine var(--tokeni-intro-ms, 5200ms) ease both;
+}
+
+#tokeni-screen.tokeni-entering .page-heading,
+#tokeni-screen.tokeni-entering .tokeni-content,
+#tokeni-screen.tokeni-entering .settings-footer {
+    animation: tokeniRoomEnter 680ms cubic-bezier(0.2, 0.88, 0.25, 1) both;
+}
+
+#tokeni-screen.tokeni-entering .tokeni-content { animation-delay: 75ms; }
+#tokeni-screen.tokeni-entering .settings-footer { animation-delay: 135ms; }
+
+@keyframes tokeniIntroFade {
+    0% { opacity: 0; }
+    5%, 92% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+@keyframes tokeniIntroClose {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes tokeniIntroHalo {
+    0%, 10% { opacity: 0; transform: scale(0.72) rotate(-14deg); }
+    28%, 82% { opacity: 1; }
+    55% { transform: scale(1.04) rotate(8deg); }
+    100% { opacity: 0.34; transform: scale(1.12) rotate(22deg); }
+}
+
+@keyframes tokeniIntroKicker {
+    0%, 7% { opacity: 0; transform: translateY(-9px); }
+    15%, 100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tokeniIntroWord {
+    0%, 10% { opacity: 0; transform: translateY(14px) scale(0.88); }
+    20%, 100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes tokeniIntroBolt {
+    0%, 15% { opacity: 0; transform: rotate(-26deg) scale(0.42); }
+    24%, 100% { opacity: 1; transform: rotate(-11deg) scale(1); }
+}
+
+@keyframes tokeniIntroHero {
+    0%, 16% { opacity: 0; transform: translateY(28px) scale(0.58) rotate(-9deg); }
+    31% { opacity: 1; transform: translateY(-6px) scale(1.06) rotate(3deg); }
+    42%, 100% { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+}
+
+@keyframes tokeniIntroOrbit {
+    0%, 23% { opacity: 0; transform: scale(0.2); }
+    34%, 100% { opacity: 1; transform: scale(1); }
+    56% { transform: translateY(-7px) scale(1.1); }
+}
+
+@keyframes tokeniIntroAction {
+    0%, 39% { opacity: 0; transform: translateY(15px) scale(0.88); }
+    51%, 100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes tokeniIntroCopy {
+    0%, 53% { opacity: 0; transform: translateY(7px); }
+    65%, 100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tokeniIntroLine {
+    0%, 59% { opacity: 0; transform: scaleX(0.15); }
+    70%, 100% { opacity: 1; transform: scaleX(1); }
+}
+
+@keyframes tokeniRoomEnter {
+    from { opacity: 0; transform: translateY(17px) scale(0.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-height: 680px) {
+    .tokeni-intro-stage { padding-top: 22px; padding-bottom: 20px; }
+    .tokeni-intro-hero { width: min(43vw, 150px); height: min(43vw, 150px); margin-top: 10px; margin-bottom: 5px; }
+    .tokeni-intro-action { min-height: 3.35rem; }
+    .tokeni-intro-copy { margin-top: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tokeni-intro-overlay.active,
+    .tokeni-intro-overlay.closing,
+    .tokeni-intro-overlay::before,
+    .tokeni-intro-overlay::after,
+    .tokeni-intro-kicker,
+    .tokeni-intro-word,
+    .tokeni-intro-bolt,
+    .tokeni-intro-icon,
+    .tokeni-intro-orbit,
+    .tokeni-intro-action,
+    .tokeni-intro-copy,
+    .tokeni-intro-line,
+    #tokeni-screen.tokeni-entering .page-heading,
+    #tokeni-screen.tokeni-entering .tokeni-content,
+    #tokeni-screen.tokeni-entering .settings-footer {
+        animation-duration: 1ms !important;
+        animation-delay: 0ms !important;
+    }
+}
+
 /* Riznica: soft-matte uvod koristi iste boje kao centralni 3D sanduk. */
 .riznica-intro-overlay {
     display: none;

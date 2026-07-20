@@ -1297,6 +1297,9 @@ const Game = {
             UIManager.pokreniTranzicijuVrata(prikaziTablu, () => {
                 animacijaSpremna = true;
                 pokusajZakazivanja();
+            }, {
+                mod: this.trenutniMod,
+                tipOnlineModa: this.tipOnlineModa
             });
         }
 

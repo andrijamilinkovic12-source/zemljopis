@@ -33,7 +33,58 @@ const UIManager = {
         document.documentElement.scrollTop = 0;
     },
 
-    pokreniTranzicijuVrata: function(callbackNaZatvaranju, callbackPoOtvaranju) {
+    podesiTranzicijuVrata: function(mod = 'solo', tipOnlineModa = '') {
+        const overlay = document.getElementById('door-transition');
+        if (!overlay) return;
+
+        const prikazModa = mod === 'solo'
+            ? 'solo'
+            : (tipOnlineModa === 'prijatelji' ? 'prijatelji' : 'multi');
+        const podaciModa = {
+            solo: {
+                ikona: 'assets/mode-solo-clay-3d-navy-v2.png',
+                naziv: 'SOLO'
+            },
+            multi: {
+                ikona: 'assets/mode-multiplayer-clay-3d-navy-v2.png',
+                naziv: 'MULTIPLAYER'
+            },
+            prijatelji: {
+                ikona: 'assets/mode-pozovi-prijatelje-clay-3d-navy-v2.png',
+                naziv: 'POZOVI PRIJATELJE'
+            }
+        }[prikazModa];
+
+        overlay.dataset.mode = prikazModa;
+        overlay.querySelectorAll('.door-mode-icon').forEach(ikona => {
+            ikona.src = podaciModa.ikona;
+            ikona.alt = podaciModa.naziv;
+        });
+
+        const formatiraj = tekst => (
+            typeof PodesavanjaManager !== 'undefined' && typeof PodesavanjaManager.formatirajTekst === 'function'
+                ? PodesavanjaManager.formatirajTekst(tekst)
+                : tekst
+        );
+        const pismo = typeof PodesavanjaManager !== 'undefined' && PodesavanjaManager.postavke?.pismo === 'cirilica'
+            ? 'cirilica'
+            : 'latinica';
+
+        overlay.querySelectorAll('[data-door-letter-latinica]').forEach(slovo => {
+            const prikazanoSlovo = slovo.getAttribute(`data-door-letter-${pismo}`);
+            if (prikazanoSlovo) {
+                slovo.setAttribute('data-letter', prikazanoSlovo);
+                slovo.textContent = prikazanoSlovo;
+            }
+        });
+
+        const tekstPripreme = overlay.querySelector('.door-text');
+        const tekstUcitavanja = overlay.querySelector('.door-subtext');
+        if (tekstPripreme) tekstPripreme.textContent = formatiraj('PRIPREMA');
+        if (tekstUcitavanja) tekstUcitavanja.textContent = formatiraj('UČITAVANJE MODA');
+    },
+
+    pokreniTranzicijuVrata: function(callbackNaZatvaranju, callbackPoOtvaranju, opcije = {}) {
         const overlay = document.getElementById('door-transition');
         const levaVrata = overlay ? overlay.querySelector('.door-left') : null;
 
@@ -44,6 +95,8 @@ const UIManager = {
         }
 
         if (overlay.dataset.tranzicijaUToku === 'true') return;
+
+        this.podesiTranzicijuVrata(opcije.mod || 'solo', opcije.tipOnlineModa || '');
 
         const cekajTransformaciju = (element, rezervnoVreme, callback) => {
             let zavrseno = false;

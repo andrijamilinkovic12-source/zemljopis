@@ -22,6 +22,10 @@ const KvartalniNivoManager = {
     slanjeUToku: false,
     dogadjajiNaCekanju: [],
     poslatiDogadjaji: [],
+    introTrajanjeMs: 5200,
+    introTajmer: null,
+    ulazakTajmer: null,
+    otvaranjeUToku: false,
 
     // Ovde se smeštaju podaci koji stignu iz MongoDB/Servera
     serverPodaci: {
@@ -189,7 +193,7 @@ const KvartalniNivoManager = {
             sampioni: Array.isArray(podaci && podaci.sampioni) ? podaci.sampioni : []
         };
         const ekran = document.getElementById('kvartalni-nivo-screen');
-        if (ekran && ekran.classList.contains('active')) {
+        if (ekran && (ekran.classList.contains('active') || this.otvaranjeUToku)) {
             this.renderEkran();
         }
     },
@@ -238,18 +242,66 @@ const KvartalniNivoManager = {
     },
 
     otvoriEkran: function() {
+        if (this.otvaranjeUToku) return;
+        this.otvaranjeUToku = true;
         this.aktivniTab = 'sezona';
         const info = this.odrediTrenutniNivo();
         this.aktivniNivoTab = info.trenutni.id; 
+
+        if (typeof KeyboardManager !== 'undefined') {
+            KeyboardManager.hideKeyboard();
+        }
         
-        // Zatraži osvežene liste iz baze prilikom ulaska
+        // Liste i početni prikaz se pripremaju tokom uvoda.
         if (typeof Game !== 'undefined' && Game.socket) {
             this.ucitavanje = true;
             Game.socket.emit('traziKvartalneListe');
         }
 
         this.renderEkran();
-        UIManager.prikaziEkran('kvartalni-nivo-screen');
+        this.prikaziIntro(() => {
+            UIManager.prikaziEkran('kvartalni-nivo-screen');
+            this.pokreniBlagiUlazakUSobu();
+            this.otvaranjeUToku = false;
+        });
+    },
+
+    prikaziIntro: function(callback) {
+        const overlay = document.getElementById('kvartalni-nivo-intro-overlay');
+        const smanjeniPokret = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const trajanje = smanjeniPokret ? 420 : this.introTrajanjeMs;
+        const trajanjeZatvaranja = smanjeniPokret ? 160 : Math.min(420, trajanje);
+
+        if (!overlay) {
+            setTimeout(callback, trajanje);
+            return;
+        }
+
+        clearTimeout(this.introTajmer);
+        overlay.style.setProperty('--kvartalni-nivo-intro-ms', `${trajanje}ms`);
+        overlay.classList.remove('closing');
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        this.introTajmer = setTimeout(() => {
+            overlay.classList.add('closing');
+            setTimeout(() => {
+                overlay.classList.remove('active', 'closing');
+                overlay.setAttribute('aria-hidden', 'true');
+                callback();
+            }, trajanjeZatvaranja);
+        }, Math.max(0, trajanje - trajanjeZatvaranja));
+    },
+
+    pokreniBlagiUlazakUSobu: function() {
+        const ekran = document.getElementById('kvartalni-nivo-screen');
+        if (!ekran) return;
+
+        clearTimeout(this.ulazakTajmer);
+        ekran.classList.remove('kvartalni-nivo-entering');
+        void ekran.offsetWidth;
+        ekran.classList.add('kvartalni-nivo-entering');
+        this.ulazakTajmer = setTimeout(() => ekran.classList.remove('kvartalni-nivo-entering'), 720);
     },
 
     promeniTab: function(tab) {

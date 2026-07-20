@@ -13035,6 +13035,8 @@ body[data-tema][data-tastatura="izvorna"] .kb-enter {
 }
 
 #main-menu .status-icon-slot {
+    position: relative;
+    z-index: 2;
     width: var(--status-icon-size);
     height: var(--status-icon-size);
     flex: 0 0 var(--status-icon-size);
@@ -13076,6 +13078,18 @@ body[data-tema][data-tastatura="izvorna"] .kb-enter {
 #main-menu .online-pill .status-value {
     right: calc(100% - 4px);
     transform-origin: right center;
+}
+
+/* Vrednost najpre ostaje iza medaljona, zatim klizi iz njegove ivice. */
+#main-menu .ducats-pill .status-value.status-value-pending {
+    opacity: 0;
+    transform: translate(-12px, -50%) scale(0.9);
+}
+
+#main-menu .tokens-pill .status-value.status-value-pending,
+#main-menu .online-pill .status-value.status-value-pending {
+    opacity: 0;
+    transform: translate(12px, -50%) scale(0.9);
 }
 
 #main-menu .ducats-pill .status-value.status-value-reveal {

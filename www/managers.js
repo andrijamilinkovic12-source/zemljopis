@@ -21,6 +21,15 @@ const UIManager = {
         if (typeof AssetPreloader !== 'undefined') {
             AssetPreloader.pripremiEkran(ekranId);
         }
+
+        // Statusne ikonice ostaju mirne; njihove vrednosti izlaze tek kada je meni vidljiv.
+        if (ekranId === 'main-menu') {
+            requestAnimationFrame(() => {
+                if (typeof StatusBarMotion !== 'undefined') {
+                    StatusBarMotion.pokreniUlazak();
+                }
+            });
+        }
         
         // Uvek sakrij tastaturu kada se menja ekran da ne bi blokirala UI
         if (typeof KeyboardManager !== 'undefined') {

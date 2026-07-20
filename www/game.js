@@ -2231,19 +2231,75 @@ const Game = {
 Game.init();
 
 const StatusBarMotion = {
+    uvodniTajmeri: [],
+    ulazakUToku: false,
+    inicijalizovano: false,
+
+    otkaziUvodneTajmere: function() {
+        this.uvodniTajmeri.forEach((tajmer) => clearTimeout(tajmer));
+        this.uvodniTajmeri = [];
+    },
+
     reanimate: function(value) {
-        if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+        if (!value) return;
+
+        value.classList.remove('status-value-pending');
+        if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+            value.classList.remove('status-value-reveal');
+            return;
+        }
 
         value.classList.remove('status-value-reveal');
         void value.offsetWidth;
         value.classList.add('status-value-reveal');
     },
 
+    pokreniUlazak: function() {
+        const vrednosti = [
+            document.getElementById('meni-dukati'),
+            document.getElementById('meni-tokeni'),
+            document.getElementById('meni-online')
+        ].filter(Boolean);
+        if (!vrednosti.length) return;
+
+        this.otkaziUvodneTajmere();
+        this.ulazakUToku = true;
+
+        vrednosti.forEach((value) => {
+            value.classList.remove('status-value-reveal');
+            value.classList.add('status-value-pending');
+        });
+
+        if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+            vrednosti.forEach((value) => value.classList.remove('status-value-pending'));
+            this.ulazakUToku = false;
+            return;
+        }
+
+        vrednosti.forEach((value, index) => {
+            const tajmer = setTimeout(() => {
+                this.reanimate(value);
+            }, 120 + (index * 145));
+            this.uvodniTajmeri.push(tajmer);
+        });
+
+        const krajUlaska = setTimeout(() => {
+            this.ulazakUToku = false;
+            this.uvodniTajmeri = [];
+        }, 1020);
+        this.uvodniTajmeri.push(krajUlaska);
+    },
+
     init: function() {
+        if (this.inicijalizovano) return;
+        this.inicijalizovano = true;
+
         document.querySelectorAll('.status-value').forEach((value) => {
-            const observer = new MutationObserver(() => this.reanimate(value));
+            const observer = new MutationObserver(() => {
+                if (this.ulazakUToku && value.classList.contains('status-value-pending')) return;
+                this.reanimate(value);
+            });
             observer.observe(value, { childList: true, characterData: true, subtree: true });
-            requestAnimationFrame(() => this.reanimate(value));
         });
     }
 };

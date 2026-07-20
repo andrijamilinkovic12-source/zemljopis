@@ -8146,7 +8146,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     visibility: hidden;
     pointer-events: none;
     isolation: isolate;
-    --door-word-balance: clamp(0px, 1vw, 12px);
+    --door-word-balance: clamp(4px, 0.75vw, 8px);
 }
 
 .door-overlay.active,
@@ -8233,7 +8233,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     white-space: nowrap;
 }
 
-.door-word-left { right: calc(0px - var(--door-word-balance)); }
+.door-word-left { right: var(--door-word-balance); }
 .door-word-right { left: var(--door-word-balance); }
 
 .door-logo-letter {
@@ -8330,6 +8330,86 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     left: -78.3%;
     top: -76.2%;
 }
+
+.door-category-watermarks {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.door-category-watermark {
+    position: absolute;
+    display: block;
+    width: clamp(72px, 21vw, 138px);
+    height: auto;
+    opacity: 0;
+    mix-blend-mode: multiply;
+    filter: saturate(0.68) brightness(1.08) contrast(0.88) drop-shadow(0 10px 10px rgba(63, 101, 110, 0.11));
+    transform: rotate(var(--watermark-rotate, 0deg)) scale(0.82);
+    transform-origin: center;
+    will-change: opacity, transform;
+}
+
+.watermark-drzava {
+    top: 20%;
+    left: 5%;
+    --watermark-rotate: -14deg;
+}
+
+.watermark-reka {
+    top: 48%;
+    left: 23%;
+    width: clamp(76px, 22vw, 146px);
+    --watermark-rotate: 10deg;
+}
+
+.watermark-planina {
+    right: -6%;
+    bottom: 9%;
+    --watermark-rotate: -9deg;
+}
+
+.watermark-biljka {
+    left: -7%;
+    bottom: 7%;
+    width: clamp(64px, 17vw, 112px);
+    --watermark-rotate: 13deg;
+}
+
+.watermark-grad {
+    top: 19%;
+    right: 4%;
+    --watermark-rotate: 13deg;
+}
+
+.watermark-zivotinja {
+    top: 47%;
+    right: 18%;
+    width: clamp(76px, 22vw, 146px);
+    --watermark-rotate: -11deg;
+}
+
+.watermark-predmet {
+    right: -5%;
+    bottom: 10%;
+    width: clamp(67px, 18vw, 118px);
+    --watermark-rotate: 11deg;
+}
+
+.door-overlay.active .door-category-watermark {
+    animation: doorWatermarkIn 1.05s 0.72s cubic-bezier(0.18, 0.78, 0.24, 1) forwards;
+}
+
+.door-overlay.active .watermark-reka,
+.door-overlay.active .watermark-grad { animation-delay: 0.9s; }
+
+.door-overlay.active .watermark-planina,
+.door-overlay.active .watermark-zivotinja { animation-delay: 1.08s; }
+
+.door-overlay.active .watermark-biljka,
+.door-overlay.active .watermark-predmet { animation-delay: 1.24s; }
 
 .door-panel-cubes {
     position: absolute;
@@ -8565,6 +8645,21 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     100% { opacity: 0.65; }
 }
 
+@keyframes doorWatermarkIn {
+    0% {
+        opacity: 0;
+        transform: translateY(16px) rotate(var(--watermark-rotate, 0deg)) scale(0.74);
+    }
+    72% {
+        opacity: 0.17;
+        transform: translateY(-2px) rotate(var(--watermark-rotate, 0deg)) scale(1.02);
+    }
+    100% {
+        opacity: 0.13;
+        transform: translateY(0) rotate(var(--watermark-rotate, 0deg)) scale(1);
+    }
+}
+
 #game-board.game-mode-entry-soft .game-header,
 #game-board.game-mode-entry-soft .inputs-container,
 #game-board.game-mode-entry-soft .action-footer {
@@ -8602,6 +8697,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     .door-overlay.active .door-mode-assembly::before,
     .door-overlay.active .door-progress span,
     .door-overlay.active .door-panel-cubes span,
+    .door-overlay.active .door-category-watermark,
     #game-board.game-mode-entry-soft .game-header,
     #game-board.game-mode-entry-soft .inputs-container,
     #game-board.game-mode-entry-soft .action-footer,

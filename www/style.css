@@ -4269,6 +4269,338 @@ body.keyboard-open .dnevni-input-group input {
     }
 }
 
+/* Global chat: mekani 3D uvod koristi tirkizne, krem i ljubičaste tonove glavne ikone. */
+.global-chat-intro-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9995;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 50% 38%, rgba(44, 210, 210, 0.24), transparent 25%),
+        radial-gradient(circle at 50% 64%, rgba(135, 94, 226, 0.22), transparent 42%),
+        linear-gradient(155deg, #071a36 0%, #102e58 49%, #21183f 100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+    .global-chat-intro-overlay {
+        --global-chat-intro-placement: translate(-50%, -50%);
+        top: 50%;
+        right: auto;
+        bottom: auto;
+        left: 50%;
+        width: 464px;
+        height: min(calc(90dvh - 16px), 884px);
+        transform: var(--global-chat-intro-placement);
+        border-radius: 27px;
+    }
+}
+
+.global-chat-intro-overlay.active {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+    animation: globalChatIntroFade var(--global-chat-intro-ms, 5200ms) ease both;
+}
+
+.global-chat-intro-overlay.closing {
+    animation: globalChatIntroClose 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.global-chat-intro-overlay::before,
+.global-chat-intro-overlay::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: min(88vw, 460px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(231, 255, 246, 0.17);
+    border-radius: 55% 45% 52% 48% / 47% 55% 45% 53%;
+    box-shadow: inset 0 0 42px rgba(225, 255, 248, 0.04), 0 0 48px rgba(40, 207, 211, 0.12);
+    animation: globalChatIntroHalo var(--global-chat-intro-ms, 5200ms) ease both;
+}
+
+.global-chat-intro-overlay::before { transform: rotate(-12deg); }
+
+.global-chat-intro-overlay::after {
+    width: min(69vw, 350px);
+    border-color: rgba(160, 113, 235, 0.28);
+    transform: rotate(17deg);
+    animation-delay: 100ms;
+}
+
+.global-chat-intro-stage {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 390px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.global-chat-intro-kicker {
+    padding: 0.36rem 0.7rem;
+    border: 1px solid rgba(232, 255, 246, 0.28);
+    border-radius: 999px;
+    background: rgba(222, 255, 247, 0.08);
+    color: #e6fff6;
+    font-size: 0.58rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 8px 18px rgba(5, 10, 35, 0.28);
+    animation: globalChatIntroKicker var(--global-chat-intro-ms, 5200ms) ease both;
+}
+
+.global-chat-intro-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.34rem;
+    margin-top: 0.74rem;
+}
+
+.global-chat-intro-word {
+    color: #fff0dc;
+    font-size: clamp(1.36rem, 5.95vw, 1.88rem);
+    font-weight: 950;
+    letter-spacing: 0.025em;
+    line-height: 1;
+    text-shadow: 0 3px 0 rgba(36, 53, 104, 0.42), 0 0 22px rgba(37, 208, 208, 0.38);
+    animation: globalChatIntroWord var(--global-chat-intro-ms, 5200ms) cubic-bezier(0.18, 0.86, 0.26, 1) both;
+}
+
+.global-chat-intro-globe {
+    width: 1.3rem;
+    height: 1.3rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #42d8d5, #159caa);
+    color: #fff9e8;
+    font-size: 0.72rem;
+    line-height: 1;
+    box-shadow: 0 0 0 3px rgba(255, 242, 214, 0.14), 0 0 16px rgba(44, 211, 210, 0.46);
+    animation: globalChatIntroGlobe var(--global-chat-intro-ms, 5200ms) ease both;
+}
+
+.global-chat-intro-hero {
+    position: relative;
+    width: 8.85rem;
+    height: 8.25rem;
+    display: grid;
+    place-items: center;
+    margin: 0.08rem 0 -0.45rem;
+}
+
+.global-chat-intro-icon {
+    position: relative;
+    z-index: 1;
+    width: 7.75rem;
+    height: 7.75rem;
+    object-fit: contain;
+    filter: drop-shadow(0 15px 20px rgba(4, 9, 34, 0.56)) drop-shadow(0 0 20px rgba(39, 205, 208, 0.22));
+    animation: globalChatIntroHero var(--global-chat-intro-ms, 5200ms) cubic-bezier(0.18, 0.88, 0.26, 1) both;
+}
+
+.global-chat-intro-orbit {
+    position: absolute;
+    width: 0.68rem;
+    height: 0.68rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff3d9 0 15%, #3bd7d3 35%, #2087a8 100%);
+    box-shadow: 0 0 0 3px rgba(228, 255, 248, 0.12), 0 0 16px rgba(39, 208, 209, 0.42);
+    animation: globalChatIntroOrbit var(--global-chat-intro-ms, 5200ms) ease both;
+}
+
+.global-chat-intro-orbit-left { left: 0.04rem; top: 57%; }
+.global-chat-intro-orbit-right { right: 0.04rem; top: 27%; animation-delay: 140ms; }
+
+.global-chat-intro-actions {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.35rem;
+    margin-top: -0.08rem;
+}
+
+.global-chat-intro-action {
+    width: 3.58rem;
+    display: grid;
+    justify-items: center;
+    gap: 0.12rem;
+    padding: 0.26rem 0.14rem 0.22rem;
+    border: 1px solid rgba(228, 255, 247, 0.2);
+    border-radius: 0.72rem;
+    background: linear-gradient(145deg, rgba(222, 255, 247, 0.14), rgba(100, 77, 186, 0.22));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.17), 0 7px 14px rgba(5, 7, 36, 0.3);
+    animation: globalChatIntroAction var(--global-chat-intro-ms, 5200ms) cubic-bezier(0.2, 0.86, 0.25, 1) both;
+}
+
+.global-chat-intro-action:nth-child(2) { animation-delay: 110ms; }
+.global-chat-intro-action:nth-child(3) { animation-delay: 220ms; }
+
+.global-chat-intro-action i {
+    width: 1.42rem;
+    height: 1.42rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #50ded9, #1d9dad);
+    color: #fff4df;
+    font-size: 0.68rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 3px 5px rgba(8, 10, 44, 0.26);
+}
+
+.global-chat-intro-action:nth-child(2) i { background: linear-gradient(145deg, #ad85ef, #684abd); }
+.global-chat-intro-action:nth-child(3) i { background: linear-gradient(145deg, #f47aac, #cb3f79); }
+
+.global-chat-intro-action small {
+    color: #fff1dc;
+    font-size: 0.4rem;
+    font-weight: 900;
+    letter-spacing: 0.035em;
+}
+
+.global-chat-intro-copy {
+    margin: 0.52rem 0 0;
+    color: rgba(232, 255, 247, 0.92);
+    font-size: 0.51rem;
+    font-weight: 850;
+    letter-spacing: 0.1em;
+    animation: globalChatIntroCopy var(--global-chat-intro-ms, 5200ms) ease both;
+}
+
+.global-chat-intro-copy span {
+    padding: 0 0.18rem;
+    color: #60e3df;
+}
+
+.global-chat-intro-line {
+    width: min(72%, 240px);
+    height: 3px;
+    margin-top: 0.54rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, #fff0ca 18%, #38d6d1 50%, #a276ed 82%, transparent);
+    box-shadow: 0 0 12px rgba(45, 209, 208, 0.36);
+    animation: globalChatIntroLine var(--global-chat-intro-ms, 5200ms) ease both;
+}
+
+@keyframes globalChatIntroFade {
+    0% { opacity: 0; }
+    9% { opacity: 1; }
+    89% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+@keyframes globalChatIntroClose {
+    to { opacity: 0; transform: var(--global-chat-intro-placement, translate(0, 0)) scale(1.018); }
+}
+
+@keyframes globalChatIntroHalo {
+    0% { opacity: 0; }
+    17% { opacity: 0.84; }
+    75% { opacity: 0.7; }
+    100% { opacity: 0.18; }
+}
+
+@keyframes globalChatIntroKicker {
+    0%, 9% { opacity: 0; transform: translateY(-12px) scale(0.92); }
+    23%, 78% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.9; transform: translateY(0) scale(0.98); }
+}
+
+@keyframes globalChatIntroWord {
+    0%, 8% { opacity: 0; transform: translateY(-18px) scale(0.88); }
+    25%, 78% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 1; transform: translateY(0) scale(0.98); }
+}
+
+@keyframes globalChatIntroGlobe {
+    0%, 13% { opacity: 0; transform: rotate(-45deg) scale(0.2); }
+    29%, 76% { opacity: 1; transform: rotate(0deg) scale(1); }
+    100% { opacity: 0.86; transform: rotate(20deg) scale(0.84); }
+}
+
+@keyframes globalChatIntroHero {
+    0%, 12% { opacity: 0; transform: translateY(28px) scale(0.7) rotate(-4deg); }
+    28% { opacity: 1; transform: translateY(-3px) scale(1.03) rotate(1deg); }
+    48%, 76% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 1; transform: translateY(-4px) scale(1.015) rotate(0deg); }
+}
+
+@keyframes globalChatIntroOrbit {
+    0%, 18% { opacity: 0; transform: translateY(8px) scale(0.25); }
+    34%, 76% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.65; transform: translateY(-5px) scale(0.9); }
+}
+
+@keyframes globalChatIntroAction {
+    0%, 25% { opacity: 0; transform: translateY(13px) scale(0.72); }
+    41%, 77% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.86; transform: translateY(-2px) scale(0.96); }
+}
+
+@keyframes globalChatIntroCopy {
+    0%, 35% { opacity: 0; transform: translateY(5px); }
+    50%, 78% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0.72; transform: translateY(0); }
+}
+
+@keyframes globalChatIntroLine {
+    0%, 35% { opacity: 0; transform: scaleX(0.18); }
+    51%, 79% { opacity: 0.95; transform: scaleX(1); }
+    100% { opacity: 0.62; transform: scaleX(0.84); }
+}
+
+#global-chat-screen.global-chat-entering .page-heading,
+#global-chat-screen.global-chat-entering .global-chat-content,
+#global-chat-screen.global-chat-entering .global-chat-footer {
+    animation: globalChatRoomEnter 680ms cubic-bezier(0.18, 0.82, 0.28, 1) both;
+}
+
+#global-chat-screen.global-chat-entering .global-chat-content { animation-delay: 75ms; }
+#global-chat-screen.global-chat-entering .global-chat-footer { animation-delay: 135ms; }
+
+@keyframes globalChatRoomEnter {
+    from { opacity: 0; transform: translateY(15px) scale(0.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 340px), (max-height: 620px) {
+    .global-chat-intro-hero { width: 7.55rem; height: 7.15rem; }
+    .global-chat-intro-icon { width: 6.7rem; height: 6.7rem; }
+    .global-chat-intro-title { margin-top: 0.54rem; }
+    .global-chat-intro-action { width: 3.22rem; }
+    .global-chat-intro-action small { font-size: 0.35rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .global-chat-intro-overlay.active,
+    .global-chat-intro-overlay.closing,
+    .global-chat-intro-overlay::before,
+    .global-chat-intro-overlay::after,
+    .global-chat-intro-kicker,
+    .global-chat-intro-word,
+    .global-chat-intro-globe,
+    .global-chat-intro-icon,
+    .global-chat-intro-orbit,
+    .global-chat-intro-action,
+    .global-chat-intro-copy,
+    .global-chat-intro-line,
+    #global-chat-screen.global-chat-entering .page-heading,
+    #global-chat-screen.global-chat-entering .global-chat-content,
+    #global-chat-screen.global-chat-entering .global-chat-footer {
+        animation-duration: 1ms !important;
+    }
+}
+
 /* Riznica: soft-matte uvod koristi iste boje kao centralni 3D sanduk. */
 .riznica-intro-overlay {
     display: none;

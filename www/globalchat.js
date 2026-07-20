@@ -1,6 +1,11 @@
 // globalchat.js - Menadžer za Globalni Chat
 
 const GlobalChatManager = {
+    introTrajanjeMs: 5200,
+    introTajmer: null,
+    ulazakTajmer: null,
+    otvaranjeUToku: false,
+
     init: function() {
         // Slušamo "Enter" taster za slanje poruke
         const input = document.getElementById('chat-input');
@@ -63,9 +68,58 @@ const GlobalChatManager = {
     },
 
     otvoriChat: function() {
-        UIManager.prikaziEkran('global-chat-screen');
-        // Tražimo poslednje poruke sa servera
+        if (this.otvaranjeUToku) return;
+        this.otvaranjeUToku = true;
+
+        if (typeof KeyboardManager !== 'undefined') {
+            KeyboardManager.hideKeyboard();
+        }
+
+        // Istorija se učitava za vreme uvoda, pa je chat spreman pri ulasku.
         Game.socket.emit('traziIstorijuChata');
+        this.prikaziIntro(() => {
+            UIManager.prikaziEkran('global-chat-screen');
+            this.pokreniBlagiUlazakUSobu();
+            this.otvaranjeUToku = false;
+        });
+    },
+
+    prikaziIntro: function(callback) {
+        const overlay = document.getElementById('global-chat-intro-overlay');
+        const smanjeniPokret = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const trajanje = smanjeniPokret ? 420 : this.introTrajanjeMs;
+        const trajanjeZatvaranja = smanjeniPokret ? 160 : Math.min(420, trajanje);
+
+        if (!overlay) {
+            setTimeout(callback, trajanje);
+            return;
+        }
+
+        clearTimeout(this.introTajmer);
+        overlay.style.setProperty('--global-chat-intro-ms', `${trajanje}ms`);
+        overlay.classList.remove('closing');
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        this.introTajmer = setTimeout(() => {
+            overlay.classList.add('closing');
+            setTimeout(() => {
+                overlay.classList.remove('active', 'closing');
+                overlay.setAttribute('aria-hidden', 'true');
+                callback();
+            }, trajanjeZatvaranja);
+        }, Math.max(0, trajanje - trajanjeZatvaranja));
+    },
+
+    pokreniBlagiUlazakUSobu: function() {
+        const ekran = document.getElementById('global-chat-screen');
+        if (!ekran) return;
+
+        clearTimeout(this.ulazakTajmer);
+        ekran.classList.remove('global-chat-entering');
+        void ekran.offsetWidth;
+        ekran.classList.add('global-chat-entering');
+        this.ulazakTajmer = setTimeout(() => ekran.classList.remove('global-chat-entering'), 720);
     },
 
     posaljiPoruku: function() {

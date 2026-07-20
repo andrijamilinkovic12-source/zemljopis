@@ -96,7 +96,7 @@
 
     const TEMATSKI_ASSETI = {
         drzava: [
-            'assets/drzava-static-geo-flags-open-v18.png',
+            'assets/drzava-static-geo-flags-open-v19.png',
             'assets/drzava-static-geo-africa-gold-clean-v3.png',
             'assets/drzava-clouds-without-russia-v1.png'
         ],

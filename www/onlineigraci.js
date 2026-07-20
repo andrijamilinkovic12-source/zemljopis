@@ -1,6 +1,11 @@
 // onlineigraci.js - Menadžer za prikaz igrača na mreži i dodavanje prijatelja
 
 const OnlineIgraciManager = {
+    introTrajanjeMs: 5200,
+    introTajmer: null,
+    ulazakTajmer: null,
+    otvaranjeUToku: false,
+
     init: function() {
         // Više nam ne treba odvojena lokalna lista ovde, 
         // koristićemo SobaPrijateljaManager kao GLAVNU bazu!
@@ -11,9 +16,59 @@ const OnlineIgraciManager = {
             UIManager.prikaziObavestenje("Nema konekcije", "Povezivanje na server je u toku, sačekaj par sekundi...", null, "Zatvori");
             return;
         }
-        UIManager.prikaziEkran('online-igraci-screen');
+
+        if (this.otvaranjeUToku) return;
+        this.otvaranjeUToku = true;
+        if (typeof KeyboardManager !== 'undefined') KeyboardManager.hideKeyboard();
+
         // Tražimo najsvežiju listu od servera
         Game.socket.emit('traziOnlineIgrace');
+
+        this.prikaziIntro(() => {
+            UIManager.prikaziEkran('online-igraci-screen');
+            this.pokreniBlagiUlazakUSobu();
+            this.otvaranjeUToku = false;
+        });
+    },
+
+    prikaziIntro: function(callback) {
+        const overlay = document.getElementById('online-igraci-intro-overlay');
+        const trajanje = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            ? 1
+            : this.introTrajanjeMs;
+
+        if (!overlay) {
+            callback();
+            return;
+        }
+
+        clearTimeout(this.introTajmer);
+        overlay.style.setProperty('--online-igraci-intro-ms', `${trajanje}ms`);
+        overlay.classList.remove('closing');
+        overlay.setAttribute('aria-hidden', 'false');
+        void overlay.offsetWidth;
+        overlay.classList.add('active');
+
+        this.introTajmer = setTimeout(() => {
+            overlay.classList.add('closing');
+
+            setTimeout(() => {
+                overlay.classList.remove('active', 'closing');
+                overlay.setAttribute('aria-hidden', 'true');
+                callback();
+            }, trajanje === 1 ? 1 : 420);
+        }, trajanje === 1 ? 1 : trajanje - 420);
+    },
+
+    pokreniBlagiUlazakUSobu: function() {
+        const ekran = document.getElementById('online-igraci-screen');
+        if (!ekran) return;
+
+        clearTimeout(this.ulazakTajmer);
+        ekran.classList.remove('online-igraci-entering');
+        void ekran.offsetWidth;
+        ekran.classList.add('online-igraci-entering');
+        this.ulazakTajmer = setTimeout(() => ekran.classList.remove('online-igraci-entering'), 720);
     },
 
     renderLista: function(igraci) {

@@ -9306,22 +9306,6 @@ body[data-tema] #ad-preview-time {
     border-color: rgba(var(--theme-secondary-rgb), 0.35) !important;
 }
 
-body[data-tema] .tastatura-preview {
-    background: linear-gradient(145deg, rgba(255, 250, 241, 0.78), rgba(225, 242, 237, 0.68)) !important;
-}
-
-body[data-tema] .tastatura-preview-red span {
-    background: rgba(var(--theme-primary-rgb), 0.1) !important;
-    border-color: rgba(var(--theme-primary-rgb), 0.26) !important;
-    color: var(--theme-primary) !important;
-    box-shadow: 0 2px 3px rgba(72, 96, 118, 0.18) !important;
-}
-
-body[data-tema] .tastatura-preview-red span.enter {
-    background: var(--theme-primary-gradient) !important;
-    color: var(--theme-on-primary) !important;
-}
-
 body[data-tema][data-tastatura] #custom-keyboard {
     background: var(--theme-panel) !important;
     border-top-color: var(--theme-border) !important;

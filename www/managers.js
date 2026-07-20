@@ -81,6 +81,10 @@ const UIManager = {
             }
         });
 
+        overlay.querySelectorAll('[data-door-hide-cirilica]').forEach(slovo => {
+            slovo.hidden = pismo === 'cirilica';
+        });
+
         const tekstPripreme = overlay.querySelector('.door-text');
         const tekstUcitavanja = overlay.querySelector('.door-subtext');
         if (tekstPripreme) tekstPripreme.textContent = formatiraj('PRIPREMA');

@@ -8146,7 +8146,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     visibility: hidden;
     pointer-events: none;
     isolation: isolate;
-    --door-word-balance: clamp(10px, 2.8vw, 22px);
+    --door-word-balance: clamp(0px, 1vw, 12px);
 }
 
 .door-overlay.active,

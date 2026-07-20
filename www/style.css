@@ -28,7 +28,8 @@ input[readonly] {
 
 /* Centriranje celog prikaza na monitorima */
 html {
-    background: #020803; 
+    /* Vidljivo i pre nego što JavaScript učita sačuvanu temu. */
+    background: #dff4ff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,7 +40,8 @@ html {
 
 /* Body sada glumi ekran telefona sa dominantnom zelenom */
 body {
-    background: linear-gradient(135deg, #051405, #0d290d, #143d14);
+    /* Početni kadar prati native splash; aktivna tema kasnije preuzima svoju pozadinu. */
+    background: linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
     color: #ffffff;
     width: 100%;
     max-width: none; 

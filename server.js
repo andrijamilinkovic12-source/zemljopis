@@ -197,6 +197,26 @@ const DNEVNI_DOSTUPNA_SLOVA = Object.fromEntries(DNEVNI_KATEGORIJE.map(kategorij
 const MAX_PORUKA_ISTORIJA = 50;
 let istorijaChata = [];
 const onlineIgraci = {}; 
+
+// Jedan profil može imati više aktivnih Socket.IO veza tokom internog testiranja
+// (telefon, emulator, osveženje aplikacije). Za prikaz prisutnosti računamo ga samo jednom.
+function jedinstveniOnlineIgraci(izuzmiPlayerId = null) {
+    const igraciPoPlayerId = new Map();
+
+    Object.values(onlineIgraci).forEach(igrac => {
+        if (!igrac?.playerId || igrac.playerId === izuzmiPlayerId) return;
+        if (!igraciPoPlayerId.has(igrac.playerId)) {
+            igraciPoPlayerId.set(igrac.playerId, igrac);
+        }
+    });
+
+    return [...igraciPoPlayerId.values()];
+}
+
+function brojJedinstvenihOnlineIgraca() {
+    return jedinstveniOnlineIgraci().length;
+}
+
 const DOZVOLJENI_AVATARI = new Set([
     "atlas", "luna", "orion", "tara", "niko", "mila",
     "sava", "zara", "vuk", "iris", "leo", "nova"
@@ -1139,7 +1159,7 @@ function prijaviOnlineIgraca(socket, igrac) {
         avatar: igrac.avatar || "atlas",
         bazaId: igrac._id
     };
-    io.emit('azurirajBrojOnline', Object.keys(onlineIgraci).length);
+    io.emit('azurirajBrojOnline', brojJedinstvenihOnlineIgraca());
     socket.emit('podaciProfila', podaciProfilaZaKlijenta(igrac));
     osveziPrijateljeZaSocket(socket.id).catch(error => {
         console.error("Greška pri početnom učitavanju prijatelja:", error);
@@ -3421,7 +3441,7 @@ io.on('connection', (socket) => {
         ukloniIgracaIzSoba(socket, 'diskonekt');
         ukloniPozivIzSoba(socket, 'diskonekt');
         delete onlineIgraci[socket.id]; 
-        io.emit('azurirajBrojOnline', Object.keys(onlineIgraci).length);
+        io.emit('azurirajBrojOnline', brojJedinstvenihOnlineIgraca());
     });
 
     function ukloniPozivIzSoba(socket, razlog = "diskonekt") {
@@ -3567,8 +3587,8 @@ io.on('connection', (socket) => {
 
     // --- 8. OFLAJN PRIJATELJI I ZAHTEVI ---
     socket.on('traziOnlineIgrace', () => {
-        const lista = Object.values(onlineIgraci)
-            .filter(igrac => igrac.id !== socket.id)
+        const mojPlayerId = onlineIgraci[socket.id]?.playerId || null;
+        const lista = jedinstveniOnlineIgraci(mojPlayerId)
             .map(igrac => ({
                 id: igrac.id,
                 playerId: igrac.playerId,

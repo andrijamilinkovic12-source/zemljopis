@@ -8342,7 +8342,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 .door-category-watermark {
     position: absolute;
     display: block;
-    width: min(clamp(96px, 27vw, 178px), 68%);
+    width: min(clamp(112px, 31vw, 202px), 78%);
     height: auto;
     opacity: 0;
     mix-blend-mode: multiply;
@@ -8361,7 +8361,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 .watermark-reka {
     top: 44%;
     left: 18%;
-    width: min(clamp(102px, 28vw, 184px), 72%);
+    width: min(clamp(118px, 33vw, 210px), 82%);
     --watermark-rotate: 10deg;
 }
 
@@ -8374,7 +8374,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 .watermark-biljka {
     left: 5%;
     bottom: 6%;
-    width: min(clamp(84px, 22vw, 136px), 58%);
+    width: min(clamp(96px, 25vw, 154px), 66%);
     --watermark-rotate: 13deg;
 }
 
@@ -8387,14 +8387,14 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 .watermark-zivotinja {
     top: 43%;
     right: 18%;
-    width: min(clamp(102px, 28vw, 184px), 72%);
+    width: min(clamp(118px, 33vw, 210px), 82%);
     --watermark-rotate: -11deg;
 }
 
 .watermark-predmet {
     right: 5%;
     bottom: 7%;
-    width: min(clamp(88px, 23vw, 144px), 60%);
+    width: min(clamp(100px, 26vw, 162px), 68%);
     --watermark-rotate: 11deg;
 }
 

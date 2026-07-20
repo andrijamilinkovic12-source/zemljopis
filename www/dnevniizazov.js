@@ -25,6 +25,8 @@ const DnevniIzazovManager = {
     pocetakIgreAt: null,
     rokAt: null,
     introTajmer: null,
+    ulazakTajmer: null,
+    aktivacijaUnosaTajmer: null,
     introTrajanjeMs: 5200,
     x2PreuzimanjeUToku: false,
     poslednjiRezultat: null,
@@ -217,6 +219,9 @@ const DnevniIzazovManager = {
                 KeyboardManager.hideKeyboard();
             }
 
+            // Polja se pripremaju dok uvod traje, a tastatura ostaje skrivena do ulaska u sobu.
+            this.pripremiPrikazIgre();
+
             const preostaloDoStarta = this.pocetakIgreAt
                 ? Math.max(0, this.pocetakIgreAt - this.sadaServer())
                 : 0;
@@ -268,11 +273,43 @@ const DnevniIzazovManager = {
         if (!this.dnevniPodaci || !Array.isArray(this.dnevniPodaci.zadaci)) return;
 
         UIManager.prikaziEkran('dnevni-izazov-screen');
-        this.prikaziZadatke();
         this.pokreniTajmerDoRoka(this.rokAt || (this.sadaServer() + 60000));
+        this.pokreniBlagiUlazakUSobu();
+
+        clearTimeout(this.aktivacijaUnosaTajmer);
+        this.aktivacijaUnosaTajmer = setTimeout(() => this.aktivirajPrviUnos(), 240);
     },
 
-    prikaziZadatke: function() {
+    pripremiPrikazIgre: function() {
+        this.prikaziZadatke({ aktivirajPrviUnos: false });
+    },
+
+    pokreniBlagiUlazakUSobu: function() {
+        const ekran = document.getElementById('dnevni-izazov-screen');
+        if (!ekran) return;
+
+        clearTimeout(this.ulazakTajmer);
+        ekran.classList.remove('dnevni-entering');
+        void ekran.offsetWidth;
+        ekran.classList.add('dnevni-entering');
+        this.ulazakTajmer = setTimeout(() => ekran.classList.remove('dnevni-entering'), 720);
+    },
+
+    aktivirajPrviUnos: function() {
+        const prvoPolje = document.getElementById('dnevni-input-0');
+        if (!prvoPolje) return;
+
+        if (typeof KeyboardManager !== 'undefined') {
+            KeyboardManager.setActiveInput(prvoPolje);
+            KeyboardManager.showKeyboard();
+            setTimeout(() => KeyboardManager.scrollInputIntoView(prvoPolje), 280);
+        } else {
+            prvoPolje.focus();
+        }
+    },
+
+    prikaziZadatke: function(opcije = {}) {
+        const aktivirajPrviUnos = opcije.aktivirajPrviUnos !== false;
         const kontejner = document.getElementById('dnevni-izazov-polja');
         if (!kontejner || !this.dnevniPodaci) return;
 
@@ -350,16 +387,7 @@ const DnevniIzazovManager = {
             }
             this.azurirajDugmePotvrde();
 
-            const prvoPolje = document.getElementById('dnevni-input-0');
-            if (prvoPolje) {
-                if (typeof KeyboardManager !== 'undefined') {
-                    KeyboardManager.setActiveInput(prvoPolje);
-                    KeyboardManager.showKeyboard();
-                    setTimeout(() => KeyboardManager.scrollInputIntoView(prvoPolje), 280);
-                } else {
-                    prvoPolje.focus();
-                }
-            }
+            if (aktivirajPrviUnos) this.aktivirajPrviUnos();
         }, 100);
     },
 

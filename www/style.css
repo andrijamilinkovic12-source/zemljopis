@@ -8146,6 +8146,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     visibility: hidden;
     pointer-events: none;
     isolation: isolate;
+    --door-word-balance: clamp(10px, 2.8vw, 22px);
 }
 
 .door-overlay.active,
@@ -8164,7 +8165,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
         radial-gradient(circle at 79% 72%, rgba(166, 211, 194, 0.34), transparent 34%),
         linear-gradient(145deg, #f7f4e9 0%, #e0eff0 47%, #bfd9d6 100%);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76), inset 0 -22px 42px rgba(63, 112, 121, 0.14);
-    transition: transform 1.45s cubic-bezier(0.76, 0, 0.24, 1);
+    transition: transform 1.7s cubic-bezier(0.76, 0, 0.24, 1);
     will-change: transform;
 }
 
@@ -8232,8 +8233,8 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     white-space: nowrap;
 }
 
-.door-word-left { right: clamp(2px, 0.9vw, 8px); }
-.door-word-right { left: clamp(2px, 0.9vw, 8px); }
+.door-word-left { right: calc(0px - var(--door-word-balance)); }
+.door-word-right { left: var(--door-word-balance); }
 
 .door-logo-letter {
     --door-clay-highlight: #416b9b;
@@ -8363,11 +8364,11 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 .door-panel-cubes-right span:nth-child(3) { top: 84%; right: 15%; transform: rotate(-29deg) scale(0.48); }
 
 .door-overlay.active .door-panel-cubes span {
-    animation: doorPanelCubeIn 0.62s 0.57s cubic-bezier(0.2, 0.8, 0.22, 1.14) forwards;
+    animation: doorPanelCubeIn 0.74s 0.82s cubic-bezier(0.2, 0.8, 0.22, 1.14) forwards;
 }
 
-.door-panel-cubes span:nth-child(2) { animation-delay: 0.7s !important; }
-.door-panel-cubes span:nth-child(3) { animation-delay: 0.83s !important; }
+.door-panel-cubes span:nth-child(2) { animation-delay: 1.02s !important; }
+.door-panel-cubes span:nth-child(3) { animation-delay: 1.22s !important; }
 
 .door-stage {
     position: absolute;
@@ -8384,7 +8385,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 }
 
 .door-overlay.active .door-stage {
-    animation: doorStageIn 0.48s 0.68s cubic-bezier(0.18, 0.78, 0.24, 1) forwards;
+    animation: doorStageIn 0.58s 0.94s cubic-bezier(0.18, 0.78, 0.24, 1) forwards;
 }
 
 .door-overlay.opening .door-stage {
@@ -8443,9 +8444,9 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 .door-mode-half-left img { left: 0; }
 .door-mode-half-right img { right: 0; }
 
-.door-overlay.active .door-mode-half-left { animation: doorModeHalfLeft 0.76s 0.76s cubic-bezier(0.16, 0.88, 0.22, 1.18) forwards; }
-.door-overlay.active .door-mode-half-right { animation: doorModeHalfRight 0.76s 0.76s cubic-bezier(0.16, 0.88, 0.22, 1.18) forwards; }
-.door-overlay.active .door-mode-assembly::before { animation: doorModeGlow 0.78s 1.25s ease-out forwards; }
+.door-overlay.active .door-mode-half-left { animation: doorModeHalfLeft 0.94s 1.08s cubic-bezier(0.16, 0.88, 0.22, 1.18) forwards; }
+.door-overlay.active .door-mode-half-right { animation: doorModeHalfRight 0.94s 1.08s cubic-bezier(0.16, 0.88, 0.22, 1.18) forwards; }
+.door-overlay.active .door-mode-assembly::before { animation: doorModeGlow 0.96s 1.72s ease-out forwards; }
 
 .door-loading-copy {
     display: grid;
@@ -8495,7 +8496,7 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
 }
 
 .door-overlay.active .door-progress span {
-    animation: doorProgress 2.15s 0.82s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation: doorProgress 2.32s 1.03s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .door-dots {
@@ -8564,6 +8565,26 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     100% { opacity: 0.65; }
 }
 
+#game-board.game-mode-entry-soft .game-header,
+#game-board.game-mode-entry-soft .inputs-container,
+#game-board.game-mode-entry-soft .action-footer {
+    animation: gameModeSoftEnter 0.68s cubic-bezier(0.18, 0.78, 0.24, 1) both;
+}
+
+#game-board.game-mode-entry-soft .inputs-container { animation-delay: 0.08s; }
+#game-board.game-mode-entry-soft .action-footer { animation-delay: 0.15s; }
+
+@keyframes gameModeSoftEnter {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.985);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 @media (max-width: 380px) {
     .door-stage { width: calc(100% - 36px); }
     .door-word-slice { font-size: clamp(1.42rem, 7vw, 2rem); gap: 1px; }
@@ -8581,6 +8602,9 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     .door-overlay.active .door-mode-assembly::before,
     .door-overlay.active .door-progress span,
     .door-overlay.active .door-panel-cubes span,
+    #game-board.game-mode-entry-soft .game-header,
+    #game-board.game-mode-entry-soft .inputs-container,
+    #game-board.game-mode-entry-soft .action-footer,
     .door-dots span {
         animation-duration: 0.2s;
         animation-delay: 0s;

@@ -1253,6 +1253,16 @@ const Game = {
             UIManager.prikaziEkran('game-board');
         };
 
+        const pokreniBlagiUlazakNaTablu = () => {
+            const tabla = document.getElementById('game-board');
+            if (!tabla || this.trenutnaRunda !== 1) return;
+
+            tabla.classList.remove('game-mode-entry-soft');
+            void tabla.offsetWidth;
+            tabla.classList.add('game-mode-entry-soft');
+            setTimeout(() => tabla.classList.remove('game-mode-entry-soft'), 820);
+        };
+
         const rundaIdPriZakazivanju = this.aktivnaRundaId;
         const pokreniIgruNaTabli = () => {
             if (this.aktivnaRundaId !== rundaIdPriZakazivanju) return;
@@ -1299,7 +1309,8 @@ const Game = {
                 pokusajZakazivanja();
             }, {
                 mod: this.trenutniMod,
-                tipOnlineModa: this.tipOnlineModa
+                tipOnlineModa: this.tipOnlineModa,
+                onPocetakOtvaranja: pokreniBlagiUlazakNaTablu
             });
         }
 

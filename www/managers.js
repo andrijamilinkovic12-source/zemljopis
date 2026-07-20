@@ -43,15 +43,18 @@ const UIManager = {
         const podaciModa = {
             solo: {
                 ikona: 'assets/mode-solo-clay-3d-navy-v2.png',
-                naziv: 'SOLO'
+                naziv: 'SOLO',
+                ucitavanje: 'UČITAVANJE SOLO IGRE'
             },
             multi: {
                 ikona: 'assets/mode-multiplayer-clay-3d-navy-v2.png',
-                naziv: 'MULTIPLAYER'
+                naziv: 'MULTIPLAYER',
+                ucitavanje: 'UČITAVANJE MULTIPLAYER IGRE'
             },
             prijatelji: {
                 ikona: 'assets/mode-pozovi-prijatelje-clay-3d-navy-v2.png',
-                naziv: 'POZOVI PRIJATELJE'
+                naziv: 'POZOVI PRIJATELJE',
+                ucitavanje: 'UČITAVANJE IGRE SA PRIJATELJIMA'
             }
         }[prikazModa];
 
@@ -81,7 +84,7 @@ const UIManager = {
         const tekstPripreme = overlay.querySelector('.door-text');
         const tekstUcitavanja = overlay.querySelector('.door-subtext');
         if (tekstPripreme) tekstPripreme.textContent = formatiraj('PRIPREMA');
-        if (tekstUcitavanja) tekstUcitavanja.textContent = formatiraj('UČITAVANJE MODA');
+        if (tekstUcitavanja) tekstUcitavanja.textContent = formatiraj(podaciModa.ucitavanje);
     },
 
     pokreniTranzicijuVrata: function(callbackNaZatvaranju, callbackPoOtvaranju, opcije = {}) {
@@ -124,7 +127,7 @@ const UIManager = {
         void overlay.offsetWidth;
         overlay.classList.add('active', 'closing');
 
-        cekajTransformaciju(levaVrata, 1750, () => {
+        cekajTransformaciju(levaVrata, 1980, () => {
             overlay.classList.remove('closing');
             overlay.classList.add('holding');
 
@@ -133,10 +136,13 @@ const UIManager = {
             }
 
             setTimeout(() => {
+                if (typeof opcije.onPocetakOtvaranja === 'function') {
+                    opcije.onPocetakOtvaranja();
+                }
                 overlay.classList.add('opening');
                 overlay.classList.remove('active', 'holding');
 
-                cekajTransformaciju(levaVrata, 1650, () => {
+                cekajTransformaciju(levaVrata, 1980, () => {
                     overlay.classList.remove('opening');
                     overlay.dataset.tranzicijaUToku = 'false';
                     overlay.setAttribute('aria-hidden', 'true');
@@ -145,7 +151,7 @@ const UIManager = {
                         callbackPoOtvaranju();
                     }
                 });
-            }, 1700);
+            }, 2000);
         });
     },
 

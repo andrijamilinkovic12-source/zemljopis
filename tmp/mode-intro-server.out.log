@@ -1,0 +1,3 @@
+◇ injected env (2) from .env // tip: ⌘ suppress logs { quiet: true }
+🚀 Zemljopis Server uspešno pokrenut na portu 3000
+✅ Uspesno povezan na MongoDB bazu: zemljopis_db!

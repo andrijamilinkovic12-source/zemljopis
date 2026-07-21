@@ -204,8 +204,10 @@ const onlineIgraci = {};
 // ZEMLJOPIS KVIZ — server je jedini izvor tačnih odgovora i poena.
 // Novi tipovi kviza mogu se dodati samo novim stavkama u ovoj kolekciji.
 // ==========================================
-const KVIZ_BROJ_RUNDI = 6;
-const KVIZ_PRELAZ_IZMEDJU_RUNDI_MS = 4200;
+const KVIZ_BROJ_RUNDI = 7;
+// Pauza je namerna: igrači treba da stignu da vide rešenje, osvojene poene i zbirni rezultat.
+const KVIZ_PAUZA_IZMEDJU_RUNDI_MS = 10000;
+const KVIZ_PAUZA_PRE_KRAJA_MS = 7000;
 // Privremeno za interno testiranje: svaki kviz se odmah pokreće protiv Atlas Bota.
 // Za povratak na javno uparivanje dovoljno je na serveru postaviti KVIZ_TEST_BOT=false.
 const KVIZ_TEST_BOT_OMOGUCEN = process.env.KVIZ_TEST_BOT !== 'false';
@@ -213,7 +215,7 @@ const KVIZ_TEST_BOT = Object.freeze({
     playerId: '__zemljopis_test_bot__',
     ime: 'Atlas Bot'
 });
-// Svaki meč prolazi kroz svih šest vrsta takmičenja. Rešenja se ne šalju klijentu
+// Svaki meč prolazi kroz svih sedam vrsta takmičenja. Rešenja se ne šalju klijentu
 // dok se runda ne zaključi.
 const KVIZ_RUNDE = [
     {
@@ -223,7 +225,7 @@ const KVIZ_RUNDE = [
         kategorija: 'BRZINA I SNALAŽENJE',
         pitanje: 'Napiši tačno tri države na slovo P.',
         uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš bar jedan pojam koji protivnik nema.',
-        trajanjeMs: 26000,
+        trajanjeMs: 45000,
         trazeno: 3,
         prihvaceni: ['Poljska', 'Peru', 'Portugal', 'Pakistan', 'Panama', 'Palau', 'Paragvaj']
     },
@@ -234,12 +236,25 @@ const KVIZ_RUNDE = [
         kategorija: 'GRAD I REKA',
         pitanje: 'Spoji grad sa rekom koja kroz njega protiče.',
         uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
-        trajanjeMs: 24000,
+        trajanjeMs: 35000,
         parovi: [
             { levo: 'Beč', desno: 'Dunav' },
             { levo: 'Pariz', desno: 'Sena' },
             { levo: 'London', desno: 'Temza' }
         ]
+    },
+    {
+        id: 'mutna-voda-dunav',
+        tip: 'anagram',
+        naziv: 'Mutna voda',
+        kategorija: 'REKE',
+        pitanje: 'Mutna voda je ispretumbala slova. Koja je reka na slovo D?',
+        uputstvo: 'Dodirni slova redom i složi tačan naziv reke.',
+        trajanjeMs: 25000,
+        slova: ['A', 'U', 'V', 'N', 'D'],
+        prihvaceni: ['Dunav'],
+        resenje: 'Dunav',
+        poeni: 3
     },
     {
         id: 'uljez-prestonice',
@@ -248,7 +263,7 @@ const KVIZ_RUNDE = [
         kategorija: 'GRADOVI',
         pitanje: 'Koji pojam je uljez?',
         uputstvo: 'Tri grada su glavni gradovi država, a jedan nije.',
-        trajanjeMs: 18000,
+        trajanjeMs: 25000,
         opcije: ['Madrid', 'Rim', 'Lisabon', 'Barselona'],
         uljezIndeks: 3,
         objasnjenje: 'Barselona je uljez jer jedina nije glavni grad države.',
@@ -261,7 +276,7 @@ const KVIZ_RUNDE = [
         kategorija: 'MISTERIOZNI POJAM',
         pitanje: 'Pogodi pojam što ranije — svaki novi trag donosi manje poena.',
         uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.',
-        trajanjeMs: 18000,
+        trajanjeMs: 30000,
         tragovi: [
             'Ja sam predmet na slovo K. Nastao sam u drevnoj Kini.',
             'Služim za orijentaciju u prostoru i imam magnetnu iglu.',
@@ -276,29 +291,29 @@ const KVIZ_RUNDE = [
         kategorija: 'GRADOVI SVETA',
         pitanje: 'Koji grad predstavljaju emodžiji?',
         uputstvo: 'Upiši naziv grada.',
-        trajanjeMs: 18000,
+        trajanjeMs: 25000,
         emoji: '🗼  🥐  🎨',
         prihvaceni: ['Pariz', 'Paris'],
         resenje: 'Pariz',
         poeni: 3
     },
     {
-        id: 'asocijacije-egipat',
-        tip: 'asocijacije',
-        naziv: 'Velike asocijacije',
-        kategorija: 'VELIKO FINALE',
-        pitanje: 'Pronađi konačno rešenje koje spaja sve kolone.',
-        uputstvo: 'Pažljivo pročitaj sve tragove i upiši konačno rešenje.',
-        trajanjeMs: 30000,
-        kolone: [
-            { oznaka: 'A', kategorija: 'ŽIVOTINJA', tragovi: ['Pustinja', 'Grba', 'Pesak', 'Voda'], resenje: 'Kamila' },
-            { oznaka: 'B', kategorija: 'GRAD', tragovi: ['Faraoni', 'Nil', 'Glavni grad', 'Afrika'], resenje: 'Kairo' },
-            { oznaka: 'V', kategorija: 'PREDMET', tragovi: ['Grobnica', 'Trougao', 'Keops', 'Kamen'], resenje: 'Piramida' },
-            { oznaka: 'G', kategorija: 'REKA', tragovi: ['Najduža', 'Krokodili', 'Sliv', 'Viktorijino jezero'], resenje: 'Nil' }
-        ],
-        prihvaceni: ['Egipat', 'Egypt'],
-        resenje: 'Egipat',
-        poeni: 5
+        id: 'pikado-pariz',
+        tip: 'pikado',
+        naziv: 'Geografski pikado',
+        kategorija: 'VELIKO FINALE · GRADOVI',
+        pitanje: 'Postavi pin što bliže Parizu.',
+        uputstvo: 'Klikni na nemu mapu Evrope, postavi pin i zaključaš ga kada si siguran/na.',
+        trajanjeMs: 45000,
+        mapa: 'evropa',
+        grad: 'Pariz',
+        cilj: { x: 40.2, y: 57.4 },
+        pragoviPoena: [
+            { udaljenost: 3, poeni: 8 },
+            { udaljenost: 6, poeni: 6 },
+            { udaljenost: 10, poeni: 4 },
+            { udaljenost: 15, poeni: 2 }
+        ]
     }
 ];
 
@@ -350,6 +365,7 @@ function pripremiKvizRunde() {
         if (kopija.tip === 'spojnice') {
             kopija.opcije = promesajKvizStavke(kopija.parovi.map(par => par.desno));
         }
+        if (kopija.tip === 'anagram') kopija.slova = promesajKvizStavke(kopija.slova);
         return kopija;
     });
 }
@@ -493,11 +509,11 @@ function napraviJavniPrikazKvizRunde(runda) {
     if (runda.tip === 'uljez') prikaz.opcije = runda.opcije;
     if (runda.tip === 'misterija') prikaz.tragovi = runda.tragovi.slice(0, (runda.aktivniTrag || 0) + 1);
     if (runda.tip === 'emoji') prikaz.emoji = runda.emoji;
-    if (runda.tip === 'asocijacije') prikaz.kolone = runda.kolone.map(kolona => ({
-        oznaka: kolona.oznaka,
-        kategorija: kolona.kategorija,
-        tragovi: kolona.tragovi
-    }));
+    if (runda.tip === 'anagram') prikaz.slova = runda.slova;
+    if (runda.tip === 'pikado') {
+        prikaz.mapa = runda.mapa;
+        prikaz.grad = runda.grad;
+    }
     return prikaz;
 }
 
@@ -507,10 +523,8 @@ function javnoResenjeKvizRunde(runda) {
     if (runda.tip === 'uljez') return { uljez: runda.opcije[runda.uljezIndeks], objasnjenje: runda.objasnjenje };
     if (runda.tip === 'misterija') return { odgovor: runda.prihvaceni[0], tragovi: runda.tragovi };
     if (runda.tip === 'emoji') return { odgovor: runda.resenje };
-    if (runda.tip === 'asocijacije') return {
-        odgovor: runda.resenje,
-        kolone: runda.kolone.map(kolona => ({ oznaka: kolona.oznaka, resenje: kolona.resenje }))
-    };
+    if (runda.tip === 'anagram') return { odgovor: runda.resenje };
+    if (runda.tip === 'pikado') return { grad: runda.grad, cilj: runda.cilj };
     return {};
 }
 
@@ -536,6 +550,23 @@ function proceniKvizOdgovor(runda, odgovor) {
     if (runda.tip === 'uljez') {
         const tacno = Number(unos.indeks) === runda.uljezIndeks;
         return { tacno, tacnih: tacno ? 1 : 0, poeni: tacno ? runda.poeni : 0 };
+    }
+
+    if (runda.tip === 'pikado') {
+        const x = Number(unos.x);
+        const y = Number(unos.y);
+        if (!Number.isFinite(x) || !Number.isFinite(y) || x < 0 || x > 100 || y < 0 || y > 100) {
+            return { tacno: false, tacnih: 0, poeni: 0, udaljenost: null };
+        }
+        const udaljenost = Math.hypot(x - runda.cilj.x, y - runda.cilj.y);
+        const prag = runda.pragoviPoena.find(stavka => udaljenost <= stavka.udaljenost);
+        const poeni = prag ? prag.poeni : 0;
+        return {
+            tacno: poeni > 0,
+            tacnih: poeni > 0 ? 1 : 0,
+            poeni,
+            udaljenost: Math.round(udaljenost * 10) / 10
+        };
     }
 
     const tekst = normalizujKvizTekst(unos.tekst);
@@ -607,12 +638,15 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
             tacnih: Number(odgovor.tacnih) || 0,
             bonus: Number(odgovor.bonus) || 0,
             poeniRunde: Number(odgovor.poeni) || 0,
+            udaljenost: typeof odgovor.udaljenost === 'number' ? odgovor.udaljenost : null,
             ukupnoPoena: Number(zbir.ukupnoPoena) || 0,
             tacnihUkupno: Number(zbir.tacnih) || 0
         };
     });
 
     const poslednje = soba.indeksRunde >= soba.runde.length - 1;
+    const trajanjePauzeMs = poslednje ? KVIZ_PAUZA_PRE_KRAJA_MS : KVIZ_PAUZA_IZMEDJU_RUNDI_MS;
+    const nastavakAt = Date.now() + trajanjePauzeMs;
     io.to(soba.id).emit('kviz:rezultatRunde', {
         sobaId: soba.id,
         indeksRunde: soba.indeksRunde,
@@ -621,14 +655,16 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
         resenje: javnoResenjeKvizRunde(runda),
         rezultati,
         razlog,
-        poslednje
+        poslednje,
+        trajanjePauzeMs,
+        nastavakAt
     });
 
     soba.timeoutSledecaRunda = setTimeout(() => {
         if (kvizSobe[soba.id] !== soba || soba.status !== 'u_igri') return;
         if (poslednje) zakljuciKvizMec(soba, 'zavrseno');
         else pokreniKvizRundu(soba);
-    }, KVIZ_PRELAZ_IZMEDJU_RUNDI_MS);
+    }, trajanjePauzeMs);
 }
 
 function napraviOdgovorTestBota(runda) {
@@ -653,7 +689,16 @@ function napraviOdgovorTestBota(runda) {
     }
     if (runda.tip === 'misterija') return { tekst: pogadja ? runda.prihvaceni[0] : 'Sekstant' };
     if (runda.tip === 'emoji') return { tekst: pogadja ? runda.resenje : 'London' };
-    return { tekst: pogadja ? runda.resenje : 'Maroko' };
+    if (runda.tip === 'anagram') return { tekst: pogadja ? runda.resenje : 'Drina' };
+    if (runda.tip === 'pikado') {
+        const ugao = (crypto.randomInt(360) * Math.PI) / 180;
+        const odmak = pogadja ? 1 + crypto.randomInt(5) : 12 + crypto.randomInt(13);
+        return {
+            x: Math.min(98, Math.max(2, runda.cilj.x + (Math.cos(ugao) * odmak))),
+            y: Math.min(98, Math.max(2, runda.cilj.y + (Math.sin(ugao) * odmak)))
+        };
+    }
+    return {};
 }
 
 function zakaziOdgovorTestBota(soba) {

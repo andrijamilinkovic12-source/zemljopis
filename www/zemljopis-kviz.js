@@ -1,4 +1,4 @@
-// zemljopis-kviz.js - Online Zemljopis kviz, šest različitih rundi 1 na 1.
+// zemljopis-kviz.js - Online Zemljopis kviz, sedam različitih rundi 1 na 1.
 // Server je jedini izvor rešenja, vremena i bodova.
 
 const KvizManager = {
@@ -11,6 +11,8 @@ const KvizManager = {
     aktivnaRunda: null,
     krajRundeAt: 0,
     tajmer: null,
+    nastavakAt: 0,
+    pauzaTajmer: null,
     introTrajanjeMs: 5200,
     introTajmer: null,
     ulazakTajmer: null,
@@ -96,7 +98,7 @@ const KvizManager = {
 
         this.cekanjeUToku = true;
         this.prikaziCekanje(true);
-        this.postaviStatus('Tražimo protivnika za duel od šest rundi...', false);
+        this.postaviStatus('Tražimo protivnika za duel od sedam rundi...', false);
 
         this.socket.emit('kviz:traziMec', (odgovor = {}) => {
             if (odgovor.uspeh) return;
@@ -123,30 +125,34 @@ const KvizManager = {
         this.rezultat = {};
         this.prikaziCekanje(false);
         this.prikaziSekciju('igra');
+        this.vratiKvizNaPocetak();
         this.postaviTekst('kviz-moje-ime', this.mojeIme);
         this.postaviTekst('kviz-protivnik-ime', this.protivnik.ime || 'Protivnik');
         this.postaviTekst('kviz-moji-poeni', '0');
         this.postaviTekst('kviz-protivnik-poeni', '0');
-        this.postaviTekst('kviz-round', 'RUNDA 1 / 6');
+        this.postaviTekst('kviz-round', 'RUNDA 1 / 7');
         this.postaviTekst('kviz-kategorija', 'SPREMI SE');
         this.postaviTekst('kviz-pitanje', 'Protivnik je pronađen. Prva runda stiže uskoro...');
-        this.postaviTekst('kviz-answer-status', 'Očekuje te šest potpuno različitih izazova.');
+        this.postaviTekst('kviz-answer-status', 'Očekuje te sedam potpuno različitih izazova.');
         this.ocistiSadrzajRunde();
     },
 
     primiRundu: function(podaci) {
         if (!this.mecUToku || podaci.sobaId !== this.sobaId || !podaci.runda) return;
+        this.sakrijPauzuRunde();
+        this.vratiKvizNaPocetak();
         this.odgovorPoslat = false;
         this.indeksRunde = Number(podaci.indeksRunde);
         this.aktivnaRunda = podaci.runda;
         this.krajRundeAt = Number(podaci.krajRundeAt) || 0;
 
-        this.postaviTekst('kviz-round', `RUNDA ${Number(podaci.redniBroj) || 1} / ${Number(podaci.ukupno) || 6}`);
+        this.postaviTekst('kviz-round', `RUNDA ${Number(podaci.redniBroj) || 1} / ${Number(podaci.ukupno) || 7}`);
         this.postaviTekst('kviz-kategorija', this.aktivnaRunda.kategorija || this.aktivnaRunda.naziv || 'ZEMLJOPIS');
         this.postaviTekst('kviz-pitanje', this.aktivnaRunda.pitanje || 'Zadatak nije dostupan.');
         this.postaviTekst('kviz-answer-status', this.aktivnaRunda.uputstvo || 'Pošalji odgovor pre isteka vremena.');
-        this.prikaziNapredak(Number(podaci.redniBroj) || 1, Number(podaci.ukupno) || 6);
+        this.prikaziNapredak(Number(podaci.redniBroj) || 1, Number(podaci.ukupno) || 7);
         this.renderujRundu(this.aktivnaRunda);
+        requestAnimationFrame(() => this.vratiKvizNaPocetak());
         this.pokreniTajmer();
     },
 
@@ -171,10 +177,11 @@ const KvizManager = {
 
         if (runda.tip === 'brzopotezne') return this.renderujBrzopotezne(sadrzaj, runda);
         if (runda.tip === 'spojnice') return this.renderujSpojnice(sadrzaj, runda);
+        if (runda.tip === 'anagram') return this.renderujAnagram(sadrzaj, runda);
         if (runda.tip === 'uljez') return this.renderujUljeza(sadrzaj, runda);
         if (runda.tip === 'misterija') return this.renderujMisteriju(sadrzaj, runda);
         if (runda.tip === 'emoji') return this.renderujEmoji(sadrzaj, runda);
-        if (runda.tip === 'asocijacije') return this.renderujAsocijacije(sadrzaj, runda);
+        if (runda.tip === 'pikado') return this.renderujPikado(sadrzaj, runda);
 
         this.postaviTekst('kviz-answer-status', 'Ovaj tip runde trenutno nije dostupan.', true);
     },
@@ -193,6 +200,7 @@ const KvizManager = {
             polje.maxLength = 40;
             polje.autocomplete = 'off';
             polje.placeholder = `Pojam ${indeks + 1}`;
+            this.zadrziFokusUKvizEkranu(polje);
             polja.push(polje);
             forma.appendChild(polje);
         }
@@ -211,6 +219,7 @@ const KvizManager = {
             levo.textContent = pojam;
             const select = document.createElement('select');
             select.className = 'kviz-select';
+            this.zadrziFokusUKvizEkranu(select);
             const podrazumevano = document.createElement('option');
             podrazumevano.value = '';
             podrazumevano.textContent = 'Izaberi reku';
@@ -226,6 +235,97 @@ const KvizManager = {
             forma.appendChild(red);
         });
         this.dodajDugmeZaSlanje(forma, 'POTVRDI SPAJANJE', () => this.posaljiOdgovor({ spojeno }));
+    },
+
+    renderujAnagram: function(kontejner, runda) {
+        const forma = this.napraviFormu(kontejner, 'kviz-anagram-form');
+        const odgovor = [];
+        const prikazOdgovora = document.createElement('div');
+        prikazOdgovora.className = 'kviz-anagram-answer';
+        prikazOdgovora.textContent = '—';
+        const slova = document.createElement('div');
+        slova.className = 'kviz-anagram-tiles';
+        const dugmici = [];
+
+        const osveziOdgovor = () => {
+            prikazOdgovora.textContent = odgovor.length ? odgovor.join('') : '—';
+        };
+
+        (runda.slova || []).forEach((slovo, indeks) => {
+            const dugme = document.createElement('button');
+            dugme.type = 'button';
+            dugme.className = 'kviz-anagram-tile';
+            dugme.style.setProperty('--kviz-wave-delay', `${indeks * 85}ms`);
+            dugme.textContent = slovo;
+            dugme.addEventListener('click', () => {
+                odgovor.push(slovo);
+                dugme.disabled = true;
+                osveziOdgovor();
+            });
+            dugmici.push(dugme);
+            slova.appendChild(dugme);
+        });
+
+        const akcije = document.createElement('div');
+        akcije.className = 'kviz-anagram-actions';
+        const reset = document.createElement('button');
+        reset.type = 'button';
+        reset.className = 'kviz-anagram-reset';
+        reset.textContent = 'ISPOČETKA';
+        reset.addEventListener('click', () => {
+            odgovor.splice(0);
+            dugmici.forEach(dugme => { dugme.disabled = false; });
+            osveziOdgovor();
+        });
+        akcije.appendChild(reset);
+
+        forma.append(prikazOdgovora, slova, akcije);
+        this.dodajDugmeZaSlanje(forma, 'PROVERI REKU', () => this.posaljiOdgovor({ tekst: odgovor.join('') }));
+    },
+
+    renderujPikado: function(kontejner, runda) {
+        const forma = this.napraviFormu(kontejner, 'kviz-pikado-form');
+        const mapa = document.createElement('button');
+        mapa.type = 'button';
+        mapa.className = 'kviz-map-picker';
+        mapa.setAttribute('aria-label', `Postavi pin za grad ${runda.grad || ''} na mapi Evrope`);
+
+        const slika = document.createElement('img');
+        slika.src = 'assets/kviz-pikado-europa.svg';
+        slika.alt = 'Nema mapa Evrope';
+        slika.draggable = false;
+        const pin = document.createElement('span');
+        pin.className = 'kviz-map-pin';
+        pin.hidden = true;
+        pin.setAttribute('aria-hidden', 'true');
+        mapa.append(slika, pin);
+
+        const status = document.createElement('p');
+        status.className = 'kviz-map-status';
+        status.textContent = `Postavi pin za grad: ${runda.grad || 'odabrani grad'}.`;
+        const akcije = document.createElement('div');
+        akcije.className = 'kviz-pikado-actions';
+        const zakljucaj = document.createElement('button');
+        zakljucaj.type = 'button';
+        zakljucaj.className = 'kviz-round-submit';
+        zakljucaj.textContent = 'ZAKLJUČAJ PIN';
+        zakljucaj.disabled = true;
+        let koordinata = null;
+
+        mapa.addEventListener('click', dogadjaj => {
+            const okvir = mapa.getBoundingClientRect();
+            const x = Math.min(100, Math.max(0, ((dogadjaj.clientX - okvir.left) / okvir.width) * 100));
+            const y = Math.min(100, Math.max(0, ((dogadjaj.clientY - okvir.top) / okvir.height) * 100));
+            koordinata = { x, y };
+            pin.hidden = false;
+            pin.style.left = `${x}%`;
+            pin.style.top = `${y}%`;
+            zakljucaj.disabled = false;
+            status.textContent = 'Pin je postavljen. Možeš ga pomeriti ponovnim dodirom mape.';
+        });
+        zakljucaj.addEventListener('click', () => this.posaljiOdgovor(koordinata));
+        akcije.appendChild(zakljucaj);
+        forma.append(mapa, status, akcije);
     },
 
     renderujUljeza: function(kontejner, runda) {
@@ -266,23 +366,6 @@ const KvizManager = {
         this.renderujTekstualniOdgovor(kontejner, 'Naziv grada', 'POŠALJI ODGOVOR');
     },
 
-    renderujAsocijacije: function(kontejner, runda) {
-        const mreza = document.createElement('div');
-        mreza.className = 'kviz-association-grid';
-        (runda.kolone || []).forEach(kolona => {
-            const kartica = document.createElement('article');
-            kartica.className = 'kviz-association-card';
-            const naslov = document.createElement('h4');
-            naslov.textContent = `${kolona.oznaka} · ${kolona.kategorija}`;
-            const tragovi = document.createElement('p');
-            tragovi.textContent = (kolona.tragovi || []).join(' · ');
-            kartica.append(naslov, tragovi);
-            mreza.appendChild(kartica);
-        });
-        kontejner.appendChild(mreza);
-        this.renderujTekstualniOdgovor(kontejner, 'Konačno rešenje', 'ZAKLJUČAJ REŠENJE');
-    },
-
     renderujTekstualniOdgovor: function(kontejner, placeholder, oznakaDugmeta) {
         const forma = this.napraviFormu(kontejner, 'kviz-text-answer-form');
         const polje = document.createElement('input');
@@ -291,6 +374,7 @@ const KvizManager = {
         polje.maxLength = 60;
         polje.autocomplete = 'off';
         polje.placeholder = placeholder;
+        this.zadrziFokusUKvizEkranu(polje);
         forma.appendChild(polje);
         this.dodajDugmeZaSlanje(forma, oznakaDugmeta, () => this.posaljiOdgovor({ tekst: polje.value }));
     },
@@ -310,6 +394,7 @@ const KvizManager = {
         dugme.textContent = oznaka;
         dugme.addEventListener('click', akcija);
         forma.appendChild(dugme);
+        return dugme;
     },
 
     prikaziTragoveMisterije: function() {
@@ -343,6 +428,7 @@ const KvizManager = {
     primiRezultatRunde: function(podaci) {
         if (!this.mecUToku || podaci.sobaId !== this.sobaId || Number(podaci.indeksRunde) !== this.indeksRunde) return;
         this.zaustaviTajmer();
+        this.vratiKvizNaPocetak();
         this.odgovorPoslat = true;
         this.onemoguciUnosRunde();
 
@@ -354,8 +440,56 @@ const KvizManager = {
         });
 
         const mojRezultat = rezultati.find(rezultat => rezultat.playerId === this.igracId()) || {};
+        const protivnickiRezultat = rezultati.find(rezultat => rezultat.playerId !== this.igracId()) || {};
         this.prikaziResenjeRunde(podaci.tip, podaci.resenje || {});
-        this.postaviTekst('kviz-answer-status', this.porukaRezultataRunde(mojRezultat, podaci) + (podaci.poslednje ? ' Računamo konačan rezultat...' : ' Sledeća runda stiže uskoro...'));
+        const poruka = this.porukaRezultataRunde(mojRezultat, podaci);
+        this.postaviTekst('kviz-answer-status', poruka);
+        this.prikaziPauzuRunde(podaci, mojRezultat, protivnickiRezultat, poruka);
+    },
+
+    prikaziPauzuRunde: function(podaci, mojRezultat, protivnickiRezultat, poruka) {
+        const pauza = document.getElementById('kviz-pauza-runde');
+        if (!pauza) return;
+        const poslednje = Boolean(podaci.poslednje);
+        this.postaviTekst('kviz-pauza-naslov', poslednje ? 'POSLEDNJA RUNDA JE ZAVRŠENA' : `RUNDA ${Number(podaci.indeksRunde) + 1} JE ZAVRŠENA`);
+        this.postaviTekst('kviz-pauza-podnaslov', podaci.naziv || 'Zemljopis kviz');
+        this.postaviTekst('kviz-pauza-moji-runda', `+${Number(mojRezultat.poeniRunde) || 0}`);
+        this.postaviTekst('kviz-pauza-protivnik-runda', `+${Number(protivnickiRezultat.poeniRunde) || 0}`);
+        this.postaviTekst('kviz-pauza-ukupno', `${Number(mojRezultat.ukupnoPoena) || 0} : ${Number(protivnickiRezultat.ukupnoPoena) || 0}`);
+        this.postaviTekst('kviz-pauza-poruka', poruka);
+        this.postaviTekst('kviz-pauza-nastavak', poslednje ? 'KONAČAN REZULTAT ZA' : 'SLEDEĆA RUNDA ZA');
+        this.nastavakAt = Number(podaci.nastavakAt) || 0;
+        pauza.hidden = false;
+        document.getElementById('kviz-igra')?.classList.add('kviz-round-paused');
+        this.pokreniPauzaTajmer();
+    },
+
+    sakrijPauzuRunde: function() {
+        this.zaustaviPauzaTajmer();
+        this.nastavakAt = 0;
+        const pauza = document.getElementById('kviz-pauza-runde');
+        if (pauza) pauza.hidden = true;
+        document.getElementById('kviz-igra')?.classList.remove('kviz-round-paused');
+    },
+
+    vratiKvizNaPocetak: function() {
+        const igra = document.getElementById('kviz-igra');
+        if (igra) igra.scrollTop = 0;
+        this.vratiGlobalniKvizNaVrh();
+    },
+
+    vratiGlobalniKvizNaVrh: function() {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+        window.scrollTo(0, 0);
+    },
+
+    zadrziFokusUKvizEkranu: function(polje) {
+        polje.addEventListener('focus', () => {
+            // Android ponekad otvori tastaturu tako što pomeri ceo dokument.
+            // Sadržaj runde sada ima svoj skrol, pa globalni ekran ostaje na vrhu.
+            window.setTimeout(() => this.vratiGlobalniKvizNaVrh(), 80);
+        });
     },
 
     porukaRezultataRunde: function(mojRezultat, podaci) {
@@ -363,6 +497,12 @@ const KvizManager = {
         if (podaci.tip === 'brzopotezne') {
             const bonus = Number(mojRezultat.bonus) ? ' + bonus za originalnost!' : '';
             return `Tačnih pojmova: ${mojRezultat.tacnih || 0}. Osvojeno: +${mojRezultat.poeniRunde || 0}.${bonus}`;
+        }
+        if (podaci.tip === 'pikado') {
+            const udaljenost = typeof mojRezultat.udaljenost === 'number' ? ` Udaljenost pina: ${mojRezultat.udaljenost}.` : '';
+            return mojRezultat.tacno
+                ? `Odličan pogodak! Osvojeno: +${mojRezultat.poeniRunde || 0}.${udaljenost}`
+                : `Pin je predaleko za poene.${udaljenost}`;
         }
         return mojRezultat.tacno
             ? `Tačno! Osvojeno: +${mojRezultat.poeniRunde || 0}.`
@@ -382,10 +522,19 @@ const KvizManager = {
         if (tip === 'brzopotezne') tekst.textContent = `Prihvaćeni pojmovi: ${(resenje.prihvaceni || []).join(', ')}.`;
         else if (tip === 'spojnice') tekst.textContent = (resenje.parovi || []).map(par => `${par.levo} — ${par.desno}`).join(' · ');
         else if (tip === 'uljez') tekst.textContent = `${resenje.uljez || ''}. ${resenje.objasnjenje || ''}`;
-        else if (tip === 'misterija' || tip === 'emoji') tekst.textContent = `Odgovor: ${resenje.odgovor || ''}.`;
-        else if (tip === 'asocijacije') {
-            const kolone = (resenje.kolone || []).map(kolona => `${kolona.oznaka}: ${kolona.resenje}`).join(' · ');
-            tekst.textContent = `${kolone}. Konačno: ${resenje.odgovor || ''}.`;
+        else if (tip === 'misterija' || tip === 'emoji' || tip === 'anagram') tekst.textContent = `Odgovor: ${resenje.odgovor || ''}.`;
+        else if (tip === 'pikado') {
+            tekst.textContent = `Tačna lokacija grada ${resenje.grad || ''} je označena zlatnim pinom.`;
+            const mapa = kontejner.querySelector('.kviz-map-picker');
+            if (mapa && resenje.cilj) {
+                mapa.querySelector('.kviz-map-target')?.remove();
+                const cilj = document.createElement('span');
+                cilj.className = 'kviz-map-target';
+                cilj.style.left = `${resenje.cilj.x}%`;
+                cilj.style.top = `${resenje.cilj.y}%`;
+                cilj.setAttribute('aria-label', `Tačna lokacija: ${resenje.grad || ''}`);
+                mapa.appendChild(cilj);
+            }
         }
         okvir.append(naslov, tekst);
         kontejner.appendChild(okvir);
@@ -394,6 +543,7 @@ const KvizManager = {
     primiKrajMeca: function(podaci) {
         if (!this.sobaId || podaci.sobaId !== this.sobaId) return;
         this.zaustaviTajmer();
+        this.sakrijPauzuRunde();
         this.mecUToku = false;
         this.cekanjeUToku = false;
         const rezultati = Array.isArray(podaci.rezultati) ? podaci.rezultati : [];
@@ -408,9 +558,9 @@ const KvizManager = {
         this.postaviTekst('kviz-final-protivnik', String(protivnik.ukupnoPoena || 0));
         this.postaviTekst('kviz-result-title', naslov);
         this.postaviTekst('kviz-result-copy', jeNereseno
-            ? 'Isti broj poena nakon svih šest rundi.'
+            ? 'Isti broj poena nakon svih sedam rundi.'
             : (pobedio ? `Savladao/la si ${protivnik.ime || 'protivnika'}!` : `Čestitaj ${protivnik.ime || 'protivniku'} na pobedi.`));
-        this.postaviTekst('kviz-result-eyebrow', podaci.razlog === 'predaja' ? 'PROTIVNIK JE NAPUSTIO MEČ' : 'REZULTAT ŠEST RUNDI');
+        this.postaviTekst('kviz-result-eyebrow', podaci.razlog === 'predaja' ? 'PROTIVNIK JE NAPUSTIO MEČ' : 'REZULTAT SEDAM RUNDI');
         const ikona = document.getElementById('kviz-result-icon');
         if (ikona) ikona.classList.toggle('loss', !jeNereseno && !pobedio);
     },
@@ -444,7 +594,7 @@ const KvizManager = {
         this.resetujStanje();
         this.prikaziSekciju('lobi');
         this.prikaziCekanje(false);
-        this.postaviStatus('Spreman si za duel kroz šest rundi.', false);
+        this.postaviStatus('Spreman si za duel kroz sedam rundi.', false);
         this.ocistiSadrzajRunde();
         const progress = document.getElementById('kviz-progress-fill');
         if (progress) progress.style.width = '0%';
@@ -452,6 +602,7 @@ const KvizManager = {
 
     resetujStanje: function() {
         this.zaustaviTajmer();
+        this.sakrijPauzuRunde();
         this.sobaId = null;
         this.cekanjeUToku = false;
         this.mecUToku = false;
@@ -503,6 +654,26 @@ const KvizManager = {
     zaustaviTajmer: function() {
         if (this.tajmer) clearInterval(this.tajmer);
         this.tajmer = null;
+    },
+
+    pokreniPauzaTajmer: function() {
+        this.zaustaviPauzaTajmer();
+        const osvezi = () => {
+            const preostalo = Math.max(0, Math.ceil((this.nastavakAt - this.serverSada()) / 1000));
+            this.postaviTekst('kviz-pauza-tajmer', String(preostalo));
+            if (preostalo <= 0) this.zaustaviPauzaTajmer();
+        };
+        osvezi();
+        this.pauzaTajmer = setInterval(osvezi, 180);
+    },
+
+    zaustaviPauzaTajmer: function() {
+        if (this.pauzaTajmer) clearInterval(this.pauzaTajmer);
+        this.pauzaTajmer = null;
+    },
+
+    serverSada: function() {
+        return typeof Game !== 'undefined' && typeof Game.serverSada === 'function' ? Game.serverSada() : Date.now();
     },
 
     prikaziNapredak: function(redniBroj, ukupno) {

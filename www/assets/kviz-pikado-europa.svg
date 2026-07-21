@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" role="img" aria-label="Nema karta Evrope">
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b3e67"/>
+      <stop offset="1" stop-color="#071b45"/>
+    </linearGradient>
+    <linearGradient id="land" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#7fc2aa"/>
+      <stop offset="1" stop-color="#40877d"/>
+    </linearGradient>
+    <pattern id="grid" width="100" height="62" patternUnits="userSpaceOnUse">
+      <path d="M100 0H0V62" fill="none" stroke="#bdefff" stroke-opacity=".12" stroke-width="1"/>
+    </pattern>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="9" stdDeviation="10" flood-color="#00142f" flood-opacity=".52"/>
+    </filter>
+  </defs>
+  <rect width="1000" height="620" rx="34" fill="url(#sea)"/>
+  <rect width="1000" height="620" rx="34" fill="url(#grid)"/>
+  <g fill="url(#land)" stroke="#d3fff0" stroke-opacity=".55" stroke-width="3" stroke-linejoin="round" filter="url(#shadow)">
+    <path d="M87 425 111 387 158 374 187 349 228 356 255 383 266 423 240 453 190 466 145 449Z"/>
+    <path d="M164 310 187 275 221 264 250 282 241 325 211 345 182 338Z"/>
+    <path d="M262 374 280 330 315 305 353 292 392 306 424 284 465 298 484 327 469 355 490 379 468 401 434 396 413 424 373 426 336 409 304 414Z"/>
+    <path d="M314 237 333 195 375 169 419 178 431 213 403 247 364 262Z"/>
+    <path d="M428 264 455 238 493 247 517 278 504 311 471 307Z"/>
+    <path d="M489 333 523 318 556 341 568 380 549 412 529 438 511 416 515 384Z"/>
+    <path d="M521 407 550 390 588 407 612 438 597 470 570 455 548 475 530 451Z"/>
+    <path d="M570 330 609 301 647 312 686 300 735 318 773 311 812 332 839 362 825 397 785 405 753 429 710 414 674 438 637 419 602 420 584 386Z"/>
+    <path d="M637 255 684 221 739 214 790 235 812 277 784 309 739 301 700 325 662 306Z"/>
+    <path d="M782 447 815 430 848 446 864 477 847 508 816 489Z"/>
+    <path d="M505 191 527 159 558 154 576 178 561 209 530 214Z"/>
+  </g>
+  <g fill="none" stroke="#e0fff2" stroke-opacity=".34" stroke-width="2" stroke-linecap="round">
+    <path d="M282 351 314 374 338 355 366 383 399 358 430 379 461 352"/>
+    <path d="M335 305 355 340 390 306 412 348 447 318"/>
+    <path d="M490 333 510 357 543 341 555 374"/>
+    <path d="M588 349 620 368 647 344 679 367 710 339 744 366 785 346"/>
+    <path d="M610 406 639 386 674 414 700 384 734 408 759 380 790 401"/>
+  </g>
+  <g fill="#d9fff3" fill-opacity=".7">
+    <circle cx="105" cy="102" r="3"/><circle cx="152" cy="133" r="2"/><circle cx="885" cy="190" r="3"/><circle cx="918" cy="516" r="2"/>
+  </g>
+  <path d="M68 73h56M96 45v56" stroke="#d3fff0" stroke-opacity=".65" stroke-width="3" stroke-linecap="round"/>
+  <path d="M96 45 85 68h22Z" fill="#ffd96a"/>
+</svg>

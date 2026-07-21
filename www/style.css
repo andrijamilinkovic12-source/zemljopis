@@ -2302,33 +2302,139 @@ body[data-tema="zivotinja"] #main-menu::before {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.kviz-association-grid {
+.kviz-anagram-form { gap: 0.7rem; }
+
+.kviz-anagram-answer {
+    min-height: 54px;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.52rem;
+    place-items: center;
+    padding: 0.2rem 0.7rem;
+    border: 1px solid rgba(126, 237, 255, 0.5);
+    border-radius: 14px;
+    color: #fff4bd;
+    font-size: clamp(1.3rem, 7vw, 1.75rem);
+    font-weight: 950;
+    letter-spacing: 0.2em;
+    background: linear-gradient(180deg, rgba(63, 164, 203, 0.48), rgba(8, 46, 92, 0.76));
+    box-shadow: inset 0 8px 12px rgba(132, 246, 255, 0.12), inset 0 -10px 13px rgba(2, 21, 72, 0.28);
 }
 
-.kviz-association-card {
-    min-width: 0;
-    padding: 0.6rem;
-    border: 1px solid rgba(203, 240, 255, 0.24);
-    border-radius: 13px;
-    background: rgba(8, 38, 77, 0.58);
+.kviz-anagram-tiles {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.46rem;
 }
 
-.kviz-association-card h4 {
-    margin: 0 0 0.35rem;
-    color: #ffdf74;
-    font-size: 0.58rem;
-    letter-spacing: 0.055em;
+.kviz-anagram-tile {
+    min-height: 58px;
+    border: 1px solid rgba(214, 251, 255, 0.45);
+    border-radius: 14px;
+    color: #efffff;
+    font: 950 clamp(1.06rem, 5vw, 1.34rem) inherit;
+    background: linear-gradient(160deg, #2e8fb7, #145182 68%, #0a315d);
+    box-shadow: 0 6px 13px rgba(0, 10, 43, 0.3), inset 0 1px 0 rgba(255,255,255,0.28);
+    cursor: pointer;
+    animation: kvizWaterLetter 1.8s ease-in-out var(--kviz-wave-delay) infinite alternate;
 }
 
-.kviz-association-card p {
+.kviz-anagram-tile:active:not(:disabled) { transform: translateY(2px) scale(0.96); }
+.kviz-anagram-tile:disabled { cursor: default; opacity: 0.3; animation-play-state: paused; }
+
+.kviz-anagram-actions,
+.kviz-pikado-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.kviz-anagram-reset {
+    min-height: 34px;
+    padding: 0 0.9rem;
+    border: 1px solid rgba(192, 239, 255, 0.32);
+    border-radius: 999px;
+    color: #c9efff;
+    font: 900 0.6rem inherit;
+    letter-spacing: 0.08em;
+    background: rgba(6, 37, 78, 0.64);
+    cursor: pointer;
+}
+
+.kviz-map-picker {
+    position: relative;
+    display: block;
+    width: min(100%, 360px, 44dvh);
+    margin-inline: auto;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid rgba(166, 241, 255, 0.62);
+    border-radius: 18px;
+    background: #092a57;
+    box-shadow: 0 10px 24px rgba(0, 6, 32, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+    cursor: crosshair;
+}
+
+.kviz-map-picker > img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1000 / 620;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.kviz-map-picker:active:not(:disabled) { transform: scale(0.99); }
+.kviz-map-picker:disabled { cursor: default; }
+
+.kviz-map-pin,
+.kviz-map-target {
+    position: absolute;
+    z-index: 2;
+    width: 31px;
+    height: 31px;
+    display: grid;
+    place-items: center;
+    transform: translate(-50%, -86%);
+    pointer-events: none;
+}
+
+.kviz-map-pin::before {
+    content: '📍';
+    font-size: 1.85rem;
+    filter: drop-shadow(0 3px 3px rgba(0, 4, 32, 0.6));
+}
+
+.kviz-map-target {
+    z-index: 3;
+    border: 2px solid #fff4aa;
+    border-radius: 50%;
+    background: rgba(255, 207, 74, 0.34);
+    box-shadow: 0 0 0 5px rgba(255, 216, 89, 0.19), 0 0 15px rgba(255, 224, 102, 0.82);
+    animation: kvizTargetPulse 850ms ease-in-out infinite alternate;
+}
+
+.kviz-map-target::before {
+    content: '★';
+    color: #fff8c6;
+    font-size: 0.95rem;
+    text-shadow: 0 1px 3px #8b5210;
+}
+
+.kviz-map-status {
+    min-height: 1.35em;
     margin: 0;
-    color: #eaf8ff;
+    color: #c7eaf6;
+    text-align: center;
     font-size: 0.72rem;
     font-weight: 700;
-    line-height: 1.36;
+    line-height: 1.35;
+}
+
+@keyframes kvizWaterLetter {
+    from { transform: translateY(-2px) rotate(-1deg); filter: brightness(1.06); }
+    to { transform: translateY(3px) rotate(1deg); filter: brightness(0.91); }
+}
+
+@keyframes kvizTargetPulse {
+    from { transform: translate(-50%, -86%) scale(0.86); }
+    to { transform: translate(-50%, -86%) scale(1.12); }
 }
 
 .kviz-round-solution {
@@ -15805,6 +15911,9 @@ body[data-tema] #main-menu .circle-overlay.active {
 #zemljopis-kviz-screen {
     position: relative;
     isolation: isolate;
+    min-height: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
     padding: max(1rem, env(safe-area-inset-top, 0px)) clamp(1rem, 5vw, 1.5rem) max(1.1rem, env(safe-area-inset-bottom, 0px));
     color: #f7f6eb;
     background:
@@ -16004,16 +16113,28 @@ body[data-tema] #main-menu .circle-overlay.active {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    position: relative;
     min-height: 0;
-    padding-top: 0.9rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0.72rem 0.08rem 1rem;
 }
+.kviz-game::-webkit-scrollbar { display: none; }
 
 .kviz-duel-bar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr);
     gap: 0.45rem;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    padding: 0.08rem 0 0.48rem;
+    background: linear-gradient(to bottom, #0b2d4d 78%, rgba(11, 45, 77, 0));
 }
 
 .kviz-player {
@@ -16126,6 +16247,73 @@ body[data-tema] #main-menu .circle-overlay.active {
     font-weight: 700;
     line-height: 1.35;
 }
+
+.kviz-round-break {
+    position: absolute;
+    z-index: 5;
+    inset: 5.9rem 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem 1rem;
+    border: 1px solid rgba(255, 228, 137, 0.53);
+    border-radius: 20px;
+    color: #f9fcff;
+    text-align: center;
+    background:
+        radial-gradient(circle at 50% 10%, rgba(101, 200, 241, 0.24), transparent 40%),
+        linear-gradient(145deg, rgba(12, 52, 95, 0.98), rgba(25, 19, 69, 0.98));
+    box-shadow: 0 14px 34px rgba(0, 5, 31, 0.58), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+}
+.kviz-round-break[hidden] { display: none; }
+.kviz-game.kviz-round-paused > .kviz-progress,
+.kviz-game.kviz-round-paused > .kviz-category,
+.kviz-game.kviz-round-paused > .kviz-question,
+.kviz-game.kviz-round-paused > .kviz-round-content,
+.kviz-game.kviz-round-paused > .kviz-answer-status { visibility: hidden; }
+.kviz-break-eyebrow {
+    color: #9fefff;
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+}
+.kviz-round-break h4 {
+    margin: 0.38rem 0 0;
+    color: #fff4c4;
+    font-size: clamp(1.15rem, 5vw, 1.45rem);
+    line-height: 1.14;
+}
+.kviz-break-subtitle {
+    margin: 0.32rem 0 0.85rem;
+    color: #c6e9f7;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+.kviz-break-scores {
+    width: min(100%, 335px);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+}
+.kviz-break-player {
+    display: grid;
+    gap: 0.18rem;
+    padding: 0.68rem 0.45rem;
+    border: 1px solid rgba(149, 235, 255, 0.28);
+    border-radius: 13px;
+    background: rgba(6, 21, 61, 0.46);
+}
+.kviz-break-player span { color: #aeeeff; font-size: 0.55rem; font-weight: 900; }
+.kviz-break-player b { color: #ffdf74; font-size: 1.5rem; line-height: 1; }
+.kviz-break-rival { border-color: rgba(236, 174, 255, 0.35); }
+.kviz-break-rival span { color: #e8b6ff; }
+.kviz-break-total { margin: 0.75rem 0 0; color: #b9d6e7; font-size: 0.62rem; font-weight: 900; letter-spacing: 0.08em; }
+.kviz-break-total strong { margin-left: 0.26rem; color: #fff4c5; font-size: 1.28rem; letter-spacing: 0; }
+.kviz-break-copy { min-height: 2.45em; max-width: 355px; margin: 0.6rem 0 0; color: #deeff7; font-size: 0.76rem; font-weight: 700; line-height: 1.35; }
+.kviz-break-next { margin: 0.5rem 0 0; color: #9fcadb; font-size: 0.67rem; font-weight: 900; letter-spacing: 0.07em; }
+.kviz-break-next b { color: #ffdf70; font-size: 1.24rem; letter-spacing: 0; }
 
 .kviz-result-icon {
     width: 78px;

@@ -762,12 +762,12 @@
 
         <section id="kviz-lobi" class="kviz-lobi" aria-live="polite">
             <div class="kviz-hero-icon" aria-hidden="true"><i class="fa-solid fa-map-location-dot"></i></div>
-            <h3>Duel kroz šest rundi</h3>
-            <p>Brzopotezne trojke, spojnice, uljez, misterija, emodži i velike asocijacije — svaki duel prolazi kroz svih šest izazova.</p>
+            <h3>Duel kroz sedam rundi</h3>
+            <p>Trojke, spojnice, mutna voda, uljez, misterija, emodži i veliki finale Geografski pikado — svaki duel prolazi kroz svih sedam izazova.</p>
 
             <div class="kviz-rules" aria-label="Pravila kviza">
                 <span><i class="fa-solid fa-users" aria-hidden="true"></i> 2 igrača</span>
-                <span><i class="fa-solid fa-list-ol" aria-hidden="true"></i> 6 rundi</span>
+                <span><i class="fa-solid fa-list-ol" aria-hidden="true"></i> 7 rundi</span>
                 <span><i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i> Razni izazovi</span>
             </div>
 
@@ -788,7 +788,7 @@
                     <b id="kviz-moji-poeni">0</b>
                 </div>
                 <div class="kviz-round-status">
-                    <span id="kviz-round">RUNDA 1 / 6</span>
+                    <span id="kviz-round">RUNDA 1 / 7</span>
                     <strong id="kviz-tajmer">30</strong>
                 </div>
                 <div class="kviz-player kviz-player-rival">
@@ -803,6 +803,25 @@
             <h3 id="kviz-pitanje" class="kviz-question">Pitanje se učitava...</h3>
             <div id="kviz-runda-sadrzaj" class="kviz-round-content"></div>
             <p id="kviz-answer-status" class="kviz-answer-status">Reši izazov i pošalji odgovor.</p>
+
+            <section id="kviz-pauza-runde" class="kviz-round-break" hidden aria-live="polite">
+                <span class="kviz-break-eyebrow">REZULTAT RUNDE</span>
+                <h4 id="kviz-pauza-naslov">RUNDA JE ZAVRŠENA</h4>
+                <p id="kviz-pauza-podnaslov" class="kviz-break-subtitle">Zemljopis kviz</p>
+                <div class="kviz-break-scores">
+                    <div class="kviz-break-player">
+                        <span>TI · OVA RUNDA</span>
+                        <b id="kviz-pauza-moji-runda">+0</b>
+                    </div>
+                    <div class="kviz-break-player kviz-break-rival">
+                        <span>PROTIVNIK · OVA RUNDA</span>
+                        <b id="kviz-pauza-protivnik-runda">+0</b>
+                    </div>
+                </div>
+                <p class="kviz-break-total">UKUPNO <strong id="kviz-pauza-ukupno">0 : 0</strong></p>
+                <p id="kviz-pauza-poruka" class="kviz-break-copy"></p>
+                <p class="kviz-break-next"><span id="kviz-pauza-nastavak">SLEDEĆA RUNDA ZA</span> <b id="kviz-pauza-tajmer">10</b> s</p>
+            </section>
         </section>
 
         <section id="kviz-kraj" class="kviz-result" hidden aria-live="polite">
@@ -1273,8 +1292,8 @@
             </div>
             <div class="soba-prijatelja-intro-actions" aria-hidden="true">
                 <span class="soba-prijatelja-intro-action"><i class="fa-solid fa-user-group"></i><small>1 NA 1</small></span>
-                <span class="soba-prijatelja-intro-action"><i class="fa-solid fa-list-ol"></i><small>8 PITANJA</small></span>
-                <span class="soba-prijatelja-intro-action"><i class="fa-solid fa-stopwatch"></i><small>15 SEK.</small></span>
+                <span class="soba-prijatelja-intro-action"><i class="fa-solid fa-list-ol"></i><small>7 RUNDI</small></span>
+                <span class="soba-prijatelja-intro-action"><i class="fa-solid fa-map-pin"></i><small>VELIKI FIN.</small></span>
             </div>
             <p class="soba-prijatelja-intro-copy">IZAZOV <span>•</span> ODGOVORI <span>•</span> POBEDI</p>
             <div class="soba-prijatelja-intro-line" aria-hidden="true"></div>

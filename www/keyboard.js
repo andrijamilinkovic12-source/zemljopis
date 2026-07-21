@@ -72,6 +72,9 @@ const KeyboardManager = {
 
     getInputScrollContainer: function(input = this.activeInput) {
         if (input) {
+            const kvizContainer = input.closest('#kviz-igra');
+            if (kvizContainer) return kvizContainer;
+
             const dnevniContainer = input.closest('.dnevni-izazov-inputs');
             if (dnevniContainer) return dnevniContainer;
 
@@ -80,7 +83,7 @@ const KeyboardManager = {
         }
 
         const activeScreen = document.querySelector('.screen.active');
-        return activeScreen ? activeScreen.querySelector('.inputs-container, .dnevni-izazov-inputs') : null;
+        return activeScreen ? activeScreen.querySelector('#kviz-igra, .inputs-container, .dnevni-izazov-inputs') : null;
     },
 
     scrollInputIntoView: function(input) {
@@ -89,7 +92,7 @@ const KeyboardManager = {
             if (!container || !input) return;
 
             const inputRect = input.getBoundingClientRect();
-            const group = input.closest('.input-group');
+            const group = input.closest('.input-group, .kviz-challenge-card');
             const groupRect = group ? group.getBoundingClientRect() : inputRect;
             const containerRect = container.getBoundingClientRect();
             const keyboard = document.getElementById('custom-keyboard');
@@ -209,6 +212,7 @@ const KeyboardManager = {
         const kb = document.getElementById('custom-keyboard');
         if (kb) kb.classList.add('active');
         document.body.classList.add('keyboard-open');
+        document.body.classList.toggle('kviz-keyboard-open', Boolean(this.activeInput?.closest('#zemljopis-kviz-screen')));
         
         // Povećaj padding na dnu containera da tastatura ne prekrije polja
         const container = this.getInputScrollContainer();
@@ -230,6 +234,7 @@ const KeyboardManager = {
         const kb = document.getElementById('custom-keyboard');
         if (kb) kb.classList.remove('active');
         document.body.classList.remove('keyboard-open');
+        document.body.classList.remove('kviz-keyboard-open');
         document.body.style.removeProperty('--keyboard-visible-height');
 
         const container = this.getInputScrollContainer();

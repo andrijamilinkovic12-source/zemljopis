@@ -16884,3 +16884,146 @@ body[data-tema] #main-menu .circle-overlay.active {
     .kviz-anagram-tile,
     .kviz-map-target { animation: none; }
 }
+
+/* Kompaktan vrh aktivne runde i interna tastatura za kviz. */
+.kviz-duel-bar {
+    grid-template-columns: minmax(0, 1fr) 96px minmax(0, 1fr);
+    gap: 0.34rem;
+}
+
+.kviz-round-status {
+    min-width: 0;
+    min-height: 62px;
+    aspect-ratio: auto;
+    padding: 0.35rem 0.2rem 0.3rem;
+    border-radius: 18px;
+}
+
+.kviz-round-status span {
+    max-width: 88px;
+    color: #f5e6ff;
+    font-size: 0.48rem;
+    line-height: 1.1;
+    letter-spacing: 0.045em;
+    text-align: center;
+    white-space: pre-line;
+}
+
+.kviz-round-status strong {
+    display: flex;
+    align-items: baseline;
+    gap: 0.08rem;
+    font-size: 1.42rem;
+    line-height: 0.8;
+}
+
+.kviz-round-status strong::after {
+    content: 's';
+    color: #e9cbff;
+    font-size: 0.46rem;
+    font-weight: 900;
+}
+
+.kviz-player {
+    min-height: 62px;
+    padding: 0.48rem 0.52rem;
+}
+
+.kviz-player-caption { font-size: 0.49rem; }
+.kviz-player strong { font-size: 0.7rem; }
+.kviz-player b { font-size: 0.96rem; }
+
+body.keyboard-open #zemljopis-kviz-screen {
+    padding-top: max(0.4rem, env(safe-area-inset-top, 0px));
+    padding-bottom: 0;
+}
+
+body.keyboard-open #zemljopis-kviz-screen .kviz-screen-header { display: none; }
+
+body.keyboard-open #zemljopis-kviz-screen .kviz-game {
+    padding-top: 0.3rem;
+    scroll-padding-bottom: calc(var(--keyboard-visible-height, 260px) + 1rem);
+}
+
+body.keyboard-open #zemljopis-kviz-screen .kviz-duel-bar { padding-bottom: 0.35rem; }
+body.keyboard-open #zemljopis-kviz-screen .kviz-progress { height: 6px; margin: 0.4rem 0 0.56rem; }
+body.keyboard-open #zemljopis-kviz-screen .kviz-category { font-size: 0.54rem; }
+body.keyboard-open #zemljopis-kviz-screen .kviz-question { margin: 0.28rem auto 0.52rem; font-size: clamp(0.96rem, 4.3vw, 1.12rem); }
+body.keyboard-open #zemljopis-kviz-screen .kviz-challenge-card { gap: 0.38rem; padding: 0.52rem; border-radius: 18px; }
+body.keyboard-open #zemljopis-kviz-screen .kviz-challenge-title { font-size: 0.55rem; }
+body.keyboard-open #zemljopis-kviz-screen .kviz-challenge-copy { font-size: 0.65rem; }
+body.keyboard-open #zemljopis-kviz-screen .kviz-text-input { min-height: 39px; padding: 0.42rem 0.65rem; }
+body.keyboard-open #zemljopis-kviz-screen .kviz-round-form { gap: 0.4rem; }
+body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit { min-height: 41px; }
+body.keyboard-open #zemljopis-kviz-screen .kviz-answer-status { display: none; }
+
+body.kviz-keyboard-open #custom-keyboard {
+    border-top-color: rgba(255, 201, 222, 0.42) !important;
+    background: linear-gradient(160deg, rgba(48, 37, 88, 0.99), rgba(28, 28, 65, 0.99)) !important;
+    box-shadow: 0 -10px 30px rgba(9, 5, 29, 0.56), inset 0 1px 0 rgba(255, 238, 250, 0.16) !important;
+}
+
+body.kviz-keyboard-open #custom-keyboard .kb-key {
+    border-color: rgba(255, 225, 238, 0.16) !important;
+    border-radius: 11px;
+    color: #fff0e9 !important;
+    background: linear-gradient(145deg, #6b518d, #3d316d) !important;
+    box-shadow: 3px 4px 7px rgba(8, 5, 28, 0.35), inset 1px 1px 0 rgba(255,255,255,0.18), inset -3px -3px 5px rgba(25, 17, 61, 0.28) !important;
+}
+
+body.kviz-keyboard-open #custom-keyboard .kb-special {
+    color: #f3d2e3 !important;
+    background: linear-gradient(145deg, #85517e, #4d376f) !important;
+}
+
+body.kviz-keyboard-open #custom-keyboard .kb-enter {
+    color: #fff8ed !important;
+    background: linear-gradient(145deg, #ee7d9e, #b13f70) !important;
+}
+
+body.kviz-keyboard-open #custom-keyboard .kb-key:active {
+    color: #fff7ea !important;
+    background: linear-gradient(145deg, #f08aaa, #c44d7b) !important;
+    transform: translateY(2px) scale(0.94);
+}
+
+@media (max-width: 360px) {
+    #zemljopis-kviz-screen { padding-inline: 0.72rem; }
+    .kviz-duel-bar { grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr); gap: 0.26rem; }
+    .kviz-player { padding-inline: 0.42rem; }
+    .kviz-player strong { font-size: 0.66rem; }
+    .kviz-round-status span { font-size: 0.45rem; }
+}
+
+@media (max-height: 690px) {
+    .kviz-game { padding-top: 0.38rem; }
+    .kviz-duel-bar { padding-bottom: 0.34rem; }
+    .kviz-progress { margin: 0.5rem 0 0.62rem; }
+    .kviz-question { margin: 0.3rem auto 0.58rem; }
+}
+
+/* Keep the full prompt, card and answer feedback visible without a needless scroll. */
+.kviz-game {
+    padding: .46rem .08rem .75rem;
+}
+
+.kviz-progress {
+    margin: .55rem 0 .72rem;
+}
+
+.kviz-question {
+    margin: .35rem auto .68rem;
+    font-size: clamp(1.06rem, 4.5vw, 1.32rem);
+}
+
+.kviz-challenge-card {
+    padding: .64rem;
+    gap: .48rem;
+}
+
+.kviz-answer-status {
+    min-height: 1.4em;
+    margin: .5rem auto 0;
+    padding: .4rem .6rem;
+    font-size: .66rem;
+}

@@ -152,12 +152,13 @@ const KvizManager = {
         const redniBroj = Number(podaci.redniBroj) || 1;
         const ukupnoPitanja = Number(podaci.ukupnoPitanja) || 1;
         const rednoPitanje = (Number(podaci.indeksPitanja) || 0) + 1;
-        this.postaviTekst('kviz-round', `RUNDA ${redniBroj} / ${Number(podaci.ukupno) || 7} · PITANJE ${rednoPitanje} / ${ukupnoPitanja}`);
+        this.postaviTekst('kviz-round', `RUNDA ${redniBroj}/${Number(podaci.ukupno) || 7}\nPITANJE ${rednoPitanje}/${ukupnoPitanja}`);
         this.postaviTekst('kviz-kategorija', this.aktivnaRunda.kategorija || this.aktivnaRunda.naziv || 'ZEMLJOPIS');
         this.postaviTekst('kviz-pitanje', this.aktivnaRunda.pitanje || 'Zadatak nije dostupan.');
         this.postaviTekst('kviz-answer-status', this.aktivnaRunda.uputstvo || 'Pošalji odgovor pre isteka vremena.');
         this.prikaziNapredak(Number(podaci.redniBroj) || 1, Number(podaci.ukupno) || 7);
         this.renderujRundu(this.aktivnaRunda);
+        this.poveziKvizTastaturu();
         requestAnimationFrame(() => this.vratiKvizNaPocetak());
         this.pokreniTajmer();
     },
@@ -203,7 +204,7 @@ const KvizManager = {
             const polja = [];
             for (let indeks = 0; indeks < (izazov.trazeno || 3); indeks++) {
                 const polje = document.createElement('input');
-                polje.className = 'kviz-text-input';
+                polje.className = 'kviz-text-input game-input';
                 polje.type = 'text';
                 polje.maxLength = 40;
                 polje.autocomplete = 'off';
@@ -391,7 +392,7 @@ const KvizManager = {
             tragovi.className = 'kviz-clues';
             tragovi.dataset.kvizTragovi = String(indeks);
             const polje = document.createElement('input');
-            polje.className = 'kviz-text-input';
+            polje.className = 'kviz-text-input game-input';
             polje.type = 'text';
             polje.maxLength = 60;
             polje.autocomplete = 'off';
@@ -413,7 +414,7 @@ const KvizManager = {
             emoji.className = 'kviz-emoji-clue';
             emoji.textContent = izazov.emoji || '🗺️';
             const polje = document.createElement('input');
-            polje.className = 'kviz-text-input';
+            polje.className = 'kviz-text-input game-input';
             polje.type = 'text';
             polje.maxLength = 60;
             polje.autocomplete = 'off';
@@ -562,6 +563,8 @@ const KvizManager = {
     },
 
     vratiGlobalniKvizNaVrh: function() {
+        const kvizEkran = document.getElementById('zemljopis-kviz-screen');
+        if (kvizEkran) kvizEkran.scrollTop = 0;
         document.body.scrollTop = 0;
         document.documentElement.scrollTop = 0;
         window.scrollTo(0, 0);
@@ -573,6 +576,18 @@ const KvizManager = {
             // Sadržaj runde sada ima svoj skrol, pa globalni ekran ostaje na vrhu.
             window.setTimeout(() => this.vratiGlobalniKvizNaVrh(), 80);
         });
+    },
+
+    poveziKvizTastaturu: function() {
+        const polja = this.sadrzajRunde()?.querySelectorAll('.kviz-text-input.game-input') || [];
+        polja.forEach(polje => {
+            polje.readOnly = true;
+            polje.setAttribute('inputmode', 'none');
+            polje.setAttribute('enterkeyhint', 'next');
+        });
+        if (typeof KeyboardManager !== 'undefined' && typeof KeyboardManager.bindInputs === 'function') {
+            KeyboardManager.bindInputs();
+        }
     },
 
     porukaRezultataRunde: function(mojRezultat, podaci) {
@@ -775,6 +790,8 @@ const KvizManager = {
 
     onemoguciUnosRunde: function() {
         this.sadrzajRunde()?.querySelectorAll('button, input, select, textarea').forEach(element => { element.disabled = true; });
+        const aktivnoPolje = typeof KeyboardManager !== 'undefined' ? KeyboardManager.activeInput : null;
+        if (aktivnoPolje?.closest('#zemljopis-kviz-screen')) KeyboardManager.hideKeyboard();
     },
 
     postaviStatus: function(tekst, greska) {

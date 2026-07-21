@@ -135,6 +135,10 @@ const Game = {
                 GlobalChatManager.poveziSokete(this.socket);
             }
 
+            if (typeof KvizManager !== 'undefined') {
+                KvizManager.poveziSokete(this.socket);
+            }
+
             this.socket.on('connect', () => {
                 console.log("Povezan na server sa ID:", this.socket.id);
                 this.vremeSinhronizovano = false;

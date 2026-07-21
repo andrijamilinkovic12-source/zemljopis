@@ -286,9 +286,9 @@
                     </button>
                 </div>
 
-                <div class="sub-mode-wrapper" onclick="UIManager.prikaziObavestenje('Turniri', 'Epski turniri sa vrednim nagradama stižu uskoro! Spremi se.', null, 'Zatvori')">
-                    <button class="sub-mode-btn tournament-btn" aria-label="Turnir">
-                        <img class="sub-mode-icon tournament-mode-icon" src="assets/mode-turnir-clay-3d-navy-v2.png" alt="" aria-hidden="true" decoding="async">
+                <div class="sub-mode-wrapper" onclick="KvizManager.otvoriEkran()">
+                    <button class="sub-mode-btn kviz-btn" aria-label="Zemljopis kviz 1 na 1">
+                        <img class="sub-mode-icon kviz-mode-icon" src="assets/mode-kviz.svg" alt="" aria-hidden="true" decoding="async">
                     </button>
                 </div>
             </div>
@@ -744,6 +744,76 @@
         <div style="padding: min(0.8rem, 1.6vh) 1.2rem; padding-bottom: calc(min(0.8rem, 1.6vh) + env(safe-area-inset-bottom, 10px)); background: linear-gradient(to top, #091317 85%, transparent);">
             <button id="btn-next-round" class="btn-finish" disabled>Sačekaj (10s)</button>
         </div>
+    </div>
+
+    <div id="zemljopis-kviz-screen" class="screen kviz-screen">
+        <div class="kviz-map-glow" aria-hidden="true"></div>
+
+        <div class="kviz-screen-header">
+            <button class="kviz-back-btn" type="button" onclick="KvizManager.nazadUMeni()" aria-label="Nazad u meni">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+            </button>
+            <div>
+                <span class="kviz-eyebrow">ONLINE • 1 NA 1</span>
+                <h2>ZEMLJOPIS KVIZ</h2>
+            </div>
+            <span class="kviz-header-icon" aria-hidden="true"><i class="fa-solid fa-earth-europe"></i></span>
+        </div>
+
+        <section id="kviz-lobi" class="kviz-lobi" aria-live="polite">
+            <div class="kviz-hero-icon" aria-hidden="true"><i class="fa-solid fa-map-location-dot"></i></div>
+            <h3>Brzi meč znanja</h3>
+            <p>Upari se sa jednim protivnikom i odgovori brže i tačnije na pitanja iz geografije.</p>
+
+            <div class="kviz-rules" aria-label="Pravila kviza">
+                <span><i class="fa-solid fa-users" aria-hidden="true"></i> 2 igrača</span>
+                <span><i class="fa-solid fa-list-ol" aria-hidden="true"></i> 8 pitanja</span>
+                <span><i class="fa-solid fa-stopwatch" aria-hidden="true"></i> 15 s</span>
+            </div>
+
+            <button id="kviz-match-btn" class="kviz-primary-btn" type="button" onclick="KvizManager.traziMec()">
+                <i class="fa-solid fa-bolt" aria-hidden="true"></i> PRONAĐI PROTIVNIKA
+            </button>
+            <button id="kviz-cancel-btn" class="kviz-secondary-btn" type="button" onclick="KvizManager.otkaziCekanje()" hidden>
+                Odustani od čekanja
+            </button>
+            <p id="kviz-status" class="kviz-status">Spreman si za meč.</p>
+        </section>
+
+        <section id="kviz-igra" class="kviz-game" hidden aria-live="polite">
+            <div class="kviz-duel-bar">
+                <div class="kviz-player kviz-player-me">
+                    <span class="kviz-player-caption">TI</span>
+                    <strong id="kviz-moje-ime">Igrač</strong>
+                    <b id="kviz-moji-poeni">0</b>
+                </div>
+                <div class="kviz-round-status">
+                    <span id="kviz-round">1 / 8</span>
+                    <strong id="kviz-tajmer">15</strong>
+                </div>
+                <div class="kviz-player kviz-player-rival">
+                    <span class="kviz-player-caption">PROTIVNIK</span>
+                    <strong id="kviz-protivnik-ime">...</strong>
+                    <b id="kviz-protivnik-poeni">0</b>
+                </div>
+            </div>
+
+            <div class="kviz-progress" aria-hidden="true"><span id="kviz-progress-fill"></span></div>
+            <p id="kviz-kategorija" class="kviz-category">GEOGRAFIJA</p>
+            <h3 id="kviz-pitanje" class="kviz-question">Pitanje se učitava...</h3>
+            <div id="kviz-opcije" class="kviz-options"></div>
+            <p id="kviz-answer-status" class="kviz-answer-status">Izaberi jedan odgovor.</p>
+        </section>
+
+        <section id="kviz-kraj" class="kviz-result" hidden aria-live="polite">
+            <span id="kviz-result-icon" class="kviz-result-icon" aria-hidden="true"><i class="fa-solid fa-trophy"></i></span>
+            <p id="kviz-result-eyebrow" class="kviz-eyebrow">REZULTAT MEČA</p>
+            <h3 id="kviz-result-title">Meč je završen</h3>
+            <div class="kviz-final-score"><b id="kviz-final-moji">0</b><span>:</span><b id="kviz-final-protivnik">0</b></div>
+            <p id="kviz-result-copy">Dobro odigrano!</p>
+            <button class="kviz-primary-btn" type="button" onclick="KvizManager.igrajPonovo()"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> IGRAJ PONOVO</button>
+            <button class="kviz-secondary-btn" type="button" onclick="KvizManager.nazadUMeni()">Nazad u meni</button>
+        </section>
     </div>
 
     <div id="dnevni-rezime-screen" class="screen">
@@ -1211,6 +1281,7 @@
     <script src="clay-theme-3d.js"></script>
     <script src="dnevniizazov.js"></script>
     <script src="kvartalninivo.js"></script>
+    <script src="zemljopis-kviz.js"></script>
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
     <script src="keyboard.js"></script>
     <script src="managers.js"></script>

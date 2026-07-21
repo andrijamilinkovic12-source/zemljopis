@@ -182,6 +182,8 @@ const LigaStanje = mongoose.model('LigaStanje', LigaStanjeSchema);
 // 3. GLOBALNE VARIJABLE (Sobe, Chat, Prijatelji)
 // ==========================================
 const sobe = {}; 
+const kvizSobe = {};
+const kvizRedCekanja = [];
 const svaSlova = ["A","B","V","G","D","Đ","E","Ž","Z","I","J","K","L","LJ","M","N","NJ","O","P","R","S","T","Ć","U","F","H","C","Č","DŽ","Š"];
 const DNEVNI_DOSTUPNA_SLOVA = Object.fromEntries(DNEVNI_KATEGORIJE.map(kategorija => {
     const reci = [
@@ -197,6 +199,224 @@ const DNEVNI_DOSTUPNA_SLOVA = Object.fromEntries(DNEVNI_KATEGORIJE.map(kategorij
 const MAX_PORUKA_ISTORIJA = 50;
 let istorijaChata = [];
 const onlineIgraci = {}; 
+
+// ==========================================
+// ZEMLJOPIS KVIZ — server je jedini izvor tačnih odgovora i poena.
+// Novi tipovi kviza mogu se dodati samo novim stavkama u ovoj kolekciji.
+// ==========================================
+const KVIZ_BROJ_PITANJA = 8;
+const KVIZ_TRAJANJE_PITANJA_MS = 15 * 1000;
+const KVIZ_PRELAZ_IZMEDJU_PITANJA_MS = 2800;
+const KVIZ_PITANJA = [
+    { id: 'kanada-prestonica', kategorija: 'PRESTONICE', pitanje: 'Koji je glavni grad Kanade?', opcije: ['Toronto', 'Otava', 'Vankuver', 'Montreal'], tacan: 1 },
+    { id: 'australija-prestonica', kategorija: 'PRESTONICE', pitanje: 'Koji je glavni grad Australije?', opcije: ['Sidnej', 'Melburn', 'Kanbera', 'Pert'], tacan: 2 },
+    { id: 'brazil-prestonica', kategorija: 'PRESTONICE', pitanje: 'Koji je glavni grad Brazila?', opcije: ['Rio de Žaneiro', 'Brazilija', 'Salvador', 'Sao Paulo'], tacan: 1 },
+    { id: 'novi-zeland-prestonica', kategorija: 'PRESTONICE', pitanje: 'Koji je glavni grad Novog Zelanda?', opcije: ['Okland', 'Velington', 'Krajstčerč', 'Dunedin'], tacan: 1 },
+    { id: 'maroko-prestonica', kategorija: 'PRESTONICE', pitanje: 'Koji je glavni grad Maroka?', opcije: ['Kazablanka', 'Marrakeš', 'Rabat', 'Fes'], tacan: 2 },
+    { id: 'slovenija-prestonica', kategorija: 'BALKAN', pitanje: 'Koji je glavni grad Slovenije?', opcije: ['Maribor', 'Ljubljana', 'Koper', 'Celje'], tacan: 1 },
+    { id: 'madjarska-reka', kategorija: 'REKE', pitanje: 'Koja reka protiče kroz Budimpeštu?', opcije: ['Dunav', 'Sava', 'Rajna', 'Tisa'], tacan: 0 },
+    { id: 'dunav-usta', kategorija: 'REKE', pitanje: 'U koje more se uliva Dunav?', opcije: ['Jadransko more', 'Baltičko more', 'Crno more', 'Egejsko more'], tacan: 2 },
+    { id: 'najveci-okean', kategorija: 'OKEANI', pitanje: 'Koji je najveći okean na Zemlji?', opcije: ['Atlantski okean', 'Indijski okean', 'Tihi okean', 'Severni ledeni okean'], tacan: 2 },
+    { id: 'panamski-kanal', kategorija: 'SVET', pitanje: 'Koja dva okeana spaja Panamski kanal?', opcije: ['Atlantski i Tihi', 'Tihi i Indijski', 'Atlantski i Indijski', 'Južni i Severni ledeni'], tacan: 0 },
+    { id: 'gobi-kontinent', kategorija: 'PRIRODA', pitanje: 'Na kom kontinentu se nalazi pustinja Gobi?', opcije: ['Afrika', 'Azija', 'Australija', 'Južna Amerika'], tacan: 1 },
+    { id: 'kilimandzaro', kategorija: 'PLANINE', pitanje: 'U kojoj državi se nalazi Kilimandžaro?', opcije: ['Kenija', 'Tanzanija', 'Etiopija', 'Južnoafrička Republika'], tacan: 1 },
+    { id: 'and-kontinent', kategorija: 'PLANINE', pitanje: 'Na kom kontinentu se prostiru Andi?', opcije: ['Severna Amerika', 'Azija', 'Južna Amerika', 'Evropa'], tacan: 2 },
+    { id: 'himalaji-kontinent', kategorija: 'PLANINE', pitanje: 'Na kom kontinentu se nalaze Himalaji?', opcije: ['Azija', 'Evropa', 'Afrika', 'Južna Amerika'], tacan: 0 },
+    { id: 'bajkal', kategorija: 'JEZERA', pitanje: 'U kojoj državi se nalazi Bajkalsko jezero?', opcije: ['Mongolija', 'Rusija', 'Kazahstan', 'Kina'], tacan: 1 },
+    { id: 'portugal-komsija', kategorija: 'EVROPA', pitanje: 'Sa kojom državom Portugal ima kopnenu granicu?', opcije: ['Francuska', 'Španija', 'Italija', 'Maroko'], tacan: 1 },
+    { id: 'norveski-fjordovi', kategorija: 'EVROPA', pitanje: 'Koja država je poznata po svojim fjordovima?', opcije: ['Norveška', 'Holandija', 'Mađarska', 'Rumunija'], tacan: 0 },
+    { id: 'turska-prestonica', kategorija: 'PRESTONICE', pitanje: 'Koji je glavni grad Turske?', opcije: ['Istanbul', 'Izmir', 'Ankara', 'Antalija'], tacan: 2 },
+    { id: 'egipat-prestonica', kategorija: 'PRESTONICE', pitanje: 'Koji je glavni grad Egipta?', opcije: ['Aleksandrija', 'Kairo', 'Giza', 'Luksor'], tacan: 1 },
+    { id: 'japan-zastava', kategorija: 'ZASTAVE', pitanje: 'Crveni krug na beloj podlozi je zastava koje države?', opcije: ['Južna Koreja', 'Japan', 'Bangladeš', 'Indonezija'], tacan: 1 },
+    { id: 'sri-lanka-polozaj', kategorija: 'SVET', pitanje: 'Koja ostrvska država leži južno od Indije?', opcije: ['Madagaskar', 'Šri Lanka', 'Maldivi', 'Kipar'], tacan: 1 },
+    { id: 'najveca-drzava', kategorija: 'SVET', pitanje: 'Koja država ima najveću površinu na svetu?', opcije: ['Kanada', 'Kina', 'Rusija', 'Sjedinjene Američke Države'], tacan: 2 },
+    { id: 'antarktik-kontinent', kategorija: 'KONTINENTI', pitanje: 'Na kom kontinentu nema država?', opcije: ['Evropa', 'Antarktik', 'Australija', 'Južna Amerika'], tacan: 1 },
+    { id: 'jadransko-more', kategorija: 'BALKAN', pitanje: 'Koje more zapljuskuje obalu Hrvatske?', opcije: ['Crno more', 'Jadransko more', 'Egejsko more', 'Baltičko more'], tacan: 1 }
+];
+
+function promesajKvizStavke(stavke) {
+    const kopija = [...stavke];
+    for (let indeks = kopija.length - 1; indeks > 0; indeks--) {
+        const noviIndeks = crypto.randomInt(indeks + 1);
+        [kopija[indeks], kopija[noviIndeks]] = [kopija[noviIndeks], kopija[indeks]];
+    }
+    return kopija;
+}
+
+function napraviKvizKod() {
+    const karakteri = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let kod = 'KV';
+    do {
+        kod = 'KV';
+        for (let indeks = 0; indeks < 5; indeks++) {
+            kod += karakteri[crypto.randomInt(karakteri.length)];
+        }
+    } while (kvizSobe[kod]);
+    return kod;
+}
+
+function ukloniIzKvizReda(socketId) {
+    let indeks = kvizRedCekanja.indexOf(socketId);
+    while (indeks !== -1) {
+        kvizRedCekanja.splice(indeks, 1);
+        indeks = kvizRedCekanja.indexOf(socketId);
+    }
+}
+
+function pripremiKvizPitanja() {
+    return promesajKvizStavke(KVIZ_PITANJA)
+        .slice(0, Math.min(KVIZ_BROJ_PITANJA, KVIZ_PITANJA.length))
+        .map(pitanje => ({ ...pitanje, opcije: [...pitanje.opcije] }));
+}
+
+function ocistiKvizTajmere(soba) {
+    if (!soba) return;
+    if (soba.timeoutPitanje) clearTimeout(soba.timeoutPitanje);
+    if (soba.timeoutSledecePitanje) clearTimeout(soba.timeoutSledecePitanje);
+    if (soba.timeoutBrisanje) clearTimeout(soba.timeoutBrisanje);
+    soba.timeoutPitanje = null;
+    soba.timeoutSledecePitanje = null;
+    soba.timeoutBrisanje = null;
+}
+
+function rezultatKvizIgraca(soba, igrac) {
+    const rezultat = soba.rezultati?.[igrac.playerId] || {};
+    return {
+        playerId: igrac.playerId,
+        ime: igrac.ime,
+        ukupnoPoena: Number(rezultat.ukupnoPoena) || 0,
+        tacnih: Number(rezultat.tacnih) || 0
+    };
+}
+
+function sviKvizRezultati(soba) {
+    return (soba.ucesniciMeca || []).map(igrac => rezultatKvizIgraca(soba, igrac));
+}
+
+function zakljuciKvizMec(soba, razlog = 'zavrseno', forsiraniPobednici = null) {
+    if (!soba || kvizSobe[soba.id] !== soba || soba.status === 'zavrsena') return;
+    soba.status = 'zavrsena';
+    ocistiKvizTajmere(soba);
+
+    const rezultati = sviKvizRezultati(soba);
+    const najboljiRezultat = Math.max(0, ...rezultati.map(rezultat => rezultat.ukupnoPoena));
+    const pobednikPlayerIds = Array.isArray(forsiraniPobednici)
+        ? forsiraniPobednici
+        : rezultati
+            .filter(rezultat => rezultat.ukupnoPoena === najboljiRezultat)
+            .map(rezultat => rezultat.playerId);
+    soba.pobednikPlayerIds = pobednikPlayerIds;
+
+    io.to(soba.id).emit('kviz:krajMeca', {
+        sobaId: soba.id,
+        razlog,
+        nereseno: pobednikPlayerIds.length !== 1,
+        pobednikPlayerIds,
+        rezultati
+    });
+
+    upisiOdigranOnlineMec(soba, pobednikPlayerIds).catch(error => {
+        console.error(`Greška pri upisu kviz meča ${soba.partijaId}:`, error);
+    });
+
+    soba.timeoutBrisanje = setTimeout(() => {
+        if (kvizSobe[soba.id] === soba) delete kvizSobe[soba.id];
+    }, 60 * 1000);
+}
+
+function zakljuciKvizPitanje(soba, razlog = 'svi_odgovorili') {
+    if (!soba || kvizSobe[soba.id] !== soba || soba.status !== 'u_igri' || soba.pitanjeZakljuceno) return;
+    soba.pitanjeZakljuceno = true;
+    if (soba.timeoutPitanje) clearTimeout(soba.timeoutPitanje);
+    soba.timeoutPitanje = null;
+
+    const pitanje = soba.pitanja[soba.indeksPitanja];
+    if (!pitanje) return zakljuciKvizMec(soba, 'zavrseno');
+
+    const rezultati = soba.igraci.map(igrac => {
+        const odgovor = soba.odgovori?.[igrac.id] || {
+            odgovorIndeks: null,
+            tacno: false,
+            poeni: 0
+        };
+        const zbir = soba.rezultati[igrac.playerId] || { ukupnoPoena: 0, tacnih: 0 };
+        return {
+            playerId: igrac.playerId,
+            ime: igrac.ime,
+            odgovorIndeks: Number.isInteger(odgovor.odgovorIndeks) ? odgovor.odgovorIndeks : null,
+            tacno: Boolean(odgovor.tacno),
+            poeni: Number(odgovor.poeni) || 0,
+            ukupnoPoena: Number(zbir.ukupnoPoena) || 0,
+            tacnih: Number(zbir.tacnih) || 0
+        };
+    });
+
+    const poslednje = soba.indeksPitanja >= soba.pitanja.length - 1;
+    io.to(soba.id).emit('kviz:rezultatPitanja', {
+        sobaId: soba.id,
+        indeksPitanja: soba.indeksPitanja,
+        tacanIndeks: pitanje.tacan,
+        rezultati,
+        razlog,
+        poslednje
+    });
+
+    soba.timeoutSledecePitanje = setTimeout(() => {
+        if (kvizSobe[soba.id] !== soba || soba.status !== 'u_igri') return;
+        if (poslednje) zakljuciKvizMec(soba, 'zavrseno');
+        else pokreniKvizPitanje(soba);
+    }, KVIZ_PRELAZ_IZMEDJU_PITANJA_MS);
+}
+
+function pokreniKvizPitanje(soba) {
+    if (!soba || kvizSobe[soba.id] !== soba || soba.status !== 'u_igri') return;
+    soba.indeksPitanja++;
+    if (soba.indeksPitanja >= soba.pitanja.length) {
+        zakljuciKvizMec(soba, 'zavrseno');
+        return;
+    }
+
+    const pitanje = soba.pitanja[soba.indeksPitanja];
+    soba.odgovori = {};
+    soba.pitanjeZakljuceno = false;
+    soba.krajPitanjaAt = Date.now() + KVIZ_TRAJANJE_PITANJA_MS;
+    io.to(soba.id).emit('kviz:pitanje', {
+        sobaId: soba.id,
+        indeks: soba.indeksPitanja,
+        redniBroj: soba.indeksPitanja + 1,
+        ukupno: soba.pitanja.length,
+        kategorija: pitanje.kategorija,
+        pitanje: pitanje.pitanje,
+        opcije: pitanje.opcije,
+        krajPitanjaAt: soba.krajPitanjaAt
+    });
+
+    soba.timeoutPitanje = setTimeout(() => {
+        zakljuciKvizPitanje(soba, 'vreme_isteklo');
+    }, KVIZ_TRAJANJE_PITANJA_MS + 80);
+}
+
+function ukloniIgracaIzKvizSoba(socket, razlog = 'napustio') {
+    ukloniIzKvizReda(socket.id);
+    for (const soba of Object.values(kvizSobe)) {
+        const indeks = soba.igraci.findIndex(igrac => igrac.id === socket.id);
+        if (indeks === -1) continue;
+
+        const igracKojiIzlazi = soba.igraci[indeks];
+        soba.igraci.splice(indeks, 1);
+        socket.leave(soba.id);
+        if (soba.status === 'zavrsena') return;
+
+        const preostali = soba.igraci[0];
+        if (preostali) {
+            zakljuciKvizMec(soba, razlog === 'diskonekt' ? 'diskonekt' : 'predaja', [preostali.playerId]);
+        } else {
+            ocistiKvizTajmere(soba);
+            delete kvizSobe[soba.id];
+        }
+        return;
+    }
+}
 
 // Jedan profil može imati više aktivnih Socket.IO veza tokom internog testiranja
 // (telefon, emulator, osveženje aplikacije). Za prikaz prisutnosti računamo ga samo jednom.
@@ -2284,6 +2504,134 @@ io.on('connection', (socket) => {
         });
     });
 
+    // --- ZEMLJOPIS KVIZ: javno uparivanje 1 na 1 ---
+    socket.on('kviz:traziMec', (callback = () => {}) => {
+        if (typeof callback !== 'function') callback = () => {};
+        const igracNaMrezi = onlineIgraci[socket.id];
+        if (!igracNaMrezi) {
+            return callback({ uspeh: false, poruka: 'Prvo kreiraj i potvrdi svoj profil.' });
+        }
+
+        const vecIgra = Object.values(kvizSobe).some(soba => (
+            soba.status !== 'zavrsena' && soba.igraci.some(igrac => igrac.id === socket.id)
+        ));
+        if (vecIgra) {
+            return callback({ uspeh: false, poruka: 'Već si u aktivnom kviz meču.' });
+        }
+
+        ukloniIzKvizReda(socket.id);
+        let protivnikSocketId = null;
+        while (kvizRedCekanja.length > 0 && !protivnikSocketId) {
+            const kandidat = kvizRedCekanja.shift();
+            if (
+                kandidat !== socket.id
+                && onlineIgraci[kandidat]
+                && io.sockets.sockets.get(kandidat)
+            ) {
+                protivnikSocketId = kandidat;
+            }
+        }
+
+        if (!protivnikSocketId) {
+            kvizRedCekanja.push(socket.id);
+            return callback({ uspeh: true, ceka: true });
+        }
+
+        const protivnikSocket = io.sockets.sockets.get(protivnikSocketId);
+        const protivnikNaMrezi = onlineIgraci[protivnikSocketId];
+        if (!protivnikSocket || !protivnikNaMrezi) {
+            kvizRedCekanja.push(socket.id);
+            return callback({ uspeh: true, ceka: true });
+        }
+
+        const sobaId = napraviKvizKod();
+        const igraci = [
+            {
+                id: protivnikSocketId,
+                playerId: protivnikNaMrezi.playerId,
+                bazaId: protivnikNaMrezi.bazaId,
+                ime: protivnikNaMrezi.ime
+            },
+            {
+                id: socket.id,
+                playerId: igracNaMrezi.playerId,
+                bazaId: igracNaMrezi.bazaId,
+                ime: igracNaMrezi.ime
+            }
+        ];
+        const soba = {
+            id: sobaId,
+            status: 'u_igri',
+            igraci,
+            ucesniciMeca: igraci.map(igrac => ({ playerId: igrac.playerId, ime: igrac.ime })),
+            partijaId: `kviz_${sobaId}_${Date.now()}_${crypto.randomUUID()}`,
+            pitanja: pripremiKvizPitanja(),
+            indeksPitanja: -1,
+            odgovori: {},
+            rezultati: Object.fromEntries(igraci.map(igrac => [igrac.playerId, { ukupnoPoena: 0, tacnih: 0 }])),
+            pitanjeZakljuceno: false,
+            timeoutPitanje: null,
+            timeoutSledecePitanje: null,
+            timeoutBrisanje: null
+        };
+        kvizSobe[sobaId] = soba;
+        protivnikSocket.join(sobaId);
+        socket.join(sobaId);
+
+        io.to(protivnikSocketId).emit('kviz:pronadjenMec', {
+            sobaId,
+            ja: { playerId: igraci[0].playerId, ime: igraci[0].ime },
+            protivnik: { playerId: igraci[1].playerId, ime: igraci[1].ime }
+        });
+        io.to(socket.id).emit('kviz:pronadjenMec', {
+            sobaId,
+            ja: { playerId: igraci[1].playerId, ime: igraci[1].ime },
+            protivnik: { playerId: igraci[0].playerId, ime: igraci[0].ime }
+        });
+        callback({ uspeh: true, sobaId, pronadjenProtivnik: true });
+
+        setTimeout(() => {
+            if (kvizSobe[sobaId] === soba && soba.status === 'u_igri' && soba.igraci.length === 2) {
+                pokreniKvizPitanje(soba);
+            }
+        }, 1300);
+    });
+
+    socket.on('kviz:otkaziCekanje', () => {
+        ukloniIzKvizReda(socket.id);
+    });
+
+    socket.on('kviz:napusti', () => {
+        ukloniIgracaIzKvizSoba(socket, 'napustio');
+    });
+
+    socket.on('kviz:odgovori', (podaci = {}) => {
+        const sobaId = String(podaci.sobaId || '');
+        const soba = kvizSobe[sobaId];
+        if (!soba || soba.status !== 'u_igri' || soba.pitanjeZakljuceno) return;
+        if (Number(podaci.indeksPitanja) !== soba.indeksPitanja) return;
+        if (Date.now() > soba.krajPitanjaAt) return;
+
+        const igrac = soba.igraci.find(kandidat => kandidat.id === socket.id);
+        const pitanje = soba.pitanja[soba.indeksPitanja];
+        const odgovorIndeks = Number(podaci.indeksOpcije);
+        if (!igrac || !pitanje || soba.odgovori[socket.id]) return;
+        if (!Number.isInteger(odgovorIndeks) || odgovorIndeks < 0 || odgovorIndeks >= pitanje.opcije.length) return;
+
+        const tacno = odgovorIndeks === pitanje.tacan;
+        const preostaloMs = Math.max(0, soba.krajPitanjaAt - Date.now());
+        const poeni = tacno ? 100 + (Math.ceil(preostaloMs / 1000) * 4) : 0;
+        soba.odgovori[socket.id] = { odgovorIndeks, tacno, poeni };
+        if (tacno) {
+            soba.rezultati[igrac.playerId].ukupnoPoena += poeni;
+            soba.rezultati[igrac.playerId].tacnih++;
+        }
+
+        if (soba.igraci.every(kandidat => soba.odgovori[kandidat.id])) {
+            zakljuciKvizPitanje(soba, 'svi_odgovorili');
+        }
+    });
+
     socket.on('dnevniIzazovStanje', async (...args) => {
         const callback = vratiSocketCallback(...args);
         try {
@@ -3439,6 +3787,7 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         ukloniIgracaIzSoba(socket, 'diskonekt');
+        ukloniIgracaIzKvizSoba(socket, 'diskonekt');
         ukloniPozivIzSoba(socket, 'diskonekt');
         delete onlineIgraci[socket.id]; 
         io.emit('azurirajBrojOnline', brojJedinstvenihOnlineIgraca());
@@ -3826,4 +4175,11 @@ module.exports.topListaTestApi = {
     spojiServerskiNapredakProfila,
     odrediPobednikeMeca,
     playerIdsZaUpisOnlineMeca
+};
+
+module.exports.kvizTestApi = {
+    KVIZ_BROJ_PITANJA,
+    KVIZ_TRAJANJE_PITANJA_MS,
+    KVIZ_PITANJA,
+    pripremiKvizPitanja
 };

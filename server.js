@@ -207,6 +207,13 @@ const onlineIgraci = {};
 const KVIZ_BROJ_PITANJA = 8;
 const KVIZ_TRAJANJE_PITANJA_MS = 15 * 1000;
 const KVIZ_PRELAZ_IZMEDJU_PITANJA_MS = 2800;
+// Privremeno za interno testiranje: svaki kviz se odmah pokreće protiv Atlas Bota.
+// Za povratak na javno uparivanje dovoljno je na serveru postaviti KVIZ_TEST_BOT=false.
+const KVIZ_TEST_BOT_OMOGUCEN = process.env.KVIZ_TEST_BOT !== 'false';
+const KVIZ_TEST_BOT = Object.freeze({
+    playerId: '__zemljopis_test_bot__',
+    ime: 'Atlas Bot'
+});
 const KVIZ_PITANJA = [
     { id: 'kanada-prestonica', kategorija: 'PRESTONICE', pitanje: 'Koji je glavni grad Kanade?', opcije: ['Toronto', 'Otava', 'Vankuver', 'Montreal'], tacan: 1 },
     { id: 'australija-prestonica', kategorija: 'PRESTONICE', pitanje: 'Koji je glavni grad Australije?', opcije: ['Sidnej', 'Melburn', 'Kanbera', 'Pert'], tacan: 2 },
@@ -269,13 +276,76 @@ function pripremiKvizPitanja() {
         .map(pitanje => ({ ...pitanje, opcije: [...pitanje.opcije] }));
 }
 
+function napraviKvizSobu(igraci, testBot = false) {
+    const sobaId = napraviKvizKod();
+    return {
+        id: sobaId,
+        status: 'u_igri',
+        igraci,
+        testBot,
+        ucesniciMeca: igraci.map(igrac => ({ playerId: igrac.playerId, ime: igrac.ime })),
+        partijaId: `kviz_${sobaId}_${Date.now()}_${crypto.randomUUID()}`,
+        pitanja: pripremiKvizPitanja(),
+        indeksPitanja: -1,
+        odgovori: {},
+        rezultati: Object.fromEntries(igraci.map(igrac => [igrac.playerId, { ukupnoPoena: 0, tacnih: 0 }])),
+        pitanjeZakljuceno: false,
+        timeoutPocetka: null,
+        timeoutPitanje: null,
+        timeoutSledecePitanje: null,
+        timeoutTestBot: null,
+        timeoutBrisanje: null
+    };
+}
+
+function zakaziPocetakKvizMeca(soba) {
+    if (!soba) return;
+    if (soba.timeoutPocetka) clearTimeout(soba.timeoutPocetka);
+    soba.timeoutPocetka = setTimeout(() => {
+        soba.timeoutPocetka = null;
+        if (kvizSobe[soba.id] === soba && soba.status === 'u_igri' && soba.igraci.length === 2) {
+            pokreniKvizPitanje(soba);
+        }
+    }, 1300);
+}
+
+function napraviTestKvizMec(socket, igracNaMrezi) {
+    const bot = {
+        id: `kviz-test-bot:${crypto.randomUUID()}`,
+        playerId: KVIZ_TEST_BOT.playerId,
+        bazaId: null,
+        ime: KVIZ_TEST_BOT.ime,
+        jeTestBot: true
+    };
+    const igrac = {
+        id: socket.id,
+        playerId: igracNaMrezi.playerId,
+        bazaId: igracNaMrezi.bazaId,
+        ime: igracNaMrezi.ime
+    };
+    const soba = napraviKvizSobu([igrac, bot], true);
+    kvizSobe[soba.id] = soba;
+    socket.join(soba.id);
+    io.to(socket.id).emit('kviz:pronadjenMec', {
+        sobaId: soba.id,
+        ja: { playerId: igrac.playerId, ime: igrac.ime },
+        protivnik: { playerId: bot.playerId, ime: bot.ime }
+    });
+    zakaziPocetakKvizMeca(soba);
+    return soba;
+}
+
 function ocistiKvizTajmere(soba) {
     if (!soba) return;
+    if (soba.timeoutPocetka) clearTimeout(soba.timeoutPocetka);
     if (soba.timeoutPitanje) clearTimeout(soba.timeoutPitanje);
     if (soba.timeoutSledecePitanje) clearTimeout(soba.timeoutSledecePitanje);
+    if (soba.timeoutTestBot) clearTimeout(soba.timeoutTestBot);
     if (soba.timeoutBrisanje) clearTimeout(soba.timeoutBrisanje);
+    soba.timeoutPocetka = null;
     soba.timeoutPitanje = null;
     soba.timeoutSledecePitanje = null;
+    soba.timeoutTestBot = null;
     soba.timeoutBrisanje = null;
 }
 
@@ -328,7 +398,9 @@ function zakljuciKvizPitanje(soba, razlog = 'svi_odgovorili') {
     if (!soba || kvizSobe[soba.id] !== soba || soba.status !== 'u_igri' || soba.pitanjeZakljuceno) return;
     soba.pitanjeZakljuceno = true;
     if (soba.timeoutPitanje) clearTimeout(soba.timeoutPitanje);
+    if (soba.timeoutTestBot) clearTimeout(soba.timeoutTestBot);
     soba.timeoutPitanje = null;
+    soba.timeoutTestBot = null;
 
     const pitanje = soba.pitanja[soba.indeksPitanja];
     if (!pitanje) return zakljuciKvizMec(soba, 'zavrseno');
@@ -368,6 +440,57 @@ function zakljuciKvizPitanje(soba, razlog = 'svi_odgovorili') {
     }, KVIZ_PRELAZ_IZMEDJU_PITANJA_MS);
 }
 
+function upisiKvizOdgovor(soba, igrac, odgovorIndeks) {
+    const pitanje = soba?.pitanja?.[soba.indeksPitanja];
+    if (
+        !soba
+        || soba.status !== 'u_igri'
+        || soba.pitanjeZakljuceno
+        || !igrac
+        || !pitanje
+        || soba.odgovori?.[igrac.id]
+        || Date.now() > soba.krajPitanjaAt
+        || !Number.isInteger(odgovorIndeks)
+        || odgovorIndeks < 0
+        || odgovorIndeks >= pitanje.opcije.length
+    ) {
+        return false;
+    }
+
+    const tacno = odgovorIndeks === pitanje.tacan;
+    const preostaloMs = Math.max(0, soba.krajPitanjaAt - Date.now());
+    const poeni = tacno ? 100 + (Math.ceil(preostaloMs / 1000) * 4) : 0;
+    soba.odgovori[igrac.id] = { odgovorIndeks, tacno, poeni };
+    if (tacno) {
+        soba.rezultati[igrac.playerId].ukupnoPoena += poeni;
+        soba.rezultati[igrac.playerId].tacnih++;
+    }
+
+    if (soba.igraci.every(kandidat => soba.odgovori[kandidat.id])) {
+        zakljuciKvizPitanje(soba, 'svi_odgovorili');
+    }
+    return true;
+}
+
+function zakaziOdgovorTestBota(soba) {
+    if (!soba?.testBot) return;
+    const bot = soba.igraci.find(igrac => igrac.jeTestBot);
+    const pitanje = soba.pitanja[soba.indeksPitanja];
+    if (!bot || !pitanje) return;
+
+    // Varijabilno vreme i oko 64% tačnih odgovora čine probni meč realističnim.
+    const kasnjenjeMs = 2400 + crypto.randomInt(5200);
+    soba.timeoutTestBot = setTimeout(() => {
+        if (kvizSobe[soba.id] !== soba || soba.status !== 'u_igri' || soba.pitanjeZakljuceno) return;
+
+        const tacanOdgovor = crypto.randomInt(100) < 64;
+        const odgovorIndeks = tacanOdgovor
+            ? pitanje.tacan
+            : [0, 1, 2, 3].filter(indeks => indeks !== pitanje.tacan)[crypto.randomInt(3)];
+        upisiKvizOdgovor(soba, bot, odgovorIndeks);
+    }, kasnjenjeMs);
+}
+
 function pokreniKvizPitanje(soba) {
     if (!soba || kvizSobe[soba.id] !== soba || soba.status !== 'u_igri') return;
     soba.indeksPitanja++;
@@ -394,6 +517,8 @@ function pokreniKvizPitanje(soba) {
     soba.timeoutPitanje = setTimeout(() => {
         zakljuciKvizPitanje(soba, 'vreme_isteklo');
     }, KVIZ_TRAJANJE_PITANJA_MS + 80);
+
+    zakaziOdgovorTestBota(soba);
 }
 
 function ukloniIgracaIzKvizSoba(socket, razlog = 'napustio') {
@@ -2087,9 +2212,14 @@ function playerIdsZaUpisOnlineMeca(soba) {
 
 async function upisiOdigranOnlineMec(soba, pobednikPlayerIds = []) {
     if (!soba || !soba.partijaId || !Array.isArray(soba.ucesniciMeca)) return;
+    // Probni mečevi ne treba da utiču ni na statistiku stvarnog igrača.
+    if (soba.testBot) return;
     if (soba.statistikaMecaPromise) return soba.statistikaMecaPromise;
 
-    const ucesnici = playerIdsZaUpisOnlineMeca(soba);
+    // Atlas Bot je samo lokalni protivnik za interno testiranje i nema profil
+    // kojem treba beležiti online statistiku.
+    const ucesnici = playerIdsZaUpisOnlineMeca(soba)
+        .filter(playerId => playerId !== KVIZ_TEST_BOT.playerId);
     const pobednici = [...new Set(
         pobednikPlayerIds.filter(playerId => ucesnici.includes(playerId))
     )];
@@ -2520,6 +2650,11 @@ io.on('connection', (socket) => {
         }
 
         ukloniIzKvizReda(socket.id);
+        if (KVIZ_TEST_BOT_OMOGUCEN) {
+            const soba = napraviTestKvizMec(socket, igracNaMrezi);
+            return callback({ uspeh: true, sobaId: soba.id, pronadjenProtivnik: true, testBot: true });
+        }
+
         let protivnikSocketId = null;
         while (kvizRedCekanja.length > 0 && !protivnikSocketId) {
             const kandidat = kvizRedCekanja.shift();
@@ -2610,26 +2745,9 @@ io.on('connection', (socket) => {
         const soba = kvizSobe[sobaId];
         if (!soba || soba.status !== 'u_igri' || soba.pitanjeZakljuceno) return;
         if (Number(podaci.indeksPitanja) !== soba.indeksPitanja) return;
-        if (Date.now() > soba.krajPitanjaAt) return;
 
         const igrac = soba.igraci.find(kandidat => kandidat.id === socket.id);
-        const pitanje = soba.pitanja[soba.indeksPitanja];
-        const odgovorIndeks = Number(podaci.indeksOpcije);
-        if (!igrac || !pitanje || soba.odgovori[socket.id]) return;
-        if (!Number.isInteger(odgovorIndeks) || odgovorIndeks < 0 || odgovorIndeks >= pitanje.opcije.length) return;
-
-        const tacno = odgovorIndeks === pitanje.tacan;
-        const preostaloMs = Math.max(0, soba.krajPitanjaAt - Date.now());
-        const poeni = tacno ? 100 + (Math.ceil(preostaloMs / 1000) * 4) : 0;
-        soba.odgovori[socket.id] = { odgovorIndeks, tacno, poeni };
-        if (tacno) {
-            soba.rezultati[igrac.playerId].ukupnoPoena += poeni;
-            soba.rezultati[igrac.playerId].tacnih++;
-        }
-
-        if (soba.igraci.every(kandidat => soba.odgovori[kandidat.id])) {
-            zakljuciKvizPitanje(soba, 'svi_odgovorili');
-        }
+        upisiKvizOdgovor(soba, igrac, Number(podaci.indeksOpcije));
     });
 
     socket.on('dnevniIzazovStanje', async (...args) => {
@@ -4181,5 +4299,7 @@ module.exports.kvizTestApi = {
     KVIZ_BROJ_PITANJA,
     KVIZ_TRAJANJE_PITANJA_MS,
     KVIZ_PITANJA,
-    pripremiKvizPitanja
+    pripremiKvizPitanja,
+    KVIZ_TEST_BOT_OMOGUCEN,
+    KVIZ_TEST_BOT
 };

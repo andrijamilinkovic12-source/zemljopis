@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" role="img" aria-label="Nema karta Srbije">
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b3e67"/><stop offset="1" stop-color="#071b45"/></linearGradient>
+    <linearGradient id="land" x1="0" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#86c5ad"/><stop offset="1" stop-color="#3f867b"/></linearGradient>
+    <pattern id="grid" width="100" height="62" patternUnits="userSpaceOnUse"><path d="M100 0H0V62" fill="none" stroke="#bdefff" stroke-opacity=".1" stroke-width="1"/></pattern>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="9" stdDeviation="10" flood-color="#00142f" flood-opacity=".52"/></filter>
+  </defs>
+  <rect width="1000" height="620" rx="34" fill="url(#sea)"/><rect width="1000" height="620" rx="34" fill="url(#grid)"/>
+  <path d="M440.1,73.2L469.4,100.6L480.9,119.5L488.0,127.5L488.1,152.2L515.8,175.2L546.3,187.5L547.2,200.4L540.0,209.0L553.6,219.3L539.7,232.6L566.1,249.9L600.0,262.1L623.4,253.1L652.2,256.1L648.5,265.1L639.6,278.7L658.3,299.1L651.1,315.5L641.7,333.0L630.4,349.9L633.7,375.7L639.3,386.3L643.0,400.8L656.1,410.5L671.1,425.7L679.5,449.7L667.1,461.7L645.8,475.1L634.9,483.0L636.8,501.1L644.3,527.3L625.8,545.1L599.2,546.4L568.0,555.0L562.6,530.2L572.7,509.5L565.0,500.6L541.8,490.9L534.9,474.5L520.0,459.1L493.4,434.1L484.9,428.4L476.5,445.4L466.4,462.2L456.6,479.7L423.3,457.1L401.0,448.6L378.3,432.8L344.9,396.4L361.7,385.0L372.2,387.9L350.7,341.4L360.6,338.0L382.7,327.6L370.8,316.4L356.7,301.3L339.6,285.2L346.0,263.8L362.0,228.5L358.7,223.6L344.8,220.3L337.1,221.1L337.8,208.4L341.5,192.9L353.8,189.5L355.1,181.6L329.9,166.3L330.1,149.0L330.9,140.4L321.4,134.0L317.8,112.8L319.7,101.1L327.3,93.7L342.4,88.6L364.6,80.2L372.7,69.9L407.2,67.6L431.4,69.6L440.1,73.2Z" fill="url(#land)" stroke="#d3fff0" stroke-opacity=".64" stroke-width="3" stroke-linejoin="round" filter="url(#shadow)"/>
+  <path d="M68 73h56M96 45v56" stroke="#d3fff0" stroke-opacity=".65" stroke-width="3" stroke-linecap="round"/><path d="M96 45 85 68h22Z" fill="#ffd96a"/>
+</svg>

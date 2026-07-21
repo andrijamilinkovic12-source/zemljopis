@@ -632,22 +632,22 @@ const KVIZ_RUNDE = [
         mesajPitanja: false,
         pitanja: [
             {
-                id: 'pariz', kategorija: 'GRADOVI · EVROPA',
+                id: 'pariz', kategorija: 'GRADOVI · FRANCUSKA',
                 pitanje: 'Postavi pin što bliže Parizu.',
-                uputstvo: 'Klikni na nemu mapu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Pariz', cilj: { x: 40.2, y: 57.4 }
+                uputstvo: 'Klikni na nemu kartu Francuske i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'francuska', grad: 'Pariz', cilj: { x: 50.48, y: 28.62 }
             },
             {
-                id: 'kopaonik', kategorija: 'PLANINE · EVROPA',
+                id: 'kopaonik', kategorija: 'PLANINE · SRBIJA',
                 pitanje: 'Postavi pin što bliže Kopaoniku.',
-                uputstvo: 'Klikni na nemu mapu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Kopaonik', cilj: { x: 63.8, y: 63.2 }
+                uputstvo: 'Klikni na nemu kartu Srbije i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'srbija', grad: 'Kopaonik', cilj: { x: 49.19, y: 68.45 }
             },
             {
-                id: 'rim', kategorija: 'GRADOVI · EVROPA',
+                id: 'rim', kategorija: 'GRADOVI · ITALIJA',
                 pitanje: 'Postavi pin što bliže Rimu.',
-                uputstvo: 'Klikni na nemu mapu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Rim', cilj: { x: 52.5, y: 65.5 }
+                uputstvo: 'Klikni na nemu kartu Italije i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'italija', grad: 'Rim', cilj: { x: 49.8, y: 45.8 }
             }
         ]
     }

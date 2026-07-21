@@ -302,15 +302,22 @@ const KvizManager = {
     renderujPikado: function(kontejner, runda) {
         const forma = this.napraviFormu(kontejner, 'kviz-pikado-form');
         const koordinate = Array((runda.izazovi || []).length).fill(null);
+        const mape = {
+            francuska: { datoteka: 'kviz-pikado-francuska.svg', naziv: 'Francuske' },
+            srbija: { datoteka: 'kviz-pikado-srbija.svg', naziv: 'Srbije' },
+            italija: { datoteka: 'kviz-pikado-italija.svg', naziv: 'Italije' },
+            evropa: { datoteka: 'kviz-pikado-europa.svg', naziv: 'Evrope' }
+        };
         (runda.izazovi || []).forEach((izazov, indeks) => {
+            const prikazMape = mape[izazov.mapa || runda.mapa] || mape.evropa;
             const kartica = this.napraviKarticuIzazova(forma, izazov.naziv, `Postavi pin za grad: ${izazov.grad}.`);
             const mapa = document.createElement('button');
             mapa.type = 'button';
             mapa.className = 'kviz-map-picker';
-            mapa.setAttribute('aria-label', `Postavi pin za grad ${izazov.grad} na mapi Evrope`);
+            mapa.setAttribute('aria-label', `Postavi pin za grad ${izazov.grad} na mapi ${prikazMape.naziv}`);
             const slika = document.createElement('img');
-            slika.src = 'assets/kviz-pikado-europa.svg';
-            slika.alt = 'Nema mapa Evrope';
+            slika.src = `assets/${prikazMape.datoteka}`;
+            slika.alt = `Nema mapa ${prikazMape.naziv}`;
             slika.draggable = false;
             const pin = document.createElement('span');
             pin.className = 'kviz-map-pin';

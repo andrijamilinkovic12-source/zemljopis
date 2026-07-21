@@ -208,6 +208,7 @@ const KVIZ_BROJ_RUNDI = 7;
 // Pauza je namerna: igrači treba da stignu da vide rešenje, osvojene poene i zbirni rezultat.
 const KVIZ_PAUZA_IZMEDJU_RUNDI_MS = 10000;
 const KVIZ_PAUZA_PRE_KRAJA_MS = 7000;
+const KVIZ_PAUZA_IZMEDJU_PITANJA_MS = 3500;
 // Privremeno za interno testiranje: svaki kviz se odmah pokreće protiv Atlas Bota.
 // Za povratak na javno uparivanje dovoljno je na serveru postaviti KVIZ_TEST_BOT=false.
 const KVIZ_TEST_BOT_OMOGUCEN = process.env.KVIZ_TEST_BOT !== 'false';
@@ -215,104 +216,439 @@ const KVIZ_TEST_BOT = Object.freeze({
     playerId: '__zemljopis_test_bot__',
     ime: 'Atlas Bot'
 });
-// Svaki meč prolazi kroz svih sedam vrsta takmičenja. Rešenja se ne šalju klijentu
-// dok se runda ne zaključi.
+// Svaki meč prolazi kroz svih sedam vrsta takmičenja. Svaka runda je niz
+// zasebnih pitanja, a rešenja se ne šalju klijentu dok se pitanje ne zaključi.
 const KVIZ_RUNDE = [
     {
-        id: 'brzopotezne-drzave-p',
+        id: 'brzopotezne-trojke',
         tip: 'brzopotezne',
         naziv: 'Brzopotezne trojke',
         kategorija: 'BRZINA I SNALAŽENJE',
-        pitanje: 'Napiši tačno tri države na slovo P.',
-        uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš bar jedan pojam koji protivnik nema.',
-        trajanjeMs: 45000,
-        trazeno: 3,
-        prihvaceni: ['Poljska', 'Peru', 'Portugal', 'Pakistan', 'Panama', 'Palau', 'Paragvaj']
-    },
-    {
-        id: 'spojnice-grad-reka',
-        tip: 'spojnice',
-        naziv: 'Geografske spojnice',
-        kategorija: 'GRAD I REKA',
-        pitanje: 'Spoji grad sa rekom koja kroz njega protiče.',
-        uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
-        trajanjeMs: 35000,
-        parovi: [
-            { levo: 'Beč', desno: 'Dunav' },
-            { levo: 'Pariz', desno: 'Sena' },
-            { levo: 'London', desno: 'Temza' }
+        brojPitanja: 4,
+        pitanja: [
+            {
+                id: 'gradovi-p',
+                kategorija: 'GRADOVI',
+                pitanje: 'Napiši tačno tri grada na slovo P.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.',
+                trajanjeMs: 45000,
+                trazeno: 3,
+                prihvaceni: ['Pariz', 'Prag', 'Podgorica', 'Peking', 'Porto', 'Pančevo', 'Pirot', 'Pula']
+            },
+            {
+                id: 'reke-d',
+                kategorija: 'REKE',
+                pitanje: 'Napiši tačno tri reke na slovo D.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.',
+                trajanjeMs: 45000,
+                trazeno: 3,
+                prihvaceni: ['Dunav', 'Drina', 'Drava']
+            },
+            {
+                id: 'biljke-s',
+                kategorija: 'BILJKE',
+                pitanje: 'Napiši tačno tri biljke na slovo S.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.',
+                trajanjeMs: 45000,
+                trazeno: 3,
+                prihvaceni: ['Suncokret', 'Smokva', 'Spanać', 'Sremuš']
+            },
+            {
+                id: 'drzave-m',
+                kategorija: 'DRŽAVE',
+                pitanje: 'Napiši tačno tri države na slovo M.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.',
+                trajanjeMs: 45000,
+                trazeno: 3,
+                prihvaceni: ['Mali', 'Malta', 'Maroko', 'Meksiko', 'Moldavija', 'Mongolija', 'Mozambik', 'Madagaskar', 'Mauritanija', 'Mjanmar', 'Mikronezija']
+            },
+            {
+                id: 'planine-k',
+                kategorija: 'PLANINE',
+                pitanje: 'Napiši tačno tri planine ili planinska masiva na slovo K.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.',
+                trajanjeMs: 45000,
+                trazeno: 3,
+                prihvaceni: ['Kopaonik', 'Kilimandžaro', 'Karpati', 'Kavkaz', 'Kordiljeri']
+            },
+            {
+                id: 'zivotinje-l',
+                kategorija: 'ŽIVOTINJE',
+                pitanje: 'Napiši tačno tri životinje na slovo L.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.',
+                trajanjeMs: 45000,
+                trazeno: 3,
+                prihvaceni: ['Lav', 'Lisica', 'Lemur', 'Leopard', 'Lasica', 'Lama']
+            },
+            {
+                id: 'predmeti-k',
+                kategorija: 'PREDMETI',
+                pitanje: 'Napiši tačno tri predmeta na slovo K.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.',
+                trajanjeMs: 45000,
+                trazeno: 3,
+                prihvaceni: ['Kompas', 'Knjiga', 'Kašika', 'Kocka', 'Kamera', 'Kalkulator']
+            }
         ]
     },
     {
-        id: 'mutna-voda-dunav',
+        id: 'geografske-spojnice',
+        tip: 'spojnice',
+        naziv: 'Geografske spojnice',
+        kategorija: 'POVEZIVANJE POJMOVA',
+        brojPitanja: 4,
+        pitanja: [
+            {
+                id: 'grad-reka',
+                kategorija: 'GRAD I REKA',
+                pitanje: 'Spoji grad sa rekom koja kroz njega protiče.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
+                trajanjeMs: 35000,
+                parovi: [
+                    { levo: 'Beč', desno: 'Dunav' },
+                    { levo: 'Pariz', desno: 'Sena' },
+                    { levo: 'London', desno: 'Temza' }
+                ]
+            },
+            {
+                id: 'drzava-planina',
+                kategorija: 'DRŽAVA I PLANINA',
+                pitanje: 'Spoji državu sa poznatom planinom na njenoj teritoriji.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
+                trajanjeMs: 35000,
+                parovi: [
+                    { levo: 'Srbija', desno: 'Kopaonik' },
+                    { levo: 'Grčka', desno: 'Olimp' },
+                    { levo: 'Japan', desno: 'Fudži' }
+                ]
+            },
+            {
+                id: 'zivotinja-drzava',
+                kategorija: 'ŽIVOTINJA I DRŽAVA',
+                pitanje: 'Spoji životinju sa državom za koju je prepoznatljiva.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
+                trajanjeMs: 35000,
+                parovi: [
+                    { levo: 'Kengur', desno: 'Australija' },
+                    { levo: 'Panda', desno: 'Kina' },
+                    { levo: 'Lemur', desno: 'Madagaskar' }
+                ]
+            },
+            {
+                id: 'biljka-drzava',
+                kategorija: 'BILJKA I DRŽAVA',
+                pitanje: 'Spoji biljni simbol sa državom za koju je prepoznatljiv.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
+                trajanjeMs: 35000,
+                parovi: [
+                    { levo: 'Lala', desno: 'Holandija' },
+                    { levo: 'Kedar', desno: 'Liban' },
+                    { levo: 'Javor', desno: 'Kanada' }
+                ]
+            },
+            {
+                id: 'grad-drzava',
+                kategorija: 'GRAD I DRŽAVA',
+                pitanje: 'Spoji glavni grad sa državom čiji je glavni grad.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
+                trajanjeMs: 35000,
+                parovi: [
+                    { levo: 'Beograd', desno: 'Srbija' },
+                    { levo: 'Lisabon', desno: 'Portugal' },
+                    { levo: 'Tokio', desno: 'Japan' }
+                ]
+            },
+            {
+                id: 'znamenitost-grad',
+                kategorija: 'PREDMET I GRAD',
+                pitanje: 'Spoji znamenitost sa gradom u kojem se nalazi.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
+                trajanjeMs: 35000,
+                parovi: [
+                    { levo: 'Ajfelov toranj', desno: 'Pariz' },
+                    { levo: 'Koloseum', desno: 'Rim' },
+                    { levo: 'Big Ben', desno: 'London' }
+                ]
+            }
+        ]
+    },
+    {
+        id: 'mutna-voda',
         tip: 'anagram',
         naziv: 'Mutna voda',
-        kategorija: 'REKE',
-        pitanje: 'Mutna voda je ispretumbala slova. Koja je reka na slovo D?',
-        uputstvo: 'Dodirni slova redom i složi tačan naziv reke.',
-        trajanjeMs: 25000,
-        slova: ['A', 'U', 'V', 'N', 'D'],
-        prihvaceni: ['Dunav'],
-        resenje: 'Dunav',
-        poeni: 3
+        kategorija: 'ANAGRAMI',
+        brojPitanja: 4,
+        pitanja: [
+            {
+                id: 'dunav', kategorija: 'REKE',
+                pitanje: 'Mutna voda je ispretumbala slova. Koja je reka na slovo D?',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv reke.', trajanjeMs: 30000,
+                slova: ['A', 'U', 'V', 'N', 'D'], prihvaceni: ['Dunav'], resenje: 'Dunav', poeni: 3
+            },
+            {
+                id: 'kopaonik', kategorija: 'PLANINE',
+                pitanje: 'Složi naziv planine od ponuđenih slova.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv planine.', trajanjeMs: 30000,
+                slova: ['K', 'A', 'P', 'O', 'N', 'O', 'I', 'K'], prihvaceni: ['Kopaonik'], resenje: 'Kopaonik', poeni: 3
+            },
+            {
+                id: 'subotica', kategorija: 'GRADOVI',
+                pitanje: 'Složi naziv grada na severu Srbije od ponuđenih slova.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv grada.', trajanjeMs: 30000,
+                slova: ['S', 'U', 'B', 'O', 'T', 'I', 'C', 'A'], prihvaceni: ['Subotica'], resenje: 'Subotica', poeni: 3
+            },
+            {
+                id: 'portugal', kategorija: 'DRŽAVE',
+                pitanje: 'Složi naziv države na zapadu Evrope od ponuđenih slova.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv države.', trajanjeMs: 30000,
+                slova: ['P', 'O', 'R', 'T', 'U', 'G', 'A', 'L'], prihvaceni: ['Portugal'], resenje: 'Portugal', poeni: 3
+            },
+            {
+                id: 'suncokret', kategorija: 'BILJKE',
+                pitanje: 'Složi naziv biljke od ponuđenih slova.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv biljke.', trajanjeMs: 30000,
+                slova: ['S', 'U', 'N', 'C', 'O', 'K', 'R', 'E', 'T'], prihvaceni: ['Suncokret'], resenje: 'Suncokret', poeni: 3
+            },
+            {
+                id: 'kengur', kategorija: 'ŽIVOTINJE',
+                pitanje: 'Složi naziv australijske životinje od ponuđenih slova.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv životinje.', trajanjeMs: 30000,
+                slova: ['K', 'E', 'N', 'G', 'U', 'R'], prihvaceni: ['Kengur'], resenje: 'Kengur', poeni: 3
+            },
+            {
+                id: 'kompas', kategorija: 'PREDMETI',
+                pitanje: 'Složi naziv predmeta za orijentaciju od ponuđenih slova.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv predmeta.', trajanjeMs: 30000,
+                slova: ['K', 'O', 'M', 'P', 'A', 'S'], prihvaceni: ['Kompas'], resenje: 'Kompas', poeni: 3
+            }
+        ]
     },
     {
-        id: 'uljez-prestonice',
+        id: 'pronadji-uljeza',
         tip: 'uljez',
         naziv: 'Pronađi uljeza',
-        kategorija: 'GRADOVI',
-        pitanje: 'Koji pojam je uljez?',
-        uputstvo: 'Tri grada su glavni gradovi država, a jedan nije.',
-        trajanjeMs: 25000,
-        opcije: ['Madrid', 'Rim', 'Lisabon', 'Barselona'],
-        uljezIndeks: 3,
-        objasnjenje: 'Barselona je uljez jer jedina nije glavni grad države.',
-        poeni: 2
+        kategorija: 'PRONAĐI RAZLIKU',
+        brojPitanja: 4,
+        pitanja: [
+            {
+                id: 'prestonice', kategorija: 'GRADOVI',
+                pitanje: 'Tri grada su glavni gradovi država, a jedan nije.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Madrid', 'Rim', 'Lisabon', 'Barselona'],
+                uljezIndeks: 3,
+                objasnjenje: 'Barselona je uljez jer nije glavni grad Španije.',
+                poeni: 2
+            },
+            {
+                id: 'reke-planina', kategorija: 'REKE I PLANINE',
+                pitanje: 'Tri pojma su reke, a jedan je planina.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Dunav', 'Drina', 'Sava', 'Kopaonik'],
+                uljezIndeks: 3,
+                objasnjenje: 'Kopaonik je planinski masiv, dok su ostalo reke.',
+                poeni: 2
+            },
+            {
+                id: 'predmeti-zivotinja', kategorija: 'PREDMETI I ŽIVOTINJE',
+                pitanje: 'Tri pojma su predmeti za snalaženje ili posmatranje, a jedan je životinja.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Kompas', 'Globus', 'Sekstant', 'Lemur'],
+                uljezIndeks: 3,
+                objasnjenje: 'Lemur je životinja, dok su kompas, globus i sekstant predmeti.',
+                poeni: 2
+            },
+            {
+                id: 'drzave-grad', kategorija: 'DRŽAVE I GRADOVI',
+                pitanje: 'Tri pojma su države, a jedan je grad.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Portugal', 'Peru', 'Pariz', 'Panama'],
+                uljezIndeks: 2,
+                objasnjenje: 'Pariz je grad, dok su Portugal, Peru i Panama države.',
+                poeni: 2
+            },
+            {
+                id: 'biljke-predmet', kategorija: 'BILJKE I PREDMETI',
+                pitanje: 'Tri pojma su biljke, a jedan je predmet.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Suncokret', 'Smokva', 'Kompas', 'Spanać'],
+                uljezIndeks: 2,
+                objasnjenje: 'Kompas je predmet, dok su suncokret, smokva i spanać biljke.',
+                poeni: 2
+            },
+            {
+                id: 'zivotinje-drzava', kategorija: 'ŽIVOTINJE I DRŽAVE',
+                pitanje: 'Tri pojma su životinje, a jedan je država.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Kengur', 'Lemur', 'Portugal', 'Panda'],
+                uljezIndeks: 2,
+                objasnjenje: 'Portugal je država, dok su kengur, lemur i panda životinje.',
+                poeni: 2
+            }
+        ]
     },
     {
-        id: 'misterija-kompas',
+        id: 'ko-sam-ja',
         tip: 'misterija',
         naziv: 'Ko sam ja?',
         kategorija: 'MISTERIOZNI POJAM',
-        pitanje: 'Pogodi pojam što ranije — svaki novi trag donosi manje poena.',
-        uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.',
-        trajanjeMs: 30000,
-        tragovi: [
-            'Ja sam predmet na slovo K. Nastao sam u drevnoj Kini.',
-            'Služim za orijentaciju u prostoru i imam magnetnu iglu.',
-            'Pokazujem gde je sever.'
-        ],
-        prihvaceni: ['Kompas']
+        brojPitanja: 4,
+        pitanja: [
+            {
+                id: 'kompas', kategorija: 'PREDMETI',
+                pitanje: 'Pogodi pojam što ranije — svaki novi trag donosi manje poena.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Ja sam predmet na slovo K. Nastao sam u drevnoj Kini.',
+                    'Služim za orijentaciju u prostoru i imam magnetnu iglu.',
+                    'Pokazujem magnetni sever.'
+                ],
+                prihvaceni: ['Kompas']
+            },
+            {
+                id: 'kengur', kategorija: 'ŽIVOTINJE',
+                pitanje: 'Pogodi životinju što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Ja sam životinja na slovo K i živim u Australiji.',
+                    'Ženka nosi mladunče u torbi.',
+                    'Krećem se velikim skokovima.'
+                ],
+                prihvaceni: ['Kengur', 'Kangaroo']
+            },
+            {
+                id: 'fudzi', kategorija: 'PLANINE',
+                pitanje: 'Pogodi planinu što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Ja sam planina na slovo F i nalazim se u Japanu.',
+                    'U mom podnožju nalazi se čuvena oblast Pet jezera.',
+                    'Prepoznatljiv sam simbol Japana.'
+                ],
+                prihvaceni: ['Fudži', 'Fuji']
+            },
+            {
+                id: 'pariz', kategorija: 'GRADOVI',
+                pitanje: 'Pogodi grad što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Ja sam grad na reci Seni.',
+                    'Poznat sam po Ajfelovom tornju i muzeju Luvr.',
+                    'Glavni sam grad Francuske.'
+                ],
+                prihvaceni: ['Pariz', 'Paris']
+            },
+            {
+                id: 'dunav', kategorija: 'REKE',
+                pitanje: 'Pogodi reku što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Ja sam reka na slovo D i protičem kroz više evropskih prestonica.',
+                    'Protičem kroz Beč, Bratislavu, Budimpeštu i Beograd.',
+                    'Druga sam najduža reka Evrope.'
+                ],
+                prihvaceni: ['Dunav', 'Danube']
+            },
+            {
+                id: 'portugal', kategorija: 'DRŽAVE',
+                pitanje: 'Pogodi državu što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Ja sam država na zapadu Evrope i izlazim na Atlantski okean.',
+                    'Moj glavni grad je Lisabon.',
+                    'Poznat/a sam po fadu i gradu Portu.'
+                ],
+                prihvaceni: ['Portugal']
+            },
+            {
+                id: 'suncokret', kategorija: 'BILJKE',
+                pitanje: 'Pogodi biljku što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Ja sam biljka na slovo S.',
+                    'Imam krupnu cvetnu glavu i semenke od kojih se pravi ulje.',
+                    'Prepoznaješ me po velikim žutim laticama.'
+                ],
+                prihvaceni: ['Suncokret']
+            }
+        ]
     },
     {
-        id: 'emoji-pariz',
+        id: 'emoji-geografija',
         tip: 'emoji',
         naziv: 'Emodži geografija',
-        kategorija: 'GRADOVI SVETA',
-        pitanje: 'Koji grad predstavljaju emodžiji?',
-        uputstvo: 'Upiši naziv grada.',
-        trajanjeMs: 25000,
-        emoji: '🗼  🥐  🎨',
-        prihvaceni: ['Pariz', 'Paris'],
-        resenje: 'Pariz',
-        poeni: 3
+        kategorija: 'VIZUELNI ZADACI',
+        brojPitanja: 4,
+        pitanja: [
+            {
+                id: 'pariz', kategorija: 'GRADOVI', tezina: 3,
+                pitanje: 'Koji grad predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv grada.', trajanjeMs: 28000,
+                emoji: '🗼  🥐  🎨', prihvaceni: ['Pariz', 'Paris'], resenje: 'Pariz', poeni: 3
+            },
+            {
+                id: 'australija', kategorija: 'DRŽAVE I ŽIVOTINJE', tezina: 3,
+                pitanje: 'Koju državu predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv države.', trajanjeMs: 28000,
+                emoji: '🦘  🪃  🏖️', prihvaceni: ['Australija', 'Australia'], resenje: 'Australija', poeni: 3
+            },
+            {
+                id: 'njujork', kategorija: 'GRADOVI', tezina: 3,
+                pitanje: 'Koji grad predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv grada.', trajanjeMs: 28000,
+                emoji: '🗽  🚕  🍎', prihvaceni: ['Njujork', 'New York', 'New York City', 'Nju Jork'], resenje: 'Njujork', poeni: 3
+            },
+            {
+                id: 'kompas', kategorija: 'PREDMETI', tezina: 3,
+                pitanje: 'Koji predmet predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv predmeta.', trajanjeMs: 28000,
+                emoji: '🧭  🧲  🗺️', prihvaceni: ['Kompas', 'Compass'], resenje: 'Kompas', poeni: 3
+            },
+            {
+                id: 'dunav', kategorija: 'REKE',
+                pitanje: 'Koju reku predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv reke.', trajanjeMs: 28000,
+                emoji: '🇷🇸  🏰  🚢', prihvaceni: ['Dunav', 'Danube'], resenje: 'Dunav', poeni: 3
+            },
+            {
+                id: 'kopaonik', kategorija: 'PLANINE',
+                pitanje: 'Koju planinu predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv planine.', trajanjeMs: 28000,
+                emoji: '🏔️  🎿  🇷🇸', prihvaceni: ['Kopaonik'], resenje: 'Kopaonik', poeni: 3
+            },
+            {
+                id: 'suncokret', kategorija: 'BILJKE',
+                pitanje: 'Koju biljku predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv biljke.', trajanjeMs: 28000,
+                emoji: '🌻  ☀️  🌱', prihvaceni: ['Suncokret', 'Sunflower'], resenje: 'Suncokret', poeni: 3
+            }
+        ]
     },
     {
-        id: 'pikado-pariz',
+        id: 'geografski-pikado',
         tip: 'pikado',
         naziv: 'Geografski pikado',
         kategorija: 'VELIKO FINALE · GRADOVI',
-        pitanje: 'Postavi pin što bliže Parizu.',
-        uputstvo: 'Klikni na nemu mapu Evrope, postavi pin i zaključaš ga kada si siguran/na.',
-        trajanjeMs: 45000,
-        mapa: 'evropa',
-        grad: 'Pariz',
-        cilj: { x: 40.2, y: 57.4 },
-        pragoviPoena: [
-            { udaljenost: 3, poeni: 8 },
-            { udaljenost: 6, poeni: 6 },
-            { udaljenost: 10, poeni: 4 },
-            { udaljenost: 15, poeni: 2 }
+        brojPitanja: 3,
+        mesajPitanja: false,
+        pitanja: [
+            {
+                id: 'pariz', kategorija: 'GRADOVI · EVROPA',
+                pitanje: 'Postavi pin što bliže Parizu.',
+                uputstvo: 'Klikni na nemu mapu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'evropa', grad: 'Pariz', cilj: { x: 40.2, y: 57.4 }
+            },
+            {
+                id: 'kopaonik', kategorija: 'PLANINE · EVROPA',
+                pitanje: 'Postavi pin što bliže Kopaoniku.',
+                uputstvo: 'Klikni na nemu mapu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'evropa', grad: 'Kopaonik', cilj: { x: 63.8, y: 63.2 }
+            },
+            {
+                id: 'rim', kategorija: 'GRADOVI · EVROPA',
+                pitanje: 'Postavi pin što bliže Rimu.',
+                uputstvo: 'Klikni na nemu mapu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'evropa', grad: 'Rim', cilj: { x: 52.5, y: 65.5 }
+            }
         ]
     }
 ];
@@ -324,6 +660,55 @@ function promesajKvizStavke(stavke) {
         [kopija[indeks], kopija[noviIndeks]] = [kopija[noviIndeks], kopija[indeks]];
     }
     return kopija;
+}
+
+function oznakeKategorijaKvizPitanja(pitanje) {
+    const oznaka = normalizujKvizTekst(pitanje?.kategorija);
+    const kategorije = [];
+    if (oznaka.includes('grad')) kategorije.push('grad');
+    if (oznaka.includes('rek')) kategorije.push('reka');
+    if (oznaka.includes('drzav')) kategorije.push('drzava');
+    if (oznaka.includes('planin')) kategorije.push('planina');
+    if (oznaka.includes('biljk')) kategorije.push('biljka');
+    if (oznaka.includes('zivotinj')) kategorije.push('zivotinja');
+    if (oznaka.includes('predmet') || oznaka.includes('znamenitost')) kategorije.push('predmet');
+    return kategorije;
+}
+
+function imajuZajednickuKategoriju(prva, druga) {
+    return prva.some(kategorija => druga.includes(kategorija));
+}
+
+function odaberiKvizPitanja(pitanja, brojPitanja, prethodneKategorije = []) {
+    const preostala = promesajKvizStavke(pitanja);
+    const izabrana = [];
+    let poslednjeKategorije = prethodneKategorije;
+
+    while (izabrana.length < brojPitanja && preostala.length > 0) {
+        let kandidati = preostala.filter(pitanje => !imajuZajednickuKategoriju(
+            oznakeKategorijaKvizPitanja(pitanje),
+            poslednjeKategorije
+        ));
+        // Ako više nema kombinacije bez ponavljanja, preostali materijal je bolji od praznog pitanja.
+        if (kandidati.length === 0) kandidati = preostala;
+
+        const ukupanPrioritet = kandidati.reduce((zbir, pitanje) => zbir + Math.max(1, Number(pitanje.tezina) || 1), 0);
+        let izvuceniBroj = crypto.randomInt(ukupanPrioritet);
+        let izabranoPitanje = kandidati[0];
+        for (const kandidat of kandidati) {
+            izvuceniBroj -= Math.max(1, Number(kandidat.tezina) || 1);
+            if (izvuceniBroj < 0) {
+                izabranoPitanje = kandidat;
+                break;
+            }
+        }
+
+        preostala.splice(preostala.indexOf(izabranoPitanje), 1);
+        izabrana.push(izabranoPitanje);
+        poslednjeKategorije = oznakeKategorijaKvizPitanja(izabranoPitanje);
+    }
+
+    return izabrana;
 }
 
 function napraviKvizKod() {
@@ -360,12 +745,24 @@ function normalizujKvizTekst(vrednost) {
 }
 
 function pripremiKvizRunde() {
+    let poslednjeKategorije = [];
     return KVIZ_RUNDE.map(runda => {
         const kopija = klonirajKvizPodatke(runda);
-        if (kopija.tip === 'spojnice') {
-            kopija.opcije = promesajKvizStavke(kopija.parovi.map(par => par.desno));
+        if (Number.isInteger(kopija.brojPitanja) && kopija.brojPitanja > 0) {
+            kopija.pitanja = kopija.mesajPitanja === false
+                ? kopija.pitanja.slice(0, kopija.brojPitanja)
+                : odaberiKvizPitanja(kopija.pitanja, kopija.brojPitanja, poslednjeKategorije);
         }
-        if (kopija.tip === 'anagram') kopija.slova = promesajKvizStavke(kopija.slova);
+        kopija.pitanja.forEach(pitanje => {
+            if (kopija.tip === 'spojnice') pitanje.opcije = promesajKvizStavke(pitanje.parovi.map(par => par.desno));
+            if (kopija.tip === 'anagram') pitanje.slova = promesajKvizStavke(pitanje.slova);
+            if (kopija.tip === 'pikado') pitanje.pragoviPoena = [
+                { udaljenost: 3, poeni: 8 }, { udaljenost: 6, poeni: 6 },
+                { udaljenost: 10, poeni: 4 }, { udaljenost: 15, poeni: 2 }
+            ];
+        });
+        const poslednjePitanje = kopija.pitanja[kopija.pitanja.length - 1];
+        poslednjeKategorije = oznakeKategorijaKvizPitanja(poslednjePitanje);
         return kopija;
     });
 }
@@ -381,8 +778,10 @@ function napraviKvizSobu(igraci, testBot = false) {
         partijaId: `kviz_${sobaId}_${Date.now()}_${crypto.randomUUID()}`,
         runde: pripremiKvizRunde(),
         indeksRunde: -1,
+        indeksPitanja: -1,
         odgovori: {},
         rezultati: Object.fromEntries(igraci.map(igrac => [igrac.playerId, { ukupnoPoena: 0, tacnih: 0 }])),
+        rezultatAktivneRunde: {},
         rundaZakljucena: false,
         timeoutPocetka: null,
         timeoutRunda: null,
@@ -491,49 +890,71 @@ function zakljuciKvizMec(soba, razlog = 'zavrseno', forsiraniPobednici = null) {
     }, 60 * 1000);
 }
 
-function napraviJavniPrikazKvizRunde(runda) {
+function trenutnoKvizPitanje(soba) {
+    return soba?.runde?.[soba.indeksRunde]?.pitanja?.[soba.indeksPitanja] || null;
+}
+
+function napraviJavniPrikazKvizRunde(runda, pitanje) {
     const prikaz = {
-        id: runda.id,
+        id: `${runda.id}:${pitanje.id}`,
         tip: runda.tip,
         naziv: runda.naziv,
-        kategorija: runda.kategorija,
-        pitanje: runda.pitanje,
-        uputstvo: runda.uputstvo,
-        trajanjeMs: runda.trajanjeMs
+        kategorija: pitanje.kategorija || runda.kategorija,
+        pitanje: pitanje.pitanje,
+        uputstvo: pitanje.uputstvo,
+        trajanjeMs: pitanje.trajanjeMs
     };
-    if (runda.tip === 'brzopotezne') prikaz.trazeno = runda.trazeno;
-    if (runda.tip === 'spojnice') {
-        prikaz.levo = runda.parovi.map(par => par.levo);
-        prikaz.opcije = runda.opcije;
+    if (runda.tip === 'brzopotezne') {
+        prikaz.trazeno = pitanje.trazeno;
+        prikaz.izazovi = [{ naziv: `PITANJE`, trazeno: pitanje.trazeno }];
     }
-    if (runda.tip === 'uljez') prikaz.opcije = runda.opcije;
-    if (runda.tip === 'misterija') prikaz.tragovi = runda.tragovi.slice(0, (runda.aktivniTrag || 0) + 1);
-    if (runda.tip === 'emoji') prikaz.emoji = runda.emoji;
-    if (runda.tip === 'anagram') prikaz.slova = runda.slova;
+    if (runda.tip === 'spojnice') {
+        prikaz.levo = pitanje.parovi.map(par => par.levo);
+        prikaz.opcije = pitanje.opcije;
+        prikaz.izazovi = [{ naziv: 'SPOJI POJMOVE', levo: prikaz.levo, opcije: prikaz.opcije }];
+    }
+    if (runda.tip === 'uljez') {
+        prikaz.opcije = pitanje.opcije;
+        prikaz.izazovi = [{ naziv: 'PRONAĐI ULJEZA', pitanje: pitanje.pitanje, opcije: pitanje.opcije }];
+    }
+    if (runda.tip === 'misterija') {
+        prikaz.tragovi = pitanje.tragovi.slice(0, (pitanje.aktivniTrag || 0) + 1);
+        prikaz.izazovi = [{ naziv: 'MISTERIOZNI POJAM', tragovi: prikaz.tragovi }];
+    }
+    if (runda.tip === 'emoji') {
+        prikaz.emoji = pitanje.emoji;
+        prikaz.izazovi = [{ naziv: 'EMODŽI ZADATAK', emoji: pitanje.emoji }];
+    }
+    if (runda.tip === 'anagram') {
+        prikaz.slova = pitanje.slova;
+        prikaz.izazovi = [{ naziv: 'ANAGRAM', slova: pitanje.slova }];
+    }
     if (runda.tip === 'pikado') {
-        prikaz.mapa = runda.mapa;
-        prikaz.grad = runda.grad;
+        prikaz.mapa = pitanje.mapa;
+        prikaz.grad = pitanje.grad;
+        prikaz.izazovi = [{ naziv: 'POSTAVI PIN', grad: pitanje.grad }];
     }
     return prikaz;
 }
 
-function javnoResenjeKvizRunde(runda) {
-    if (runda.tip === 'brzopotezne') return { prihvaceni: runda.prihvaceni };
-    if (runda.tip === 'spojnice') return { parovi: runda.parovi };
-    if (runda.tip === 'uljez') return { uljez: runda.opcije[runda.uljezIndeks], objasnjenje: runda.objasnjenje };
-    if (runda.tip === 'misterija') return { odgovor: runda.prihvaceni[0], tragovi: runda.tragovi };
-    if (runda.tip === 'emoji') return { odgovor: runda.resenje };
-    if (runda.tip === 'anagram') return { odgovor: runda.resenje };
-    if (runda.tip === 'pikado') return { grad: runda.grad, cilj: runda.cilj };
+function javnoResenjeKvizRunde(runda, pitanje) {
+    if (runda.tip === 'brzopotezne') return { prihvaceni: pitanje.prihvaceni };
+    if (runda.tip === 'spojnice') return { parovi: pitanje.parovi };
+    if (runda.tip === 'uljez') return { uljez: pitanje.opcije[pitanje.uljezIndeks], objasnjenje: pitanje.objasnjenje };
+    if (runda.tip === 'misterija') return { odgovor: pitanje.prihvaceni[0], tragovi: pitanje.tragovi };
+    if (runda.tip === 'emoji' || runda.tip === 'anagram') return { odgovor: pitanje.resenje };
+    if (runda.tip === 'pikado') return { grad: pitanje.grad, cilj: pitanje.cilj };
     return {};
 }
 
-function proceniKvizOdgovor(runda, odgovor) {
+function proceniKvizOdgovor(tip, pitanje, odgovor) {
     const unos = odgovor && typeof odgovor === 'object' ? odgovor : {};
-    const prihvaceni = new Set((runda.prihvaceni || []).map(normalizujKvizTekst));
+    const prihvaceni = new Set((pitanje.prihvaceni || []).map(normalizujKvizTekst));
 
-    if (runda.tip === 'brzopotezne') {
-        const unosi = Array.isArray(unos.stavke) ? unos.stavke.slice(0, runda.trazeno) : [];
+    if (tip === 'brzopotezne') {
+        const unosi = Array.isArray(unos.stavke)
+            ? unos.stavke.slice(0, pitanje.trazeno)
+            : (Array.isArray(unos.grupe?.[0]) ? unos.grupe[0].slice(0, pitanje.trazeno) : []);
         const vidjeni = new Set();
         const tacniPojmovi = unosi
             .map(normalizujKvizTekst)
@@ -541,25 +962,27 @@ function proceniKvizOdgovor(runda, odgovor) {
         return { tacno: tacniPojmovi.length > 0, tacnih: tacniPojmovi.length, tacniPojmovi, poeni: tacniPojmovi.length };
     }
 
-    if (runda.tip === 'spojnice') {
+    if (tip === 'spojnice') {
         const spojeno = unos.spojeno && typeof unos.spojeno === 'object' ? unos.spojeno : {};
-        const tacnih = runda.parovi.filter((par, indeks) => normalizujKvizTekst(spojeno[indeks]) === normalizujKvizTekst(par.desno)).length;
+        const tacnih = pitanje.parovi.filter((par, indeks) => normalizujKvizTekst(spojeno[indeks]) === normalizujKvizTekst(par.desno)).length;
         return { tacno: tacnih > 0, tacnih, poeni: tacnih };
     }
 
-    if (runda.tip === 'uljez') {
-        const tacno = Number(unos.indeks) === runda.uljezIndeks;
-        return { tacno, tacnih: tacno ? 1 : 0, poeni: tacno ? runda.poeni : 0 };
+    if (tip === 'uljez') {
+        const indeks = Number.isInteger(Number(unos.indeks)) ? Number(unos.indeks) : Number(unos.indeksi?.[0]);
+        const tacno = indeks === pitanje.uljezIndeks;
+        return { tacno, tacnih: tacno ? 1 : 0, poeni: tacno ? pitanje.poeni : 0 };
     }
 
-    if (runda.tip === 'pikado') {
-        const x = Number(unos.x);
-        const y = Number(unos.y);
+    if (tip === 'pikado') {
+        const koordinata = unos.koordinate?.[0] || unos;
+        const x = Number(koordinata.x);
+        const y = Number(koordinata.y);
         if (!Number.isFinite(x) || !Number.isFinite(y) || x < 0 || x > 100 || y < 0 || y > 100) {
             return { tacno: false, tacnih: 0, poeni: 0, udaljenost: null };
         }
-        const udaljenost = Math.hypot(x - runda.cilj.x, y - runda.cilj.y);
-        const prag = runda.pragoviPoena.find(stavka => udaljenost <= stavka.udaljenost);
+        const udaljenost = Math.hypot(x - pitanje.cilj.x, y - pitanje.cilj.y);
+        const prag = pitanje.pragoviPoena.find(stavka => udaljenost <= stavka.udaljenost);
         const poeni = prag ? prag.poeni : 0;
         return {
             tacno: poeni > 0,
@@ -569,30 +992,32 @@ function proceniKvizOdgovor(runda, odgovor) {
         };
     }
 
-    const tekst = normalizujKvizTekst(unos.tekst);
+    const tekst = normalizujKvizTekst(unos.tekst ?? unos.tekstovi?.[0]);
     const tacno = prihvaceni.has(tekst);
-    if (runda.tip === 'misterija') {
-        const trag = Math.max(0, Math.min(runda.tragovi.length - 1, Number(runda.aktivniTrag) || 0));
+    if (tip === 'misterija') {
+        const trag = Math.max(0, Math.min(pitanje.tragovi.length - 1, Number(pitanje.aktivniTrag) || 0));
         return { tacno, tacnih: tacno ? 1 : 0, trag, poeni: tacno ? Math.max(1, 3 - trag) : 0 };
     }
-    return { tacno, tacnih: tacno ? 1 : 0, poeni: tacno ? runda.poeni : 0 };
+    return { tacno, tacnih: tacno ? 1 : 0, poeni: tacno ? pitanje.poeni : 0 };
 }
 
 function upisiKvizOdgovor(soba, igrac, odgovor) {
     const runda = soba?.runde?.[soba.indeksRunde];
+    const pitanje = trenutnoKvizPitanje(soba);
     if (
         !soba
         || soba.status !== 'u_igri'
         || soba.rundaZakljucena
         || !igrac
         || !runda
+        || !pitanje
         || soba.odgovori?.[igrac.id]
         || Date.now() > soba.krajRundeAt
     ) {
         return false;
     }
 
-    soba.odgovori[igrac.id] = { poslat: true, bonus: 0, ...proceniKvizOdgovor(runda, odgovor) };
+    soba.odgovori[igrac.id] = { poslat: true, bonus: 0, ...proceniKvizOdgovor(runda.tip, pitanje, odgovor) };
     if (soba.igraci.every(kandidat => soba.odgovori[kandidat.id])) {
         zakljuciKvizRundu(soba, 'svi_odgovorili');
     }
@@ -610,7 +1035,8 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
     soba.timeoutTragovi = [];
 
     const runda = soba.runde[soba.indeksRunde];
-    if (!runda) return zakljuciKvizMec(soba, 'zavrseno');
+    const pitanje = trenutnoKvizPitanje(soba);
+    if (!runda || !pitanje) return zakljuciKvizMec(soba, 'zavrseno');
 
     if (runda.tip === 'brzopotezne') {
         soba.igraci.forEach(igrac => {
@@ -625,20 +1051,52 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
         });
     }
 
-    const rezultati = soba.igraci.map(igrac => {
+    soba.igraci.forEach(igrac => {
         const odgovor = soba.odgovori[igrac.id] || { poslat: false, tacno: false, tacnih: 0, poeni: 0, bonus: 0 };
         const zbir = soba.rezultati[igrac.playerId] || { ukupnoPoena: 0, tacnih: 0 };
+        const zbirRunde = soba.rezultatAktivneRunde[igrac.playerId] || { poslat: false, poeni: 0, tacnih: 0, bonus: 0, udaljenost: null };
         zbir.ukupnoPoena += Number(odgovor.poeni) || 0;
         zbir.tacnih += Number(odgovor.tacnih) || 0;
+        zbirRunde.poslat = zbirRunde.poslat || Boolean(odgovor.poslat);
+        zbirRunde.poeni += Number(odgovor.poeni) || 0;
+        zbirRunde.tacnih += Number(odgovor.tacnih) || 0;
+        zbirRunde.bonus += Number(odgovor.bonus) || 0;
+        if (typeof odgovor.udaljenost === 'number') zbirRunde.udaljenost = odgovor.udaljenost;
+        soba.rezultatAktivneRunde[igrac.playerId] = zbirRunde;
+    });
+
+    const poslednjePitanje = soba.indeksPitanja >= runda.pitanja.length - 1;
+    if (!poslednjePitanje) {
+        const nastavakAt = Date.now() + KVIZ_PAUZA_IZMEDJU_PITANJA_MS;
+        io.to(soba.id).emit('kviz:pitanjeZakljuceno', {
+            sobaId: soba.id,
+            indeksRunde: soba.indeksRunde,
+            indeksPitanja: soba.indeksPitanja,
+            ukupnoPitanja: runda.pitanja.length,
+            tip: runda.tip,
+            resenje: javnoResenjeKvizRunde(runda, pitanje),
+            nastavakAt
+        });
+        soba.timeoutSledecaRunda = setTimeout(() => {
+            if (kvizSobe[soba.id] !== soba || soba.status !== 'u_igri') return;
+            soba.indeksPitanja++;
+            pokreniKvizPitanje(soba);
+        }, KVIZ_PAUZA_IZMEDJU_PITANJA_MS);
+        return;
+    }
+
+    const rezultati = soba.igraci.map(igrac => {
+        const zbir = soba.rezultati[igrac.playerId] || {};
+        const zbirRunde = soba.rezultatAktivneRunde[igrac.playerId] || {};
         return {
             playerId: igrac.playerId,
             ime: igrac.ime,
-            poslat: Boolean(odgovor.poslat),
-            tacno: Boolean(odgovor.tacno),
-            tacnih: Number(odgovor.tacnih) || 0,
-            bonus: Number(odgovor.bonus) || 0,
-            poeniRunde: Number(odgovor.poeni) || 0,
-            udaljenost: typeof odgovor.udaljenost === 'number' ? odgovor.udaljenost : null,
+            poslat: Boolean(zbirRunde.poslat),
+            tacno: Number(zbirRunde.tacnih) > 0,
+            tacnih: Number(zbirRunde.tacnih) || 0,
+            bonus: Number(zbirRunde.bonus) || 0,
+            poeniRunde: Number(zbirRunde.poeni) || 0,
+            udaljenost: typeof zbirRunde.udaljenost === 'number' ? zbirRunde.udaljenost : null,
             ukupnoPoena: Number(zbir.ukupnoPoena) || 0,
             tacnihUkupno: Number(zbir.tacnih) || 0
         };
@@ -652,7 +1110,7 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
         indeksRunde: soba.indeksRunde,
         tip: runda.tip,
         naziv: runda.naziv,
-        resenje: javnoResenjeKvizRunde(runda),
+        resenje: javnoResenjeKvizRunde(runda, pitanje),
         rezultati,
         razlog,
         poslednje,
@@ -667,35 +1125,35 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
     }, trajanjePauzeMs);
 }
 
-function napraviOdgovorTestBota(runda) {
+function napraviOdgovorTestBota(tip, pitanje) {
     const pogadja = crypto.randomInt(100) < 64;
-    if (runda.tip === 'brzopotezne') {
-        const pojmovi = promesajKvizStavke(runda.prihvaceni);
-        return { stavke: pogadja ? pojmovi.slice(0, 3) : [pojmovi[0], pojmovi[1], 'Planeta'] };
+    if (tip === 'brzopotezne') {
+        const pojmovi = promesajKvizStavke(pitanje.prihvaceni);
+        return { stavke: pogadja ? pojmovi.slice(0, pitanje.trazeno) : [pojmovi[0], pojmovi[1], 'Planeta'] };
     }
-    if (runda.tip === 'spojnice') {
+    if (tip === 'spojnice') {
         const spojeno = {};
-        runda.parovi.forEach((par, indeks) => {
-            const pogresne = runda.opcije.filter(opcija => opcija !== par.desno);
+        pitanje.parovi.forEach((par, indeks) => {
+            const pogresne = pitanje.opcije.filter(opcija => opcija !== par.desno);
             spojeno[indeks] = crypto.randomInt(100) < 68 || pogresne.length === 0
                 ? par.desno
                 : pogresne[crypto.randomInt(pogresne.length)];
         });
         return { spojeno };
     }
-    if (runda.tip === 'uljez') {
-        const pogresni = runda.opcije.map((_, indeks) => indeks).filter(indeks => indeks !== runda.uljezIndeks);
-        return { indeks: pogadja ? runda.uljezIndeks : pogresni[crypto.randomInt(pogresni.length)] };
+    if (tip === 'uljez') {
+        const pogresni = pitanje.opcije.map((_, indeks) => indeks).filter(indeks => indeks !== pitanje.uljezIndeks);
+        return { indeks: pogadja ? pitanje.uljezIndeks : pogresni[crypto.randomInt(pogresni.length)] };
     }
-    if (runda.tip === 'misterija') return { tekst: pogadja ? runda.prihvaceni[0] : 'Sekstant' };
-    if (runda.tip === 'emoji') return { tekst: pogadja ? runda.resenje : 'London' };
-    if (runda.tip === 'anagram') return { tekst: pogadja ? runda.resenje : 'Drina' };
-    if (runda.tip === 'pikado') {
+    if (tip === 'misterija') return { tekst: pogadja ? pitanje.prihvaceni[0] : 'Sekstant' };
+    if (tip === 'emoji') return { tekst: pogadja ? pitanje.resenje : 'London' };
+    if (tip === 'anagram') return { tekst: pogadja ? pitanje.resenje : 'Drina' };
+    if (tip === 'pikado') {
         const ugao = (crypto.randomInt(360) * Math.PI) / 180;
         const odmak = pogadja ? 1 + crypto.randomInt(5) : 12 + crypto.randomInt(13);
         return {
-            x: Math.min(98, Math.max(2, runda.cilj.x + (Math.cos(ugao) * odmak))),
-            y: Math.min(98, Math.max(2, runda.cilj.y + (Math.sin(ugao) * odmak)))
+            x: Math.min(98, Math.max(2, pitanje.cilj.x + (Math.cos(ugao) * odmak))),
+            y: Math.min(98, Math.max(2, pitanje.cilj.y + (Math.sin(ugao) * odmak)))
         };
     }
     return {};
@@ -705,31 +1163,59 @@ function zakaziOdgovorTestBota(soba) {
     if (!soba?.testBot) return;
     const bot = soba.igraci.find(igrac => igrac.jeTestBot);
     const runda = soba.runde[soba.indeksRunde];
-    if (!bot || !runda) return;
+    const pitanje = trenutnoKvizPitanje(soba);
+    if (!bot || !runda || !pitanje) return;
 
     const minimalnoKasnjenje = runda.tip === 'misterija' ? 6700 : 2800;
-    const maksimalnoDodatno = Math.max(1, Math.min(5200, runda.trajanjeMs - minimalnoKasnjenje - 1200));
+    const maksimalnoDodatno = Math.max(1, Math.min(5200, pitanje.trajanjeMs - minimalnoKasnjenje - 1200));
     const kasnjenjeMs = minimalnoKasnjenje + crypto.randomInt(maksimalnoDodatno);
     soba.timeoutTestBot = setTimeout(() => {
         if (kvizSobe[soba.id] !== soba || soba.status !== 'u_igri' || soba.rundaZakljucena) return;
-        upisiKvizOdgovor(soba, bot, napraviOdgovorTestBota(runda));
+        upisiKvizOdgovor(soba, bot, napraviOdgovorTestBota(runda.tip, pitanje));
     }, kasnjenjeMs);
 }
 
-function zakaziTragoveMisterije(soba, runda) {
+function zakaziTragoveMisterije(soba, runda, pitanje) {
     if (runda.tip !== 'misterija') return;
-    runda.aktivniTrag = 0;
-    const razmak = Math.floor(runda.trajanjeMs / runda.tragovi.length);
-    soba.timeoutTragovi = runda.tragovi.slice(1).map((tekst, pomeraj) => setTimeout(() => {
+    pitanje.aktivniTrag = 0;
+    const razmak = Math.floor(pitanje.trajanjeMs / pitanje.tragovi.length);
+    soba.timeoutTragovi = pitanje.tragovi.slice(1).map((tekst, pomeraj) => setTimeout(() => {
         if (kvizSobe[soba.id] !== soba || soba.status !== 'u_igri' || soba.rundaZakljucena) return;
-        runda.aktivniTrag = pomeraj + 1;
+        pitanje.aktivniTrag = pomeraj + 1;
         io.to(soba.id).emit('kviz:trag', {
             sobaId: soba.id,
             indeksRunde: soba.indeksRunde,
-            indeksTraga: runda.aktivniTrag,
+            indeksPitanja: soba.indeksPitanja,
+            indeksIzazova: 0,
+            indeksTraga: pitanje.aktivniTrag,
             tekst
         });
     }, razmak * (pomeraj + 1)));
+}
+
+function pokreniKvizPitanje(soba) {
+    const runda = soba?.runde?.[soba.indeksRunde];
+    const pitanje = trenutnoKvizPitanje(soba);
+    if (!soba || !runda || !pitanje || kvizSobe[soba.id] !== soba || soba.status !== 'u_igri') return;
+    soba.odgovori = {};
+    soba.rundaZakljucena = false;
+    soba.krajRundeAt = Date.now() + pitanje.trajanjeMs;
+    zakaziTragoveMisterije(soba, runda, pitanje);
+    io.to(soba.id).emit('kviz:runda', {
+        sobaId: soba.id,
+        indeksRunde: soba.indeksRunde,
+        indeksPitanja: soba.indeksPitanja,
+        ukupnoPitanja: runda.pitanja.length,
+        redniBroj: soba.indeksRunde + 1,
+        ukupno: soba.runde.length,
+        krajRundeAt: soba.krajRundeAt,
+        runda: napraviJavniPrikazKvizRunde(runda, pitanje)
+    });
+
+    soba.timeoutRunda = setTimeout(() => {
+        zakljuciKvizRundu(soba, 'vreme_isteklo');
+    }, pitanje.trajanjeMs + 80);
+    zakaziOdgovorTestBota(soba);
 }
 
 function pokreniKvizRundu(soba) {
@@ -739,25 +1225,11 @@ function pokreniKvizRundu(soba) {
         zakljuciKvizMec(soba, 'zavrseno');
         return;
     }
-
-    const runda = soba.runde[soba.indeksRunde];
-    soba.odgovori = {};
-    soba.rundaZakljucena = false;
-    soba.krajRundeAt = Date.now() + runda.trajanjeMs;
-    zakaziTragoveMisterije(soba, runda);
-    io.to(soba.id).emit('kviz:runda', {
-        sobaId: soba.id,
-        indeksRunde: soba.indeksRunde,
-        redniBroj: soba.indeksRunde + 1,
-        ukupno: soba.runde.length,
-        krajRundeAt: soba.krajRundeAt,
-        runda: napraviJavniPrikazKvizRunde(runda)
-    });
-
-    soba.timeoutRunda = setTimeout(() => {
-        zakljuciKvizRundu(soba, 'vreme_isteklo');
-    }, runda.trajanjeMs + 80);
-    zakaziOdgovorTestBota(soba);
+    soba.indeksPitanja = 0;
+    soba.rezultatAktivneRunde = Object.fromEntries(soba.igraci.map(igrac => [
+        igrac.playerId, { poslat: false, poeni: 0, tacnih: 0, bonus: 0, udaljenost: null }
+    ]));
+    pokreniKvizPitanje(soba);
 }
 
 function ukloniIgracaIzKvizSoba(socket, razlog = 'napustio') {
@@ -2966,6 +3438,7 @@ io.on('connection', (socket) => {
         const soba = kvizSobe[sobaId];
         if (!soba || soba.status !== 'u_igri' || soba.rundaZakljucena) return;
         if (Number(podaci.indeksRunde) !== soba.indeksRunde) return;
+        if (Number(podaci.indeksPitanja) !== soba.indeksPitanja) return;
 
         const igrac = soba.igraci.find(kandidat => kandidat.id === socket.id);
         upisiKvizOdgovor(soba, igrac, podaci.odgovor);

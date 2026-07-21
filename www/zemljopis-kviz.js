@@ -8,6 +8,7 @@ const KvizManager = {
     mecUToku: false,
     odgovorPoslat: false,
     indeksRunde: -1,
+    indeksPitanja: -1,
     aktivnaRunda: null,
     krajRundeAt: 0,
     tajmer: null,
@@ -33,6 +34,7 @@ const KvizManager = {
         socket.on('kviz:pronadjenMec', (podaci = {}) => this.primiPronadjenMec(podaci));
         socket.on('kviz:runda', (podaci = {}) => this.primiRundu(podaci));
         socket.on('kviz:trag', (podaci = {}) => this.primiTrag(podaci));
+        socket.on('kviz:pitanjeZakljuceno', (podaci = {}) => this.primiPitanjeZakljuceno(podaci));
         socket.on('kviz:rezultatRunde', (podaci = {}) => this.primiRezultatRunde(podaci));
         socket.on('kviz:krajMeca', (podaci = {}) => this.primiKrajMeca(podaci));
         socket.on('kviz:protivnikNapustio', (podaci = {}) => this.primiPredaju(podaci));
@@ -143,10 +145,14 @@ const KvizManager = {
         this.vratiKvizNaPocetak();
         this.odgovorPoslat = false;
         this.indeksRunde = Number(podaci.indeksRunde);
+        this.indeksPitanja = Number(podaci.indeksPitanja);
         this.aktivnaRunda = podaci.runda;
         this.krajRundeAt = Number(podaci.krajRundeAt) || 0;
 
-        this.postaviTekst('kviz-round', `RUNDA ${Number(podaci.redniBroj) || 1} / ${Number(podaci.ukupno) || 7}`);
+        const redniBroj = Number(podaci.redniBroj) || 1;
+        const ukupnoPitanja = Number(podaci.ukupnoPitanja) || 1;
+        const rednoPitanje = (Number(podaci.indeksPitanja) || 0) + 1;
+        this.postaviTekst('kviz-round', `RUNDA ${redniBroj} / ${Number(podaci.ukupno) || 7} · PITANJE ${rednoPitanje} / ${ukupnoPitanja}`);
         this.postaviTekst('kviz-kategorija', this.aktivnaRunda.kategorija || this.aktivnaRunda.naziv || 'ZEMLJOPIS');
         this.postaviTekst('kviz-pitanje', this.aktivnaRunda.pitanje || 'Zadatak nije dostupan.');
         this.postaviTekst('kviz-answer-status', this.aktivnaRunda.uputstvo || 'Pošalji odgovor pre isteka vremena.');
@@ -161,12 +167,15 @@ const KvizManager = {
             !this.mecUToku
             || podaci.sobaId !== this.sobaId
             || Number(podaci.indeksRunde) !== this.indeksRunde
+            || Number(podaci.indeksPitanja) !== this.indeksPitanja
             || this.aktivnaRunda?.tip !== 'misterija'
         ) return;
 
-        const tragovi = Array.isArray(this.aktivnaRunda.tragovi) ? this.aktivnaRunda.tragovi : [];
+        const izazov = this.aktivnaRunda.izazovi?.[Number(podaci.indeksIzazova)];
+        if (!izazov) return;
+        const tragovi = Array.isArray(izazov.tragovi) ? izazov.tragovi : [];
         if (!tragovi.includes(podaci.tekst)) tragovi.push(podaci.tekst);
-        this.aktivnaRunda.tragovi = tragovi;
+        izazov.tragovi = tragovi;
         this.prikaziTragoveMisterije();
     },
 
@@ -188,121 +197,142 @@ const KvizManager = {
 
     renderujBrzopotezne: function(kontejner, runda) {
         const forma = this.napraviFormu(kontejner, 'kviz-triples-form');
-        const uputstvo = document.createElement('p');
-        uputstvo.className = 'kviz-inline-title';
-        uputstvo.textContent = `Upiši ${runda.trazeno || 3} različita pojma.`;
-        forma.appendChild(uputstvo);
-        const polja = [];
-        for (let indeks = 0; indeks < (runda.trazeno || 3); indeks++) {
-            const polje = document.createElement('input');
-            polje.className = 'kviz-text-input';
-            polje.type = 'text';
-            polje.maxLength = 40;
-            polje.autocomplete = 'off';
-            polje.placeholder = `Pojam ${indeks + 1}`;
-            this.zadrziFokusUKvizEkranu(polje);
-            polja.push(polje);
-            forma.appendChild(polje);
-        }
+        const grupe = [];
+        (runda.izazovi || []).forEach((izazov, indeksIzazova) => {
+            const kartica = this.napraviKarticuIzazova(forma, izazov.naziv, `Upiši ${izazov.trazeno || 3} različita pojma.`);
+            const polja = [];
+            for (let indeks = 0; indeks < (izazov.trazeno || 3); indeks++) {
+                const polje = document.createElement('input');
+                polje.className = 'kviz-text-input';
+                polje.type = 'text';
+                polje.maxLength = 40;
+                polje.autocomplete = 'off';
+                polje.placeholder = `Pojam ${indeks + 1}`;
+                polje.setAttribute('aria-label', `${izazov.naziv || `Izazov ${indeksIzazova + 1}`}, pojam ${indeks + 1}`);
+                this.zadrziFokusUKvizEkranu(polje);
+                polja.push(polje);
+                kartica.appendChild(polje);
+            }
+            grupe.push(polja);
+        });
         this.dodajDugmeZaSlanje(forma, 'POŠALJI TROJKU', () => {
-            this.posaljiOdgovor({ stavke: polja.map(polje => polje.value) });
+            this.posaljiOdgovor({ grupe: grupe.map(polja => polja.map(polje => polje.value)) });
         });
     },
 
     renderujSpojnice: function(kontejner, runda) {
         const forma = this.napraviFormu(kontejner, 'kviz-matching-form');
         const spojeno = {};
-        (runda.levo || []).forEach((pojam, indeks) => {
-            const red = document.createElement('label');
-            red.className = 'kviz-match-row';
-            const levo = document.createElement('b');
-            levo.textContent = pojam;
-            const select = document.createElement('select');
-            select.className = 'kviz-select';
-            this.zadrziFokusUKvizEkranu(select);
-            const podrazumevano = document.createElement('option');
-            podrazumevano.value = '';
-            podrazumevano.textContent = 'Izaberi reku';
-            select.appendChild(podrazumevano);
-            (runda.opcije || []).forEach(opcija => {
-                const izbor = document.createElement('option');
-                izbor.value = opcija;
-                izbor.textContent = opcija;
-                select.appendChild(izbor);
+        let redniBroj = 0;
+        (runda.izazovi || []).forEach(izazov => {
+            const kartica = this.napraviKarticuIzazova(forma, izazov.naziv);
+            (izazov.levo || []).forEach(pojam => {
+                const red = document.createElement('label');
+                red.className = 'kviz-match-row';
+                const levo = document.createElement('b');
+                levo.textContent = pojam;
+                const select = document.createElement('select');
+                select.className = 'kviz-select';
+                select.setAttribute('aria-label', pojam);
+                this.zadrziFokusUKvizEkranu(select);
+                const podrazumevano = document.createElement('option');
+                podrazumevano.value = '';
+                podrazumevano.textContent = 'Izaberi pojam';
+                select.appendChild(podrazumevano);
+                (izazov.opcije || []).forEach(opcija => {
+                    const izbor = document.createElement('option');
+                    izbor.value = opcija;
+                    izbor.textContent = opcija;
+                    select.appendChild(izbor);
+                });
+                const trenutniRed = redniBroj++;
+                select.addEventListener('change', () => { spojeno[trenutniRed] = select.value; });
+                red.append(levo, select);
+                kartica.appendChild(red);
             });
-            select.addEventListener('change', () => { spojeno[indeks] = select.value; });
-            red.append(levo, select);
-            forma.appendChild(red);
         });
         this.dodajDugmeZaSlanje(forma, 'POTVRDI SPAJANJE', () => this.posaljiOdgovor({ spojeno }));
     },
 
     renderujAnagram: function(kontejner, runda) {
         const forma = this.napraviFormu(kontejner, 'kviz-anagram-form');
-        const odgovor = [];
-        const prikazOdgovora = document.createElement('div');
-        prikazOdgovora.className = 'kviz-anagram-answer';
-        prikazOdgovora.textContent = '—';
-        const slova = document.createElement('div');
-        slova.className = 'kviz-anagram-tiles';
-        const dugmici = [];
-
-        const osveziOdgovor = () => {
-            prikazOdgovora.textContent = odgovor.length ? odgovor.join('') : '—';
-        };
-
-        (runda.slova || []).forEach((slovo, indeks) => {
-            const dugme = document.createElement('button');
-            dugme.type = 'button';
-            dugme.className = 'kviz-anagram-tile';
-            dugme.style.setProperty('--kviz-wave-delay', `${indeks * 85}ms`);
-            dugme.textContent = slovo;
-            dugme.addEventListener('click', () => {
-                odgovor.push(slovo);
-                dugme.disabled = true;
+        const odgovori = [];
+        (runda.izazovi || []).forEach((izazov, indeksIzazova) => {
+            const kartica = this.napraviKarticuIzazova(forma, izazov.naziv);
+            const odgovor = [];
+            const prikazOdgovora = document.createElement('div');
+            prikazOdgovora.className = 'kviz-anagram-answer';
+            prikazOdgovora.textContent = '—';
+            const slova = document.createElement('div');
+            slova.className = 'kviz-anagram-tiles';
+            const dugmici = [];
+            const osveziOdgovor = () => { prikazOdgovora.textContent = odgovor.length ? odgovor.join('') : '—'; };
+            (izazov.slova || []).forEach((slovo, indeks) => {
+                const dugme = document.createElement('button');
+                dugme.type = 'button';
+                dugme.className = 'kviz-anagram-tile';
+                dugme.style.setProperty('--kviz-wave-delay', `${(indeks + (indeksIzazova * 5)) * 85}ms`);
+                dugme.textContent = slovo;
+                dugme.addEventListener('click', () => {
+                    odgovor.push(slovo);
+                    dugme.disabled = true;
+                    osveziOdgovor();
+                });
+                dugmici.push(dugme);
+                slova.appendChild(dugme);
+            });
+            const akcije = document.createElement('div');
+            akcije.className = 'kviz-anagram-actions';
+            const reset = document.createElement('button');
+            reset.type = 'button';
+            reset.className = 'kviz-anagram-reset';
+            reset.textContent = 'ISPOČETKA';
+            reset.addEventListener('click', () => {
+                odgovor.splice(0);
+                dugmici.forEach(dugme => { dugme.disabled = false; });
                 osveziOdgovor();
             });
-            dugmici.push(dugme);
-            slova.appendChild(dugme);
+            akcije.appendChild(reset);
+            kartica.append(prikazOdgovora, slova, akcije);
+            odgovori.push(odgovor);
         });
-
-        const akcije = document.createElement('div');
-        akcije.className = 'kviz-anagram-actions';
-        const reset = document.createElement('button');
-        reset.type = 'button';
-        reset.className = 'kviz-anagram-reset';
-        reset.textContent = 'ISPOČETKA';
-        reset.addEventListener('click', () => {
-            odgovor.splice(0);
-            dugmici.forEach(dugme => { dugme.disabled = false; });
-            osveziOdgovor();
-        });
-        akcije.appendChild(reset);
-
-        forma.append(prikazOdgovora, slova, akcije);
-        this.dodajDugmeZaSlanje(forma, 'PROVERI REKU', () => this.posaljiOdgovor({ tekst: odgovor.join('') }));
+        this.dodajDugmeZaSlanje(forma, 'PROVERI ANAGRAM', () => this.posaljiOdgovor({ tekstovi: odgovori.map(odgovor => odgovor.join('')) }));
     },
 
     renderujPikado: function(kontejner, runda) {
         const forma = this.napraviFormu(kontejner, 'kviz-pikado-form');
-        const mapa = document.createElement('button');
-        mapa.type = 'button';
-        mapa.className = 'kviz-map-picker';
-        mapa.setAttribute('aria-label', `Postavi pin za grad ${runda.grad || ''} na mapi Evrope`);
-
-        const slika = document.createElement('img');
-        slika.src = 'assets/kviz-pikado-europa.svg';
-        slika.alt = 'Nema mapa Evrope';
-        slika.draggable = false;
-        const pin = document.createElement('span');
-        pin.className = 'kviz-map-pin';
-        pin.hidden = true;
-        pin.setAttribute('aria-hidden', 'true');
-        mapa.append(slika, pin);
-
-        const status = document.createElement('p');
-        status.className = 'kviz-map-status';
-        status.textContent = `Postavi pin za grad: ${runda.grad || 'odabrani grad'}.`;
+        const koordinate = Array((runda.izazovi || []).length).fill(null);
+        (runda.izazovi || []).forEach((izazov, indeks) => {
+            const kartica = this.napraviKarticuIzazova(forma, izazov.naziv, `Postavi pin za grad: ${izazov.grad}.`);
+            const mapa = document.createElement('button');
+            mapa.type = 'button';
+            mapa.className = 'kviz-map-picker';
+            mapa.setAttribute('aria-label', `Postavi pin za grad ${izazov.grad} na mapi Evrope`);
+            const slika = document.createElement('img');
+            slika.src = 'assets/kviz-pikado-europa.svg';
+            slika.alt = 'Nema mapa Evrope';
+            slika.draggable = false;
+            const pin = document.createElement('span');
+            pin.className = 'kviz-map-pin';
+            pin.hidden = true;
+            pin.setAttribute('aria-hidden', 'true');
+            mapa.append(slika, pin);
+            const status = document.createElement('p');
+            status.className = 'kviz-map-status';
+            status.textContent = `Postavi pin za grad: ${izazov.grad}.`;
+            mapa.addEventListener('click', dogadjaj => {
+                const okvir = mapa.getBoundingClientRect();
+                const x = Math.min(100, Math.max(0, ((dogadjaj.clientX - okvir.left) / okvir.width) * 100));
+                const y = Math.min(100, Math.max(0, ((dogadjaj.clientY - okvir.top) / okvir.height) * 100));
+                koordinate[indeks] = { x, y };
+                pin.hidden = false;
+                pin.style.left = `${x}%`;
+                pin.style.top = `${y}%`;
+                zakljucaj.disabled = !koordinate.every(Boolean);
+                status.textContent = `Pin za ${izazov.grad} je postavljen.`;
+            });
+            kartica.append(mapa, status);
+        });
         const akcije = document.createElement('div');
         akcije.className = 'kviz-pikado-actions';
         const zakljucaj = document.createElement('button');
@@ -310,73 +340,99 @@ const KvizManager = {
         zakljucaj.className = 'kviz-round-submit';
         zakljucaj.textContent = 'ZAKLJUČAJ PIN';
         zakljucaj.disabled = true;
-        let koordinata = null;
-
-        mapa.addEventListener('click', dogadjaj => {
-            const okvir = mapa.getBoundingClientRect();
-            const x = Math.min(100, Math.max(0, ((dogadjaj.clientX - okvir.left) / okvir.width) * 100));
-            const y = Math.min(100, Math.max(0, ((dogadjaj.clientY - okvir.top) / okvir.height) * 100));
-            koordinata = { x, y };
-            pin.hidden = false;
-            pin.style.left = `${x}%`;
-            pin.style.top = `${y}%`;
-            zakljucaj.disabled = false;
-            status.textContent = 'Pin je postavljen. Možeš ga pomeriti ponovnim dodirom mape.';
-        });
-        zakljucaj.addEventListener('click', () => this.posaljiOdgovor(koordinata));
+        zakljucaj.addEventListener('click', () => this.posaljiOdgovor({ koordinate }));
         akcije.appendChild(zakljucaj);
-        forma.append(mapa, status, akcije);
+        forma.appendChild(akcije);
     },
 
     renderujUljeza: function(kontejner, runda) {
-        const lista = document.createElement('div');
-        lista.className = 'kviz-choice-list';
-        (runda.opcije || []).forEach((opcija, indeks) => {
-            const dugme = document.createElement('button');
-            dugme.type = 'button';
-            dugme.className = 'kviz-option';
-            const oznaka = document.createElement('span');
-            oznaka.textContent = String.fromCharCode(65 + indeks);
-            const tekst = document.createElement('b');
-            tekst.textContent = opcija;
-            dugme.append(oznaka, tekst);
-            dugme.addEventListener('click', () => {
-                dugme.classList.add('selected');
-                this.posaljiOdgovor({ indeks });
+        const forma = this.napraviFormu(kontejner, 'kviz-uljez-form');
+        const indeksi = Array((runda.izazovi || []).length).fill(null);
+        (runda.izazovi || []).forEach((izazov, indeksIzazova) => {
+            const kartica = this.napraviKarticuIzazova(forma, izazov.naziv, izazov.pitanje);
+            const lista = document.createElement('div');
+            lista.className = 'kviz-choice-list';
+            (izazov.opcije || []).forEach((opcija, indeks) => {
+                const dugme = document.createElement('button');
+                dugme.type = 'button';
+                dugme.className = 'kviz-option';
+                const oznaka = document.createElement('span');
+                oznaka.textContent = String.fromCharCode(65 + indeks);
+                const tekst = document.createElement('b');
+                tekst.textContent = opcija;
+                dugme.append(oznaka, tekst);
+                dugme.addEventListener('click', () => {
+                    lista.querySelectorAll('.kviz-option').forEach(opcijaDugme => opcijaDugme.classList.remove('selected'));
+                    dugme.classList.add('selected');
+                    indeksi[indeksIzazova] = indeks;
+                    potvrdi.disabled = !indeksi.every(indeksIzbora => Number.isInteger(indeksIzbora));
+                });
+                lista.appendChild(dugme);
             });
-            lista.appendChild(dugme);
+            kartica.appendChild(lista);
         });
-        kontejner.appendChild(lista);
+        const potvrdi = this.dodajDugmeZaSlanje(forma, 'POTVRDI ULJEZA', () => this.posaljiOdgovor({ indeksi }));
+        potvrdi.disabled = true;
     },
 
     renderujMisteriju: function(kontejner, runda) {
-        const tragovi = document.createElement('div');
-        tragovi.id = 'kviz-misterija-tragovi';
-        tragovi.className = 'kviz-clues';
-        kontejner.appendChild(tragovi);
+        const forma = this.napraviFormu(kontejner, 'kviz-misterija-form');
+        const polja = [];
+        (runda.izazovi || []).forEach((izazov, indeks) => {
+            const kartica = this.napraviKarticuIzazova(forma, izazov.naziv);
+            const tragovi = document.createElement('div');
+            tragovi.className = 'kviz-clues';
+            tragovi.dataset.kvizTragovi = String(indeks);
+            const polje = document.createElement('input');
+            polje.className = 'kviz-text-input';
+            polje.type = 'text';
+            polje.maxLength = 60;
+            polje.autocomplete = 'off';
+            polje.placeholder = `Rešenje za ${izazov.naziv}`;
+            this.zadrziFokusUKvizEkranu(polje);
+            kartica.append(tragovi, polje);
+            polja.push(polje);
+        });
         this.prikaziTragoveMisterije();
-        this.renderujTekstualniOdgovor(kontejner, 'Tvoje rešenje', 'POGODI POJAM');
+        this.dodajDugmeZaSlanje(forma, 'POGODI POJAM', () => this.posaljiOdgovor({ tekstovi: polja.map(polje => polje.value) }));
     },
 
     renderujEmoji: function(kontejner, runda) {
-        const emoji = document.createElement('div');
-        emoji.className = 'kviz-emoji-clue';
-        emoji.textContent = runda.emoji || '🗺️';
-        kontejner.appendChild(emoji);
-        this.renderujTekstualniOdgovor(kontejner, 'Naziv grada', 'POŠALJI ODGOVOR');
+        const forma = this.napraviFormu(kontejner, 'kviz-emoji-form');
+        const polja = [];
+        (runda.izazovi || []).forEach(izazov => {
+            const kartica = this.napraviKarticuIzazova(forma, izazov.naziv);
+            const emoji = document.createElement('div');
+            emoji.className = 'kviz-emoji-clue';
+            emoji.textContent = izazov.emoji || '🗺️';
+            const polje = document.createElement('input');
+            polje.className = 'kviz-text-input';
+            polje.type = 'text';
+            polje.maxLength = 60;
+            polje.autocomplete = 'off';
+            polje.placeholder = `Naziv ${izazov.naziv.toLowerCase()}`;
+            this.zadrziFokusUKvizEkranu(polje);
+            kartica.append(emoji, polje);
+            polja.push(polje);
+        });
+        this.dodajDugmeZaSlanje(forma, 'POŠALJI ODGOVOR', () => this.posaljiOdgovor({ tekstovi: polja.map(polje => polje.value) }));
     },
 
-    renderujTekstualniOdgovor: function(kontejner, placeholder, oznakaDugmeta) {
-        const forma = this.napraviFormu(kontejner, 'kviz-text-answer-form');
-        const polje = document.createElement('input');
-        polje.className = 'kviz-text-input';
-        polje.type = 'text';
-        polje.maxLength = 60;
-        polje.autocomplete = 'off';
-        polje.placeholder = placeholder;
-        this.zadrziFokusUKvizEkranu(polje);
-        forma.appendChild(polje);
-        this.dodajDugmeZaSlanje(forma, oznakaDugmeta, () => this.posaljiOdgovor({ tekst: polje.value }));
+    napraviKarticuIzazova: function(kontejner, naziv, pitanje = '') {
+        const kartica = document.createElement('section');
+        kartica.className = 'kviz-challenge-card';
+        const naslov = document.createElement('h4');
+        naslov.className = 'kviz-challenge-title';
+        naslov.textContent = naziv || 'IZAZOV';
+        kartica.appendChild(naslov);
+        if (pitanje) {
+            const tekst = document.createElement('p');
+            tekst.className = 'kviz-challenge-copy';
+            tekst.textContent = pitanje;
+            kartica.appendChild(tekst);
+        }
+        kontejner.appendChild(kartica);
+        return kartica;
     },
 
     napraviFormu: function(kontejner, klasa) {
@@ -398,18 +454,21 @@ const KvizManager = {
     },
 
     prikaziTragoveMisterije: function() {
-        const kontejner = document.getElementById('kviz-misterija-tragovi');
-        if (!kontejner) return;
-        kontejner.replaceChildren();
-        (this.aktivnaRunda?.tragovi || []).forEach((trag, indeks) => {
-            const stavka = document.createElement('p');
-            stavka.className = 'kviz-clue';
-            const oznaka = document.createElement('b');
-            oznaka.textContent = `TRAG ${indeks + 1}`;
-            const tekst = document.createElement('span');
-            tekst.textContent = trag;
-            stavka.append(oznaka, tekst);
-            kontejner.appendChild(stavka);
+        const izazovi = this.aktivnaRunda?.izazovi || [];
+        document.querySelectorAll('[data-kviz-tragovi]').forEach(kontejner => {
+            const indeksIzazova = Number(kontejner.dataset.kvizTragovi);
+            const tragovi = izazovi[indeksIzazova]?.tragovi || [];
+            kontejner.replaceChildren();
+            tragovi.forEach((trag, indeks) => {
+                const stavka = document.createElement('p');
+                stavka.className = 'kviz-clue';
+                const oznaka = document.createElement('b');
+                oznaka.textContent = `TRAG ${indeks + 1}`;
+                const tekst = document.createElement('span');
+                tekst.textContent = trag;
+                stavka.append(oznaka, tekst);
+                kontejner.appendChild(stavka);
+            });
         });
     },
 
@@ -421,8 +480,25 @@ const KvizManager = {
         this.socket.emit('kviz:odgovori', {
             sobaId: this.sobaId,
             indeksRunde: this.indeksRunde,
+            indeksPitanja: this.indeksPitanja,
             odgovor
         });
+    },
+
+    primiPitanjeZakljuceno: function(podaci) {
+        if (
+            !this.mecUToku
+            || podaci.sobaId !== this.sobaId
+            || Number(podaci.indeksRunde) !== this.indeksRunde
+            || Number(podaci.indeksPitanja) !== this.indeksPitanja
+        ) return;
+        this.zaustaviTajmer();
+        this.odgovorPoslat = true;
+        this.onemoguciUnosRunde();
+        this.prikaziResenjeRunde(podaci.tip, podaci.resenje || {});
+        const sledece = (Number(podaci.indeksPitanja) || 0) + 2;
+        const ukupno = Number(podaci.ukupnoPitanja) || 1;
+        this.postaviTekst('kviz-answer-status', `Pitanje je zaključano. Sledeće pitanje (${sledece}/${ukupno}) stiže za trenutak.`);
     },
 
     primiRezultatRunde: function(podaci) {
@@ -608,6 +684,7 @@ const KvizManager = {
         this.mecUToku = false;
         this.odgovorPoslat = false;
         this.indeksRunde = -1;
+        this.indeksPitanja = -1;
         this.aktivnaRunda = null;
         this.krajRundeAt = 0;
         this.protivnik = null;

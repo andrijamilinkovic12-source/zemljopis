@@ -2184,6 +2184,34 @@ body[data-tema="zivotinja"] #main-menu::before {
     width: 100%;
 }
 
+/* Jedno pitanje se prikazuje po ekranu, u istoj kartici bez obzira na tip runde. */
+.kviz-challenge-card {
+    display: grid;
+    gap: 0.56rem;
+    padding: 0.68rem;
+    border: 1px solid rgba(177, 236, 255, 0.24);
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(13, 54, 99, 0.55), rgba(35, 31, 86, 0.45));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.kviz-challenge-title {
+    margin: 0;
+    color: #ffdf72;
+    text-align: center;
+    font-size: 0.62rem;
+    letter-spacing: 0.11em;
+}
+
+.kviz-challenge-copy {
+    margin: 0;
+    color: #d9f7ff;
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
 .kviz-inline-title {
     margin: 0 0 0.08rem;
     color: #d9f7ff;

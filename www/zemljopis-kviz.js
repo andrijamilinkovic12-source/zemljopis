@@ -9,6 +9,10 @@ const KvizManager = {
     odgovorPoslat: false,
     krajPitanjaAt: 0,
     tajmer: null,
+    introTrajanjeMs: 5200,
+    introTajmer: null,
+    ulazakTajmer: null,
+    otvaranjeUToku: false,
     mojeIme: 'Igrač',
     protivnik: null,
     rezultat: {},
@@ -31,8 +35,52 @@ const KvizManager = {
 
     otvoriEkran: function() {
         if (typeof PodesavanjaManager !== 'undefined' && !PodesavanjaManager.zahtevajProfil()) return;
+        if (this.otvaranjeUToku) return;
+        this.otvaranjeUToku = true;
         this.resetujPrikaz();
-        UIManager.prikaziEkran('zemljopis-kviz-screen');
+        this.prikaziIntro(() => {
+            UIManager.prikaziEkran('zemljopis-kviz-screen');
+            this.pokreniBlagiUlazakUSobu();
+            this.otvaranjeUToku = false;
+        });
+    },
+
+    prikaziIntro: function(callback) {
+        const overlay = document.getElementById('zemljopis-kviz-intro-overlay');
+        const smanjeniPokret = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const trajanje = smanjeniPokret ? 420 : this.introTrajanjeMs;
+        const trajanjeZatvaranja = smanjeniPokret ? 160 : Math.min(420, trajanje);
+
+        if (!overlay) {
+            setTimeout(callback, trajanje);
+            return;
+        }
+
+        clearTimeout(this.introTajmer);
+        overlay.style.setProperty('--soba-prijatelja-intro-ms', `${trajanje}ms`);
+        overlay.classList.remove('closing');
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        this.introTajmer = setTimeout(() => {
+            callback();
+            requestAnimationFrame(() => overlay.classList.add('closing'));
+            setTimeout(() => {
+                overlay.classList.remove('active', 'closing');
+                overlay.setAttribute('aria-hidden', 'true');
+            }, trajanjeZatvaranja);
+        }, Math.max(0, trajanje - trajanjeZatvaranja));
+    },
+
+    pokreniBlagiUlazakUSobu: function() {
+        const ekran = document.getElementById('zemljopis-kviz-screen');
+        if (!ekran) return;
+
+        clearTimeout(this.ulazakTajmer);
+        ekran.classList.remove('kviz-entering');
+        void ekran.offsetWidth;
+        ekran.classList.add('kviz-entering');
+        this.ulazakTajmer = setTimeout(() => ekran.classList.remove('kviz-entering'), 720);
     },
 
     traziMec: function() {

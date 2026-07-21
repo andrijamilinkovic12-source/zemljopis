@@ -2171,6 +2171,194 @@ body[data-tema="zivotinja"] #main-menu::before {
     }
 }
 
+/* Interaktivne runde Zemljopis kviza. */
+.kviz-round-content {
+    display: grid;
+    gap: 0.72rem;
+    width: 100%;
+}
+
+.kviz-round-form {
+    display: grid;
+    gap: 0.56rem;
+    width: 100%;
+}
+
+.kviz-inline-title {
+    margin: 0 0 0.08rem;
+    color: #d9f7ff;
+    text-align: center;
+    font-size: 0.76rem;
+    font-weight: 800;
+}
+
+.kviz-text-input,
+.kviz-select {
+    width: 100%;
+    min-height: 49px;
+    box-sizing: border-box;
+    border: 1px solid rgba(190, 241, 255, 0.33);
+    border-radius: 13px;
+    outline: none;
+    color: #f7fdff;
+    font: 800 0.86rem inherit;
+    background: rgba(5, 29, 65, 0.72);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.kviz-text-input {
+    padding: 0.65rem 0.85rem;
+}
+
+.kviz-text-input::placeholder { color: #9bc7d9; opacity: 0.82; }
+.kviz-text-input:focus,
+.kviz-select:focus { border-color: #ffdc69; box-shadow: 0 0 0 3px rgba(255, 215, 102, 0.15); }
+
+.kviz-select {
+    padding: 0 0.7rem;
+    cursor: pointer;
+}
+
+.kviz-select option { color: #10254c; background: #f6fbff; }
+
+.kviz-round-submit {
+    min-height: 49px;
+    border: 1px solid rgba(255, 247, 188, 0.82);
+    border-radius: 14px;
+    color: #223957;
+    font: 900 0.74rem inherit;
+    letter-spacing: 0.07em;
+    background: linear-gradient(135deg, #fff2a9, #ffd561 54%, #f4aa34);
+    box-shadow: 0 8px 18px rgba(0, 7, 31, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+}
+
+.kviz-round-submit:active:not(:disabled) { transform: translateY(2px) scale(0.98); }
+.kviz-round-submit:disabled,
+.kviz-text-input:disabled,
+.kviz-select:disabled { cursor: default; opacity: 0.72; }
+
+.kviz-match-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 0.72fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.45rem;
+    border: 1px solid rgba(190, 241, 255, 0.18);
+    border-radius: 14px;
+    background: rgba(7, 35, 72, 0.5);
+}
+
+.kviz-match-row > b {
+    padding-left: 0.3rem;
+    color: #fff8dc;
+    font-size: 0.83rem;
+}
+
+.kviz-choice-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.58rem;
+}
+
+.kviz-choice-list .kviz-option {
+    min-height: 70px;
+    grid-template-columns: 28px 1fr;
+}
+
+.kviz-clues {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.kviz-clue {
+    display: grid;
+    gap: 0.24rem;
+    margin: 0;
+    padding: 0.68rem 0.75rem;
+    border: 1px solid rgba(255, 221, 112, 0.28);
+    border-radius: 13px;
+    color: #eaf7fd;
+    font-size: 0.8rem;
+    line-height: 1.32;
+    background: linear-gradient(120deg, rgba(77, 58, 130, 0.46), rgba(15, 66, 100, 0.5));
+}
+
+.kviz-clue b {
+    color: #ffdc6b;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+}
+
+.kviz-emoji-clue {
+    padding: 0.8rem 0.5rem;
+    border: 1px solid rgba(255, 222, 110, 0.48);
+    border-radius: 18px;
+    color: #fff9dd;
+    text-align: center;
+    font-size: clamp(2.3rem, 12vw, 3.7rem);
+    line-height: 1.12;
+    background: radial-gradient(circle at 50% 35%, rgba(93, 210, 241, 0.28), rgba(22, 53, 105, 0.6));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.kviz-association-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.52rem;
+}
+
+.kviz-association-card {
+    min-width: 0;
+    padding: 0.6rem;
+    border: 1px solid rgba(203, 240, 255, 0.24);
+    border-radius: 13px;
+    background: rgba(8, 38, 77, 0.58);
+}
+
+.kviz-association-card h4 {
+    margin: 0 0 0.35rem;
+    color: #ffdf74;
+    font-size: 0.58rem;
+    letter-spacing: 0.055em;
+}
+
+.kviz-association-card p {
+    margin: 0;
+    color: #eaf8ff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.36;
+}
+
+.kviz-round-solution {
+    display: grid;
+    gap: 0.24rem;
+    padding: 0.68rem 0.75rem;
+    border: 1px solid rgba(107, 240, 172, 0.47);
+    border-radius: 13px;
+    color: #dcfff0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.36;
+    background: rgba(26, 126, 91, 0.32);
+}
+
+.kviz-round-solution > b {
+    color: #8bffc0;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+}
+
+@media (max-height: 670px) {
+    .kviz-text-input,
+    .kviz-select,
+    .kviz-round-submit { min-height: 43px; }
+    .kviz-clue,
+    .kviz-association-card { padding: 0.48rem 0.58rem; }
+    .kviz-emoji-clue { padding: 0.5rem; }
+}
+
 body[data-tema="okean"] #main-menu::after {
     display: none;
 }

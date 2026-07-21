@@ -2,7 +2,10 @@
 
 const Game = {
     // === MULTIPLAYER VARIJABLE ===
-    socketURL: 'https://zemljopis.onrender.com', // TVOJ PRAVI RENDER LINK
+    // Lokalni pregled na portu 3000 koristi lokalni backend; Android i produkcija ostaju na Renderu.
+    socketURL: window.location.protocol === 'http:' && window.location.port === '3000'
+        ? window.location.origin
+        : 'https://zemljopis.onrender.com',
     socket: null,
     profilPrijavljen: false,
     trenutnaSoba: null,

@@ -762,17 +762,17 @@
 
         <section id="kviz-lobi" class="kviz-lobi" aria-live="polite">
             <div class="kviz-hero-icon" aria-hidden="true"><i class="fa-solid fa-map-location-dot"></i></div>
-            <h3>Brzi meč znanja</h3>
-            <p>Upari se sa jednim protivnikom i odgovori brže i tačnije na pitanja iz geografije.</p>
+            <h3>Duel kroz šest rundi</h3>
+            <p>Brzopotezne trojke, spojnice, uljez, misterija, emodži i velike asocijacije — svaki duel prolazi kroz svih šest izazova.</p>
 
             <div class="kviz-rules" aria-label="Pravila kviza">
                 <span><i class="fa-solid fa-users" aria-hidden="true"></i> 2 igrača</span>
-                <span><i class="fa-solid fa-list-ol" aria-hidden="true"></i> 8 pitanja</span>
-                <span><i class="fa-solid fa-stopwatch" aria-hidden="true"></i> 15 s</span>
+                <span><i class="fa-solid fa-list-ol" aria-hidden="true"></i> 6 rundi</span>
+                <span><i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i> Razni izazovi</span>
             </div>
 
             <button id="kviz-match-btn" class="kviz-primary-btn" type="button" onclick="KvizManager.traziMec()">
-                <i class="fa-solid fa-bolt" aria-hidden="true"></i> PRONAĐI PROTIVNIKA
+                <i class="fa-solid fa-bolt" aria-hidden="true"></i> ZAPOČNI DUEL
             </button>
             <button id="kviz-cancel-btn" class="kviz-secondary-btn" type="button" onclick="KvizManager.otkaziCekanje()" hidden>
                 Odustani od čekanja
@@ -788,8 +788,8 @@
                     <b id="kviz-moji-poeni">0</b>
                 </div>
                 <div class="kviz-round-status">
-                    <span id="kviz-round">1 / 8</span>
-                    <strong id="kviz-tajmer">15</strong>
+                    <span id="kviz-round">RUNDA 1 / 6</span>
+                    <strong id="kviz-tajmer">30</strong>
                 </div>
                 <div class="kviz-player kviz-player-rival">
                     <span class="kviz-player-caption">PROTIVNIK</span>
@@ -801,8 +801,8 @@
             <div class="kviz-progress" aria-hidden="true"><span id="kviz-progress-fill"></span></div>
             <p id="kviz-kategorija" class="kviz-category">GEOGRAFIJA</p>
             <h3 id="kviz-pitanje" class="kviz-question">Pitanje se učitava...</h3>
-            <div id="kviz-opcije" class="kviz-options"></div>
-            <p id="kviz-answer-status" class="kviz-answer-status">Izaberi jedan odgovor.</p>
+            <div id="kviz-runda-sadrzaj" class="kviz-round-content"></div>
+            <p id="kviz-answer-status" class="kviz-answer-status">Reši izazov i pošalji odgovor.</p>
         </section>
 
         <section id="kviz-kraj" class="kviz-result" hidden aria-live="polite">

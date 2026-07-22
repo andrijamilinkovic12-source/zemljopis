@@ -17800,3 +17800,224 @@ body.kviz-keyboard-open #custom-keyboard .kb-key:active {
         inset 1px 1px 0 rgba(255, 247, 255, 0.16),
         inset -3px -4px 8px rgba(16, 12, 48, 0.3);
 }
+
+/* Jedinstven, kompaktan prostor za igru u svim rundama. */
+#zemljopis-kviz-screen .kviz-round-content,
+#zemljopis-kviz-screen .kviz-round-form {
+    gap: 0.38rem;
+}
+
+#zemljopis-kviz-screen .kviz-challenge-card {
+    gap: 0.42rem;
+    padding: 0.48rem;
+    border-radius: 17px;
+}
+
+/* Oblast i Pitanje iznad kartice već nose kontekst zadatka. */
+#zemljopis-kviz-screen .kviz-challenge-title,
+#zemljopis-kviz-screen .kviz-challenge-copy {
+    display: none;
+}
+
+#zemljopis-kviz-screen .kviz-text-input {
+    min-height: 41px;
+    padding: 0.42rem 0.65rem;
+    border-radius: 12px;
+    font-size: 0.76rem;
+}
+
+#zemljopis-kviz-screen .kviz-round-submit {
+    min-height: 42px;
+    border-radius: 13px;
+    font-size: 0.64rem;
+}
+
+#zemljopis-kviz-screen .kviz-choice-list {
+    gap: 0.36rem;
+}
+
+#zemljopis-kviz-screen .kviz-choice-list .kviz-option {
+    min-height: 49px;
+    border-radius: 14px;
+    font-size: 0.72rem;
+}
+
+#zemljopis-kviz-screen .kviz-clues {
+    gap: 0.34rem;
+}
+
+#zemljopis-kviz-screen .kviz-clue {
+    gap: 0.16rem;
+    padding: 0.42rem 0.56rem;
+    border-radius: 11px;
+    font-size: 0.68rem;
+    line-height: 1.22;
+}
+
+#zemljopis-kviz-screen .kviz-emoji-clue {
+    padding: 0.35rem;
+    border-radius: 14px;
+    font-size: clamp(1.7rem, 8vw, 2.65rem);
+}
+
+#zemljopis-kviz-screen .kviz-anagram-form { gap: 0.4rem; }
+
+#zemljopis-kviz-screen .kviz-anagram-answer {
+    min-height: 42px;
+    padding: 0.15rem 0.6rem;
+    border-radius: 12px;
+    font-size: clamp(1.02rem, 5.5vw, 1.35rem);
+}
+
+#zemljopis-kviz-screen .kviz-anagram-tiles { gap: 0.32rem; }
+
+#zemljopis-kviz-screen .kviz-anagram-tile {
+    min-height: 44px;
+    border-radius: 11px;
+    font-size: clamp(0.9rem, 4.3vw, 1.1rem);
+}
+
+#zemljopis-kviz-screen .kviz-anagram-reset {
+    min-height: 30px;
+    font-size: 0.54rem;
+}
+
+#zemljopis-kviz-screen .kviz-map-picker {
+    width: min(100%, 38dvh);
+    border-radius: 15px;
+}
+
+#zemljopis-kviz-screen .kviz-map-status {
+    min-height: 1.1em;
+    font-size: 0.62rem;
+}
+
+/* Spojnice: levi pojmovi stoje stalno levo, izmešani parovi stalno desno. */
+#zemljopis-kviz-screen .kviz-match-instruction {
+    margin: 0;
+    font-size: 0.57rem;
+    line-height: 1.16;
+}
+
+#zemljopis-kviz-screen .kviz-match-board {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.4rem;
+    align-items: start;
+}
+
+#zemljopis-kviz-screen .kviz-match-column {
+    min-width: 0;
+    display: grid;
+    align-content: start;
+    gap: 0.28rem;
+}
+
+#zemljopis-kviz-screen .kviz-match-bank {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+#zemljopis-kviz-screen .kviz-match-bank-title {
+    margin: 0;
+    font-size: 0.48rem;
+    line-height: 1;
+    letter-spacing: 0.07em;
+}
+
+#zemljopis-kviz-screen .kviz-match-rows,
+#zemljopis-kviz-screen .kviz-match-options {
+    grid-template-columns: 1fr;
+    gap: 0.28rem;
+}
+
+#zemljopis-kviz-screen .kviz-match-row {
+    display: block;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+#zemljopis-kviz-screen .kviz-match-source,
+#zemljopis-kviz-screen .kviz-match-choice {
+    width: 100%;
+    min-height: 42px;
+    box-sizing: border-box;
+    padding: 0.34rem 0.4rem;
+    border-radius: 11px;
+    font-size: clamp(0.56rem, 2.55vw, 0.65rem);
+    line-height: 1.08;
+}
+
+#zemljopis-kviz-screen .kviz-match-source {
+    display: grid;
+    gap: 0.13rem;
+    text-align: left;
+}
+
+#zemljopis-kviz-screen .kviz-match-source-label {
+    display: block;
+    color: #fff5e9;
+}
+
+#zemljopis-kviz-screen .kviz-match-answer {
+    display: block;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    color: #cfc5e3;
+    font-size: 0.52rem;
+    font-weight: 800;
+    line-height: 1.1;
+    background: transparent;
+    box-shadow: none;
+    cursor: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#zemljopis-kviz-screen .kviz-match-source.filled .kviz-match-answer {
+    color: #ffe9bf;
+}
+
+#zemljopis-kviz-screen .kviz-match-row.active .kviz-match-source {
+    border-color: rgba(255, 211, 174, 0.86);
+    color: #fff9e9;
+    background: linear-gradient(145deg, rgba(158, 79, 126, 0.94), rgba(85, 43, 107, 0.98));
+}
+
+#zemljopis-kviz-screen .kviz-match-choice.used {
+    border-color: rgba(255, 214, 174, 0.66);
+    opacity: 0.7;
+}
+
+#zemljopis-kviz-screen .kviz-match-row.revealed.correct .kviz-match-source {
+    border-color: rgba(120, 239, 172, 0.72);
+    background: linear-gradient(145deg, rgba(59, 135, 108, 0.94), rgba(30, 69, 76, 0.97));
+}
+
+#zemljopis-kviz-screen .kviz-match-row.revealed.incorrect .kviz-match-source {
+    border-color: rgba(250, 150, 170, 0.72);
+    background: linear-gradient(145deg, rgba(137, 64, 102, 0.94), rgba(78, 37, 78, 0.97));
+}
+
+/* Donja poruka ostaje samo jedan kratak, koristan red. */
+#zemljopis-kviz-screen #kviz-answer-status {
+    min-height: 0;
+    padding: 0.36rem 0.62rem;
+    border-radius: 14px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    line-height: 1.15;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

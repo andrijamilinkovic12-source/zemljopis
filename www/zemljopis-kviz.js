@@ -165,7 +165,7 @@ const KvizManager = {
         const rednoPitanje = (Number(podaci.indeksPitanja) || 0) + 1;
         this.postaviTekst('kviz-kategorija', this.aktivnaRunda.kategorija || this.aktivnaRunda.naziv || 'ZEMLJOPIS');
         this.postaviTekst('kviz-pitanje', this.aktivnaRunda.pitanje || 'Zadatak nije dostupan.');
-        this.postaviTekst('kviz-answer-status', this.aktivnaRunda.uputstvo || 'Pošalji odgovor pre isteka vremena.');
+        this.postaviTekst('kviz-answer-status', this.kratkoUputstvoRunde(this.aktivnaRunda.tip));
         this.prikaziNapredak(rednoPitanje, ukupnoPitanja);
         this.renderujRundu(this.aktivnaRunda);
         this.poveziKvizTastaturu();
@@ -193,6 +193,7 @@ const KvizManager = {
     renderujRundu: function(runda) {
         const sadrzaj = this.sadrzajRunde();
         if (!sadrzaj) return;
+        document.getElementById('kviz-igra')?.setAttribute('data-kviz-runda', runda.tip || '');
         sadrzaj.replaceChildren();
 
         if (runda.tip === 'brzopotezne') return this.renderujBrzopotezne(sadrzaj, runda);
@@ -204,6 +205,19 @@ const KvizManager = {
         if (runda.tip === 'pikado') return this.renderujPikado(sadrzaj, runda);
 
         this.postaviTekst('kviz-answer-status', 'Ovaj tip runde trenutno nije dostupan.', true);
+    },
+
+    kratkoUputstvoRunde: function(tip) {
+        const uputstva = {
+            brzopotezne: 'Upiši tri pojma i pošalji odgovor.',
+            spojnice: 'Dodirni pojam levo, zatim njegov par desno.',
+            anagram: 'Složi slova u tačan pojam.',
+            uljez: 'Izaberi pojam koji ne pripada grupi.',
+            misterija: 'Pogodi pojam na osnovu tragova.',
+            emoji: 'Prepoznaj pojam na osnovu emodžija.',
+            pikado: 'Postavi pin što bliže traženom gradu.'
+        };
+        return uputstva[tip] || 'Odgovori pre isteka vremena.';
     },
 
     renderujBrzopotezne: function(kontejner, runda) {
@@ -241,15 +255,21 @@ const KvizManager = {
             const kartica = this.napraviKarticuIzazova(forma, izazov.naziv);
             const uputstvo = document.createElement('p');
             uputstvo.className = 'kviz-match-instruction';
-            uputstvo.textContent = 'Dodirni levi pojam, pa njegov par iz banke ispod.';
-            kartica.appendChild(uputstvo);
+            uputstvo.textContent = 'Dodirni levi pojam, pa odgovarajući izmešani pojam desno.';
+            const tabla = document.createElement('div');
+            tabla.className = 'kviz-match-board';
+            const levaKolona = document.createElement('div');
+            levaKolona.className = 'kviz-match-column kviz-match-left-column';
+            const naslovLevo = document.createElement('b');
+            naslovLevo.className = 'kviz-match-bank-title';
+            naslovLevo.textContent = 'LEVI POJMOVI';
             const lista = document.createElement('div');
             lista.className = 'kviz-match-rows';
             const banka = document.createElement('div');
-            banka.className = 'kviz-match-bank';
+            banka.className = 'kviz-match-column kviz-match-bank';
             const naslovBanke = document.createElement('b');
             naslovBanke.className = 'kviz-match-bank-title';
-            naslovBanke.textContent = 'IZABERI PAR';
+            naslovBanke.textContent = 'IZMEŠANI POJMOVI';
             const izbori = document.createElement('div');
             izbori.className = 'kviz-match-options';
             izbori.setAttribute('role', 'group');
@@ -261,9 +281,9 @@ const KvizManager = {
                 redovi.forEach((red, indeks) => {
                     const izabrano = spojeno[indeks];
                     red.red.classList.toggle('active', indeks === aktivniRed);
-                    red.odgovor.classList.toggle('filled', Boolean(izabrano));
-                    red.odgovor.textContent = izabrano || 'IZABERI PAR';
-                    red.odgovor.setAttribute('aria-label', izabrano ? `Izabrani par: ${izabrano}` : 'Izaberi par');
+                    red.levo.classList.toggle('filled', Boolean(izabrano));
+                    red.odgovor.textContent = izabrano || 'IZABERI PAR DESNO';
+                    red.levo.setAttribute('aria-label', izabrano ? `${red.izvor}: izabrani par ${izabrano}` : `${red.izvor}: izaberi par`);
                 });
                 dugmiciIzbora.forEach(dugme => {
                     const koristiSe = Object.values(spojeno).includes(dugme.dataset.kvizPojam);
@@ -278,20 +298,21 @@ const KvizManager = {
                 const levo = document.createElement('button');
                 levo.type = 'button';
                 levo.className = 'kviz-match-source';
-                levo.textContent = pojam;
+                const nazivPojma = document.createElement('strong');
+                nazivPojma.className = 'kviz-match-source-label';
+                nazivPojma.textContent = pojam;
                 const trenutniRed = redniBroj++;
-                const odgovor = document.createElement('button');
-                odgovor.type = 'button';
+                const odgovor = document.createElement('span');
                 odgovor.className = 'kviz-match-answer';
-                odgovor.textContent = 'IZABERI PAR';
+                odgovor.textContent = 'IZABERI PAR DESNO';
                 const aktivirajRed = () => {
                     aktivniRed = trenutniRed;
                     osveziIzbor();
                 };
                 levo.addEventListener('click', aktivirajRed);
-                odgovor.addEventListener('click', aktivirajRed);
-                red.append(levo, odgovor);
-                redovi.set(trenutniRed, { red, levo, odgovor });
+                levo.append(nazivPojma, odgovor);
+                red.appendChild(levo);
+                redovi.set(trenutniRed, { red, levo, odgovor, izvor: pojam });
                 lista.appendChild(red);
             });
             (izazov.opcije || []).forEach(opcija => {
@@ -315,7 +336,9 @@ const KvizManager = {
             });
             banka.append(naslovBanke, izbori);
             banke.push(banka);
-            kartica.append(lista, banka);
+            levaKolona.append(naslovLevo, lista);
+            tabla.append(levaKolona, banka);
+            kartica.append(uputstvo, tabla);
             osveziIzbor();
         });
         this.aktivneSpojnice = { spojeno, redovi, banke };

@@ -784,21 +784,23 @@ function napraviTestKvizMec(socket, igracNaMrezi) {
         playerId: KVIZ_TEST_BOT.playerId,
         bazaId: null,
         ime: KVIZ_TEST_BOT.ime,
+        avatar: "orion",
         jeTestBot: true
     };
     const igrac = {
         id: socket.id,
         playerId: igracNaMrezi.playerId,
         bazaId: igracNaMrezi.bazaId,
-        ime: igracNaMrezi.ime
+        ime: igracNaMrezi.ime,
+        avatar: igracNaMrezi.avatar || "atlas"
     };
     const soba = napraviKvizSobu([igrac, bot], true);
     kvizSobe[soba.id] = soba;
     socket.join(soba.id);
     io.to(socket.id).emit('kviz:pronadjenMec', {
         sobaId: soba.id,
-        ja: { playerId: igrac.playerId, ime: igrac.ime },
-        protivnik: { playerId: bot.playerId, ime: bot.ime }
+        ja: { playerId: igrac.playerId, ime: igrac.ime, avatar: igrac.avatar },
+        protivnik: { playerId: bot.playerId, ime: bot.ime, avatar: bot.avatar }
     });
     zakaziPocetakKvizMeca(soba);
     return soba;
@@ -3456,13 +3458,15 @@ io.on('connection', (socket) => {
                 id: protivnikSocketId,
                 playerId: protivnikNaMrezi.playerId,
                 bazaId: protivnikNaMrezi.bazaId,
-                ime: protivnikNaMrezi.ime
+                ime: protivnikNaMrezi.ime,
+                avatar: protivnikNaMrezi.avatar || "atlas"
             },
             {
                 id: socket.id,
                 playerId: igracNaMrezi.playerId,
                 bazaId: igracNaMrezi.bazaId,
-                ime: igracNaMrezi.ime
+                ime: igracNaMrezi.ime,
+                avatar: igracNaMrezi.avatar || "atlas"
             }
         ];
         const soba = napraviKvizSobu(igraci);
@@ -3473,13 +3477,13 @@ io.on('connection', (socket) => {
 
         io.to(protivnikSocketId).emit('kviz:pronadjenMec', {
             sobaId,
-            ja: { playerId: igraci[0].playerId, ime: igraci[0].ime },
-            protivnik: { playerId: igraci[1].playerId, ime: igraci[1].ime }
+            ja: { playerId: igraci[0].playerId, ime: igraci[0].ime, avatar: igraci[0].avatar },
+            protivnik: { playerId: igraci[1].playerId, ime: igraci[1].ime, avatar: igraci[1].avatar }
         });
         io.to(socket.id).emit('kviz:pronadjenMec', {
             sobaId,
-            ja: { playerId: igraci[1].playerId, ime: igraci[1].ime },
-            protivnik: { playerId: igraci[0].playerId, ime: igraci[0].ime }
+            ja: { playerId: igraci[1].playerId, ime: igraci[1].ime, avatar: igraci[1].avatar },
+            protivnik: { playerId: igraci[0].playerId, ime: igraci[0].ime, avatar: igraci[0].avatar }
         });
         callback({ uspeh: true, sobaId, pronadjenProtivnik: true });
 

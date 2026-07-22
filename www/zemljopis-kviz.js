@@ -19,6 +19,7 @@ const KvizManager = {
     ulazakTajmer: null,
     otvaranjeUToku: false,
     mojeIme: 'Igrač',
+    mojAvatar: 'atlas',
     protivnik: null,
     rezultat: {},
     rezultatiPoRundama: {},
@@ -128,6 +129,7 @@ const KvizManager = {
         this.sobaId = podaci.sobaId || null;
         this.protivnik = podaci.protivnik || {};
         this.mojeIme = podaci.ja?.ime || this.imeIgraca();
+        this.mojAvatar = podaci.ja?.avatar || window.PodesavanjaManager?.postavke?.avatar || 'atlas';
         this.rezultat = {};
         this.rezultatiPoRundama = {};
         this.informacijeRundi = {};
@@ -705,17 +707,18 @@ const KvizManager = {
 
     opisRunde: function(tip, naziv) {
         const opisi = {
-            brzopotezne: { naziv: 'BRZOPOZOTEZNE TROJKE', ikona: 'fa-bolt', varijanta: 'speed' },
-            spojnice: { naziv: 'GEOGRAFSKE SPOJNICE', ikona: 'fa-link', varijanta: 'links' },
-            anagram: { naziv: 'MUTNA VODA', ikona: 'fa-water', varijanta: 'water' },
-            uljez: { naziv: 'PRONAĐI ULJEZA', ikona: 'fa-eye', varijanta: 'odd' },
-            misterija: { naziv: 'KO SAM JA?', ikona: 'fa-wand-magic-sparkles', varijanta: 'mystery' },
-            emoji: { naziv: 'EMODŽI GEOGRAFIJA', ikona: 'fa-face-smile', varijanta: 'emoji' },
-            pikado: { naziv: 'GEOGRAFSKI PIKADO', ikona: 'fa-location-dot', varijanta: 'dart' }
+            brzopotezne: { naziv: 'BRZOPOZOTEZNE TROJKE', slika: 'kviz-round-brzopotezne-v1.png', varijanta: 'speed' },
+            spojnice: { naziv: 'GEOGRAFSKE SPOJNICE', slika: 'kviz-round-spojnice-v1.png', varijanta: 'links' },
+            anagram: { naziv: 'MUTNA VODA', slika: 'kviz-round-mutna-voda-v1.png', varijanta: 'water' },
+            uljez: { naziv: 'PRONAĐI ULJEZA', slika: 'kviz-round-uljez-v1.png', varijanta: 'odd' },
+            misterija: { naziv: 'KO SAM JA?', slika: 'kviz-round-misterija-v1.png', varijanta: 'mystery' },
+            emoji: { naziv: 'EMODŽI GEOGRAFIJA', slika: 'kviz-round-emoji-v1.png', varijanta: 'emoji' },
+            pikado: { naziv: 'GEOGRAFSKI PIKADO', slika: 'kviz-round-pikado-v1.png', varijanta: 'dart' }
         };
+        const podrazumevano = opisi.misterija;
         return {
             naziv: naziv || opisi[tip]?.naziv || 'ZEMLJOPIS KVIZ',
-            ikona: opisi[tip]?.ikona || 'fa-globe',
+            slika: opisi[tip]?.slika || podrazumevano.slika,
             varijanta: opisi[tip]?.varijanta || 'default'
         };
     },
@@ -723,12 +726,17 @@ const KvizManager = {
     postaviIkonuRunde: function(element, opis, dodatnaKlasa = '') {
         if (!element) return;
         element.className = `${dodatnaKlasa} kviz-round-icon--${opis.varijanta}`.trim();
-        let ikona = element.querySelector('i');
-        if (!ikona) {
-            ikona = document.createElement('i');
-            element.prepend(ikona);
+        element.querySelector('i')?.remove();
+        let slika = element.querySelector('.kviz-round-icon-image');
+        if (!slika) {
+            slika = document.createElement('img');
+            slika.className = 'kviz-round-icon-image';
+            slika.alt = '';
+            slika.setAttribute('aria-hidden', 'true');
+            slika.draggable = false;
+            element.prepend(slika);
         }
-        ikona.className = `fa-solid ${opis.ikona}`;
+        slika.src = `assets/${opis.slika}`;
     },
 
     postaviIkoneRunde: function(tip, naziv) {
@@ -743,12 +751,119 @@ const KvizManager = {
         const token = document.createElement('div');
         token.className = `kviz-final-round-token kviz-round-icon--${opis.varijanta}`;
         token.setAttribute('aria-label', `${oznaka}: ${poeni} poena`);
-        const ikona = document.createElement('i');
-        ikona.className = `fa-solid ${opis.ikona}`;
+        const slika = document.createElement('img');
+        slika.className = 'kviz-round-icon-image';
+        slika.src = `assets/${opis.slika}`;
+        slika.alt = '';
+        slika.setAttribute('aria-hidden', 'true');
+        slika.draggable = false;
         const rezultat = document.createElement('b');
         rezultat.textContent = String(poeni);
-        token.append(ikona, rezultat);
+        token.append(slika, rezultat);
         return token;
+    },
+
+    izvorAvatara: function(avatar) {
+        const dozvoljeni = new Set(['atlas', 'luna', 'orion', 'tara', 'niko', 'mila', 'sava', 'zara', 'vuk', 'iris', 'leo', 'nova']);
+        const identifikator = dozvoljeni.has(avatar) ? avatar : 'atlas';
+        return `assets/avatars/${identifikator}-clay-soft-matte-3d.png`;
+    },
+
+    napraviZaglavljeTabeleIgraca: function({ ime, avatar, moje = false }) {
+        const igrac = document.createElement('article');
+        igrac.className = `kviz-scoreboard-player${moje ? ' mine' : ''}`;
+        const slika = document.createElement('img');
+        slika.src = this.izvorAvatara(avatar);
+        slika.alt = '';
+        slika.draggable = false;
+        const tekst = document.createElement('div');
+        const oznaka = document.createElement('span');
+        oznaka.textContent = moje ? 'TI' : 'PROTIVNIK';
+        const naziv = document.createElement('b');
+        naziv.textContent = ime || (moje ? this.mojeIme : 'Protivnik');
+        tekst.append(oznaka, naziv);
+        igrac.append(slika, tekst);
+        return igrac;
+    },
+
+    prikaziAnimiranuTabeluRundi: function(mojTrenutniRezultat = {}, protivnickiTrenutniRezultat = {}) {
+        const tabela = document.getElementById('kviz-pauza-tabela');
+        if (!tabela) return;
+        const indeksi = Object.keys(this.rezultatiPoRundama).map(Number).sort((a, b) => a - b);
+        if (indeksi.length === 0) {
+            tabela.hidden = true;
+            return;
+        }
+
+        tabela.replaceChildren();
+        tabela.style.setProperty('--broj-rundi', String(indeksi.length));
+        tabela.style.setProperty('--ukupno-odlaganje', `${300 + indeksi.length * 105}ms`);
+        const zaglavlje = document.createElement('div');
+        zaglavlje.className = 'kviz-scoreboard-players';
+        zaglavlje.append(
+            this.napraviZaglavljeTabeleIgraca({
+                ime: mojTrenutniRezultat.ime || this.mojeIme,
+                avatar: this.mojAvatar,
+                moje: true
+            }),
+            Object.assign(document.createElement('span'), { className: 'kviz-scoreboard-versus', textContent: 'PO RUNDAMA' }),
+            this.napraviZaglavljeTabeleIgraca({
+                ime: protivnickiTrenutniRezultat.ime || this.protivnik?.ime || 'Protivnik',
+                avatar: this.protivnik?.avatar || 'atlas'
+            })
+        );
+
+        const redovi = document.createElement('div');
+        redovi.className = 'kviz-scoreboard-rows';
+        indeksi.forEach((indeks, redniBroj) => {
+            const rezultati = this.rezultatiPoRundama[indeks] || [];
+            const podaciRunde = this.informacijeRundi[indeks] || {};
+            const opis = this.opisRunde(podaciRunde.tip, podaciRunde.naziv);
+            const ja = rezultati.find(rezultat => rezultat.playerId === this.igracId()) || {};
+            const protivnik = rezultati.find(rezultat => rezultat.playerId !== this.igracId()) || {};
+            const red = document.createElement('article');
+            red.className = `kviz-scoreboard-row${redniBroj === indeksi.length - 1 ? ' latest' : ''}`;
+            red.style.setProperty('--ulaz-odlaganje', `${250 + redniBroj * 105}ms`);
+            red.setAttribute('aria-label', `Runda ${indeks + 1}, ${opis.naziv}: ${Number(ja.poeniRunde) || 0} prema ${Number(protivnik.poeniRunde) || 0}`);
+            const mojiPoeni = document.createElement('b');
+            mojiPoeni.className = 'kviz-scoreboard-points mine';
+            mojiPoeni.textContent = `+${Number(ja.poeniRunde) || 0}`;
+            const ikona = document.createElement('div');
+            ikona.className = `kviz-scoreboard-round-icon kviz-round-icon--${opis.varijanta}`;
+            ikona.title = `Runda ${indeks + 1}: ${opis.naziv}`;
+            const slika = document.createElement('img');
+            slika.src = `assets/${opis.slika}`;
+            slika.alt = '';
+            slika.draggable = false;
+            const broj = document.createElement('span');
+            broj.textContent = String(indeks + 1);
+            ikona.append(slika, broj);
+            const protivnickiPoeni = document.createElement('b');
+            protivnickiPoeni.className = 'kviz-scoreboard-points rival';
+            protivnickiPoeni.textContent = `+${Number(protivnik.poeniRunde) || 0}`;
+            red.append(mojiPoeni, ikona, protivnickiPoeni);
+            redovi.appendChild(red);
+        });
+
+        const ukupno = document.createElement('div');
+        ukupno.className = 'kviz-scoreboard-total-row';
+        ukupno.append(
+            Object.assign(document.createElement('b'), { textContent: String(Number(mojTrenutniRezultat.ukupnoPoena) || 0) }),
+            Object.assign(document.createElement('span'), { textContent: 'UKUPNO' }),
+            Object.assign(document.createElement('b'), { textContent: String(Number(protivnickiTrenutniRezultat.ukupnoPoena) || 0) })
+        );
+        tabela.append(zaglavlje, redovi, ukupno);
+        tabela.hidden = false;
+        tabela.classList.remove('is-animating');
+        void tabela.offsetWidth;
+        tabela.classList.add('is-animating');
+    },
+
+    sakrijAnimiranuTabeluRundi: function() {
+        const tabela = document.getElementById('kviz-pauza-tabela');
+        if (!tabela) return;
+        tabela.hidden = true;
+        tabela.classList.remove('is-animating');
     },
 
     prikaziKrajnjuTabeluRundi: function() {
@@ -809,6 +924,8 @@ const KvizManager = {
     prikaziPauzuPodpitanja: function(podaci, mojRezultat, protivnickiRezultat) {
         const pauza = document.getElementById('kviz-pauza-runde');
         if (!pauza) return;
+        pauza.classList.remove('kviz-show-round-scoreboard');
+        this.sakrijAnimiranuTabeluRundi();
         const redniBroj = (Number(podaci.indeksPitanja) || 0) + 1;
         const ukupno = Number(podaci.ukupnoPitanja) || 4;
         const brzo = podaci.tip === 'brzopotezne';
@@ -885,9 +1002,11 @@ const KvizManager = {
         this.postaviTekst('kviz-pauza-ukupno', `${Number(mojRezultat.ukupnoPoena) || 0} : ${Number(protivnickiRezultat.ukupnoPoena) || 0}`);
         this.postaviTekst('kviz-pauza-poruka', poruka);
         this.postaviTekst('kviz-pauza-nastavak', poslednje ? 'KONAČAN REZULTAT ZA' : (brzo ? 'SLEDEĆA IGRA ZA' : 'SLEDEĆA RUNDA ZA'));
-        this.prikaziSazetakDveRunde(spojnice && Number(podaci.indeksRunde) === 1);
+        this.prikaziSazetakDveRunde(false);
+        this.prikaziAnimiranuTabeluRundi(mojRezultat, protivnickiRezultat);
         this.nastavakAt = Number(podaci.nastavakAt) || 0;
         pauza.hidden = false;
+        pauza.classList.add('kviz-show-round-scoreboard');
         document.getElementById('kviz-igra')?.classList.add('kviz-round-paused');
         this.pokreniAnimacijuRezultata(brzo ? 'kviz-brzopotezne-final' : (spojnice ? 'kviz-spojnice-final' : ''));
         this.pokreniPauzaTajmer();
@@ -908,6 +1027,8 @@ const KvizManager = {
         const logo = document.getElementById('kviz-pauza-igra-logo');
         if (logo) logo.hidden = true;
         this.prikaziSazetakDveRunde(false);
+        this.sakrijAnimiranuTabeluRundi();
+        if (pauza) pauza.classList.remove('kviz-show-round-scoreboard');
         document.getElementById('kviz-igra')?.classList.remove('kviz-round-paused');
     },
 
@@ -1066,6 +1187,7 @@ const KvizManager = {
         this.aktivnaRunda = null;
         this.krajRundeAt = 0;
         this.protivnik = null;
+        this.mojAvatar = 'atlas';
         this.rezultat = {};
         this.rezultatiPoRundama = {};
         this.informacijeRundi = {};

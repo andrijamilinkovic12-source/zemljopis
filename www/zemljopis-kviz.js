@@ -160,7 +160,7 @@ const KvizManager = {
         this.aktivnaRunda = podaci.runda;
         this.postaviInfoDugmeRunde(this.aktivnaRunda?.tip, this.aktivnaRunda?.naziv);
         this.krajRundeAt = Number(podaci.krajRundeAt) || 0;
-        this.postaviDonjuKarticuRunde(this.aktivnaRunda?.tip);
+        this.postaviBodovanjeRunde(this.aktivnaRunda?.tip);
 
         const ukupnoPitanja = Number(podaci.ukupnoPitanja) || 1;
         const rednoPitanje = (Number(podaci.indeksPitanja) || 0) + 1;
@@ -778,45 +778,9 @@ const KvizManager = {
         return bodovanje[tip] || 'Bodovi se osvajaju za tačno rešene zadatke.';
     },
 
-    postaviDonjuKarticuRunde: function(tip) {
-        const igra = document.getElementById('kviz-game');
-        if (!igra) return;
-
-        let kartica = document.getElementById('kviz-bottom-round-card');
-        if (!kartica) {
-            kartica = document.createElement('aside');
-            kartica.id = 'kviz-bottom-round-card';
-            kartica.className = 'kviz-bottom-round-card';
-            kartica.setAttribute('aria-live', 'polite');
-
-            const stanje = document.createElement('strong');
-            stanje.className = 'kviz-bottom-round-card__state';
-            const bodovi = document.createElement('p');
-            bodovi.className = 'kviz-bottom-round-card__score';
-            kartica.append(stanje, bodovi);
-            igra.appendChild(kartica);
-        }
-
-        kartica.hidden = false;
-        kartica.dataset.tip = tip || '';
-        const bodovi = kartica.querySelector('.kviz-bottom-round-card__score');
-        if (bodovi) bodovi.textContent = `BODOVANJE: ${this.opisBodovanjaRunde(tip)}`;
-
-        this.osveziDonjuKarticuRunde();
-        clearTimeout(this.donjaKarticaTimer);
-        const doIsteka = this.krajRundeAt - Date.now();
-        if (doIsteka > 0) {
-            this.donjaKarticaTimer = window.setTimeout(() => this.osveziDonjuKarticuRunde(), doIsteka + 80);
-        }
-    },
-
-    osveziDonjuKarticuRunde: function() {
-        const stanje = document.querySelector('#kviz-bottom-round-card .kviz-bottom-round-card__state');
-        if (!stanje) return;
-        const vremeJeIsteklo = this.krajRundeAt > 0 && Date.now() >= this.krajRundeAt;
-        stanje.textContent = vremeJeIsteklo
-            ? 'VREME JE ISTEKLO. ČEKAMO PROTIVNIKA…'
-            : 'BODOVANJE OVE RUNDE';
+    postaviBodovanjeRunde: function(tip) {
+        const status = document.getElementById('kviz-answer-status');
+        if (status) status.dataset.bodovanje = `BODOVANJE: ${this.opisBodovanjaRunde(tip)}`;
     },
 
     postaviIkonuRunde: function(element, opis, dodatnaKlasa = '') {

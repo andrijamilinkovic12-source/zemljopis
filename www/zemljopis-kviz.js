@@ -141,7 +141,7 @@ const KvizManager = {
         this.postaviAvatareDuela();
         this.postaviTekst('kviz-moji-poeni', '0');
         this.postaviTekst('kviz-protivnik-poeni', '0');
-        this.postaviTekst('kviz-round', 'RUNDA 1 / 7');
+        this.prikaziNapredak(0, 1);
         this.postaviTekst('kviz-kategorija', 'SPREMI SE');
         this.postaviTekst('kviz-pitanje', 'Protivnik je pronađen. Prva runda stiže uskoro...');
         this.postaviTekst('kviz-answer-status', 'Očekuje te sedam potpuno različitih izazova.');
@@ -160,14 +160,12 @@ const KvizManager = {
         this.aktivnaRunda = podaci.runda;
         this.krajRundeAt = Number(podaci.krajRundeAt) || 0;
 
-        const redniBroj = Number(podaci.redniBroj) || 1;
         const ukupnoPitanja = Number(podaci.ukupnoPitanja) || 1;
         const rednoPitanje = (Number(podaci.indeksPitanja) || 0) + 1;
-        this.postaviTekst('kviz-round', `RUNDA ${redniBroj}/${Number(podaci.ukupno) || 7}\nPITANJE ${rednoPitanje}/${ukupnoPitanja}`);
         this.postaviTekst('kviz-kategorija', this.aktivnaRunda.kategorija || this.aktivnaRunda.naziv || 'ZEMLJOPIS');
         this.postaviTekst('kviz-pitanje', this.aktivnaRunda.pitanje || 'Zadatak nije dostupan.');
         this.postaviTekst('kviz-answer-status', this.aktivnaRunda.uputstvo || 'Pošalji odgovor pre isteka vremena.');
-        this.prikaziNapredak(Number(podaci.redniBroj) || 1, Number(podaci.ukupno) || 7);
+        this.prikaziNapredak(rednoPitanje, ukupnoPitanja);
         this.renderujRundu(this.aktivnaRunda);
         this.poveziKvizTastaturu();
         requestAnimationFrame(() => this.vratiKvizNaPocetak());
@@ -1268,7 +1266,9 @@ const KvizManager = {
 
     prikaziNapredak: function(redniBroj, ukupno) {
         const popuna = document.getElementById('kviz-progress-fill');
-        if (popuna) popuna.style.width = `${Math.min(100, Math.max(0, (redniBroj / ukupno) * 100))}%`;
+        const brojUkupno = Math.max(1, Number(ukupno) || 1);
+        const brojZavrsenih = Math.max(0, Number(redniBroj) || 0);
+        if (popuna) popuna.style.width = `${Math.min(100, (brojZavrsenih / brojUkupno) * 100)}%`;
     },
 
     sadrzajRunde: function() {

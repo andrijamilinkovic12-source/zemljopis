@@ -16968,6 +16968,127 @@ body[data-tema] #main-menu .circle-overlay.active {
 .kviz-break-total,
 .kviz-break-next { color: #c8c3de; }
 
+/* Clay-medaljoni za poene svake kviz igre. */
+.kviz-break-game-table {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0.18rem auto 0.48rem;
+    color: #eadcf7;
+    font-size: 0.61rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-align: left;
+}
+
+.kviz-round-icon,
+.kviz-break-score-icon,
+.kviz-final-round-token {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    overflow: hidden;
+    border: 1px solid rgba(255, 238, 220, 0.38);
+    color: #fff4df;
+    box-shadow: 5px 7px 13px rgba(7, 5, 28, 0.32), inset 2px 2px 0 rgba(255,255,255,0.35), inset -5px -6px 10px rgba(34, 20, 65, 0.3);
+}
+
+.kviz-round-icon::before,
+.kviz-break-score-icon::before,
+.kviz-final-round-token::before {
+    content: '';
+    position: absolute;
+    inset: 11% 53% 54% 14%;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.28);
+    filter: blur(1px);
+}
+
+.kviz-round-icon > i,
+.kviz-break-score-icon > i,
+.kviz-final-round-token > i { position: relative; z-index: 1; text-shadow: 0 3px 4px rgba(42, 16, 57, 0.32); }
+
+.kviz-round-icon {
+    width: 38px;
+    aspect-ratio: 1;
+    border-radius: 15px 19px 16px 20px / 18px 15px 20px 16px;
+    font-size: 1rem;
+}
+
+.kviz-break-score-icon {
+    width: 62px;
+    aspect-ratio: 1;
+    margin: 0.34rem auto 0;
+    border-radius: 24px 29px 23px 31px / 28px 22px 31px 24px;
+    font-size: 1.02rem;
+}
+
+.kviz-break-score-icon > i {
+    position: absolute;
+    top: 11px;
+    left: 12px;
+    z-index: 1;
+    opacity: 0.56;
+    font-size: 0.95rem;
+}
+
+.kviz-break-score-icon > b {
+    position: relative;
+    z-index: 2;
+    margin-top: 0.5rem;
+    color: #fff9ec;
+    font-size: 1.45rem;
+    line-height: 1;
+    text-shadow: 0 3px 0 rgba(56, 25, 70, 0.27);
+}
+
+.kviz-round-icon--speed { background: radial-gradient(circle at 28% 24%, #fff2c6 0 7%, #f59b9d 32%, #b14c7b 70%, #61305f 100%); }
+.kviz-round-icon--links { background: radial-gradient(circle at 28% 24%, #def8ff 0 7%, #7dbce7 31%, #5c7fc7 70%, #3c427f 100%); }
+.kviz-round-icon--water { background: radial-gradient(circle at 28% 24%, #e0ffff 0 7%, #73d9d7 32%, #418bb7 70%, #2d4f87 100%); }
+.kviz-round-icon--odd { background: radial-gradient(circle at 28% 24%, #fff6cf 0 7%, #f5bd7b 31%, #c76c74 70%, #71395d 100%); }
+.kviz-round-icon--mystery { background: radial-gradient(circle at 28% 24%, #f7e2ff 0 7%, #c48ee8 32%, #8057b3 70%, #462d7d 100%); }
+.kviz-round-icon--emoji { background: radial-gradient(circle at 28% 24%, #ffffdc 0 7%, #f7d76d 32%, #e69565 70%, #8d4d5a 100%); }
+.kviz-round-icon--dart { background: radial-gradient(circle at 28% 24%, #efffcf 0 7%, #96d986 32%, #5d9c85 70%, #365d78 100%); }
+.kviz-round-icon--default { background: radial-gradient(circle at 28% 24%, #fff0df 0 7%, #bba4e8 32%, #765ba9 70%, #47356f 100%); }
+
+.kviz-final-rounds {
+    width: min(100%, 356px);
+    display: grid;
+    gap: 0.36rem;
+    margin: 0.7rem auto 0.85rem;
+}
+
+.kviz-final-rounds:empty { display: none; }
+
+.kviz-final-round-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.38rem 0.5rem;
+    border: 1px solid rgba(241, 224, 255, 0.15);
+    border-radius: 15px;
+    background: linear-gradient(145deg, rgba(69, 57, 120, 0.78), rgba(34, 30, 78, 0.9));
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,0.12), inset -5px -5px 9px rgba(15, 12, 43, 0.2);
+    animation: kvizScoreCardIn 500ms cubic-bezier(.18,.82,.28,1) both;
+}
+
+.kviz-final-round-name { min-width: 0; display: grid; gap: 0.06rem; }
+.kviz-final-round-name span { color: #d9c8ef; font-size: 0.47rem; font-weight: 900; letter-spacing: 0.08em; }
+.kviz-final-round-name b { overflow: hidden; color: #fff0dc; font-size: 0.61rem; font-weight: 900; letter-spacing: 0.03em; text-overflow: ellipsis; white-space: nowrap; }
+.kviz-final-round-points { display: flex; align-items: center; gap: 0.22rem; color: #e8d7f2; font-size: 0.78rem; font-weight: 900; }
+
+.kviz-final-round-token {
+    width: 34px;
+    aspect-ratio: 1;
+    border-radius: 13px 16px 12px 17px / 15px 12px 17px 13px;
+}
+
+.kviz-final-round-token > i { position: absolute; top: 5px; left: 6px; opacity: 0.5; font-size: 0.56rem; }
+.kviz-final-round-token > b { position: relative; z-index: 2; margin-top: 0.36rem; color: #fff9ed; font-size: 0.83rem; text-shadow: 0 2px 0 rgba(56, 25, 70, 0.25); }
+
 .kviz-break-game-logo {
     width: 72px;
     height: 72px;

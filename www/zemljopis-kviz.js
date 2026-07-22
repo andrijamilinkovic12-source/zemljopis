@@ -22,6 +22,7 @@ const KvizManager = {
     protivnik: null,
     rezultat: {},
     rezultatiPoRundama: {},
+    informacijeRundi: {},
     aktivneSpojnice: null,
     spojniceTajmer: null,
 
@@ -129,6 +130,7 @@ const KvizManager = {
         this.mojeIme = podaci.ja?.ime || this.imeIgraca();
         this.rezultat = {};
         this.rezultatiPoRundama = {};
+        this.informacijeRundi = {};
         this.prikaziCekanje(false);
         this.prikaziSekciju('igra');
         this.vratiKvizNaPocetak();
@@ -596,6 +598,7 @@ const KvizManager = {
         const rezultati = Array.isArray(podaci.rezultati) ? podaci.rezultati : [];
         this.osveziRezultateIgraca(rezultati);
         this.rezultatiPoRundama[Number(podaci.indeksRunde)] = rezultati;
+        this.informacijeRundi[Number(podaci.indeksRunde)] = { tip: podaci.tip, naziv: podaci.naziv };
 
         const mojRezultat = rezultati.find(rezultat => rezultat.playerId === this.igracId()) || {};
         const protivnickiRezultat = rezultati.find(rezultat => rezultat.playerId !== this.igracId()) || {};
@@ -664,6 +667,85 @@ const KvizManager = {
         });
     },
 
+    opisRunde: function(tip, naziv) {
+        const opisi = {
+            brzopotezne: { naziv: 'BRZOPOZOTEZNE TROJKE', ikona: 'fa-bolt', varijanta: 'speed' },
+            spojnice: { naziv: 'GEOGRAFSKE SPOJNICE', ikona: 'fa-link', varijanta: 'links' },
+            anagram: { naziv: 'MUTNA VODA', ikona: 'fa-water', varijanta: 'water' },
+            uljez: { naziv: 'PRONAĐI ULJEZA', ikona: 'fa-eye', varijanta: 'odd' },
+            misterija: { naziv: 'KO SAM JA?', ikona: 'fa-wand-magic-sparkles', varijanta: 'mystery' },
+            emoji: { naziv: 'EMODŽI GEOGRAFIJA', ikona: 'fa-face-smile', varijanta: 'emoji' },
+            pikado: { naziv: 'GEOGRAFSKI PIKADO', ikona: 'fa-location-dot', varijanta: 'dart' }
+        };
+        return {
+            naziv: naziv || opisi[tip]?.naziv || 'ZEMLJOPIS KVIZ',
+            ikona: opisi[tip]?.ikona || 'fa-globe',
+            varijanta: opisi[tip]?.varijanta || 'default'
+        };
+    },
+
+    postaviIkonuRunde: function(element, opis, dodatnaKlasa = '') {
+        if (!element) return;
+        element.className = `${dodatnaKlasa} kviz-round-icon--${opis.varijanta}`.trim();
+        let ikona = element.querySelector('i');
+        if (!ikona) {
+            ikona = document.createElement('i');
+            element.prepend(ikona);
+        }
+        ikona.className = `fa-solid ${opis.ikona}`;
+    },
+
+    postaviIkoneRunde: function(tip, naziv) {
+        const opis = this.opisRunde(tip, naziv);
+        this.postaviIkonuRunde(document.getElementById('kviz-pauza-igra-ikona'), opis, 'kviz-round-icon');
+        this.postaviIkonuRunde(document.getElementById('kviz-pauza-moja-ikona'), opis, 'kviz-break-score-icon');
+        this.postaviIkonuRunde(document.getElementById('kviz-pauza-protivnik-ikona'), opis, 'kviz-break-score-icon');
+        this.postaviTekst('kviz-pauza-igra-naziv', opis.naziv);
+    },
+
+    napraviKrajnjiTokenRunde: function(opis, poeni, oznaka) {
+        const token = document.createElement('div');
+        token.className = `kviz-final-round-token kviz-round-icon--${opis.varijanta}`;
+        token.setAttribute('aria-label', `${oznaka}: ${poeni} poena`);
+        const ikona = document.createElement('i');
+        ikona.className = `fa-solid ${opis.ikona}`;
+        const rezultat = document.createElement('b');
+        rezultat.textContent = String(poeni);
+        token.append(ikona, rezultat);
+        return token;
+    },
+
+    prikaziKrajnjuTabeluRundi: function() {
+        const tabela = document.getElementById('kviz-final-rounds');
+        if (!tabela) return;
+        tabela.replaceChildren();
+        Object.keys(this.rezultatiPoRundama).map(Number).sort((a, b) => a - b).forEach(indeks => {
+            const rezultati = this.rezultatiPoRundama[indeks] || [];
+            const podaciRunde = this.informacijeRundi[indeks] || {};
+            const opis = this.opisRunde(podaciRunde.tip, podaciRunde.naziv);
+            const ja = rezultati.find(rezultat => rezultat.playerId === this.igracId()) || {};
+            const protivnik = rezultati.find(rezultat => rezultat.playerId !== this.igracId()) || {};
+            const red = document.createElement('article');
+            red.className = 'kviz-final-round-row';
+            const naziv = document.createElement('div');
+            naziv.className = 'kviz-final-round-name';
+            const broj = document.createElement('span');
+            broj.textContent = `RUNDA ${indeks + 1}`;
+            const tekst = document.createElement('b');
+            tekst.textContent = opis.naziv;
+            naziv.append(broj, tekst);
+            const poeni = document.createElement('div');
+            poeni.className = 'kviz-final-round-points';
+            poeni.append(
+                this.napraviKrajnjiTokenRunde(opis, Number(ja.poeniRunde) || 0, 'Ti'),
+                Object.assign(document.createElement('span'), { textContent: ':' }),
+                this.napraviKrajnjiTokenRunde(opis, Number(protivnik.poeniRunde) || 0, 'Protivnik')
+            );
+            red.append(naziv, poeni);
+            tabela.appendChild(red);
+        });
+    },
+
     pokreniAnimacijuRezultata: function(klasa) {
         const pauza = document.getElementById('kviz-pauza-runde');
         if (!pauza) return;
@@ -695,6 +777,7 @@ const KvizManager = {
         const ukupno = Number(podaci.ukupnoPitanja) || 4;
         const brzo = podaci.tip === 'brzopotezne';
         const oznaka = brzo ? 'OBLAST' : 'SPOJNICA';
+        this.postaviIkoneRunde(podaci.tip, this.aktivnaRunda?.naziv);
         this.postaviOznakePauze({
             obrva: `REZULTAT ${oznaka}`,
             mojaOznaka: `TI · OVA ${oznaka}`,
@@ -740,12 +823,13 @@ const KvizManager = {
         const poslednje = Boolean(podaci.poslednje);
         const brzo = podaci.tip === 'brzopotezne';
         const spojnice = podaci.tip === 'spojnice';
+        this.postaviIkoneRunde(podaci.tip, podaci.naziv);
         this.postaviOznakePauze(brzo ? {
             obrva: 'KONAČAN REZULTAT PRVE IGRE',
             mojaOznaka: 'TI · SVE 4 OBLASTI',
             protivnickaOznaka: 'PROTIVNIK · SVE 4 OBLASTI',
             ukupnoOznaka: 'UKUPNO U MEČU',
-            prikaziLogo: true
+            prikaziLogo: false
         } : {
             obrva: 'REZULTAT RUNDE',
             mojaOznaka: 'TI · OVA RUNDA',
@@ -892,6 +976,7 @@ const KvizManager = {
             ? 'Isti broj poena nakon svih sedam rundi.'
             : (pobedio ? `Savladao/la si ${protivnik.ime || 'protivnika'}!` : `Čestitaj ${protivnik.ime || 'protivniku'} na pobedi.`));
         this.postaviTekst('kviz-result-eyebrow', podaci.razlog === 'predaja' ? 'PROTIVNIK JE NAPUSTIO MEČ' : 'REZULTAT SEDAM RUNDI');
+        this.prikaziKrajnjuTabeluRundi();
         const ikona = document.getElementById('kviz-result-icon');
         if (ikona) ikona.classList.toggle('loss', !jeNereseno && !pobedio);
     },
@@ -945,6 +1030,7 @@ const KvizManager = {
         this.protivnik = null;
         this.rezultat = {};
         this.rezultatiPoRundama = {};
+        this.informacijeRundi = {};
         this.aktivneSpojnice = null;
         clearTimeout(this.spojniceTajmer);
         this.spojniceTajmer = null;

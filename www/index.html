@@ -811,14 +811,18 @@
                 </div>
                 <h4 id="kviz-pauza-naslov">RUNDA JE ZAVRŠENA</h4>
                 <p id="kviz-pauza-podnaslov" class="kviz-break-subtitle">Zemljopis kviz</p>
+                <div class="kviz-break-game-table" aria-hidden="true">
+                    <span id="kviz-pauza-igra-ikona" class="kviz-round-icon kviz-round-icon--default"><i class="fa-solid fa-globe"></i></span>
+                    <span id="kviz-pauza-igra-naziv">ZEMLJOPIS KVIZ</span>
+                </div>
                 <div class="kviz-break-scores">
                     <div class="kviz-break-player">
                         <span id="kviz-pauza-moji-oznaka">TI · OVA RUNDA</span>
-                        <b id="kviz-pauza-moji-runda">+0</b>
+                        <div id="kviz-pauza-moja-ikona" class="kviz-break-score-icon kviz-round-icon--default"><i class="fa-solid fa-globe"></i><b id="kviz-pauza-moji-runda">+0</b></div>
                     </div>
                     <div class="kviz-break-player kviz-break-rival">
                         <span id="kviz-pauza-protivnik-oznaka">PROTIVNIK · OVA RUNDA</span>
-                        <b id="kviz-pauza-protivnik-runda">+0</b>
+                        <div id="kviz-pauza-protivnik-ikona" class="kviz-break-score-icon kviz-round-icon--default"><i class="fa-solid fa-globe"></i><b id="kviz-pauza-protivnik-runda">+0</b></div>
                     </div>
                 </div>
                 <div id="kviz-pauza-sazetak-rundi" class="kviz-break-round-history" hidden>
@@ -835,6 +839,7 @@
             <span id="kviz-result-icon" class="kviz-result-icon" aria-hidden="true"><i class="fa-solid fa-trophy"></i></span>
             <p id="kviz-result-eyebrow" class="kviz-eyebrow">REZULTAT MEČA</p>
             <h3 id="kviz-result-title">Meč je završen</h3>
+            <div id="kviz-final-rounds" class="kviz-final-rounds" aria-label="Rezultati po rundama"></div>
             <div class="kviz-final-score"><b id="kviz-final-moji">0</b><span>:</span><b id="kviz-final-protivnik">0</b></div>
             <p id="kviz-result-copy">Dobro odigrano!</p>
             <button class="kviz-primary-btn" type="button" onclick="KvizManager.igrajPonovo()"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> IGRAJ PONOVO</button>

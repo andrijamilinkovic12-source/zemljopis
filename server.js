@@ -298,75 +298,48 @@ const KVIZ_RUNDE = [
         tip: 'spojnice',
         naziv: 'Geografske spojnice',
         kategorija: 'POVEZIVANJE POJMOVA',
-        brojPitanja: 4,
+        brojPitanja: 2,
         pitanja: [
             {
-                id: 'grad-reka',
-                kategorija: 'GRAD I REKA',
-                pitanje: 'Spoji grad sa rekom koja kroz njega protiče.',
+                id: 'grad-reka-i-planina',
+                kategorija: 'GRADOVI, REKE, DRŽAVE I PLANINE',
+                pitanje: 'Spoji gradove sa rekama, a države sa poznatim planinama.',
                 uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
-                trajanjeMs: 35000,
+                trajanjeMs: 55000,
                 parovi: [
                     { levo: 'Beč', desno: 'Dunav' },
                     { levo: 'Pariz', desno: 'Sena' },
-                    { levo: 'London', desno: 'Temza' }
-                ]
-            },
-            {
-                id: 'drzava-planina',
-                kategorija: 'DRŽAVA I PLANINA',
-                pitanje: 'Spoji državu sa poznatom planinom na njenoj teritoriji.',
-                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
-                trajanjeMs: 35000,
-                parovi: [
+                    { levo: 'London', desno: 'Temza' },
                     { levo: 'Srbija', desno: 'Kopaonik' },
                     { levo: 'Grčka', desno: 'Olimp' },
                     { levo: 'Japan', desno: 'Fudži' }
                 ]
             },
             {
-                id: 'zivotinja-drzava',
-                kategorija: 'ŽIVOTINJA I DRŽAVA',
-                pitanje: 'Spoji životinju sa državom za koju je prepoznatljiva.',
+                id: 'zivotinje-i-biljke',
+                kategorija: 'ŽIVOTINJE, BILJKE I DRŽAVE',
+                pitanje: 'Spoji životinje i biljne simbole sa državama za koje su prepoznatljivi.',
                 uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
-                trajanjeMs: 35000,
+                trajanjeMs: 55000,
                 parovi: [
                     { levo: 'Kengur', desno: 'Australija' },
                     { levo: 'Panda', desno: 'Kina' },
-                    { levo: 'Lemur', desno: 'Madagaskar' }
-                ]
-            },
-            {
-                id: 'biljka-drzava',
-                kategorija: 'BILJKA I DRŽAVA',
-                pitanje: 'Spoji biljni simbol sa državom za koju je prepoznatljiv.',
-                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
-                trajanjeMs: 35000,
-                parovi: [
+                    { levo: 'Lemur', desno: 'Madagaskar' },
                     { levo: 'Lala', desno: 'Holandija' },
                     { levo: 'Kedar', desno: 'Liban' },
                     { levo: 'Javor', desno: 'Kanada' }
                 ]
             },
             {
-                id: 'grad-drzava',
-                kategorija: 'GRAD I DRŽAVA',
-                pitanje: 'Spoji glavni grad sa državom čiji je glavni grad.',
+                id: 'gradovi-i-znamenitosti',
+                kategorija: 'GRADOVI, DRŽAVE I PREDMETI',
+                pitanje: 'Spoji glavne gradove sa državama, a znamenitosti sa gradovima.',
                 uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
-                trajanjeMs: 35000,
+                trajanjeMs: 55000,
                 parovi: [
                     { levo: 'Beograd', desno: 'Srbija' },
                     { levo: 'Lisabon', desno: 'Portugal' },
-                    { levo: 'Tokio', desno: 'Japan' }
-                ]
-            },
-            {
-                id: 'znamenitost-grad',
-                kategorija: 'PREDMET I GRAD',
-                pitanje: 'Spoji znamenitost sa gradom u kojem se nalazi.',
-                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.',
-                trajanjeMs: 35000,
-                parovi: [
+                    { levo: 'Tokio', desno: 'Japan' },
                     { levo: 'Ajfelov toranj', desno: 'Pariz' },
                     { levo: 'Koloseum', desno: 'Rim' },
                     { levo: 'Big Ben', desno: 'London' }
@@ -1118,10 +1091,11 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
     const poslednje = soba.indeksRunde >= soba.runde.length - 1;
     const trajanjePauzeMs = poslednje ? KVIZ_PAUZA_PRE_KRAJA_MS : KVIZ_PAUZA_IZMEDJU_RUNDI_MS;
     const nastavakAt = Date.now() + trajanjePauzeMs;
-    io.to(soba.id).emit('kviz:rezultatRunde', {
-        sobaId: soba.id,
-        indeksRunde: soba.indeksRunde,
-        tip: runda.tip,
+        io.to(soba.id).emit('kviz:rezultatRunde', {
+            sobaId: soba.id,
+            indeksRunde: soba.indeksRunde,
+            ukupnoPitanja: runda.pitanja.length,
+            tip: runda.tip,
         naziv: runda.naziv,
         resenje: javnoResenjeKvizRunde(runda, pitanje),
         rezultati,

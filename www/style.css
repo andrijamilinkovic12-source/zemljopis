@@ -16684,17 +16684,63 @@ body[data-tema] #main-menu .circle-overlay.active {
 .kviz-clue { color: #eee9f4; }
 
 /* Spajanje se bira direktno na kartici, bez Android select pop-up prozora. */
-.kviz-match-row {
-    grid-template-columns: 1fr;
-    align-items: stretch;
-    gap: 0.42rem;
-    padding: 0.62rem;
+.kviz-match-instruction {
+    margin: -0.08rem 0 0.16rem;
+    color: #d9ccec;
+    font-size: 0.61rem;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
 }
 
-.kviz-match-row > b {
-    padding-left: 0.08rem;
-    font-size: 0.76rem;
+.kviz-match-rows {
+    display: grid;
+    gap: 0.36rem;
 }
+
+.kviz-match-row {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    align-items: stretch;
+    gap: 0.38rem;
+    padding: 0.38rem;
+    transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.kviz-match-source,
+.kviz-match-answer {
+    min-width: 0;
+    min-height: 42px;
+    padding: 0.38rem 0.44rem;
+    border: 1px solid rgba(239, 224, 255, 0.16);
+    border-radius: 12px;
+    color: #f8effb;
+    background: linear-gradient(145deg, rgba(92, 74, 142, 0.92), rgba(48, 39, 98, 0.97));
+    box-shadow: 3px 4px 8px rgba(7, 5, 28, 0.25), inset 1px 1px 0 rgba(255,255,255,0.13), inset -3px -4px 6px rgba(26, 17, 63, 0.2);
+    font: inherit;
+    font-size: clamp(0.57rem, 2.7vw, 0.68rem);
+    font-weight: 800;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+}
+
+.kviz-match-source:active,
+.kviz-match-answer:active { transform: translateY(1px) scale(0.98); }
+.kviz-match-row.active { border-color: rgba(255, 199, 220, 0.72); background: linear-gradient(145deg, rgba(111, 71, 133, 0.82), rgba(46, 34, 85, 0.9)); }
+.kviz-match-row.active .kviz-match-source { border-color: rgba(255, 211, 174, 0.76); color: #fff5dd; }
+.kviz-match-answer { color: #cfc5e3; background: linear-gradient(145deg, rgba(52, 43, 101, 0.92), rgba(25, 25, 63, 0.96)); }
+.kviz-match-answer.filled { border-color: rgba(239, 173, 211, 0.58); color: #fff0ef; }
+
+.kviz-match-bank {
+    margin-top: 0.16rem;
+    padding: 0.48rem;
+    border: 1px solid rgba(241, 221, 255, 0.13);
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(52, 43, 101, 0.6), rgba(28, 27, 66, 0.75));
+}
+
+.kviz-match-bank[hidden] { display: none; }
+.kviz-match-bank-title { display: block; margin-bottom: 0.36rem; color: #e9d4ff; font-size: 0.52rem; letter-spacing: 0.1em; text-align: center; }
 
 .kviz-match-options {
     display: grid;
@@ -16727,6 +16773,26 @@ body[data-tema] #main-menu .circle-overlay.active {
     color: #fff9e9;
     background: linear-gradient(145deg, #e77d9e, #a84477);
     box-shadow: 0 0 0 2px rgba(243, 153, 188, 0.16), 3px 5px 9px rgba(18, 7, 37, 0.33), inset 1px 1px 0 rgba(255,255,255,0.28), inset -3px -4px 6px rgba(98, 24, 71, 0.28);
+}
+
+.kviz-match-choice.used {
+    border-color: rgba(255, 214, 174, 0.58);
+    color: #ffeecf;
+    background: linear-gradient(145deg, #9a638d, #603a78);
+}
+
+.kviz-match-row.revealed { animation: kvizMatchReveal 360ms cubic-bezier(.18,.82,.28,1) both; }
+.kviz-match-row.revealed.correct { border-color: rgba(120, 239, 172, 0.58); background: linear-gradient(145deg, rgba(59, 135, 108, 0.9), rgba(30, 69, 76, 0.94)); }
+.kviz-match-row.revealed.incorrect { border-color: rgba(250, 150, 170, 0.62); background: linear-gradient(145deg, rgba(137, 64, 102, 0.9), rgba(78, 37, 78, 0.94)); }
+.kviz-match-row.revealed .kviz-match-source { cursor: default; opacity: 0.92; }
+.kviz-match-row.revealed .kviz-match-answer { display: flex; align-items: center; justify-content: center; gap: 0.24rem; cursor: default; }
+.kviz-match-result-wrong { color: #ffd0da; text-decoration: line-through; }
+.kviz-match-result-arrow { color: #f7e1ea; font-weight: 900; }
+.kviz-match-result-correct { color: #bdffd6; font-weight: 900; }
+
+@keyframes kvizMatchReveal {
+    from { opacity: 0; transform: translateX(-8px) scale(.97); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
 }
 
 .kviz-match-choice:disabled { cursor: default; opacity: 0.72; }

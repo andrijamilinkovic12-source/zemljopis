@@ -22,6 +22,8 @@ const KvizManager = {
     protivnik: null,
     rezultat: {},
     rezultatiPoRundama: {},
+    aktivneSpojnice: null,
+    spojniceTajmer: null,
 
     init: function() {
         if (this.inicijalizovano) return;
@@ -143,6 +145,8 @@ const KvizManager = {
 
     primiRundu: function(podaci) {
         if (!this.mecUToku || podaci.sobaId !== this.sobaId || !podaci.runda) return;
+        clearTimeout(this.spojniceTajmer);
+        this.spojniceTajmer = null;
         this.sakrijPauzuRunde();
         this.vratiKvizNaPocetak();
         this.odgovorPoslat = false;
@@ -226,41 +230,91 @@ const KvizManager = {
     renderujSpojnice: function(kontejner, runda) {
         const forma = this.napraviFormu(kontejner, 'kviz-matching-form');
         const spojeno = {};
+        const redovi = new Map();
+        const banke = [];
         let redniBroj = 0;
         (runda.izazovi || []).forEach(izazov => {
             const kartica = this.napraviKarticuIzazova(forma, izazov.naziv);
+            const uputstvo = document.createElement('p');
+            uputstvo.className = 'kviz-match-instruction';
+            uputstvo.textContent = 'Dodirni levi pojam, pa njegov par iz banke ispod.';
+            kartica.appendChild(uputstvo);
+            const lista = document.createElement('div');
+            lista.className = 'kviz-match-rows';
+            const banka = document.createElement('div');
+            banka.className = 'kviz-match-bank';
+            const naslovBanke = document.createElement('b');
+            naslovBanke.className = 'kviz-match-bank-title';
+            naslovBanke.textContent = 'IZABERI PAR';
+            const izbori = document.createElement('div');
+            izbori.className = 'kviz-match-options';
+            izbori.setAttribute('role', 'group');
+            izbori.setAttribute('aria-label', 'Ponuđeni pojmovi za spajanje');
+            const dugmiciIzbora = [];
+            let aktivniRed = null;
+
+            const osveziIzbor = () => {
+                redovi.forEach((red, indeks) => {
+                    const izabrano = spojeno[indeks];
+                    red.red.classList.toggle('active', indeks === aktivniRed);
+                    red.odgovor.classList.toggle('filled', Boolean(izabrano));
+                    red.odgovor.textContent = izabrano || 'IZABERI PAR';
+                    red.odgovor.setAttribute('aria-label', izabrano ? `Izabrani par: ${izabrano}` : 'Izaberi par');
+                });
+                dugmiciIzbora.forEach(dugme => {
+                    const koristiSe = Object.values(spojeno).includes(dugme.dataset.kvizPojam);
+                    dugme.classList.toggle('used', koristiSe);
+                    dugme.setAttribute('aria-pressed', String(koristiSe));
+                });
+            };
+
             (izazov.levo || []).forEach(pojam => {
                 const red = document.createElement('section');
                 red.className = 'kviz-match-row';
-                const levo = document.createElement('b');
+                const levo = document.createElement('button');
+                levo.type = 'button';
+                levo.className = 'kviz-match-source';
                 levo.textContent = pojam;
-                const izbori = document.createElement('div');
-                izbori.className = 'kviz-match-options';
-                izbori.setAttribute('role', 'group');
-                izbori.setAttribute('aria-label', `Spoji pojam ${pojam}`);
-                const dugmici = [];
                 const trenutniRed = redniBroj++;
-                (izazov.opcije || []).forEach(opcija => {
-                    const izbor = document.createElement('button');
-                    izbor.type = 'button';
-                    izbor.className = 'kviz-match-choice';
-                    izbor.textContent = opcija;
-                    izbor.setAttribute('aria-pressed', 'false');
-                    izbor.addEventListener('click', () => {
-                        spojeno[trenutniRed] = opcija;
-                        dugmici.forEach(dugme => {
-                            const izabrano = dugme === izbor;
-                            dugme.classList.toggle('selected', izabrano);
-                            dugme.setAttribute('aria-pressed', String(izabrano));
-                        });
-                    });
-                    dugmici.push(izbor);
-                    izbori.appendChild(izbor);
-                });
-                red.append(levo, izbori);
-                kartica.appendChild(red);
+                const odgovor = document.createElement('button');
+                odgovor.type = 'button';
+                odgovor.className = 'kviz-match-answer';
+                odgovor.textContent = 'IZABERI PAR';
+                const aktivirajRed = () => {
+                    aktivniRed = trenutniRed;
+                    osveziIzbor();
+                };
+                levo.addEventListener('click', aktivirajRed);
+                odgovor.addEventListener('click', aktivirajRed);
+                red.append(levo, odgovor);
+                redovi.set(trenutniRed, { red, levo, odgovor });
+                lista.appendChild(red);
             });
+            (izazov.opcije || []).forEach(opcija => {
+                const izbor = document.createElement('button');
+                izbor.type = 'button';
+                izbor.className = 'kviz-match-choice';
+                izbor.textContent = opcija;
+                izbor.dataset.kvizPojam = opcija;
+                izbor.setAttribute('aria-pressed', 'false');
+                izbor.addEventListener('click', () => {
+                    if (aktivniRed === null) return;
+                    Object.entries(spojeno).forEach(([indeks, vrednost]) => {
+                        if (vrednost === opcija && Number(indeks) !== aktivniRed) delete spojeno[indeks];
+                    });
+                    spojeno[aktivniRed] = opcija;
+                    aktivniRed = null;
+                    osveziIzbor();
+                });
+                dugmiciIzbora.push(izbor);
+                izbori.appendChild(izbor);
+            });
+            banka.append(naslovBanke, izbori);
+            banke.push(banka);
+            kartica.append(lista, banka);
+            osveziIzbor();
         });
+        this.aktivneSpojnice = { spojeno, redovi, banke };
         this.dodajDugmeZaSlanje(forma, 'POTVRDI SPAJANJE', () => this.posaljiOdgovor({ spojeno }));
     },
 
@@ -517,6 +571,12 @@ const KvizManager = {
             this.osveziRezultateIgraca(rezultati);
             const mojRezultat = rezultati.find(rezultat => rezultat.playerId === this.igracId()) || {};
             const protivnickiRezultat = rezultati.find(rezultat => rezultat.playerId !== this.igracId()) || {};
+            if (podaci.tip === 'spojnice') {
+                this.prikaziIshodSpajnica(podaci.resenje || {});
+                this.postaviTekst('kviz-answer-status', 'Provera spojnica…');
+                this.zakaziRezultatSpajnica(() => this.prikaziPauzuPodpitanja(podaci, mojRezultat, protivnickiRezultat));
+                return;
+            }
             this.prikaziPauzuPodpitanja(podaci, mojRezultat, protivnickiRezultat);
             return;
         }
@@ -539,12 +599,61 @@ const KvizManager = {
 
         const mojRezultat = rezultati.find(rezultat => rezultat.playerId === this.igracId()) || {};
         const protivnickiRezultat = rezultati.find(rezultat => rezultat.playerId !== this.igracId()) || {};
-        if (podaci.tip !== 'brzopotezne') this.prikaziResenjeRunde(podaci.tip, podaci.resenje || {});
         const poruka = podaci.tip === 'brzopotezne'
             ? 'Poeni su sabrani nakon sve četiri oblasti.'
-            : this.porukaRezultataRunde(mojRezultat, podaci);
-        this.postaviTekst('kviz-answer-status', poruka);
-        this.prikaziPauzuRunde(podaci, mojRezultat, protivnickiRezultat, poruka);
+            : (podaci.tip === 'spojnice'
+                ? `Tačno spojenih: ${mojRezultat.tacnih || 0}. Osvojeno: +${mojRezultat.poeniRunde || 0}.`
+                : this.porukaRezultataRunde(mojRezultat, podaci));
+        const prikaziPauzu = () => {
+            if (podaci.tip !== 'brzopotezne' && podaci.tip !== 'spojnice') this.prikaziResenjeRunde(podaci.tip, podaci.resenje || {});
+            this.postaviTekst('kviz-answer-status', poruka);
+            this.prikaziPauzuRunde(podaci, mojRezultat, protivnickiRezultat, poruka);
+        };
+        if (podaci.tip === 'spojnice') {
+            this.prikaziIshodSpajnica(podaci.resenje || {});
+            this.postaviTekst('kviz-answer-status', 'Provera spojnica…');
+            this.zakaziRezultatSpajnica(prikaziPauzu);
+            return;
+        }
+        prikaziPauzu();
+    },
+
+    prikaziIshodSpajnica: function(resenje) {
+        const aktivne = this.aktivneSpojnice;
+        const parovi = Array.isArray(resenje?.parovi) ? resenje.parovi : [];
+        if (!aktivne || parovi.length === 0) return;
+        aktivne.banke.forEach(banka => { banka.hidden = true; });
+        aktivne.redovi.forEach((stavka, indeks) => {
+            const tacanPar = parovi[indeks]?.desno || '';
+            const izabraniPar = aktivne.spojeno[indeks] || '';
+            const tacno = Boolean(izabraniPar) && izabraniPar === tacanPar;
+            stavka.red.classList.remove('active');
+            stavka.red.classList.add('revealed', tacno ? 'correct' : 'incorrect');
+            stavka.levo.disabled = true;
+            stavka.odgovor.disabled = true;
+            stavka.odgovor.replaceChildren();
+            const izabrano = document.createElement('span');
+            izabrano.className = tacno ? 'kviz-match-result-correct' : 'kviz-match-result-wrong';
+            izabrano.textContent = izabraniPar || 'NIJE SPOJENO';
+            stavka.odgovor.appendChild(izabrano);
+            if (!tacno) {
+                const strelica = document.createElement('span');
+                strelica.className = 'kviz-match-result-arrow';
+                strelica.textContent = '→';
+                const ispravno = document.createElement('strong');
+                ispravno.className = 'kviz-match-result-correct';
+                ispravno.textContent = tacanPar;
+                stavka.odgovor.append(strelica, ispravno);
+            }
+        });
+    },
+
+    zakaziRezultatSpajnica: function(akcija) {
+        clearTimeout(this.spojniceTajmer);
+        this.spojniceTajmer = setTimeout(() => {
+            this.spojniceTajmer = null;
+            akcija();
+        }, 1800);
     },
 
     osveziRezultateIgraca: function(rezultati) {
@@ -644,9 +753,10 @@ const KvizManager = {
             ukupnoOznaka: 'UKUPNO',
             prikaziLogo: false
         });
+        const brojSpojnica = Number(podaci.ukupnoPitanja) || 2;
         this.postaviTekst('kviz-pauza-naslov', brzo
             ? 'SVE 4 OBLASTI SU ZAVRŠENE'
-            : (spojnice ? 'SVE 4 SPOJNICE SU ZAVRŠENE' : (poslednje ? 'POSLEDNJA RUNDA JE ZAVRŠENA' : `RUNDA ${Number(podaci.indeksRunde) + 1} JE ZAVRŠENA`)));
+            : (spojnice ? `SVE ${brojSpojnica} SPOJNICE SU ZAVRŠENE` : (poslednje ? 'POSLEDNJA RUNDA JE ZAVRŠENA' : `RUNDA ${Number(podaci.indeksRunde) + 1} JE ZAVRŠENA`)));
         this.postaviTekst('kviz-pauza-podnaslov', podaci.naziv || 'Zemljopis kviz');
         this.postaviTekst('kviz-pauza-moji-runda', `+${Number(mojRezultat.poeniRunde) || 0}`);
         this.postaviTekst('kviz-pauza-protivnik-runda', `+${Number(protivnickiRezultat.poeniRunde) || 0}`);
@@ -835,6 +945,9 @@ const KvizManager = {
         this.protivnik = null;
         this.rezultat = {};
         this.rezultatiPoRundama = {};
+        this.aktivneSpojnice = null;
+        clearTimeout(this.spojniceTajmer);
+        this.spojniceTajmer = null;
     },
 
     prikaziSekciju: function(naziv) {

@@ -16703,10 +16703,10 @@ body[data-tema] #main-menu .circle-overlay.active {
     display: flex;
     align-items: center;
     gap: 0.35rem;
-    min-height: 40px;
-    margin: 0 0 0.5rem;
-    padding: 0.55rem 0.8rem;
-    font-size: clamp(0.66rem, 2.5vw, 0.75rem);
+    min-height: 34px;
+    margin: 0 0 0.32rem;
+    padding: 0.38rem 0.75rem;
+    font-size: clamp(0.61rem, 2.3vw, 0.7rem);
     font-weight: 800;
     line-height: 1.15;
     letter-spacing: 0.055em;
@@ -16720,9 +16720,9 @@ body[data-tema] #main-menu .circle-overlay.active {
 
 #kviz-pitanje {
     display: block;
-    margin: 0 0 0.7rem;
-    padding: 0.65rem 0.8rem 0.72rem;
-    font-size: clamp(0.88rem, 3.25vw, 1.02rem);
+    margin: 0 0 0.42rem;
+    padding: 0.42rem 0.75rem 0.48rem;
+    font-size: clamp(0.8rem, 3vw, 0.94rem);
     font-weight: 700;
     line-height: 1.28;
     letter-spacing: 0.005em;
@@ -16732,7 +16732,7 @@ body[data-tema] #main-menu .circle-overlay.active {
 #kviz-pitanje::before {
     content: 'PITANJE:';
     display: block;
-    margin-bottom: 0.28rem;
+    margin-bottom: 0.18rem;
     color: var(--kviz-clay-gold);
     font-size: 0.65em;
     font-weight: 800;
@@ -16742,7 +16742,7 @@ body[data-tema] #main-menu .circle-overlay.active {
 .kviz-bottom-round-card {
     position: fixed;
     right: max(12px, env(safe-area-inset-right));
-    bottom: calc(env(safe-area-inset-bottom) + 72px);
+    bottom: max(4px, calc(env(safe-area-inset-bottom) + 4px));
     left: max(12px, env(safe-area-inset-left));
     z-index: 24;
     box-sizing: border-box;
@@ -16777,7 +16777,7 @@ body[data-tema] #main-menu .circle-overlay.active {
 }
 
 #kviz-game {
-    padding-bottom: 8rem;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 4px);
 }
 
 .kviz-hero-icon {

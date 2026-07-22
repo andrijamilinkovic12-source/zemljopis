@@ -138,6 +138,7 @@ const KvizManager = {
         this.vratiKvizNaPocetak();
         this.postaviTekst('kviz-moje-ime', this.mojeIme);
         this.postaviTekst('kviz-protivnik-ime', this.protivnik.ime || 'Protivnik');
+        this.postaviAvatareDuela();
         this.postaviTekst('kviz-moji-poeni', '0');
         this.postaviTekst('kviz-protivnik-poeni', '0');
         this.postaviTekst('kviz-round', 'RUNDA 1 / 7');
@@ -767,6 +768,13 @@ const KvizManager = {
         const dozvoljeni = new Set(['atlas', 'luna', 'orion', 'tara', 'niko', 'mila', 'sava', 'zara', 'vuk', 'iris', 'leo', 'nova']);
         const identifikator = dozvoljeni.has(avatar) ? avatar : 'atlas';
         return `assets/avatars/${identifikator}-clay-soft-matte-3d.png`;
+    },
+
+    postaviAvatareDuela: function() {
+        const mojiAvatar = document.getElementById('kviz-moj-avatar');
+        const protivnickiAvatar = document.getElementById('kviz-protivnik-avatar');
+        if (mojiAvatar) mojiAvatar.src = this.izvorAvatara(this.mojAvatar);
+        if (protivnickiAvatar) protivnickiAvatar.src = this.izvorAvatara(this.protivnik?.avatar || 'atlas');
     },
 
     napraviZaglavljeTabeleIgraca: function({ ime, avatar, moje = false }) {

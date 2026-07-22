@@ -753,9 +753,8 @@
             <button class="kviz-back-btn" type="button" onclick="KvizManager.nazadUMeni()" aria-label="Nazad u meni">
                 <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
             </button>
-            <div>
-                <span class="kviz-eyebrow">ONLINE • 1 NA 1</span>
-                <h2>ZEMLJOPIS KVIZ</h2>
+            <div class="kviz-active-brand" aria-label="Zemljopis kviz">
+                <span>ZEMLJOPIS</span><b>KVIZ</b>
             </div>
             <span class="kviz-header-icon" aria-hidden="true"><i class="fa-solid fa-earth-europe"></i></span>
         </div>
@@ -783,8 +782,11 @@
         <section id="kviz-igra" class="kviz-game" hidden aria-live="polite">
             <div class="kviz-duel-bar">
                 <div class="kviz-player kviz-player-me">
-                    <span class="kviz-player-caption">TI</span>
-                    <strong id="kviz-moje-ime">Igrač</strong>
+                    <img id="kviz-moj-avatar" class="kviz-duel-avatar" src="assets/avatars/atlas-clay-soft-matte-3d.png" alt="">
+                    <div class="kviz-player-identity">
+                        <span class="kviz-player-caption">TI</span>
+                        <strong id="kviz-moje-ime">Igrač</strong>
+                    </div>
                     <b id="kviz-moji-poeni">0</b>
                 </div>
                 <div class="kviz-round-status">
@@ -792,8 +794,11 @@
                     <strong id="kviz-tajmer">30</strong>
                 </div>
                 <div class="kviz-player kviz-player-rival">
-                    <span class="kviz-player-caption">PROTIVNIK</span>
-                    <strong id="kviz-protivnik-ime">...</strong>
+                    <img id="kviz-protivnik-avatar" class="kviz-duel-avatar" src="assets/avatars/orion-clay-soft-matte-3d.png" alt="">
+                    <div class="kviz-player-identity">
+                        <span class="kviz-player-caption">PROTIVNIK</span>
+                        <strong id="kviz-protivnik-ime">...</strong>
+                    </div>
                     <b id="kviz-protivnik-poeni">0</b>
                 </div>
             </div>

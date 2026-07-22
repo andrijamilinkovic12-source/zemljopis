@@ -17506,6 +17506,125 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-challenge-title { font-size: 0.5
 body.keyboard-open #zemljopis-kviz-screen .kviz-challenge-copy { font-size: 0.65rem; }
 body.keyboard-open #zemljopis-kviz-screen .kviz-text-input { min-height: 39px; padding: 0.42rem 0.65rem; }
 body.keyboard-open #zemljopis-kviz-screen .kviz-round-form { gap: 0.4rem; }
+
+/* Jedinstveno zaglavlje aktivnih rundi: naziv igre, duel kartice i tajmer. */
+.kviz-screen-header {
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    gap: 0.48rem;
+    padding-bottom: 0.1rem;
+}
+
+.kviz-active-brand {
+    display: flex;
+    min-width: 0;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.24rem;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.kviz-active-brand > span {
+    overflow: hidden;
+    color: #fff0dc;
+    font-size: clamp(0.9rem, 4.25vw, 1.16rem);
+    font-weight: 950;
+    letter-spacing: 0.025em;
+    line-height: 1;
+    text-overflow: ellipsis;
+    text-shadow: 0 2px 0 rgba(84, 24, 68, 0.38), 0 0 14px rgba(246, 77, 139, 0.32);
+}
+
+.kviz-active-brand > b {
+    flex: 0 0 auto;
+    color: #ffd5e7;
+    font-size: clamp(0.72rem, 3.3vw, 0.92rem);
+    font-weight: 950;
+    letter-spacing: 0.07em;
+    line-height: 1;
+    text-shadow: 0 2px 0 #7c285e, 0 5px 10px rgba(70, 19, 58, 0.5), 0 0 12px rgba(248, 96, 149, 0.32);
+}
+
+.kviz-duel-bar {
+    grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr);
+    gap: 0.28rem;
+    align-items: center;
+    padding: 0.18rem 0 0.6rem;
+}
+
+.kviz-player {
+    display: grid;
+    grid-template-columns: 35px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.34rem;
+    min-height: 64px;
+    padding: 0.38rem 0.42rem;
+    border: 1px solid rgba(237, 223, 255, 0.18);
+    border-radius: 19px 22px 18px 24px / 21px 18px 24px 19px;
+    background: linear-gradient(145deg, rgba(73, 58, 126, 0.94), rgba(31, 29, 70, 0.97));
+    box-shadow: 5px 7px 13px rgba(6, 6, 28, 0.32), -2px -2px 8px rgba(137, 109, 197, 0.1), inset 1px 1px 0 rgba(255,255,255,0.17), inset -5px -6px 10px rgba(17, 14, 46, 0.22);
+}
+
+.kviz-duel-avatar {
+    width: 35px;
+    height: 35px;
+    grid-column: 1;
+    grid-row: 1;
+    border: 1px solid rgba(237, 248, 255, 0.5);
+    border-radius: 13px 15px 12px 16px;
+    object-fit: cover;
+    background: #35245d;
+    box-shadow: 3px 4px 7px rgba(4, 4, 25, 0.34), inset 1px 1px 0 rgba(255,255,255,0.25);
+}
+
+.kviz-player-me .kviz-duel-avatar { border-color: rgba(143, 233, 255, 0.72); }
+.kviz-player-identity { min-width: 0; display: grid; grid-column: 2; grid-row: 1; gap: 0.1rem; text-align: left; }
+.kviz-player-caption { grid-column: auto; color: #a7e9ff; font-size: 0.43rem; line-height: 1; letter-spacing: 0.1em; }
+.kviz-player strong { min-width: 0; overflow: hidden; color: #fff5e8; font-size: 0.68rem; font-weight: 900; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
+.kviz-player b { grid-column: 3; grid-row: 1; color: #ffd080; font-size: 1rem; line-height: 1; text-shadow: 0 2px 5px rgba(49, 19, 48, 0.6); }
+
+.kviz-player-rival {
+    grid-template-columns: auto minmax(0, 1fr) 35px;
+    border-color: rgba(255, 181, 215, 0.27);
+}
+.kviz-player-rival .kviz-duel-avatar { grid-column: 3; border-color: rgba(255, 193, 221, 0.68); }
+.kviz-player-rival .kviz-player-identity { grid-column: 2; text-align: right; }
+.kviz-player-rival .kviz-player-caption { color: #f1acd0; }
+.kviz-player-rival b { grid-column: 1; color: #ffd9a5; }
+
+.kviz-round-status {
+    width: 68px;
+    min-width: 68px;
+    min-height: 68px;
+    aspect-ratio: 1;
+    justify-self: center;
+    gap: 0.12rem;
+    padding: 0.28rem 0.16rem;
+    border: 2px solid rgba(255, 225, 172, 0.58);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 33% 25%, rgba(255, 244, 194, 0.75), transparent 12%),
+        radial-gradient(circle at 48% 52%, #8f72b9 0%, #4c397d 56%, #2a245b 100%);
+    box-shadow: 7px 9px 15px rgba(6, 5, 28, 0.36), -3px -3px 10px rgba(170, 138, 226, 0.14), inset 2px 2px 0 rgba(255, 246, 215, 0.45), inset -6px -8px 11px rgba(27, 20, 69, 0.34);
+}
+
+.kviz-round-status span { max-width: 58px; color: #f5e6ff; font-size: 0.4rem; line-height: 1.05; letter-spacing: 0.025em; }
+.kviz-round-status strong { gap: 0.04rem; color: #ffe1a0; font-size: 1.34rem; line-height: 0.82; text-shadow: 0 2px 4px rgba(45, 20, 47, 0.56); }
+.kviz-round-status strong::after { font-size: 0.42rem; }
+
+@media (max-width: 350px) {
+    .kviz-active-brand > span { font-size: 0.82rem; }
+    .kviz-active-brand > b { font-size: 0.66rem; }
+    .kviz-duel-bar { grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr); }
+    .kviz-player { grid-template-columns: 30px minmax(0, 1fr) auto; gap: 0.22rem; min-height: 58px; padding: 0.34rem; }
+    .kviz-player-rival { grid-template-columns: auto minmax(0, 1fr) 30px; }
+    .kviz-duel-avatar { width: 30px; height: 30px; }
+    .kviz-player strong { font-size: 0.61rem; }
+    .kviz-player b { font-size: 0.86rem; }
+    .kviz-round-status { width: 61px; min-width: 61px; min-height: 61px; }
+    .kviz-round-status span { font-size: 0.36rem; }
+    .kviz-round-status strong { font-size: 1.16rem; }
+}
 body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit { min-height: 41px; }
 body.keyboard-open #zemljopis-kviz-screen .kviz-answer-status { display: none; }
 
@@ -17541,10 +17660,10 @@ body.kviz-keyboard-open #custom-keyboard .kb-key:active {
 
 @media (max-width: 360px) {
     #zemljopis-kviz-screen { padding-inline: 0.72rem; }
-    .kviz-duel-bar { grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr); gap: 0.26rem; }
+    .kviz-duel-bar { grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr); gap: 0.26rem; }
     .kviz-player { padding-inline: 0.42rem; }
     .kviz-player strong { font-size: 0.66rem; }
-    .kviz-round-status span { font-size: 0.45rem; }
+    .kviz-round-status span { font-size: 0.36rem; }
 }
 
 @media (max-height: 690px) {

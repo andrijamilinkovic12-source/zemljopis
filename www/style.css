@@ -16706,7 +16706,7 @@ body[data-tema] #main-menu .circle-overlay.active {
     min-height: 40px;
     margin: 0 0 0.5rem;
     padding: 0.55rem 0.8rem;
-    font-size: clamp(0.7rem, 2.7vw, 0.8rem);
+    font-size: clamp(0.66rem, 2.5vw, 0.75rem);
     font-weight: 800;
     line-height: 1.15;
     letter-spacing: 0.055em;
@@ -16722,7 +16722,7 @@ body[data-tema] #main-menu .circle-overlay.active {
     display: block;
     margin: 0 0 0.7rem;
     padding: 0.65rem 0.8rem 0.72rem;
-    font-size: clamp(0.94rem, 3.5vw, 1.1rem);
+    font-size: clamp(0.88rem, 3.25vw, 1.02rem);
     font-weight: 700;
     line-height: 1.28;
     letter-spacing: 0.005em;
@@ -16730,13 +16730,54 @@ body[data-tema] #main-menu .circle-overlay.active {
 }
 
 #kviz-pitanje::before {
-    content: 'PITANJE';
+    content: 'PITANJE:';
     display: block;
     margin-bottom: 0.28rem;
     color: var(--kviz-clay-gold);
     font-size: 0.65em;
     font-weight: 800;
     letter-spacing: 0.09em;
+}
+
+.kviz-bottom-round-card {
+    position: fixed;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: calc(env(safe-area-inset-bottom) + 72px);
+    left: max(12px, env(safe-area-inset-left));
+    z-index: 24;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.68rem 0.85rem 0.72rem;
+    color: #f7edff;
+    text-align: left;
+    border: 1px solid rgba(245, 226, 255, 0.18);
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(73, 59, 122, 0.96), rgba(38, 31, 79, 0.98));
+    box-shadow:
+        6px 7px 16px rgba(12, 9, 38, 0.42),
+        -2px -2px 7px rgba(152, 125, 205, 0.13),
+        inset 1px 1px 0 rgba(255, 247, 255, 0.16),
+        inset -3px -4px 8px rgba(16, 12, 48, 0.3);
+}
+
+.kviz-bottom-round-card__state {
+    display: block;
+    color: var(--kviz-clay-gold);
+    font-size: clamp(0.65rem, 2.45vw, 0.75rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: 0.06em;
+}
+
+.kviz-bottom-round-card__score {
+    margin: 0.32rem 0 0;
+    font-size: clamp(0.68rem, 2.55vw, 0.79rem);
+    font-weight: 700;
+    line-height: 1.28;
+}
+
+#kviz-game {
+    padding-bottom: 8rem;
 }
 
 .kviz-hero-icon {

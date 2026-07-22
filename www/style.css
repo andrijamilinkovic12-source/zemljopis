@@ -16683,6 +16683,54 @@ body[data-tema] #main-menu .circle-overlay.active {
 .kviz-match-row > b { color: #fff0da; }
 .kviz-clue { color: #eee9f4; }
 
+/* Spajanje se bira direktno na kartici, bez Android select pop-up prozora. */
+.kviz-match-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 0.42rem;
+    padding: 0.62rem;
+}
+
+.kviz-match-row > b {
+    padding-left: 0.08rem;
+    font-size: 0.76rem;
+}
+
+.kviz-match-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.34rem;
+}
+
+.kviz-match-choice {
+    min-height: 42px;
+    padding: 0.38rem 0.32rem;
+    border: 1px solid rgba(239, 224, 255, 0.16);
+    border-radius: 13px;
+    color: #f8effb;
+    background: linear-gradient(145deg, rgba(95, 77, 143, 0.9), rgba(50, 41, 101, 0.96));
+    box-shadow: 3px 4px 8px rgba(7, 5, 28, 0.28), inset 1px 1px 0 rgba(255,255,255,0.13), inset -3px -4px 6px rgba(26, 17, 63, 0.22);
+    font: inherit;
+    font-size: clamp(0.56rem, 2.7vw, 0.68rem);
+    font-weight: 800;
+    line-height: 1.08;
+    text-align: center;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.kviz-match-choice:active { transform: translateY(2px) scale(0.97); }
+
+.kviz-match-choice.selected {
+    border-color: rgba(255, 224, 182, 0.72);
+    color: #fff9e9;
+    background: linear-gradient(145deg, #e77d9e, #a84477);
+    box-shadow: 0 0 0 2px rgba(243, 153, 188, 0.16), 3px 5px 9px rgba(18, 7, 37, 0.33), inset 1px 1px 0 rgba(255,255,255,0.28), inset -3px -4px 6px rgba(98, 24, 71, 0.28);
+}
+
+.kviz-match-choice:disabled { cursor: default; opacity: 0.72; }
+
 .kviz-option {
     border: 1px solid rgba(235, 220, 255, 0.16);
     border-radius: 17px;
@@ -16854,6 +16902,93 @@ body[data-tema] #main-menu .circle-overlay.active {
 .kviz-break-total,
 .kviz-break-next { color: #c8c3de; }
 
+.kviz-break-game-logo {
+    width: 72px;
+    height: 72px;
+    display: grid;
+    place-items: center;
+    margin: 0.25rem auto 0.05rem;
+    border: 1px solid rgba(255, 226, 192, 0.32);
+    border-radius: 25px;
+    background: radial-gradient(circle at 32% 24%, rgba(255, 242, 198, 0.34), transparent 29%), linear-gradient(145deg, rgba(114, 80, 159, 0.92), rgba(46, 35, 94, 0.94));
+    box-shadow: 7px 9px 18px rgba(8, 5, 30, 0.38), inset 1px 1px 0 rgba(255,255,255,0.25), inset -5px -6px 10px rgba(25, 16, 61, 0.26);
+}
+
+.kviz-break-game-logo[hidden] { display: none; }
+.kviz-break-game-logo img { width: 58px; height: 58px; object-fit: contain; filter: drop-shadow(0 5px 4px rgba(19, 11, 52, 0.34)); }
+
+.kviz-round-break.kviz-brzopotezne-score .kviz-break-scores,
+.kviz-round-break.kviz-brzopotezne-final .kviz-break-scores,
+.kviz-round-break.kviz-spojnice-score .kviz-break-scores,
+.kviz-round-break.kviz-spojnice-final .kviz-break-scores {
+    border-radius: 20px;
+    padding: 0.28rem;
+    background: rgba(255, 220, 230, 0.055);
+}
+
+.kviz-round-break.kviz-score-animate .kviz-break-eyebrow { animation: kvizScoreEyebrow 420ms cubic-bezier(.18,.82,.28,1) both; }
+.kviz-round-break.kviz-score-animate .kviz-break-scores > * { animation: kvizScoreCardIn 520ms cubic-bezier(.18,.82,.28,1) both; }
+.kviz-round-break.kviz-score-animate .kviz-break-scores > *:nth-child(2) { animation-delay: 90ms; }
+.kviz-round-break.kviz-score-animate .kviz-break-player b { animation: kvizScoreCount 560ms cubic-bezier(.18,.82,.28,1) both; }
+.kviz-round-break.kviz-score-animate .kviz-break-total { animation: kvizScoreTotal 580ms 150ms cubic-bezier(.18,.82,.28,1) both; }
+.kviz-round-break.kviz-score-animate.kviz-brzopotezne-final .kviz-break-game-logo { animation: kvizFirstGameLogo 650ms cubic-bezier(.16,.9,.26,1.18) both; }
+.kviz-break-round-history {
+    width: min(100%, 335px);
+    display: grid;
+    gap: 0.34rem;
+    margin: 0.56rem auto 0;
+}
+
+.kviz-break-round-history[hidden] { display: none; }
+
+.kviz-break-round-history p {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0.46rem 0.62rem;
+    border: 1px solid rgba(245, 225, 255, 0.14);
+    border-radius: 14px;
+    color: #dcd2ed;
+    background: linear-gradient(145deg, rgba(68, 55, 119, 0.72), rgba(35, 30, 79, 0.82));
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,0.1), inset -4px -5px 8px rgba(15, 12, 44, 0.2);
+    font-size: 0.56rem;
+    font-weight: 900;
+    letter-spacing: 0.045em;
+}
+
+.kviz-break-round-history strong { color: #ffd797; font-size: 0.94rem; letter-spacing: 0; }
+.kviz-round-break.kviz-score-animate .kviz-break-round-history p { animation: kvizScoreCardIn 520ms 180ms cubic-bezier(.18,.82,.28,1) both; }
+.kviz-round-break.kviz-score-animate .kviz-break-round-history p:nth-child(2) { animation-delay: 260ms; }
+
+@keyframes kvizScoreEyebrow {
+    from { opacity: 0; transform: translateY(-9px); letter-spacing: 0.22em; }
+    to { opacity: 1; transform: translateY(0); letter-spacing: 0.12em; }
+}
+
+@keyframes kvizScoreCardIn {
+    from { opacity: 0; transform: translateY(14px) scale(.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes kvizScoreCount {
+    0% { opacity: 0; transform: translateY(10px) scale(.65); }
+    70% { opacity: 1; transform: translateY(-2px) scale(1.16); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes kvizScoreTotal {
+    from { opacity: 0; transform: scale(.82); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes kvizFirstGameLogo {
+    0% { opacity: 0; transform: translateY(-14px) rotate(-12deg) scale(.55); }
+    72% { opacity: 1; transform: translateY(2px) rotate(5deg) scale(1.08); }
+    100% { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
+}
+
 .kviz-result-icon {
     border: 2px solid rgba(255, 228, 181, 0.56);
     color: #ffe29a;
@@ -16882,7 +17017,8 @@ body[data-tema] #main-menu .circle-overlay.active {
 @media (prefers-reduced-motion: reduce) {
     .kviz-hero-icon,
     .kviz-anagram-tile,
-    .kviz-map-target { animation: none; }
+    .kviz-map-target,
+    .kviz-round-break.kviz-score-animate * { animation: none !important; }
 }
 
 /* Kompaktan vrh aktivne runde i interna tastatura za kviz. */

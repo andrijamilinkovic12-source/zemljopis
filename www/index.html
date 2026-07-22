@@ -805,20 +805,27 @@
             <p id="kviz-answer-status" class="kviz-answer-status">Reši izazov i pošalji odgovor.</p>
 
             <section id="kviz-pauza-runde" class="kviz-round-break" hidden aria-live="polite">
-                <span class="kviz-break-eyebrow">REZULTAT RUNDE</span>
+                <span id="kviz-pauza-obrva" class="kviz-break-eyebrow">REZULTAT RUNDE</span>
+                <div id="kviz-pauza-igra-logo" class="kviz-break-game-logo" hidden aria-hidden="true">
+                    <img src="assets/mode-kviz-clay-3d-navy-v1.png" alt="">
+                </div>
                 <h4 id="kviz-pauza-naslov">RUNDA JE ZAVRŠENA</h4>
                 <p id="kviz-pauza-podnaslov" class="kviz-break-subtitle">Zemljopis kviz</p>
                 <div class="kviz-break-scores">
                     <div class="kviz-break-player">
-                        <span>TI · OVA RUNDA</span>
+                        <span id="kviz-pauza-moji-oznaka">TI · OVA RUNDA</span>
                         <b id="kviz-pauza-moji-runda">+0</b>
                     </div>
                     <div class="kviz-break-player kviz-break-rival">
-                        <span>PROTIVNIK · OVA RUNDA</span>
+                        <span id="kviz-pauza-protivnik-oznaka">PROTIVNIK · OVA RUNDA</span>
                         <b id="kviz-pauza-protivnik-runda">+0</b>
                     </div>
                 </div>
-                <p class="kviz-break-total">UKUPNO <strong id="kviz-pauza-ukupno">0 : 0</strong></p>
+                <div id="kviz-pauza-sazetak-rundi" class="kviz-break-round-history" hidden>
+                    <p><span>RUNDA 1 · BRZOPOZOTEZNE</span><strong id="kviz-pauza-runda-1">0 : 0</strong></p>
+                    <p><span>RUNDA 2 · SPOJNICE</span><strong id="kviz-pauza-runda-2">0 : 0</strong></p>
+                </div>
+                <p class="kviz-break-total"><span id="kviz-pauza-ukupno-oznaka">UKUPNO</span> <strong id="kviz-pauza-ukupno">0 : 0</strong></p>
                 <p id="kviz-pauza-poruka" class="kviz-break-copy"></p>
                 <p class="kviz-break-next"><span id="kviz-pauza-nastavak">SLEDEĆA RUNDA ZA</span> <b id="kviz-pauza-tajmer">10</b> s</p>
             </section>

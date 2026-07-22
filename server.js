@@ -209,6 +209,8 @@ const KVIZ_BROJ_RUNDI = 7;
 const KVIZ_PAUZA_IZMEDJU_RUNDI_MS = 10000;
 const KVIZ_PAUZA_PRE_KRAJA_MS = 7000;
 const KVIZ_PAUZA_IZMEDJU_PITANJA_MS = 3500;
+const KVIZ_PAUZA_IZMEDJU_OBLASTI_BRZOPOTEZNE_MS = 6500;
+const KVIZ_PAUZA_IZMEDJU_SPOJNICA_MS = 4500;
 // Privremeno za interno testiranje: svaki kviz se odmah pokreće protiv Atlas Bota.
 // Za povratak na javno uparivanje dovoljno je na serveru postaviti KVIZ_TEST_BOT=false.
 const KVIZ_TEST_BOT_OMOGUCEN = process.env.KVIZ_TEST_BOT !== 'false';
@@ -1024,6 +1026,27 @@ function upisiKvizOdgovor(soba, igrac, odgovor) {
     return true;
 }
 
+function napraviKvizRezultate(soba) {
+    return soba.igraci.map(igrac => {
+        const zbir = soba.rezultati[igrac.playerId] || {};
+        const zbirRunde = soba.rezultatAktivneRunde[igrac.playerId] || {};
+        const odgovor = soba.odgovori[igrac.id] || {};
+        return {
+            playerId: igrac.playerId,
+            ime: igrac.ime,
+            poslat: Boolean(zbirRunde.poslat),
+            tacno: Number(zbirRunde.tacnih) > 0,
+            tacnih: Number(zbirRunde.tacnih) || 0,
+            bonus: Number(zbirRunde.bonus) || 0,
+            poeniOblasti: Number(odgovor.poeni) || 0,
+            poeniRunde: Number(zbirRunde.poeni) || 0,
+            udaljenost: typeof zbirRunde.udaljenost === 'number' ? zbirRunde.udaljenost : null,
+            ukupnoPoena: Number(zbir.ukupnoPoena) || 0,
+            tacnihUkupno: Number(zbir.tacnih) || 0
+        };
+    });
+}
+
 function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
     if (!soba || kvizSobe[soba.id] !== soba || soba.status !== 'u_igri' || soba.rundaZakljucena) return;
     soba.rundaZakljucena = true;
@@ -1067,7 +1090,10 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
 
     const poslednjePitanje = soba.indeksPitanja >= runda.pitanja.length - 1;
     if (!poslednjePitanje) {
-        const nastavakAt = Date.now() + KVIZ_PAUZA_IZMEDJU_PITANJA_MS;
+        const trajanjePauzeMs = runda.tip === 'brzopotezne'
+            ? KVIZ_PAUZA_IZMEDJU_OBLASTI_BRZOPOTEZNE_MS
+            : (runda.tip === 'spojnice' ? KVIZ_PAUZA_IZMEDJU_SPOJNICA_MS : KVIZ_PAUZA_IZMEDJU_PITANJA_MS);
+        const nastavakAt = Date.now() + trajanjePauzeMs;
         io.to(soba.id).emit('kviz:pitanjeZakljuceno', {
             sobaId: soba.id,
             indeksRunde: soba.indeksRunde,
@@ -1075,32 +1101,19 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
             ukupnoPitanja: runda.pitanja.length,
             tip: runda.tip,
             resenje: javnoResenjeKvizRunde(runda, pitanje),
+            rezultati: napraviKvizRezultate(soba),
+            trajanjePauzeMs,
             nastavakAt
         });
         soba.timeoutSledecaRunda = setTimeout(() => {
             if (kvizSobe[soba.id] !== soba || soba.status !== 'u_igri') return;
             soba.indeksPitanja++;
             pokreniKvizPitanje(soba);
-        }, KVIZ_PAUZA_IZMEDJU_PITANJA_MS);
+        }, trajanjePauzeMs);
         return;
     }
 
-    const rezultati = soba.igraci.map(igrac => {
-        const zbir = soba.rezultati[igrac.playerId] || {};
-        const zbirRunde = soba.rezultatAktivneRunde[igrac.playerId] || {};
-        return {
-            playerId: igrac.playerId,
-            ime: igrac.ime,
-            poslat: Boolean(zbirRunde.poslat),
-            tacno: Number(zbirRunde.tacnih) > 0,
-            tacnih: Number(zbirRunde.tacnih) || 0,
-            bonus: Number(zbirRunde.bonus) || 0,
-            poeniRunde: Number(zbirRunde.poeni) || 0,
-            udaljenost: typeof zbirRunde.udaljenost === 'number' ? zbirRunde.udaljenost : null,
-            ukupnoPoena: Number(zbir.ukupnoPoena) || 0,
-            tacnihUkupno: Number(zbir.tacnih) || 0
-        };
-    });
+    const rezultati = napraviKvizRezultate(soba);
 
     const poslednje = soba.indeksRunde >= soba.runde.length - 1;
     const trajanjePauzeMs = poslednje ? KVIZ_PAUZA_PRE_KRAJA_MS : KVIZ_PAUZA_IZMEDJU_RUNDI_MS;

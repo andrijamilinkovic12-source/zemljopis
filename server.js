@@ -208,9 +208,9 @@ const KVIZ_BROJ_RUNDI = 7;
 // Pauza je namerna: igrači treba da stignu da vide rešenje, osvojene poene i zbirni rezultat.
 const KVIZ_PAUZA_IZMEDJU_RUNDI_MS = 10000;
 const KVIZ_PAUZA_PRE_KRAJA_MS = 7000;
-const KVIZ_PAUZA_IZMEDJU_PITANJA_MS = 3500;
-const KVIZ_PAUZA_IZMEDJU_OBLASTI_BRZOPOTEZNE_MS = 6500;
-const KVIZ_PAUZA_IZMEDJU_SPOJNICA_MS = 4500;
+const KVIZ_PAUZA_IZMEDJU_PITANJA_MS = 10000;
+const KVIZ_PAUZA_IZMEDJU_OBLASTI_BRZOPOTEZNE_MS = 10000;
+const KVIZ_PAUZA_IZMEDJU_SPOJNICA_MS = 10000;
 // Privremeno za interno testiranje: svaki kviz se odmah pokreće protiv Atlas Bota.
 // Za povratak na javno uparivanje dovoljno je na serveru postaviti KVIZ_TEST_BOT=false.
 const KVIZ_TEST_BOT_OMOGUCEN = process.env.KVIZ_TEST_BOT !== 'false';
@@ -992,7 +992,12 @@ function upisiKvizOdgovor(soba, igrac, odgovor) {
         return false;
     }
 
-    soba.odgovori[igrac.id] = { poslat: true, bonus: 0, ...proceniKvizOdgovor(runda.tip, pitanje, odgovor) };
+    soba.odgovori[igrac.id] = {
+        poslat: true,
+        bonus: 0,
+        odgovor: odgovor && typeof odgovor === 'object' ? odgovor : {},
+        ...proceniKvizOdgovor(runda.tip, pitanje, odgovor)
+    };
     if (soba.igraci.every(kandidat => soba.odgovori[kandidat.id])) {
         zakljuciKvizRundu(soba, 'svi_odgovorili');
     }
@@ -1016,6 +1021,72 @@ function napraviKvizRezultate(soba) {
             udaljenost: typeof zbirRunde.udaljenost === 'number' ? zbirRunde.udaljenost : null,
             ukupnoPoena: Number(zbir.ukupnoPoena) || 0,
             tacnihUkupno: Number(zbir.tacnih) || 0
+        };
+    });
+}
+
+function napraviKvizPovratneInformacije(soba, runda, pitanje) {
+    return soba.igraci.map(igrac => {
+        const procena = soba.odgovori[igrac.id] || { poslat: false, poeni: 0, tacnih: 0 };
+        const odgovor = procena.odgovor && typeof procena.odgovor === 'object' ? procena.odgovor : {};
+        let stavke = [];
+
+        if (runda.tip === 'brzopotezne') {
+            const unosi = Array.isArray(odgovor.stavke)
+                ? odgovor.stavke
+                : (Array.isArray(odgovor.grupe?.[0]) ? odgovor.grupe[0] : []);
+            const tacni = new Set(procena.tacniPojmovi || []);
+            stavke = Array.from({ length: pitanje.trazeno || 3 }, (_, indeks) => {
+                const tekst = String(unosi[indeks] || '').trim();
+                return { odgovor: tekst || '—', tacno: Boolean(tekst) && tacni.has(normalizujKvizTekst(tekst)) };
+            });
+        } else if (runda.tip === 'spojnice') {
+            const spojeno = odgovor.spojeno && typeof odgovor.spojeno === 'object' ? odgovor.spojeno : {};
+            stavke = pitanje.parovi.map((par, indeks) => {
+                const izbor = String(spojeno[indeks] || '').trim();
+                return {
+                    oznaka: par.levo,
+                    odgovor: izbor || '—',
+                    resenje: par.desno,
+                    tacno: normalizujKvizTekst(izbor) === normalizujKvizTekst(par.desno)
+                };
+            });
+        } else if (runda.tip === 'uljez') {
+            const indeks = Number.isInteger(Number(odgovor.indeks)) ? Number(odgovor.indeks) : Number(odgovor.indeksi?.[0]);
+            stavke = [{
+                oznaka: 'ULJEZ',
+                odgovor: pitanje.opcije[indeks] || '—',
+                resenje: pitanje.opcije[pitanje.uljezIndeks] || '',
+                tacno: indeks === pitanje.uljezIndeks
+            }];
+        } else if (runda.tip === 'pikado') {
+            const koordinata = odgovor.koordinate?.[0] || odgovor;
+            const x = Number(koordinata?.x);
+            const y = Number(koordinata?.y);
+            const imaPin = Number.isFinite(x) && Number.isFinite(y);
+            stavke = [{
+                oznaka: 'TVOJ PIN',
+                odgovor: imaPin ? `(${Math.round(x)}%, ${Math.round(y)}%)` : '—',
+                resenje: pitanje.grad || '',
+                tacno: Boolean(procena.tacno)
+            }];
+        } else {
+            const tekst = String(odgovor.tekst ?? odgovor.tekstovi?.[0] ?? '').trim();
+            const resenje = runda.tip === 'anagram' || runda.tip === 'emoji' ? pitanje.resenje : pitanje.prihvaceni?.[0];
+            stavke = [{
+                oznaka: runda.tip === 'misterija' ? 'POGODAK' : 'ODGOVOR',
+                odgovor: tekst || '—',
+                resenje: resenje || '',
+                tacno: Boolean(procena.tacno)
+            }];
+        }
+
+        return {
+            playerId: igrac.playerId,
+            ime: igrac.ime,
+            poeni: Number(procena.poeni) || 0,
+            tacnih: Number(procena.tacnih) || 0,
+            stavke
         };
     });
 }
@@ -1062,6 +1133,7 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
     });
 
     const poslednjePitanje = soba.indeksPitanja >= runda.pitanja.length - 1;
+    const povratneInformacije = napraviKvizPovratneInformacije(soba, runda, pitanje);
     if (!poslednjePitanje) {
         const trajanjePauzeMs = runda.tip === 'brzopotezne'
             ? KVIZ_PAUZA_IZMEDJU_OBLASTI_BRZOPOTEZNE_MS
@@ -1075,6 +1147,7 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
             tip: runda.tip,
             resenje: javnoResenjeKvizRunde(runda, pitanje),
             rezultati: napraviKvizRezultate(soba),
+            povratneInformacije,
             trajanjePauzeMs,
             nastavakAt
         });
@@ -1099,6 +1172,7 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
         naziv: runda.naziv,
         resenje: javnoResenjeKvizRunde(runda, pitanje),
         rezultati,
+        povratneInformacije,
         razlog,
         poslednje,
         trajanjePauzeMs,

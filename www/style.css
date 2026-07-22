@@ -17053,6 +17053,72 @@ body[data-tema] #main-menu .circle-overlay.active {
 .kviz-round-icon--dart { background: radial-gradient(circle at 28% 24%, #efffcf 0 7%, #96d986 32%, #5d9c85 70%, #365d78 100%); }
 .kviz-round-icon--default { background: radial-gradient(circle at 28% 24%, #fff0df 0 7%, #bba4e8 32%, #765ba9 70%, #47356f 100%); }
 
+/* Slikovita povratna informacija poteza oba igrača između pitanja. */
+.kviz-question-feedback {
+    width: min(100%, 356px);
+    max-height: 220px;
+    margin: 0.1rem auto 0.48rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+
+.kviz-round-break {
+    justify-content: flex-start;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+}
+
+.kviz-round-break > * { flex-shrink: 0; }
+
+.kviz-question-feedback[hidden] { display: none; }
+.kviz-feedback-title { margin: 0 0 0.3rem; color: #ead9ff; font-size: 0.5rem; font-weight: 900; letter-spacing: 0.12em; text-align: center; }
+.kviz-feedback-players { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.38rem; }
+
+.kviz-feedback-player {
+    min-width: 0;
+    padding: 0.36rem;
+    border: 1px solid rgba(239, 220, 255, 0.14);
+    border-radius: 15px;
+    background: linear-gradient(145deg, rgba(71, 57, 121, 0.82), rgba(35, 30, 80, 0.92));
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,0.12), inset -4px -5px 8px rgba(13, 10, 43, 0.22);
+}
+
+.kviz-feedback-player.mine { border-color: rgba(255, 212, 185, 0.28); }
+.kviz-feedback-player-head { display: flex; align-items: center; justify-content: space-between; gap: 0.3rem; margin: 0 0.05rem 0.28rem; }
+.kviz-feedback-player-head b { min-width: 0; overflow: hidden; color: #fff0de; font-size: 0.55rem; font-weight: 900; letter-spacing: 0.05em; text-overflow: ellipsis; white-space: nowrap; }
+.kviz-feedback-player-head span { flex: 0 0 auto; padding: 0.13rem 0.26rem; border-radius: 8px; color: #fff8e9; background: linear-gradient(145deg, #dc7d9d, #9a4774); font-size: 0.58rem; font-weight: 900; }
+.kviz-feedback-items { display: grid; gap: 0.22rem; }
+
+.kviz-feedback-item {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.18rem;
+    padding: 0.25rem 0.3rem;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-size: 0.53rem;
+    line-height: 1.12;
+}
+
+.kviz-feedback-item > i { flex: 0 0 auto; width: 0.62rem; font-size: 0.55rem; text-align: center; }
+.kviz-feedback-item > span { flex: 0 1 auto; max-width: 42%; overflow: hidden; color: rgba(255,255,255,0.74); font-size: 0.46rem; font-weight: 900; letter-spacing: 0.025em; text-overflow: ellipsis; white-space: nowrap; }
+.kviz-feedback-item > b { min-width: 0; overflow: hidden; font-size: 0.54rem; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.kviz-feedback-item > em { flex: 0 0 auto; font-style: normal; font-weight: 900; }
+.kviz-feedback-item > strong { min-width: 0; overflow: hidden; font-size: 0.52rem; text-overflow: ellipsis; white-space: nowrap; }
+
+.kviz-feedback-item.correct { border-color: rgba(136, 246, 184, 0.3); color: #d9ffe7; background: linear-gradient(145deg, rgba(72, 150, 113, 0.82), rgba(35, 83, 82, 0.92)); }
+.kviz-feedback-item.correct > i { color: #baffd3; }
+.kviz-feedback-item.incorrect { border-color: rgba(255, 174, 194, 0.28); color: #ffe0e7; background: linear-gradient(145deg, rgba(157, 72, 108, 0.84), rgba(89, 41, 83, 0.94)); }
+.kviz-feedback-item.incorrect > i { color: #ffc0cf; }
+.kviz-feedback-item.incorrect > b { text-decoration: line-through; text-decoration-color: rgba(255, 235, 240, 0.58); }
+.kviz-feedback-item.incorrect > strong { color: #bdffd4; }
+
+.kviz-round-break.kviz-score-animate .kviz-feedback-player { animation: kvizScoreCardIn 440ms cubic-bezier(.18,.82,.28,1) both; }
+.kviz-round-break.kviz-score-animate .kviz-feedback-player:nth-child(2) { animation-delay: 90ms; }
+
 .kviz-final-rounds {
     width: min(100%, 356px);
     display: grid;

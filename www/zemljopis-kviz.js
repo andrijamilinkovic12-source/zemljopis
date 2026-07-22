@@ -568,24 +568,11 @@ const KvizManager = {
         this.zaustaviTajmer();
         this.odgovorPoslat = true;
         this.onemoguciUnosRunde();
-        if (podaci.tip === 'brzopotezne' || podaci.tip === 'spojnice') {
-            const rezultati = Array.isArray(podaci.rezultati) ? podaci.rezultati : [];
-            this.osveziRezultateIgraca(rezultati);
-            const mojRezultat = rezultati.find(rezultat => rezultat.playerId === this.igracId()) || {};
-            const protivnickiRezultat = rezultati.find(rezultat => rezultat.playerId !== this.igracId()) || {};
-            if (podaci.tip === 'spojnice') {
-                this.prikaziIshodSpajnica(podaci.resenje || {});
-                this.postaviTekst('kviz-answer-status', 'Provera spojnica…');
-                this.zakaziRezultatSpajnica(() => this.prikaziPauzuPodpitanja(podaci, mojRezultat, protivnickiRezultat));
-                return;
-            }
-            this.prikaziPauzuPodpitanja(podaci, mojRezultat, protivnickiRezultat);
-            return;
-        }
-        this.prikaziResenjeRunde(podaci.tip, podaci.resenje || {});
-        const sledece = (Number(podaci.indeksPitanja) || 0) + 2;
-        const ukupno = Number(podaci.ukupnoPitanja) || 1;
-        this.postaviTekst('kviz-answer-status', `Pitanje je zaključano. Sledeće pitanje (${sledece}/${ukupno}) stiže za trenutak.`);
+        const rezultati = Array.isArray(podaci.rezultati) ? podaci.rezultati : [];
+        this.osveziRezultateIgraca(rezultati);
+        const mojRezultat = rezultati.find(rezultat => rezultat.playerId === this.igracId()) || {};
+        const protivnickiRezultat = rezultati.find(rezultat => rezultat.playerId !== this.igracId()) || {};
+        this.prikaziPauzuPodpitanja(podaci, mojRezultat, protivnickiRezultat);
     },
 
     primiRezultatRunde: function(podaci) {
@@ -608,16 +595,9 @@ const KvizManager = {
                 ? `Tačno spojenih: ${mojRezultat.tacnih || 0}. Osvojeno: +${mojRezultat.poeniRunde || 0}.`
                 : this.porukaRezultataRunde(mojRezultat, podaci));
         const prikaziPauzu = () => {
-            if (podaci.tip !== 'brzopotezne' && podaci.tip !== 'spojnice') this.prikaziResenjeRunde(podaci.tip, podaci.resenje || {});
             this.postaviTekst('kviz-answer-status', poruka);
             this.prikaziPauzuRunde(podaci, mojRezultat, protivnickiRezultat, poruka);
         };
-        if (podaci.tip === 'spojnice') {
-            this.prikaziIshodSpajnica(podaci.resenje || {});
-            this.postaviTekst('kviz-answer-status', 'Provera spojnica…');
-            this.zakaziRezultatSpajnica(prikaziPauzu);
-            return;
-        }
         prikaziPauzu();
     },
 
@@ -665,6 +645,62 @@ const KvizManager = {
             if (rezultat.playerId === this.igracId()) this.postaviTekst('kviz-moji-poeni', String(rezultat.ukupnoPoena || 0));
             else this.postaviTekst('kviz-protivnik-poeni', String(rezultat.ukupnoPoena || 0));
         });
+    },
+
+    prikaziPovratneInformacije: function(podaci) {
+        const okvir = document.getElementById('kviz-pauza-povratna');
+        if (!okvir) return;
+        const igraci = Array.isArray(podaci.povratneInformacije) ? podaci.povratneInformacije : [];
+        okvir.replaceChildren();
+        if (igraci.length === 0) {
+            okvir.hidden = true;
+            return;
+        }
+        const naslov = document.createElement('p');
+        naslov.className = 'kviz-feedback-title';
+        naslov.textContent = 'KAKO STE ODGOVORILI';
+        const mreza = document.createElement('div');
+        mreza.className = 'kviz-feedback-players';
+        igraci.sort((prvi, drugi) => Number(drugi.playerId === this.igracId()) - Number(prvi.playerId === this.igracId())).forEach(igrac => {
+            const kartica = document.createElement('article');
+            kartica.className = `kviz-feedback-player${igrac.playerId === this.igracId() ? ' mine' : ''}`;
+            const zaglavlje = document.createElement('div');
+            zaglavlje.className = 'kviz-feedback-player-head';
+            const ime = document.createElement('b');
+            ime.textContent = igrac.playerId === this.igracId() ? 'TI' : (igrac.ime || 'PROTIVNIK');
+            const poeni = document.createElement('span');
+            poeni.textContent = `+${Number(igrac.poeni) || 0}`;
+            zaglavlje.append(ime, poeni);
+            const stavke = document.createElement('div');
+            stavke.className = 'kviz-feedback-items';
+            (igrac.stavke || []).forEach(stavka => {
+                const element = document.createElement('div');
+                const tacno = Boolean(stavka.tacno);
+                element.className = `kviz-feedback-item ${tacno ? 'correct' : 'incorrect'}`;
+                const ikona = document.createElement('i');
+                ikona.className = `fa-solid ${tacno ? 'fa-check' : 'fa-xmark'}`;
+                if (stavka.oznaka) {
+                    const oznaka = document.createElement('span');
+                    oznaka.textContent = stavka.oznaka;
+                    element.appendChild(oznaka);
+                }
+                const odgovor = document.createElement('b');
+                odgovor.textContent = stavka.odgovor || '—';
+                element.append(ikona, odgovor);
+                if (!tacno && stavka.resenje) {
+                    const strelica = document.createElement('em');
+                    strelica.textContent = '→';
+                    const resenje = document.createElement('strong');
+                    resenje.textContent = stavka.resenje;
+                    element.append(strelica, resenje);
+                }
+                stavke.appendChild(element);
+            });
+            kartica.append(zaglavlje, stavke);
+            mreza.appendChild(kartica);
+        });
+        okvir.append(naslov, mreza);
+        okvir.hidden = false;
     },
 
     opisRunde: function(tip, naziv) {
@@ -778,6 +814,7 @@ const KvizManager = {
         const brzo = podaci.tip === 'brzopotezne';
         const oznaka = brzo ? 'OBLAST' : 'SPOJNICA';
         this.postaviIkoneRunde(podaci.tip, this.aktivnaRunda?.naziv);
+        this.prikaziPovratneInformacije(podaci);
         this.postaviOznakePauze({
             obrva: `REZULTAT ${oznaka}`,
             mojaOznaka: `TI · OVA ${oznaka}`,
@@ -824,6 +861,7 @@ const KvizManager = {
         const brzo = podaci.tip === 'brzopotezne';
         const spojnice = podaci.tip === 'spojnice';
         this.postaviIkoneRunde(podaci.tip, podaci.naziv);
+        this.prikaziPovratneInformacije(podaci);
         this.postaviOznakePauze(brzo ? {
             obrva: 'KONAČAN REZULTAT PRVE IGRE',
             mojaOznaka: 'TI · SVE 4 OBLASTI',

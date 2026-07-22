@@ -750,13 +750,15 @@
         <div class="kviz-map-glow" aria-hidden="true"></div>
 
         <div class="kviz-screen-header">
-            <button class="kviz-back-btn" type="button" onclick="KvizManager.nazadUMeni()" aria-label="Nazad u meni">
+            <button class="kviz-back-btn" type="button" onclick="KvizManager.zatraziIzlazak()" aria-label="Izađi iz kviza">
                 <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
             </button>
             <div class="kviz-active-brand" aria-label="Zemljopis kviz">
                 <span>ZEMLJOPIS</span><b>KVIZ</b>
             </div>
-            <span class="kviz-header-icon" aria-hidden="true"><i class="fa-solid fa-earth-europe"></i></span>
+            <button id="kviz-round-info-btn" class="kviz-header-icon kviz-round-info-btn" type="button" onclick="KvizManager.prikaziInfoRunde()" aria-label="Pravila aktivne runde">
+                <img id="kviz-round-info-icon" src="assets/kviz-round-brzopotezne-v1.png" alt="">
+            </button>
         </div>
 
         <section id="kviz-lobi" class="kviz-lobi" aria-live="polite">

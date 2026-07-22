@@ -158,6 +158,7 @@ const KvizManager = {
         this.indeksRunde = Number(podaci.indeksRunde);
         this.indeksPitanja = Number(podaci.indeksPitanja);
         this.aktivnaRunda = podaci.runda;
+        this.postaviInfoDugmeRunde(this.aktivnaRunda?.tip, this.aktivnaRunda?.naziv);
         this.krajRundeAt = Number(podaci.krajRundeAt) || 0;
 
         const ukupnoPitanja = Number(podaci.ukupnoPitanja) || 1;
@@ -706,20 +707,61 @@ const KvizManager = {
 
     opisRunde: function(tip, naziv) {
         const opisi = {
-            brzopotezne: { naziv: 'BRZOPOZOTEZNE TROJKE', slika: 'kviz-round-brzopotezne-v1.png', varijanta: 'speed' },
-            spojnice: { naziv: 'GEOGRAFSKE SPOJNICE', slika: 'kviz-round-spojnice-v1.png', varijanta: 'links' },
-            anagram: { naziv: 'MUTNA VODA', slika: 'kviz-round-mutna-voda-v1.png', varijanta: 'water' },
-            uljez: { naziv: 'PRONAĐI ULJEZA', slika: 'kviz-round-uljez-v1.png', varijanta: 'odd' },
-            misterija: { naziv: 'KO SAM JA?', slika: 'kviz-round-misterija-v1.png', varijanta: 'mystery' },
-            emoji: { naziv: 'EMODŽI GEOGRAFIJA', slika: 'kviz-round-emoji-v1.png', varijanta: 'emoji' },
-            pikado: { naziv: 'GEOGRAFSKI PIKADO', slika: 'kviz-round-pikado-v1.png', varijanta: 'dart' }
+            brzopotezne: {
+                naziv: 'BRZOPOTEZNE TROJKE', slika: 'kviz-round-brzopotezne-v1.png', varijanta: 'speed',
+                objasnjenje: 'Dobijaš četiri oblasti. U svakoj upiši tri različita tačna pojma; svaki donosi bod, a originalan pojam koji protivnik nema donosi bonus.'
+            },
+            spojnice: {
+                naziv: 'GEOGRAFSKE SPOJNICE', slika: 'kviz-round-spojnice-v1.png', varijanta: 'links',
+                objasnjenje: 'Poveži pojmove iz dve kolone. Isti zadatak rešavate istovremeno, a svaki tačno spojen par donosi bod.'
+            },
+            anagram: {
+                naziv: 'MUTNA VODA', slika: 'kviz-round-mutna-voda-v1.png', varijanta: 'water',
+                objasnjenje: 'Složi ispretumbana slova u tačan pojam pre isteka vremena.'
+            },
+            uljez: {
+                naziv: 'PRONAĐI ULJEZA', slika: 'kviz-round-uljez-v1.png', varijanta: 'odd',
+                objasnjenje: 'Od četiri ponuđena pojma pronađi onaj koji ne pripada istoj grupi kao ostala tri.'
+            },
+            misterija: {
+                naziv: 'KO SAM JA?', slika: 'kviz-round-misterija-v1.png', varijanta: 'mystery',
+                objasnjenje: 'Pogodi pojam na osnovu tragova. Raniji pogodak donosi više poena.'
+            },
+            emoji: {
+                naziv: 'EMODŽI GEOGRAFIJA', slika: 'kviz-round-emoji-v1.png', varijanta: 'emoji',
+                objasnjenje: 'Pročitaj emodžije kao tragove i upiši pojam koji predstavljaju.'
+            },
+            pikado: {
+                naziv: 'GEOGRAFSKI PIKADO', slika: 'kviz-round-pikado-v1.png', varijanta: 'dart',
+                objasnjenje: 'Postavi pin što bliže traženom gradu na prikazanoj mapi. Što si bliže, osvajaš više poena.'
+            }
         };
         const podrazumevano = opisi.misterija;
         return {
             naziv: naziv || opisi[tip]?.naziv || 'ZEMLJOPIS KVIZ',
             slika: opisi[tip]?.slika || podrazumevano.slika,
-            varijanta: opisi[tip]?.varijanta || 'default'
+            varijanta: opisi[tip]?.varijanta || 'default',
+            objasnjenje: opisi[tip]?.objasnjenje || 'Odgovori na zadatak pre isteka vremena i osvoji što više poena.'
         };
+    },
+
+    postaviInfoDugmeRunde: function(tip, naziv) {
+        const dugme = document.getElementById('kviz-round-info-btn');
+        const slika = document.getElementById('kviz-round-info-icon');
+        const opis = this.opisRunde(tip, naziv);
+
+        if (slika) {
+            slika.src = `assets/${opis.slika}`;
+            slika.alt = '';
+        }
+        if (dugme) dugme.setAttribute('aria-label', `Pravila runde: ${opis.naziv}`);
+    },
+
+    prikaziInfoRunde: function() {
+        const opis = this.opisRunde(this.aktivnaRunda?.tip, this.aktivnaRunda?.naziv);
+        if (typeof UIManager !== 'undefined' && typeof UIManager.prikaziObavestenje === 'function') {
+            UIManager.prikaziObavestenje(opis.naziv, opis.objasnjenje, null, 'RAZUMEM');
+        }
     },
 
     postaviIkonuRunde: function(element, opis, dodatnaKlasa = '') {
@@ -1162,6 +1204,25 @@ const KvizManager = {
     igrajPonovo: function() {
         this.resetujPrikaz();
         this.traziMec();
+    },
+
+    zatraziIzlazak: function() {
+        if (!this.mecUToku) {
+            this.nazadUMeni();
+            return;
+        }
+        const potvrdi = () => this.nazadUMeni();
+        if (typeof UIManager !== 'undefined' && typeof UIManager.prikaziPotvrdu === 'function') {
+            UIManager.prikaziPotvrdu(
+                'NAPUSTI DUEL?',
+                'Sigurno želiš da izađeš? Aktuelni kviz će biti prekinut, a protivnik će dobiti pobedu.',
+                potvrdi,
+                'NAPUSTI IGRU',
+                'NASTAVI IGRU'
+            );
+            return;
+        }
+        if (window.confirm('Sigurno želiš da napustiš aktuelni duel?')) potvrdi();
     },
 
     nazadUMeni: function() {

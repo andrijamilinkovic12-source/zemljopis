@@ -16682,6 +16682,63 @@ body[data-tema] #main-menu .circle-overlay.active {
     outline-offset: 2px;
 }
 
+/* Kompaktne kartice zadatka ispod trake napretka. */
+#kviz-kategorija,
+#kviz-pitanje {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    color: #f7edff;
+    border: 1px solid rgba(245, 226, 255, 0.16);
+    border-radius: 17px;
+    background: linear-gradient(145deg, rgba(73, 59, 122, 0.9), rgba(38, 31, 79, 0.95));
+    box-shadow:
+        5px 6px 13px rgba(12, 9, 38, 0.34),
+        -2px -2px 7px rgba(152, 125, 205, 0.12),
+        inset 1px 1px 0 rgba(255, 247, 255, 0.15),
+        inset -3px -4px 8px rgba(16, 12, 48, 0.25);
+}
+
+#kviz-kategorija {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 40px;
+    margin: 0 0 0.5rem;
+    padding: 0.55rem 0.8rem;
+    font-size: clamp(0.7rem, 2.7vw, 0.8rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: 0.055em;
+}
+
+#kviz-kategorija::before {
+    content: 'OBLAST:';
+    flex: 0 0 auto;
+    color: var(--kviz-clay-gold);
+}
+
+#kviz-pitanje {
+    display: block;
+    margin: 0 0 0.7rem;
+    padding: 0.65rem 0.8rem 0.72rem;
+    font-size: clamp(0.94rem, 3.5vw, 1.1rem);
+    font-weight: 700;
+    line-height: 1.28;
+    letter-spacing: 0.005em;
+    overflow-wrap: anywhere;
+}
+
+#kviz-pitanje::before {
+    content: 'PITANJE';
+    display: block;
+    margin-bottom: 0.28rem;
+    color: var(--kviz-clay-gold);
+    font-size: 0.65em;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+}
+
 .kviz-hero-icon {
     border: 2px solid rgba(255, 237, 198, 0.35);
     border-radius: 39% 61% 55% 45% / 43% 45% 55% 57%;

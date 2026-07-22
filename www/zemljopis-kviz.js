@@ -160,7 +160,6 @@ const KvizManager = {
         this.aktivnaRunda = podaci.runda;
         this.postaviInfoDugmeRunde(this.aktivnaRunda?.tip, this.aktivnaRunda?.naziv);
         this.krajRundeAt = Number(podaci.krajRundeAt) || 0;
-        this.postaviBodovanjeRunde(this.aktivnaRunda?.tip);
 
         const ukupnoPitanja = Number(podaci.ukupnoPitanja) || 1;
         const rednoPitanje = (Number(podaci.indeksPitanja) || 0) + 1;
@@ -763,24 +762,6 @@ const KvizManager = {
         if (typeof UIManager !== 'undefined' && typeof UIManager.prikaziObavestenje === 'function') {
             UIManager.prikaziObavestenje(opis.naziv, opis.objasnjenje, null, 'RAZUMEM');
         }
-    },
-
-    opisBodovanjaRunde: function(tip) {
-        const bodovanje = {
-            brzopotezne: '1 bod za svaki tačan pojam, uz bonus za pojam koji protivnik nema.',
-            spojnice: '1 bod za svaki tačno spojen par.',
-            anagram: 'Bodovi se osvajaju za svaki tačno složen pojam.',
-            uljez: 'Bod osvajaš kada tačno pronađeš uljeza.',
-            misterija: 'Što ranije pogodiš pojam, osvajaš više bodova.',
-            emoji: 'Bod osvajaš za svaki tačno prepoznat pojam.',
-            pikado: 'Što je pin bliže gradu, osvajaš više bodova.'
-        };
-        return bodovanje[tip] || 'Bodovi se osvajaju za tačno rešene zadatke.';
-    },
-
-    postaviBodovanjeRunde: function(tip) {
-        const status = document.getElementById('kviz-answer-status');
-        if (status) status.dataset.bodovanje = `BODOVANJE: ${this.opisBodovanjaRunde(tip)}`;
     },
 
     postaviIkonuRunde: function(element, opis, dodatnaKlasa = '') {

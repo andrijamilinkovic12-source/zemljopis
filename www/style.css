@@ -17800,14 +17800,3 @@ body.kviz-keyboard-open #custom-keyboard .kb-key:active {
         inset 1px 1px 0 rgba(255, 247, 255, 0.16),
         inset -3px -4px 8px rgba(16, 12, 48, 0.3);
 }
-
-#zemljopis-kviz-screen #kviz-answer-status::after {
-    content: attr(data-bodovanje);
-    display: block;
-    margin-top: 0.28rem;
-    color: var(--kviz-clay-gold);
-    font-size: clamp(0.61rem, 2.3vw, 0.7rem);
-    font-weight: 800;
-    line-height: 1.22;
-    letter-spacing: 0.025em;
-}

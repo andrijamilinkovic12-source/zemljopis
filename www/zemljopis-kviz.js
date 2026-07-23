@@ -1006,11 +1006,6 @@ const KvizManager = {
         const pitanje = document.getElementById('kviz-pauza-pitanje');
         const napredak = document.getElementById('kviz-pauza-napredak');
         const napredakFill = document.getElementById('kviz-pauza-napredak-fill');
-        const povratna = document.getElementById('kviz-pauza-povratna');
-        if (povratna) {
-            povratna.replaceChildren();
-            povratna.hidden = true;
-        }
         if (pitanje) {
             pitanje.textContent = this.aktivnaRunda?.pitanje || 'Odgovor je zabeležen.';
             pitanje.hidden = false;
@@ -1018,6 +1013,7 @@ const KvizManager = {
         if (napredak) napredak.hidden = false;
         if (napredakFill) napredakFill.style.width = `${Math.round((redniBroj / ukupno) * 100)}%`;
         this.postaviIkoneRunde(podaci.tip, this.aktivnaRunda?.naziv);
+        this.prikaziPovratneInformacije(podaci);
         this.postaviOznakePauze({
             obrva: 'ZEMLJOPIS KVIZ',
             mojaOznaka: '',

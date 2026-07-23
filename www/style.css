@@ -18039,7 +18039,6 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
 
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-game-logo,
 .kviz-round-break.kviz-podpitanje-pauza .kviz-round-scoreboard,
-.kviz-round-break.kviz-podpitanje-pauza .kviz-question-feedback,
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-game-table,
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-round-history,
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-total,
@@ -18113,11 +18112,50 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
 }
 
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-scores {
+    order: 6;
     width: min(100%, 245px);
     margin: 0.62rem auto 0;
     padding-top: 0.54rem;
     border-top: 1px solid rgba(242, 219, 255, 0.16);
     gap: 0.5rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-question-feedback {
+    order: 7;
+    width: min(100%, 330px);
+    max-height: 142px;
+    margin: 0.46rem auto 0;
+    padding-top: 0.44rem;
+    border-top: 1px solid rgba(242, 219, 255, 0.13);
+    overflow-y: auto;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-title {
+    margin-bottom: 0.22rem;
+    font-size: 0.46rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-players {
+    gap: 0.3rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-player {
+    padding: 0.28rem;
+    border-radius: 11px;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-player-head {
+    margin-bottom: 0.18rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-items {
+    gap: 0.16rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-item {
+    min-height: 18px;
+    padding: 0.18rem 0.22rem;
+    font-size: 0.48rem;
 }
 
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-player {
@@ -18141,6 +18179,7 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
 }
 
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-next {
+    order: 8;
     margin: auto 0 0;
     font-size: 0.58rem;
 }

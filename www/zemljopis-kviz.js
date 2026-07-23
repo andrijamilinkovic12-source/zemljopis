@@ -240,7 +240,7 @@ const KvizManager = {
             }
             grupe.push(polja);
         });
-        this.dodajDugmeZaSlanje(forma, 'POŠALJI TROJKU', () => {
+        this.dodajDugmeZaSlanje(forma, 'POŠALJI', () => {
             this.posaljiOdgovor({ grupe: grupe.map(polja => polja.map(polje => polje.value)) });
         });
     },

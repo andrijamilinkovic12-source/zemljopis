@@ -18010,14 +18010,19 @@ body.kviz-keyboard-open #custom-keyboard .kb-key:active {
 
 /* Donja poruka ostaje samo jedan kratak, koristan red. */
 #zemljopis-kviz-screen #kviz-answer-status {
-    min-height: 0;
-    padding: 0.36rem 0.62rem;
-    border-radius: 14px;
-    font-size: 0.62rem;
-    font-weight: 800;
-    line-height: 1.15;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: none !important;
+}
+
+/* Potvrda je jedina stalna kontrola pri dnu ekrana. */
+#zemljopis-kviz-screen .kviz-round-submit {
+    position: fixed;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(4px, calc(env(safe-area-inset-bottom) + 4px));
+    left: max(12px, env(safe-area-inset-left));
+    z-index: 24;
+    min-height: 44px;
+}
+
+body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
+    bottom: calc(var(--keyboard-visible-height, 260px) + 8px);
 }

@@ -18026,3 +18026,121 @@ body.kviz-keyboard-open #custom-keyboard .kb-key:active {
 body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     bottom: calc(var(--keyboard-visible-height, 260px) + 8px);
 }
+
+/* Kratak prelaz između podpitanja: samo igra, oblast, pitanje, napredak i poeni. */
+.kviz-round-break.kviz-podpitanje-pauza {
+    inset: 0;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 0.72rem 0.72rem 0.55rem;
+    overflow: hidden;
+    border-radius: 18px;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-game-logo,
+.kviz-round-break.kviz-podpitanje-pauza .kviz-round-scoreboard,
+.kviz-round-break.kviz-podpitanje-pauza .kviz-question-feedback,
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-game-table,
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-round-history,
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-total,
+.kviz-round-break.kviz-podpitanje-pauza #kviz-pauza-poruka {
+    display: none !important;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-eyebrow {
+    margin: 0;
+    color: var(--kviz-clay-gold);
+    font-size: 0.57rem;
+    letter-spacing: 0.1em;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza h4 {
+    margin: 0.34rem 0 0;
+    color: #fff4e5;
+    font-size: clamp(0.95rem, 4.2vw, 1.15rem);
+    line-height: 1.1;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-subtitle {
+    margin: 0.22rem 0 0;
+    color: #e6d8ff;
+    font-size: 0.59rem;
+    line-height: 1.18;
+}
+
+.kviz-break-question {
+    width: min(100%, 360px);
+    margin: 0.55rem auto 0;
+    color: #f7edff;
+    font-size: clamp(0.74rem, 3.1vw, 0.86rem);
+    font-weight: 750;
+    line-height: 1.24;
+    text-align: center;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.kviz-break-question::before {
+    content: 'PITANJE:';
+    display: block;
+    margin-bottom: 0.18rem;
+    color: var(--kviz-clay-gold);
+    font-size: 0.72em;
+    font-weight: 900;
+    letter-spacing: 0.07em;
+}
+
+.kviz-break-progress {
+    width: min(100%, 300px);
+    height: 5px;
+    margin: 0.54rem auto 0;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(248, 230, 255, 0.14);
+    box-shadow: inset 0 1px 2px rgba(9, 6, 33, 0.35);
+}
+
+.kviz-break-progress > span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #f08aaa, #ffd487);
+    box-shadow: 0 0 8px rgba(245, 163, 194, 0.65);
+    transition: width 350ms ease;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-scores {
+    width: min(100%, 245px);
+    margin: 0.62rem auto 0;
+    padding-top: 0.54rem;
+    border-top: 1px solid rgba(242, 219, 255, 0.16);
+    gap: 0.5rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-player {
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-player > span {
+    display: none;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-score-icon {
+    width: 56px;
+    height: 56px;
+    margin-inline: auto;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-score-icon b {
+    font-size: 1rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-next {
+    margin: auto 0 0;
+    font-size: 0.58rem;
+}

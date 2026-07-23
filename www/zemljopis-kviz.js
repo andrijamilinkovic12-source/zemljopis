@@ -996,26 +996,41 @@ const KvizManager = {
         const pauza = document.getElementById('kviz-pauza-runde');
         if (!pauza) return;
         pauza.classList.remove('kviz-show-round-scoreboard');
+        pauza.classList.add('kviz-podpitanje-pauza');
         this.sakrijAnimiranuTabeluRundi();
         const redniBroj = (Number(podaci.indeksPitanja) || 0) + 1;
         const ukupno = Number(podaci.ukupnoPitanja) || 4;
         const brzo = podaci.tip === 'brzopotezne';
         const oznaka = brzo ? 'OBLAST' : 'SPOJNICA';
+        const opis = this.opisRunde(podaci.tip, this.aktivnaRunda?.naziv || podaci.naziv);
+        const pitanje = document.getElementById('kviz-pauza-pitanje');
+        const napredak = document.getElementById('kviz-pauza-napredak');
+        const napredakFill = document.getElementById('kviz-pauza-napredak-fill');
+        const povratna = document.getElementById('kviz-pauza-povratna');
+        if (povratna) {
+            povratna.replaceChildren();
+            povratna.hidden = true;
+        }
+        if (pitanje) {
+            pitanje.textContent = this.aktivnaRunda?.pitanje || 'Odgovor je zabeležen.';
+            pitanje.hidden = false;
+        }
+        if (napredak) napredak.hidden = false;
+        if (napredakFill) napredakFill.style.width = `${Math.round((redniBroj / ukupno) * 100)}%`;
         this.postaviIkoneRunde(podaci.tip, this.aktivnaRunda?.naziv);
-        this.prikaziPovratneInformacije(podaci);
         this.postaviOznakePauze({
-            obrva: `REZULTAT ${oznaka}`,
-            mojaOznaka: `TI · OVA ${oznaka}`,
-            protivnickaOznaka: `PROTIVNIK · OVA ${oznaka}`,
-            ukupnoOznaka: 'UKUPNO U MEČU'
+            obrva: 'ZEMLJOPIS KVIZ',
+            mojaOznaka: '',
+            protivnickaOznaka: '',
+            ukupnoOznaka: ''
         });
-        this.postaviTekst('kviz-pauza-naslov', `${oznaka} ${redniBroj}/${ukupno} JE ZAVRŠENA`);
-        this.postaviTekst('kviz-pauza-podnaslov', this.aktivnaRunda?.kategorija || (brzo ? 'Brzopotezne trojke' : 'Geografske spojnice'));
+        this.postaviTekst('kviz-pauza-naslov', opis.naziv);
+        this.postaviTekst('kviz-pauza-podnaslov', `${oznaka} ${redniBroj}/${ukupno} · ${this.aktivnaRunda?.kategorija || 'ZEMLJOPIS'}`);
         this.postaviTekst('kviz-pauza-moji-runda', `+${Number(mojRezultat.poeniOblasti) || 0}`);
         this.postaviTekst('kviz-pauza-protivnik-runda', `+${Number(protivnickiRezultat.poeniOblasti) || 0}`);
         this.postaviTekst('kviz-pauza-ukupno', `${Number(mojRezultat.ukupnoPoena) || 0} : ${Number(protivnickiRezultat.ukupnoPoena) || 0}`);
-        this.postaviTekst('kviz-pauza-poruka', `Bodovi su upisani. Sledeća ${oznaka.toLowerCase()} stiže za trenutak.`);
-        this.postaviTekst('kviz-pauza-nastavak', `SLEDEĆA ${oznaka} ZA`);
+        this.postaviTekst('kviz-pauza-poruka', '');
+        this.postaviTekst('kviz-pauza-nastavak', 'SLEDEĆE PITANJE ZA');
         this.prikaziSazetakDveRunde(false);
         this.nastavakAt = Number(podaci.nastavakAt) || 0;
         pauza.hidden = false;
@@ -1045,6 +1060,11 @@ const KvizManager = {
     prikaziPauzuRunde: function(podaci, mojRezultat, protivnickiRezultat, poruka) {
         const pauza = document.getElementById('kviz-pauza-runde');
         if (!pauza) return;
+        pauza.classList.remove('kviz-podpitanje-pauza');
+        const pitanjePauze = document.getElementById('kviz-pauza-pitanje');
+        const napredakPauze = document.getElementById('kviz-pauza-napredak');
+        if (pitanjePauze) pitanjePauze.hidden = true;
+        if (napredakPauze) napredakPauze.hidden = true;
         const poslednje = Boolean(podaci.poslednje);
         const brzo = podaci.tip === 'brzopotezne';
         const spojnice = podaci.tip === 'spojnice';
@@ -1088,6 +1108,11 @@ const KvizManager = {
         this.nastavakAt = 0;
         const pauza = document.getElementById('kviz-pauza-runde');
         if (pauza) pauza.hidden = true;
+        if (pauza) pauza.classList.remove('kviz-podpitanje-pauza');
+        const pitanjePauze = document.getElementById('kviz-pauza-pitanje');
+        const napredakPauze = document.getElementById('kviz-pauza-napredak');
+        if (pitanjePauze) pitanjePauze.hidden = true;
+        if (napredakPauze) napredakPauze.hidden = true;
         if (pauza) pauza.classList.remove(
             'kviz-score-animate',
             'kviz-brzopotezne-score',

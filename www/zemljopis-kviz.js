@@ -869,6 +869,8 @@ const KvizManager = {
         tabela.replaceChildren();
         tabela.style.setProperty('--broj-rundi', String(indeksi.length));
         tabela.style.setProperty('--ukupno-odlaganje', `${300 + indeksi.length * 105}ms`);
+        tabela.classList.toggle('kviz-scoreboard-dense', indeksi.length >= 4);
+        tabela.classList.toggle('kviz-scoreboard-compact', indeksi.length >= 6);
         const zaglavlje = document.createElement('div');
         zaglavlje.className = 'kviz-scoreboard-players';
         zaglavlje.append(

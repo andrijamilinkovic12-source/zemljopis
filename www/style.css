@@ -18202,3 +18202,169 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     margin: 0.74rem 0 0;
     font-size: 0.64rem;
 }
+
+/* Završna tabela ostaje u jednom ekranu i kada se popuni svih sedam rundi. */
+.kviz-round-break.kviz-show-round-scoreboard {
+    inset: 0;
+    justify-content: center;
+    padding: 0.56rem 0.68rem 0.6rem;
+    overflow: hidden;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-break-eyebrow {
+    margin: 0;
+    color: #dec5ff;
+    font-size: 0.5rem;
+    letter-spacing: 0.09em;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard h4 {
+    margin: 0.22rem 0 0;
+    font-size: clamp(0.84rem, 3.7vw, 1rem);
+    line-height: 1.08;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-break-subtitle {
+    margin: 0.16rem 0 0;
+    font-size: 0.56rem;
+    line-height: 1.1;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-round-scoreboard {
+    width: min(100%, 350px);
+    max-height: calc(100% - 88px);
+    flex: 0 1 auto;
+    margin: 0.34rem auto 0;
+    padding: 0.38rem;
+    border-radius: 18px;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-players,
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-row,
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-total-row {
+    grid-template-columns: minmax(0, 1fr) 38px minmax(0, 1fr);
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-players {
+    min-height: 34px;
+    padding: 0.04rem 0 0.3rem;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-player {
+    gap: 0.22rem;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-player > img {
+    width: 27px;
+    height: 27px;
+    flex-basis: 27px;
+    border-radius: 10px;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-player span,
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-versus {
+    font-size: 0.36rem;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-player b {
+    font-size: 0.53rem;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-rows {
+    gap: 0.16rem;
+    padding: 0.28rem 0;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-row {
+    min-height: 34px;
+    gap: 0.18rem;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-points {
+    padding: 0 0.28rem;
+    font-size: 0.8rem;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-round-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 11px;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-round-icon > span {
+    width: 14px;
+    height: 14px;
+    font-size: 0.44rem;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-total-row {
+    min-height: 34px;
+    padding: 0.22rem 0;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-total-row > b {
+    padding: 0 0.28rem;
+    font-size: 1rem;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-total-row > span {
+    min-height: 21px;
+    font-size: 0.45rem;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-break-next {
+    margin: 0.34rem 0 0;
+    font-size: 0.54rem;
+}
+
+.kviz-round-break.kviz-show-round-scoreboard .kviz-break-next b {
+    font-size: 1rem;
+}
+
+/* Sa četiri i više redova tabela postaje gušća, bez promene sadržaja. */
+.kviz-round-scoreboard.kviz-scoreboard-dense {
+    padding: 0.3rem;
+}
+
+.kviz-round-scoreboard.kviz-scoreboard-dense .kviz-scoreboard-rows {
+    gap: 0.1rem;
+    padding: 0.2rem 0;
+}
+
+.kviz-round-scoreboard.kviz-scoreboard-dense .kviz-scoreboard-row {
+    min-height: 30px;
+}
+
+.kviz-round-scoreboard.kviz-scoreboard-dense .kviz-scoreboard-round-icon {
+    width: 28px;
+    height: 28px;
+}
+
+.kviz-round-scoreboard.kviz-scoreboard-dense .kviz-scoreboard-points {
+    font-size: 0.72rem;
+}
+
+/* Poslednje dve runde koriste najmanju, ali i dalje čitljivu varijantu. */
+.kviz-round-scoreboard.kviz-scoreboard-compact .kviz-scoreboard-players {
+    min-height: 29px;
+    padding-bottom: 0.2rem;
+}
+
+.kviz-round-scoreboard.kviz-scoreboard-compact .kviz-scoreboard-player > img {
+    width: 23px;
+    height: 23px;
+    flex-basis: 23px;
+}
+
+.kviz-round-scoreboard.kviz-scoreboard-compact .kviz-scoreboard-row {
+    min-height: 27px;
+}
+
+.kviz-round-scoreboard.kviz-scoreboard-compact .kviz-scoreboard-round-icon {
+    width: 25px;
+    height: 25px;
+}
+
+.kviz-round-scoreboard.kviz-scoreboard-compact .kviz-scoreboard-total-row {
+    min-height: 29px;
+}

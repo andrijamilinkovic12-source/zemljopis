@@ -1164,7 +1164,10 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
 
     const rezultati = napraviKvizRezultate(soba);
     const poslednje = soba.indeksRunde >= soba.runde.length - 1;
-    const nastavakPitanjaAt = Date.now() + KVIZ_PAUZA_POSLEDNJE_PITANJE_MS;
+    const trajanjePauzePoslednjegPitanjaMs = runda.tip === 'spojnice'
+        ? 7000
+        : KVIZ_PAUZA_POSLEDNJE_PITANJE_MS;
+    const nastavakPitanjaAt = Date.now() + trajanjePauzePoslednjegPitanjaMs;
 
     // Poslednje pitanje se prvo prikazuje kao i svako drugo: oba odgovora i poeni.
     // Tek zatim sledi završna tabela cele runde.
@@ -1178,7 +1181,7 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
         rezultati,
         povratneInformacije,
         poslednjePitanje: true,
-        trajanjePauzeMs: KVIZ_PAUZA_POSLEDNJE_PITANJE_MS,
+        trajanjePauzeMs: trajanjePauzePoslednjegPitanjaMs,
         nastavakAt: nastavakPitanjaAt
     });
 
@@ -1206,7 +1209,7 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
             if (poslednje) zakljuciKvizMec(soba, 'zavrseno');
             else pokreniKvizRundu(soba);
         }, trajanjePauzeMs);
-    }, KVIZ_PAUZA_POSLEDNJE_PITANJE_MS);
+    }, trajanjePauzePoslednjegPitanjaMs);
 }
 
 function napraviOdgovorTestBota(tip, pitanje) {

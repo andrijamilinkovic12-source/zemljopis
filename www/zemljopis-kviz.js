@@ -999,6 +999,7 @@ const KvizManager = {
         if (!pauza) return;
         pauza.classList.remove('kviz-show-round-scoreboard');
         pauza.classList.add('kviz-podpitanje-pauza');
+        pauza.dataset.kvizTip = podaci.tip || '';
         this.sakrijAnimiranuTabeluRundi();
         const redniBroj = (Number(podaci.indeksPitanja) || 0) + 1;
         const ukupno = Number(podaci.ukupnoPitanja) || 4;
@@ -1059,6 +1060,7 @@ const KvizManager = {
         const pauza = document.getElementById('kviz-pauza-runde');
         if (!pauza) return;
         pauza.classList.remove('kviz-podpitanje-pauza');
+        delete pauza.dataset.kvizTip;
         const pitanjePauze = document.getElementById('kviz-pauza-pitanje');
         const napredakPauze = document.getElementById('kviz-pauza-napredak');
         if (pitanjePauze) pitanjePauze.hidden = true;
@@ -1107,6 +1109,7 @@ const KvizManager = {
         const pauza = document.getElementById('kviz-pauza-runde');
         if (pauza) pauza.hidden = true;
         if (pauza) pauza.classList.remove('kviz-podpitanje-pauza');
+        if (pauza) delete pauza.dataset.kvizTip;
         const pitanjePauze = document.getElementById('kviz-pauza-pitanje');
         const napredakPauze = document.getElementById('kviz-pauza-napredak');
         if (pitanjePauze) pitanjePauze.hidden = true;

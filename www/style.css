@@ -18203,6 +18203,67 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     font-size: 0.64rem;
 }
 
+/* Šest spojnica se prikazuje kompletno za oba igrača, bez internog skrola. */
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-question-feedback {
+    max-height: none;
+    margin-top: 0.46rem;
+    padding-top: 0.42rem;
+    overflow: visible;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-title {
+    margin-bottom: 0.2rem;
+    font-size: 0.45rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-player {
+    padding: 0.24rem;
+    border-radius: 10px;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-player-head {
+    margin-bottom: 0.14rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-items {
+    gap: 0.12rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-item {
+    min-height: 16px;
+    gap: 0.12rem;
+    padding: 0.1rem 0.16rem;
+    font-size: 0.42rem;
+    line-height: 1.04;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-item > i {
+    width: 0.46rem;
+    font-size: 0.43rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-item > span {
+    font-size: 0.39rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-item > b,
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-item > strong {
+    font-size: 0.42rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-break-scores {
+    margin-top: 0.5rem;
+    padding-top: 0.46rem;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-break-score-icon {
+    min-height: 50px;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-break-next {
+    margin-top: 0.48rem;
+}
+
 /* Završna tabela ostaje u jednom ekranu i kada se popuni svih sedam rundi. */
 .kviz-round-break.kviz-show-round-scoreboard {
     inset: 0;

@@ -17997,12 +17997,37 @@ body.kviz-keyboard-open #custom-keyboard .kb-key:active {
     display: none !important;
 }
 
+.kviz-connection-notice {
+    position: fixed;
+    top: max(68px, calc(env(safe-area-inset-top) + 56px));
+    right: max(12px, calc(50% - 228px));
+    left: max(12px, calc(50% - 228px));
+    z-index: 32;
+    margin: 0;
+    padding: 0.58rem 0.8rem;
+    border: 1px solid rgba(157, 232, 255, 0.58);
+    border-radius: 13px;
+    background: linear-gradient(145deg, rgba(40, 92, 142, 0.96), rgba(35, 50, 111, 0.98));
+    box-shadow: 0 9px 22px rgba(5, 10, 38, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    color: #f3fbff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1.25;
+    text-align: center;
+}
+
+.kviz-connection-notice.is-warning {
+    border-color: rgba(255, 209, 124, 0.72);
+    background: linear-gradient(145deg, rgba(128, 78, 58, 0.97), rgba(92, 48, 78, 0.98));
+    color: #fff4d9;
+}
+
 /* Potvrda je jedina stalna kontrola pri dnu ekrana. */
 #zemljopis-kviz-screen .kviz-round-submit {
     position: fixed;
-    right: max(12px, env(safe-area-inset-right));
+    right: max(12px, env(safe-area-inset-right), calc(50% - 228px));
     bottom: max(4px, calc(env(safe-area-inset-bottom) + 4px));
-    left: max(12px, env(safe-area-inset-left));
+    left: max(12px, env(safe-area-inset-left), calc(50% - 228px));
     z-index: 24;
     min-height: 44px;
 }

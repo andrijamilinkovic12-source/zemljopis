@@ -14,9 +14,12 @@ const KvizManager = {
     tajmer: null,
     nastavakAt: 0,
     pauzaTajmer: null,
-    introTrajanjeMs: 5200,
+    introTrajanjeMs: 1800,
     introTajmer: null,
     ulazakTajmer: null,
+    pocetakMecaAt: 0,
+    pocetakMecaTajmer: null,
+    obavestenjeVezeTajmer: null,
     otvaranjeUToku: false,
     mojeIme: 'Igrač',
     mojAvatar: 'atlas',
@@ -43,6 +46,8 @@ const KvizManager = {
         socket.on('kviz:rezultatRunde', (podaci = {}) => this.primiRezultatRunde(podaci));
         socket.on('kviz:krajMeca', (podaci = {}) => this.primiKrajMeca(podaci));
         socket.on('kviz:protivnikNapustio', (podaci = {}) => this.primiPredaju(podaci));
+        socket.on('disconnect', () => this.primiPrekidVeze());
+        socket.on('connect', () => this.primiPovratakVeze());
     },
 
     otvoriEkran: function() {
@@ -133,6 +138,7 @@ const KvizManager = {
         this.rezultat = {};
         this.rezultatiPoRundama = {};
         this.informacijeRundi = {};
+        this.pocetakMecaAt = Number(podaci.pocetakMecaAt) || (this.serverSada() + 3200);
         this.prikaziCekanje(false);
         this.prikaziSekciju('igra');
         this.vratiKvizNaPocetak();
@@ -142,16 +148,19 @@ const KvizManager = {
         this.postaviTekst('kviz-moji-poeni', '0');
         this.postaviTekst('kviz-protivnik-poeni', '0');
         this.prikaziNapredak(0, 1);
-        this.postaviTekst('kviz-kategorija', 'SPREMI SE');
-        this.postaviTekst('kviz-pitanje', 'Protivnik je pronađen. Prva runda stiže uskoro...');
+        this.postaviTekst('kviz-kategorija', 'DUEL POČINJE');
+        this.postaviTekst('kviz-pitanje', 'Protivnik je pronađen. Spremi se za prvi izazov!');
         this.postaviTekst('kviz-answer-status', 'Očekuje te sedam potpuno različitih izazova.');
         this.ocistiSadrzajRunde();
+        this.pokreniOdbrojavanjePocetka();
     },
 
     primiRundu: function(podaci) {
         if (!this.mecUToku || podaci.sobaId !== this.sobaId || !podaci.runda) return;
         clearTimeout(this.spojniceTajmer);
         this.spojniceTajmer = null;
+        this.zaustaviOdbrojavanjePocetka();
+        this.sakrijObavestenjeVeze();
         this.sakrijPauzuRunde();
         this.vratiKvizNaPocetak();
         this.odgovorPoslat = false;
@@ -1315,6 +1324,8 @@ const KvizManager = {
 
     resetujStanje: function() {
         this.zaustaviTajmer();
+        this.zaustaviOdbrojavanjePocetka();
+        this.sakrijObavestenjeVeze();
         this.sakrijPauzuRunde();
         this.sobaId = null;
         this.cekanjeUToku = false;
@@ -1324,6 +1335,7 @@ const KvizManager = {
         this.indeksPitanja = -1;
         this.aktivnaRunda = null;
         this.krajRundeAt = 0;
+        this.pocetakMecaAt = 0;
         this.protivnik = null;
         this.mojAvatar = 'atlas';
         this.rezultat = {};
@@ -1371,6 +1383,22 @@ const KvizManager = {
         this.tajmer = setInterval(osvezi, 180);
     },
 
+    pokreniOdbrojavanjePocetka: function() {
+        this.zaustaviOdbrojavanjePocetka();
+        const osvezi = () => {
+            const preostalo = Math.max(0, Math.ceil((this.pocetakMecaAt - this.serverSada()) / 1000));
+            this.postaviTekst('kviz-tajmer', String(preostalo));
+            if (preostalo <= 0) this.zaustaviOdbrojavanjePocetka();
+        };
+        osvezi();
+        this.pocetakMecaTajmer = setInterval(osvezi, 120);
+    },
+
+    zaustaviOdbrojavanjePocetka: function() {
+        if (this.pocetakMecaTajmer) clearInterval(this.pocetakMecaTajmer);
+        this.pocetakMecaTajmer = null;
+    },
+
     zaustaviTajmer: function() {
         if (this.tajmer) clearInterval(this.tajmer);
         this.tajmer = null;
@@ -1394,6 +1422,49 @@ const KvizManager = {
 
     serverSada: function() {
         return typeof Game !== 'undefined' && typeof Game.serverSada === 'function' ? Game.serverSada() : Date.now();
+    },
+
+    primiPrekidVeze: function() {
+        if (!this.mecUToku && !this.cekanjeUToku) return;
+        this.prikaziObavestenjeVeze('Veza je prekinuta. Pokušavamo ponovo da se povežemo…', true);
+    },
+
+    primiPovratakVeze: function() {
+        if (!this.mecUToku && !this.cekanjeUToku) return;
+        const aktivanMec = this.mecUToku;
+        this.resetujPrikaz();
+        this.postaviStatus(
+            aktivanMec
+                ? 'Prethodni duel je prekinut zbog prekida veze. Spreman/na si za novi duel.'
+                : 'Veza je vraćena. Spreman/na si za novi duel.',
+            false
+        );
+        this.prikaziObavestenjeVeze(
+            aktivanMec
+                ? 'Veza je vraćena. Prethodni duel je prekinut zbog prekida veze.'
+                : 'Veza je vraćena. Možeš ponovo da potražiš duel.'
+        );
+    },
+
+    prikaziObavestenjeVeze: function(tekst, upozorenje = false) {
+        const obavestenje = document.getElementById('kviz-connection-notice');
+        if (!obavestenje) return;
+        clearTimeout(this.obavestenjeVezeTajmer);
+        obavestenje.textContent = tekst;
+        obavestenje.classList.toggle('is-warning', upozorenje);
+        obavestenje.hidden = false;
+        if (!upozorenje) {
+            this.obavestenjeVezeTajmer = setTimeout(() => this.sakrijObavestenjeVeze(), 2600);
+        }
+    },
+
+    sakrijObavestenjeVeze: function() {
+        clearTimeout(this.obavestenjeVezeTajmer);
+        this.obavestenjeVezeTajmer = null;
+        const obavestenje = document.getElementById('kviz-connection-notice');
+        if (!obavestenje) return;
+        obavestenje.hidden = true;
+        obavestenje.classList.remove('is-warning');
     },
 
     prikaziNapredak: function(redniBroj, ukupno) {

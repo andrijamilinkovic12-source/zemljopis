@@ -206,12 +206,13 @@ const onlineIgraci = {};
 // ==========================================
 const KVIZ_BROJ_RUNDI = 7;
 // Pauza je namerna: igrači treba da stignu da vide rešenje, osvojene poene i zbirni rezultat.
-const KVIZ_PAUZA_IZMEDJU_RUNDI_MS = 10000;
-const KVIZ_PAUZA_PRE_KRAJA_MS = 7000;
-const KVIZ_PAUZA_IZMEDJU_PITANJA_MS = 10000;
-const KVIZ_PAUZA_IZMEDJU_OBLASTI_BRZOPOTEZNE_MS = 10000;
-const KVIZ_PAUZA_IZMEDJU_SPOJNICA_MS = 10000;
-const KVIZ_PAUZA_POSLEDNJE_PITANJE_MS = 5000;
+const KVIZ_PAUZA_IZMEDJU_RUNDI_MS = 7000;
+const KVIZ_PAUZA_PRE_KRAJA_MS = 9000;
+const KVIZ_PAUZA_IZMEDJU_PITANJA_MS = 6000;
+const KVIZ_PAUZA_IZMEDJU_OBLASTI_BRZOPOTEZNE_MS = 6000;
+const KVIZ_PAUZA_IZMEDJU_SPOJNICA_MS = 6500;
+const KVIZ_PAUZA_POSLEDNJE_PITANJE_MS = 4500;
+const KVIZ_ODBROJAVANJE_POCETKA_MS = 3200;
 // Privremeno za interno testiranje: svaki kviz se odmah pokreće protiv Atlas Bota.
 // Za povratak na javno uparivanje dovoljno je na serveru postaviti KVIZ_TEST_BOT=false.
 const KVIZ_TEST_BOT_OMOGUCEN = process.env.KVIZ_TEST_BOT !== 'false';
@@ -2320,6 +2321,7 @@ function napraviKvizSobu(igraci, testBot = false) {
         rezultatAktivneRunde: {},
         rundaZakljucena: false,
         timeoutPocetka: null,
+        pocetakMecaAt: null,
         timeoutRunda: null,
         timeoutSledecaRunda: null,
         timeoutTragovi: [],
@@ -2329,14 +2331,16 @@ function napraviKvizSobu(igraci, testBot = false) {
 }
 
 function zakaziPocetakKvizMeca(soba) {
-    if (!soba) return;
+    if (!soba) return null;
     if (soba.timeoutPocetka) clearTimeout(soba.timeoutPocetka);
+    soba.pocetakMecaAt = Date.now() + KVIZ_ODBROJAVANJE_POCETKA_MS;
     soba.timeoutPocetka = setTimeout(() => {
         soba.timeoutPocetka = null;
         if (kvizSobe[soba.id] === soba && soba.status === 'u_igri' && soba.igraci.length === 2) {
             pokreniKvizRundu(soba);
         }
-    }, 1300);
+    }, KVIZ_ODBROJAVANJE_POCETKA_MS);
+    return soba.pocetakMecaAt;
 }
 
 function napraviTestKvizMec(socket, igracNaMrezi) {
@@ -2358,12 +2362,13 @@ function napraviTestKvizMec(socket, igracNaMrezi) {
     const soba = napraviKvizSobu([igrac, bot], true);
     kvizSobe[soba.id] = soba;
     socket.join(soba.id);
+    const pocetakMecaAt = zakaziPocetakKvizMeca(soba);
     io.to(socket.id).emit('kviz:pronadjenMec', {
         sobaId: soba.id,
         ja: { playerId: igrac.playerId, ime: igrac.ime, avatar: igrac.avatar },
-        protivnik: { playerId: bot.playerId, ime: bot.ime, avatar: bot.avatar }
+        protivnik: { playerId: bot.playerId, ime: bot.ime, avatar: bot.avatar },
+        pocetakMecaAt
     });
-    zakaziPocetakKvizMeca(soba);
     return soba;
 }
 
@@ -2725,7 +2730,7 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
     const rezultati = napraviKvizRezultate(soba);
     const poslednje = soba.indeksRunde >= soba.runde.length - 1;
     const trajanjePauzePoslednjegPitanjaMs = runda.tip === 'spojnice'
-        ? 7000
+        ? 6000
         : KVIZ_PAUZA_POSLEDNJE_PITANJE_MS;
     const nastavakPitanjaAt = Date.now() + trajanjePauzePoslednjegPitanjaMs;
 
@@ -5058,20 +5063,21 @@ io.on('connection', (socket) => {
         kvizSobe[sobaId] = soba;
         protivnikSocket.join(sobaId);
         socket.join(sobaId);
+        const pocetakMecaAt = zakaziPocetakKvizMeca(soba);
 
         io.to(protivnikSocketId).emit('kviz:pronadjenMec', {
             sobaId,
             ja: { playerId: igraci[0].playerId, ime: igraci[0].ime, avatar: igraci[0].avatar },
-            protivnik: { playerId: igraci[1].playerId, ime: igraci[1].ime, avatar: igraci[1].avatar }
+            protivnik: { playerId: igraci[1].playerId, ime: igraci[1].ime, avatar: igraci[1].avatar },
+            pocetakMecaAt
         });
         io.to(socket.id).emit('kviz:pronadjenMec', {
             sobaId,
             ja: { playerId: igraci[1].playerId, ime: igraci[1].ime, avatar: igraci[1].avatar },
-            protivnik: { playerId: igraci[0].playerId, ime: igraci[0].ime, avatar: igraci[0].avatar }
+            protivnik: { playerId: igraci[0].playerId, ime: igraci[0].ime, avatar: igraci[0].avatar },
+            pocetakMecaAt
         });
-        callback({ uspeh: true, sobaId, pronadjenProtivnik: true });
-
-        zakaziPocetakKvizMeca(soba);
+        callback({ uspeh: true, sobaId, pronadjenProtivnik: true, pocetakMecaAt });
     });
 
     socket.on('kviz:otkaziCekanje', () => {

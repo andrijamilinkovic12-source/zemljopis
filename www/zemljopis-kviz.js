@@ -908,9 +908,7 @@ const KvizManager = {
             slika.src = `assets/${opis.slika}`;
             slika.alt = '';
             slika.draggable = false;
-            const broj = document.createElement('span');
-            broj.textContent = String(indeks + 1);
-            ikona.append(slika, broj);
+            ikona.appendChild(slika);
             const protivnickiPoeni = document.createElement('b');
             protivnickiPoeni.className = 'kviz-scoreboard-points rival';
             protivnickiPoeni.textContent = `+${Number(protivnik.poeniRunde) || 0}`;

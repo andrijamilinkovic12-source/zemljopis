@@ -16415,22 +16415,6 @@ body[data-tema] #main-menu .circle-overlay.active {
     box-shadow: 4px 5px 9px rgba(3, 3, 24, 0.34), inset 1px 1px 0 rgba(255,255,255,0.24);
 }
 .kviz-scoreboard-round-icon > img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.kviz-scoreboard-round-icon > span {
-    position: absolute;
-    right: -2px;
-    bottom: -3px;
-    display: grid;
-    width: 17px;
-    height: 17px;
-    place-items: center;
-    border: 1px solid rgba(255, 247, 227, 0.55);
-    border-radius: 8px 9px 7px 10px;
-    background: rgba(48, 23, 75, 0.86);
-    color: #fff5df;
-    font-size: 0.54rem;
-    font-weight: 900;
-}
-
 .kviz-scoreboard-total-row {
     gap: 0.28rem;
     min-height: 42px;
@@ -18352,12 +18336,6 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     border-radius: 11px;
 }
 
-.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-round-icon > span {
-    width: 14px;
-    height: 14px;
-    font-size: 0.44rem;
-}
-
 .kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-total-row {
     min-height: 34px;
     padding: 0.22rem 0;
@@ -18590,7 +18568,6 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
 .kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-row { min-height: 36px; }
 .kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-points { padding: 0 0.36rem; font-size: 0.88rem; }
 .kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-round-icon { width: 34px; height: 34px; border-radius: 12px; }
-.kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-round-icon > span { width: 15px; height: 15px; font-size: 0.47rem; }
 .kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-total-row { min-height: 38px; padding: 0.28rem 0; }
 .kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-total-row > b { padding: 0 0.36rem; font-size: 1.14rem; }
 .kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-total-row > span { min-height: 23px; font-size: 0.47rem; }

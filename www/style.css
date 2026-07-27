@@ -18443,11 +18443,11 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
 .kviz-round-break.kviz-podpitanje-pauza .kviz-question-feedback {
     order: 6;
     width: min(100%, 360px);
-    max-height: min(39vh, 235px);
-    margin-top: clamp(0.68rem, 1.9vh, 0.9rem);
-    padding: 0.58rem 0.06rem 0.04rem;
+    max-height: none;
+    margin-top: clamp(0.82rem, 2.3vh, 1.08rem);
+    padding: 0.72rem 0.06rem 0.08rem;
     border-top-color: rgba(249, 227, 255, 0.18);
-    scrollbar-color: rgba(242, 202, 255, 0.48) transparent;
+    overflow: visible;
 }
 
 .kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-title {
@@ -18460,7 +18460,7 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
 .kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-players { gap: 0.5rem; }
 
 .kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-player {
-    padding: 0.5rem;
+    padding: 0.58rem;
     border-radius: 15px;
 }
 
@@ -18470,7 +18470,7 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
 .kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-items { gap: 0.28rem; }
 
 .kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-item {
-    min-height: 27px;
+    min-height: 30px;
     gap: 0.24rem;
     padding: 0.3rem 0.34rem;
     font-size: clamp(0.6rem, 2.45vw, 0.68rem);
@@ -18481,6 +18481,20 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
 .kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-item > span { font-size: 0.54rem; }
 .kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-item > b { font-size: inherit; }
 .kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-item > strong { font-size: 0.94em; }
+
+/* Kod kraćih povratnih informacija kartice koriste slobodnu visinu umesto praznog prostora oko njih. */
+@media (min-height: 671px) {
+    .kviz-round-break.kviz-podpitanje-pauza:not([data-kviz-tip="spojnice"]) .kviz-feedback-player {
+        min-height: 164px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .kviz-round-break.kviz-podpitanje-pauza:not([data-kviz-tip="spojnice"]) .kviz-feedback-items {
+        flex: 1 1 auto;
+        align-content: space-between;
+    }
+}
 
 /* Poeni su već u zaglavlju kartice povratne informacije, pa ih ne prikazujemo još jednom. */
 .kviz-round-break.kviz-podpitanje-pauza.kviz-question-has-feedback .kviz-break-scores { display: none; }
@@ -18497,18 +18511,18 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     font-size: clamp(0.62rem, 2.3vw, 0.68rem);
 }
 
-/* Šest spojnica ostaje čitljivo; sadržaj kartica je jedini deo koji po potrebi skroluje. */
+/* Šest spojnica koristi slobodnu visinu kartice, bez unutrašnjeg skrola. */
 .kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-question-feedback {
-    max-height: min(43vh, 265px);
-    margin-top: 0.62rem;
-    padding-top: 0.52rem;
-    overflow-y: auto;
+    max-height: none;
+    margin-top: 0.76rem;
+    padding-top: 0.64rem;
+    overflow: visible;
 }
 
-.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-player { padding: 0.42rem; }
+.kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-player { padding: 0.48rem; }
 .kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-item {
-    min-height: 23px;
-    padding: 0.22rem 0.28rem;
+    min-height: 25px;
+    padding: 0.25rem 0.3rem;
     font-size: clamp(0.54rem, 2.25vw, 0.62rem);
     line-height: 1.12;
 }
@@ -18644,9 +18658,10 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
 
 @media (max-height: 670px) {
     .kviz-round-break.kviz-podpitanje-pauza .kviz-break-question { margin-top: 0.48rem; padding: 0.56rem 0.68rem 0.62rem; }
-    .kviz-round-break.kviz-podpitanje-pauza .kviz-question-feedback { max-height: min(34vh, 185px); margin-top: 0.5rem; }
+    .kviz-round-break.kviz-podpitanje-pauza .kviz-question-feedback { max-height: none; margin-top: 0.5rem; overflow: visible; }
     .kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-player { padding: 0.4rem; }
     .kviz-round-break.kviz-podpitanje-pauza .kviz-feedback-item { min-height: 23px; padding: 0.22rem 0.27rem; }
+    .kviz-round-break.kviz-podpitanje-pauza[data-kviz-tip="spojnice"] .kviz-feedback-item { min-height: 21px; padding: 0.18rem 0.24rem; }
     .kviz-round-break.kviz-show-round-scoreboard .kviz-round-scoreboard { margin-top: 0.4rem; padding: 0.38rem; }
     .kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-row { min-height: 32px; }
     .kviz-round-break.kviz-show-round-scoreboard .kviz-scoreboard-round-icon { width: 30px; height: 30px; }

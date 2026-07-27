@@ -351,6 +351,66 @@ const KVIZ_RUNDE = [
                 pitanje: 'Napiši tačno tri reke na slovo T.',
                 uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.', trajanjeMs: 45000, trazeno: 3,
                 prihvaceni: ['Tara', 'Tisa', 'Tajo', 'Tamnava', 'Temza', 'Tibar', 'Trent']
+            },
+            {
+                id: 'gradovi-b', kategorija: 'GRADOVI',
+                pitanje: 'Napiši tačno tri grada na slovo B.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.', trajanjeMs: 45000, trazeno: 3,
+                prihvaceni: ['Beograd', 'Berlin', 'Beč', 'Budimpešta', 'Barselona', 'Brisel', 'Bukurešt', 'Budva', 'Banja Luka']
+            },
+            {
+                id: 'drzave-a', kategorija: 'DRŽAVE',
+                pitanje: 'Napiši tačno tri države na slovo A.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.', trajanjeMs: 45000, trazeno: 3,
+                prihvaceni: ['Albanija', 'Alžir', 'Angola', 'Argentina', 'Armenija', 'Australija', 'Austrija', 'Avganistan', 'Azerbejdžan']
+            },
+            {
+                id: 'planine-d', kategorija: 'PLANINE',
+                pitanje: 'Napiši tačno tri planine ili planinska masiva na slovo D.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.', trajanjeMs: 45000, trazeno: 3,
+                prihvaceni: ['Dinara', 'Dinaridi', 'Dolomiti', 'Durmitor', 'Deli Jovan']
+            },
+            {
+                id: 'reke-n', kategorija: 'REKE',
+                pitanje: 'Napiši tačno tri reke na slovo N.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.', trajanjeMs: 45000, trazeno: 3,
+                prihvaceni: ['Neretva', 'Nišava', 'Niger', 'Nil', 'Nera', 'Njemen']
+            },
+            {
+                id: 'biljke-m', kategorija: 'BILJKE',
+                pitanje: 'Napiši tačno tri biljke na slovo M.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.', trajanjeMs: 45000, trazeno: 3,
+                prihvaceni: ['Mak', 'Malina', 'Maslina', 'Menta', 'Mango', 'Magnolija']
+            },
+            {
+                id: 'zivotinje-s', kategorija: 'ŽIVOTINJE',
+                pitanje: 'Napiši tačno tri životinje na slovo S.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.', trajanjeMs: 45000, trazeno: 3,
+                prihvaceni: ['Slon', 'Sova', 'Srna', 'Soko', 'Svinja', 'Skakavac', 'Som']
+            },
+            {
+                id: 'predmeti-t', kategorija: 'PREDMETI',
+                pitanje: 'Napiši tačno tri predmeta na slovo T.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.', trajanjeMs: 45000, trazeno: 3,
+                prihvaceni: ['Telefon', 'Televizor', 'Tanjir', 'Torba', 'Tastatura', 'Trotinet']
+            },
+            {
+                id: 'gradovi-z', kategorija: 'GRADOVI',
+                pitanje: 'Napiši tačno tri grada na slovo Z.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.', trajanjeMs: 45000, trazeno: 3,
+                prihvaceni: ['Zagreb', 'Zadar', 'Zaječar', 'Zenica', 'Zrenjanin', 'Zurih']
+            },
+            {
+                id: 'drzave-s', kategorija: 'DRŽAVE',
+                pitanje: 'Napiši tačno tri države na slovo S.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.', trajanjeMs: 45000, trazeno: 3,
+                prihvaceni: ['Senegal', 'Sejšeli', 'Singapur', 'Sirija', 'Slovačka', 'Slovenija', 'Srbija', 'Sudan', 'Surinam']
+            },
+            {
+                id: 'planine-t', kategorija: 'PLANINE',
+                pitanje: 'Napiši tačno tri planine ili planinska masiva na slovo T.',
+                uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.', trajanjeMs: 45000, trazeno: 3,
+                prihvaceni: ['Tara', 'Tatre', 'Tian Šan', 'Toros', 'Triglav']
             }
         ]
     },
@@ -505,6 +565,106 @@ const KVIZ_RUNDE = [
                     { levo: 'Hvar', desno: 'Hrvatska' }, { levo: 'Korzika', desno: 'Francuska' },
                     { levo: 'Avala', desno: 'Srbija' }, { levo: 'Mont Everest', desno: 'Nepal' }
                 ]
+            },
+            {
+                id: 'prestonice-balkan', kategorija: 'GRADOVI I DRŽAVE',
+                pitanje: 'Spoji balkanske prestonice sa državama.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.', trajanjeMs: 55000,
+                parovi: [
+                    { levo: 'Tirana', desno: 'Albanija' }, { levo: 'Podgorica', desno: 'Crna Gora' },
+                    { levo: 'Sarajevo', desno: 'Bosna i Hercegovina' }, { levo: 'Skoplje', desno: 'Severna Makedonija' },
+                    { levo: 'Zagreb', desno: 'Hrvatska' }, { levo: 'Sofija', desno: 'Bugarska' }
+                ]
+            },
+            {
+                id: 'gradovi-i-reke-svet', kategorija: 'GRADOVI I REKE',
+                pitanje: 'Spoji gradove sa rekama koje kroz njih protiču.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.', trajanjeMs: 55000,
+                parovi: [
+                    { levo: 'Kairo', desno: 'Nil' }, { levo: 'Budimpešta', desno: 'Dunav' },
+                    { levo: 'Rim', desno: 'Tibar' }, { levo: 'Lisabon', desno: 'Tajo' },
+                    { levo: 'Prag', desno: 'Vltava' }, { levo: 'Bagdad', desno: 'Tigar' }
+                ]
+            },
+            {
+                id: 'vrhovi-i-kontinenti', kategorija: 'PLANINE',
+                pitanje: 'Spoji poznate vrhove sa kontinentima na kojima se nalaze.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.', trajanjeMs: 55000,
+                parovi: [
+                    { levo: 'Mont Everest', desno: 'Azija' }, { levo: 'Akonkagva', desno: 'Južna Amerika' },
+                    { levo: 'Kilimandžaro', desno: 'Afrika' }, { levo: 'Denali', desno: 'Severna Amerika' },
+                    { levo: 'Koscjuško', desno: 'Australija' }, { levo: 'Elbrus', desno: 'Evropa' }
+                ]
+            },
+            {
+                id: 'znamenitosti-i-gradovi-nove', kategorija: 'GRADOVI I PREDMETI',
+                pitanje: 'Spoji znamenitosti sa gradovima kojima pripadaju.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.', trajanjeMs: 55000,
+                parovi: [
+                    { levo: 'Alhambra', desno: 'Granada' }, { levo: 'Hrist Spasitelj', desno: 'Rio de Žaneiro' },
+                    { levo: 'Angkor Vat', desno: 'Siem Reap' }, { levo: 'Maču Pikču', desno: 'Kusko' },
+                    { levo: 'Kapija Indije', desno: 'Nju Delhi' }, { levo: 'Brandenburška kapija', desno: 'Berlin' }
+                ]
+            },
+            {
+                id: 'ostrva-i-drzave-nove', kategorija: 'DRŽAVE',
+                pitanje: 'Spoji ostrva sa državama kojima pripadaju.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.', trajanjeMs: 55000,
+                parovi: [
+                    { levo: 'Malta', desno: 'Malta' }, { levo: 'Island', desno: 'Island' },
+                    { levo: 'Tasmanija', desno: 'Australija' }, { levo: 'Bali', desno: 'Indonezija' },
+                    { levo: 'Kuba', desno: 'Kuba' }, { levo: 'Hokaido', desno: 'Japan' }
+                ]
+            },
+            {
+                id: 'zivotinje-i-stanista-nove', kategorija: 'ŽIVOTINJE I PLANINE',
+                pitanje: 'Spoji životinje sa područjima za koja su naročito prepoznatljive.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.', trajanjeMs: 55000,
+                parovi: [
+                    { levo: 'Dromedar', desno: 'Sahara' }, { levo: 'Carski pingvin', desno: 'Antarktik' },
+                    { levo: 'Kapibara', desno: 'Južna Amerika' }, { levo: 'Polarni medved', desno: 'Arktik' },
+                    { levo: 'Kengur', desno: 'Australija' }, { levo: 'Jak', desno: 'Himalaji' }
+                ]
+            },
+            {
+                id: 'biljke-i-oblasti', kategorija: 'BILJKE',
+                pitanje: 'Spoji biljke sa oblastima za koje su naročito poznate.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.', trajanjeMs: 55000,
+                parovi: [
+                    { levo: 'Lavanda', desno: 'Provansa' }, { levo: 'Čaj', desno: 'Šri Lanka' },
+                    { levo: 'Kakao', desno: 'Ekvador' }, { levo: 'Kafa', desno: 'Etiopija' },
+                    { levo: 'Pirinač', desno: 'Vijetnam' }, { levo: 'Vinova loza', desno: 'Francuska' }
+                ]
+            },
+            {
+                id: 'nacionalni-parkovi', kategorija: 'DRŽAVE I PLANINE',
+                pitanje: 'Spoji nacionalne parkove sa državama u kojima se nalaze.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.', trajanjeMs: 55000,
+                parovi: [
+                    { levo: 'Plitvička jezera', desno: 'Hrvatska' }, { levo: 'Jelouston', desno: 'Sjedinjene Američke Države' },
+                    { levo: 'Kruger', desno: 'Južna Afrika' }, { levo: 'Banf', desno: 'Kanada' },
+                    { levo: 'Serengeti', desno: 'Tanzanija' }, { levo: 'Durmitor', desno: 'Crna Gora' }
+                ]
+            },
+            {
+                id: 'drzave-i-zastave', kategorija: 'DRŽAVE',
+                pitanje: 'Spoji države sa prepoznatljivim simbolima na zastavama.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.', trajanjeMs: 55000,
+                parovi: [
+                    { levo: 'Kanada', desno: 'Javorov list' }, { levo: 'Japan', desno: 'Crveni krug' },
+                    { levo: 'Švajcarska', desno: 'Beli krst' }, { levo: 'Australija', desno: 'Južni krst' },
+                    { levo: 'Nepal', desno: 'Dvostruki trougao' }, { levo: 'Brazil', desno: 'Zvezdano nebo' }
+                ]
+            },
+            {
+                id: 'mora-i-okeani', kategorija: 'REKE',
+                pitanje: 'Spoji mora sa državama uz čije se obale nalaze.',
+                uputstvo: 'Svaki pravilno spojen par nosi 1 bod.', trajanjeMs: 55000,
+                parovi: [
+                    { levo: 'Jadransko more', desno: 'Italija' }, { levo: 'Karipsko more', desno: 'Kuba' },
+                    { levo: 'Japansko more', desno: 'Japan' }, { levo: 'Arabijsko more', desno: 'Indija' },
+                    { levo: 'Barencovo more', desno: 'Norveška' }, { levo: 'Koralsko more', desno: 'Australija' }
+                ]
             }
         ]
     },
@@ -616,6 +776,66 @@ const KVIZ_RUNDE = [
                 pitanje: 'Složi naziv predmeta koji predstavlja Zemlju u umanjenom obliku.',
                 uputstvo: 'Dodirni slova redom i složi tačan naziv predmeta.', trajanjeMs: 30000,
                 slova: ['G', 'L', 'O', 'B', 'U', 'S'], prihvaceni: ['Globus'], resenje: 'Globus', poeni: 3
+            },
+            {
+                id: 'neretva', kategorija: 'REKE',
+                pitanje: 'Složi naziv reke koja protiče kroz Mostar.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv reke.', trajanjeMs: 30000,
+                slova: ['N', 'E', 'R', 'E', 'T', 'V', 'A'], prihvaceni: ['Neretva'], resenje: 'Neretva', poeni: 3
+            },
+            {
+                id: 'morava', kategorija: 'REKE',
+                pitanje: 'Složi naziv velike reke u Srbiji.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv reke.', trajanjeMs: 30000,
+                slova: ['M', 'O', 'R', 'A', 'V', 'A'], prihvaceni: ['Morava'], resenje: 'Morava', poeni: 3
+            },
+            {
+                id: 'durmitor', kategorija: 'PLANINE',
+                pitanje: 'Složi naziv planinskog masiva u Crnoj Gori.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv planine.', trajanjeMs: 30000,
+                slova: ['D', 'U', 'R', 'M', 'I', 'T', 'O', 'R'], prihvaceni: ['Durmitor'], resenje: 'Durmitor', poeni: 3
+            },
+            {
+                id: 'beograd', kategorija: 'GRADOVI',
+                pitanje: 'Složi naziv glavnog grada Srbije.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv grada.', trajanjeMs: 30000,
+                slova: ['B', 'E', 'O', 'G', 'R', 'A', 'D'], prihvaceni: ['Beograd'], resenje: 'Beograd', poeni: 3
+            },
+            {
+                id: 'vrsac', kategorija: 'GRADOVI',
+                pitanje: 'Složi naziv grada u južnom Banatu.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv grada.', trajanjeMs: 30000,
+                slova: ['V', 'R', 'Š', 'A', 'C'], prihvaceni: ['Vršac'], resenje: 'Vršac', poeni: 3
+            },
+            {
+                id: 'grcka', kategorija: 'DRŽAVE',
+                pitanje: 'Složi naziv države čiji je glavni grad Atina.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv države.', trajanjeMs: 30000,
+                slova: ['G', 'R', 'Č', 'K', 'A'], prihvaceni: ['Grčka'], resenje: 'Grčka', poeni: 3
+            },
+            {
+                id: 'norveska', kategorija: 'DRŽAVE',
+                pitanje: 'Složi naziv skandinavske države poznate po fjordovima.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv države.', trajanjeMs: 30000,
+                slova: ['N', 'O', 'R', 'V', 'E', 'Š', 'K', 'A'], prihvaceni: ['Norveška'], resenje: 'Norveška', poeni: 3
+            },
+            {
+                id: 'maslina', kategorija: 'BILJKE',
+                pitanje: 'Složi naziv mediteranske biljke od čijih se plodova pravi ulje.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv biljke.', trajanjeMs: 30000,
+                slova: ['M', 'A', 'S', 'L', 'I', 'N', 'A'], prihvaceni: ['Maslina'], resenje: 'Maslina', poeni: 3
+            },
+            {
+                id: 'tigar', kategorija: 'ŽIVOTINJE',
+                pitanje: 'Složi naziv velike mačke sa prugama.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv životinje.', trajanjeMs: 30000,
+                slova: ['T', 'I', 'G', 'A', 'R'], prihvaceni: ['Tigar'], resenje: 'Tigar', poeni: 3
+            },
+            {
+                id: 'sekstant', kategorija: 'PREDMETI',
+                pitanje: 'Složi naziv navigacionog instrumenta koji se koristi pri određivanju položaja.',
+                uputstvo: 'Dodirni slova redom i složi tačan naziv predmeta.', trajanjeMs: 30000,
+                slova: ['S', 'E', 'K', 'S', 'T', 'A', 'N', 'T'], prihvaceni: ['Sekstant'], resenje: 'Sekstant', poeni: 3
             }
         ]
     },
@@ -749,6 +969,76 @@ const KVIZ_RUNDE = [
                 uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
                 opcije: ['Beč', 'Prag', 'Rim', 'Sava'], uljezIndeks: 3,
                 objasnjenje: 'Sava je reka, dok su Beč, Prag i Rim evropske prestonice.', poeni: 2
+            },
+            {
+                id: 'drzave-prestonica', kategorija: 'DRŽAVE I GRADOVI',
+                pitanje: 'Tri pojma su države, a jedan je njihov glavni grad.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Austrija', 'Italija', 'Češka', 'Beč'], uljezIndeks: 3,
+                objasnjenje: 'Beč je glavni grad Austrije, dok su ostali pojmovi države.', poeni: 2
+            },
+            {
+                id: 'prestonice-planina', kategorija: 'GRADOVI I PLANINE',
+                pitanje: 'Tri pojma su prestonice, a jedan je planinski vrh.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Tirana', 'Riga', 'Oslo', 'Triglav'], uljezIndeks: 3,
+                objasnjenje: 'Triglav je planinski vrh, dok su Tirana, Riga i Oslo prestonice.', poeni: 2
+            },
+            {
+                id: 'reke-jezero', kategorija: 'REKE',
+                pitanje: 'Tri pojma su reke, a jedan je jezero.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Drava', 'Sava', 'Neretva', 'Ohridsko jezero'], uljezIndeks: 3,
+                objasnjenje: 'Ohridsko jezero je jezero, dok su Drava, Sava i Neretva reke.', poeni: 2
+            },
+            {
+                id: 'africke-drzave-grad', kategorija: 'DRŽAVE I GRADOVI',
+                pitanje: 'Tri pojma su afričke države, a jedan je grad.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Kenija', 'Tanzanija', 'Uganda', 'Tokio'], uljezIndeks: 3,
+                objasnjenje: 'Tokio je grad u Japanu, dok su Kenija, Tanzanija i Uganda afričke države.', poeni: 2
+            },
+            {
+                id: 'spanija-drzava', kategorija: 'GRADOVI I DRŽAVE',
+                pitanje: 'Tri pojma su gradovi u Španiji, a jedan je država.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Madrid', 'Sevilja', 'Valensija', 'Portugal'], uljezIndeks: 3,
+                objasnjenje: 'Portugal je država, dok su Madrid, Sevilja i Valensija gradovi u Španiji.', poeni: 2
+            },
+            {
+                id: 'kontinenti-zivotinja', kategorija: 'ŽIVOTINJE',
+                pitanje: 'Tri pojma su kontinenti, a jedan je životinja.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Afrika', 'Azija', 'Evropa', 'Panda'], uljezIndeks: 3,
+                objasnjenje: 'Panda je životinja, dok su Afrika, Azija i Evropa kontinenti.', poeni: 2
+            },
+            {
+                id: 'okeani-drzava', kategorija: 'DRŽAVE',
+                pitanje: 'Tri pojma su okeani, a jedan je država.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Tihi okean', 'Atlantski okean', 'Indijski okean', 'Srbija'], uljezIndeks: 3,
+                objasnjenje: 'Srbija je država, dok su ostali pojmovi okeani.', poeni: 2
+            },
+            {
+                id: 'kartografski-predmeti', kategorija: 'PREDMETI I REKE',
+                pitanje: 'Tri pojma služe za snalaženje na karti, a jedan je reka.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Atlas', 'Globus', 'Kompas', 'Drina'], uljezIndeks: 3,
+                objasnjenje: 'Drina je reka, dok su atlas, globus i kompas predmeti za snalaženje.', poeni: 2
+            },
+            {
+                id: 'planine-grad', kategorija: 'PLANINE I GRADOVI',
+                pitanje: 'Tri pojma su planine, a jedan je grad.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Tara', 'Avala', 'Zlatibor', 'Pariz'], uljezIndeks: 3,
+                objasnjenje: 'Pariz je grad, dok su Tara, Avala i Zlatibor planine.', poeni: 2
+            },
+            {
+                id: 'vulkani-planinski-lanac', kategorija: 'PLANINE',
+                pitanje: 'Tri pojma su vulkani, a jedan je planinski lanac.',
+                uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+                opcije: ['Etna', 'Vezuv', 'Fudži', 'Karpati'], uljezIndeks: 3,
+                objasnjenje: 'Karpati su planinski lanac, dok su Etna, Vezuv i Fudži vulkani.', poeni: 2
             }
         ]
     },
@@ -945,6 +1235,116 @@ const KVIZ_RUNDE = [
                     'Najčešće sam okrugao i postavljen na osovinu.'
                 ],
                 prihvaceni: ['Globus']
+            },
+            {
+                id: 'triglav', kategorija: 'PLANINE',
+                pitanje: 'Pogodi planinu što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Nalazim se u Julijskim Alpima.',
+                    'Najviši sam vrh Slovenije.',
+                    'Moje ime znači da imam tri glave ili vrha.'
+                ],
+                prihvaceni: ['Triglav']
+            },
+            {
+                id: 'nil', kategorija: 'REKE',
+                pitanje: 'Pogodi reku što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Protičem kroz severoistočnu Afriku.',
+                    'Prolazim kroz Kairo i ulivam se u Sredozemno more.',
+                    'Jedna sam od najdužih reka na svetu.'
+                ],
+                prihvaceni: ['Nil', 'Nile']
+            },
+            {
+                id: 'kanada', kategorija: 'DRŽAVE',
+                pitanje: 'Pogodi državu što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Nalazim se u Severnoj Americi.',
+                    'Moj glavni grad je Otava, a na zastavi imam javorov list.',
+                    'Po površini sam druga najveća država na svetu.'
+                ],
+                prihvaceni: ['Kanada', 'Canada']
+            },
+            {
+                id: 'sidnej', kategorija: 'GRADOVI',
+                pitanje: 'Pogodi grad što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Nalazim se na jugoistočnoj obali Australije.',
+                    'Poznat sam po zgradi opere i lučkom mostu.',
+                    'Najveći sam grad Australije, ali nisam njen glavni grad.'
+                ],
+                prihvaceni: ['Sidnej', 'Sydney']
+            },
+            {
+                id: 'maslina', kategorija: 'BILJKE',
+                pitanje: 'Pogodi biljku što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Rastem u toplim krajevima oko Sredozemnog mora.',
+                    'Od mojih plodova pravi se cenjeno jestivo ulje.',
+                    'Prepoznaješ me po uskim zelenim listovima i plodovima koji sazrevaju u tamnu boju.'
+                ],
+                prihvaceni: ['Maslina']
+            },
+            {
+                id: 'vuk', kategorija: 'ŽIVOTINJE',
+                pitanje: 'Pogodi životinju što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Ja sam sisar iz porodice pasa.',
+                    'Živim i lovim u čoporu.',
+                    'Poznat sam po zavijanju.'
+                ],
+                prihvaceni: ['Vuk', 'Wolf']
+            },
+            {
+                id: 'atlas', kategorija: 'PREDMETI',
+                pitanje: 'Pogodi predmet što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Ja sam zbirka karata u jednoj knjizi ili publikaciji.',
+                    'Pomažem ti da pronađeš države, gradove, reke i planine.',
+                    'Moje ime nosi i mitski div koji je držao nebo.'
+                ],
+                prihvaceni: ['Atlas']
+            },
+            {
+                id: 'antarktik', kategorija: 'PRIRODNA GEOGRAFIJA',
+                pitanje: 'Pogodi geografski pojam što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Nalazim se oko Južnog pola.',
+                    'Najhladniji sam kontinent na Zemlji.',
+                    'Prekriven/a sam ogromnim ledenim pokrivačem.'
+                ],
+                prihvaceni: ['Antarktik', 'Antarktika', 'Antarctica']
+            },
+            {
+                id: 'spanija', kategorija: 'DRŽAVE',
+                pitanje: 'Pogodi državu što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Nalazim se na Pirinejskom poluostrvu u jugozapadnoj Evropi.',
+                    'Moj glavni grad je Madrid.',
+                    'Poznata sam po flamenku, tapasima i fudbalu.'
+                ],
+                prihvaceni: ['Španija', 'Spain']
+            },
+            {
+                id: 'sava', kategorija: 'REKE',
+                pitanje: 'Pogodi reku što ranije.',
+                uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+                tragovi: [
+                    'Nastajem u Sloveniji, spajanjem dve reke.',
+                    'Protičem kroz Zagreb i čini deo granice Srbije i Bosne i Hercegovine.',
+                    'U Beogradu se ulivam u Dunav.'
+                ],
+                prihvaceni: ['Sava']
             }
         ]
     },
@@ -1056,6 +1456,66 @@ const KVIZ_RUNDE = [
                 pitanje: 'Koju biljku predstavljaju emodžiji?',
                 uputstvo: 'Upiši naziv biljke.', trajanjeMs: 28000,
                 emoji: '🌷  🇳🇱  🌱', prihvaceni: ['Lala', 'Tulipan', 'Tulip'], resenje: 'Lala', poeni: 3
+            },
+            {
+                id: 'berlin', kategorija: 'GRADOVI', tezina: 3,
+                pitanje: 'Koji grad predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv grada.', trajanjeMs: 28000,
+                emoji: '🐻  🧱  🇩🇪', prihvaceni: ['Berlin'], resenje: 'Berlin', poeni: 3
+            },
+            {
+                id: 'spanija', kategorija: 'DRŽAVE', tezina: 3,
+                pitanje: 'Koju državu predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv države.', trajanjeMs: 28000,
+                emoji: '🐂  💃  🇪🇸', prihvaceni: ['Španija', 'Spain'], resenje: 'Španija', poeni: 3
+            },
+            {
+                id: 'indija', kategorija: 'DRŽAVE', tezina: 3,
+                pitanje: 'Koju državu predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv države.', trajanjeMs: 28000,
+                emoji: '🕌  🐘  🇮🇳', prihvaceni: ['Indija', 'India'], resenje: 'Indija', poeni: 3
+            },
+            {
+                id: 'alpi', kategorija: 'PLANINE',
+                pitanje: 'Koji planinski masiv predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv planine ili masiva.', trajanjeMs: 28000,
+                emoji: '🏔️  🎿  🇨🇭', prihvaceni: ['Alpi', 'Alps'], resenje: 'Alpi', poeni: 3
+            },
+            {
+                id: 'sava', kategorija: 'REKE',
+                pitanje: 'Koju reku predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv reke.', trajanjeMs: 28000,
+                emoji: '🇷🇸  🌉  🚣', prihvaceni: ['Sava'], resenje: 'Sava', poeni: 3
+            },
+            {
+                id: 'maslina', kategorija: 'BILJKE',
+                pitanje: 'Koju biljku predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv biljke.', trajanjeMs: 28000,
+                emoji: '🫒  🇬🇷  🌱', prihvaceni: ['Maslina', 'Olive'], resenje: 'Maslina', poeni: 3
+            },
+            {
+                id: 'pingvin', kategorija: 'ŽIVOTINJE',
+                pitanje: 'Koju životinju predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv životinje.', trajanjeMs: 28000,
+                emoji: '🐧  ❄️  🌊', prihvaceni: ['Pingvin', 'Penguin'], resenje: 'Pingvin', poeni: 3
+            },
+            {
+                id: 'atlas', kategorija: 'PREDMETI',
+                pitanje: 'Koji predmet predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv predmeta.', trajanjeMs: 28000,
+                emoji: '🗺️  📖  🌍', prihvaceni: ['Atlas'], resenje: 'Atlas', poeni: 3
+            },
+            {
+                id: 'kairo', kategorija: 'GRADOVI', tezina: 3,
+                pitanje: 'Koji grad predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv grada.', trajanjeMs: 28000,
+                emoji: '🐪  🔺  🇪🇬', prihvaceni: ['Kairo', 'Cairo'], resenje: 'Kairo', poeni: 3
+            },
+            {
+                id: 'nijagarini-slapovi', kategorija: 'PRIRODNA GEOGRAFIJA',
+                pitanje: 'Koji prirodni fenomen predstavljaju emodžiji?',
+                uputstvo: 'Upiši naziv pojma.', trajanjeMs: 28000,
+                emoji: '💦  🍁  🇨🇦', prihvaceni: ['Nijagarini slapovi', 'Nijagara', 'Niagara Falls'], resenje: 'Nijagarini slapovi', poeni: 3
             }
         ]
     },
@@ -1143,7 +1603,67 @@ const KVIZ_RUNDE = [
                 id: 'napulj', kategorija: 'GRADOVI · ITALIJA',
                 pitanje: 'Postavi pin što bliže Napulju.',
                 uputstvo: 'Klikni na nemu kartu Italije i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'italija', grad: 'Napulj', cilj: { x: 55.4, y: 54.5 }
+                mapa: 'italija', grad: 'Napulj', cilj: { x: 55.5, y: 53.71 }
+            },
+            {
+                id: 'tuluz', kategorija: 'GRADOVI · FRANCUSKA',
+                pitanje: 'Postavi pin što bliže Tuluzu.',
+                uputstvo: 'Klikni na nemu kartu Francuske i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'francuska', grad: 'Tuluz', cilj: { x: 47.44, y: 70.7 }
+            },
+            {
+                id: 'nantes', kategorija: 'GRADOVI · FRANCUSKA',
+                pitanje: 'Postavi pin što bliže Nantu.',
+                uputstvo: 'Klikni na nemu kartu Francuske i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'francuska', grad: 'Nant', cilj: { x: 37.43, y: 41.76 }
+            },
+            {
+                id: 'lil', kategorija: 'GRADOVI · FRANCUSKA',
+                pitanje: 'Postavi pin što bliže Lilu.',
+                uputstvo: 'Klikni na nemu kartu Francuske i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'francuska', grad: 'Lil', cilj: { x: 52.84, y: 14.42 }
+            },
+            {
+                id: 'nica', kategorija: 'GRADOVI · FRANCUSKA',
+                pitanje: 'Postavi pin što bliže Nici.',
+                uputstvo: 'Klikni na nemu kartu Francuske i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'francuska', grad: 'Nica', cilj: { x: 66.9, y: 72.1 }
+            },
+            {
+                id: 'torino', kategorija: 'GRADOVI · ITALIJA',
+                pitanje: 'Postavi pin što bliže Torinu.',
+                uputstvo: 'Klikni na nemu kartu Italije i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'italija', grad: 'Torino', cilj: { x: 34.74, y: 19.47 }
+            },
+            {
+                id: 'venecija', kategorija: 'GRADOVI · ITALIJA',
+                pitanje: 'Postavi pin što bliže Veneciji.',
+                uputstvo: 'Klikni na nemu kartu Italije i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'italija', grad: 'Venecija', cilj: { x: 49.23, y: 16.45 }
+            },
+            {
+                id: 'bolonja', kategorija: 'GRADOVI · ITALIJA',
+                pitanje: 'Postavi pin što bliže Bolonji.',
+                uputstvo: 'Klikni na nemu kartu Italije i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'italija', grad: 'Bolonja', cilj: { x: 46.18, y: 24.27 }
+            },
+            {
+                id: 'palermo', kategorija: 'GRADOVI · ITALIJA',
+                pitanje: 'Postavi pin što bliže Palermu.',
+                uputstvo: 'Klikni na nemu kartu Italije i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'italija', grad: 'Palermo', cilj: { x: 52.7, y: 77.1 }
+            },
+            {
+                id: 'pristina', kategorija: 'GRADOVI · SRBIJA',
+                pitanje: 'Postavi pin što bliže Prištini.',
+                uputstvo: 'Klikni na nemu kartu Srbije i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'srbija', grad: 'Priština', cilj: { x: 52.02, y: 74.6 }
+            },
+            {
+                id: 'prizren', kategorija: 'GRADOVI · SRBIJA',
+                pitanje: 'Postavi pin što bliže Prizrenu.',
+                uputstvo: 'Klikni na nemu kartu Srbije i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'srbija', grad: 'Prizren', cilj: { x: 48.32, y: 82.71 }
             }
         ]
     }

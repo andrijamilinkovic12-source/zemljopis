@@ -1003,7 +1003,7 @@ const KvizManager = {
         const redniBroj = (Number(podaci.indeksPitanja) || 0) + 1;
         const ukupno = Number(podaci.ukupnoPitanja) || 4;
         const brzo = podaci.tip === 'brzopotezne';
-        const oznaka = brzo ? 'OBLAST' : 'SPOJNICA';
+        const oznaka = brzo ? 'OBLAST' : (podaci.tip === 'spojnice' ? 'SPOJNICA' : 'PITANJE');
         const opis = this.opisRunde(podaci.tip, this.aktivnaRunda?.naziv || podaci.naziv);
         const pitanje = document.getElementById('kviz-pauza-pitanje');
         const napredak = document.getElementById('kviz-pauza-napredak');

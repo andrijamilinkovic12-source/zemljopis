@@ -211,6 +211,7 @@ const KVIZ_PAUZA_PRE_KRAJA_MS = 7000;
 const KVIZ_PAUZA_IZMEDJU_PITANJA_MS = 10000;
 const KVIZ_PAUZA_IZMEDJU_OBLASTI_BRZOPOTEZNE_MS = 10000;
 const KVIZ_PAUZA_IZMEDJU_SPOJNICA_MS = 10000;
+const KVIZ_PAUZA_POSLEDNJE_PITANJE_MS = 5000;
 // Privremeno za interno testiranje: svaki kviz se odmah pokreće protiv Atlas Bota.
 // Za povratak na javno uparivanje dovoljno je na serveru postaviti KVIZ_TEST_BOT=false.
 const KVIZ_TEST_BOT_OMOGUCEN = process.env.KVIZ_TEST_BOT !== 'false';
@@ -1162,10 +1163,29 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
     }
 
     const rezultati = napraviKvizRezultate(soba);
-
     const poslednje = soba.indeksRunde >= soba.runde.length - 1;
-    const trajanjePauzeMs = poslednje ? KVIZ_PAUZA_PRE_KRAJA_MS : KVIZ_PAUZA_IZMEDJU_RUNDI_MS;
-    const nastavakAt = Date.now() + trajanjePauzeMs;
+    const nastavakPitanjaAt = Date.now() + KVIZ_PAUZA_POSLEDNJE_PITANJE_MS;
+
+    // Poslednje pitanje se prvo prikazuje kao i svako drugo: oba odgovora i poeni.
+    // Tek zatim sledi završna tabela cele runde.
+    io.to(soba.id).emit('kviz:pitanjeZakljuceno', {
+        sobaId: soba.id,
+        indeksRunde: soba.indeksRunde,
+        indeksPitanja: soba.indeksPitanja,
+        ukupnoPitanja: runda.pitanja.length,
+        tip: runda.tip,
+        resenje: javnoResenjeKvizRunde(runda, pitanje),
+        rezultati,
+        povratneInformacije,
+        poslednjePitanje: true,
+        trajanjePauzeMs: KVIZ_PAUZA_POSLEDNJE_PITANJE_MS,
+        nastavakAt: nastavakPitanjaAt
+    });
+
+    soba.timeoutSledecaRunda = setTimeout(() => {
+        if (kvizSobe[soba.id] !== soba || soba.status !== 'u_igri') return;
+        const trajanjePauzeMs = poslednje ? KVIZ_PAUZA_PRE_KRAJA_MS : KVIZ_PAUZA_IZMEDJU_RUNDI_MS;
+        const nastavakAt = Date.now() + trajanjePauzeMs;
         io.to(soba.id).emit('kviz:rezultatRunde', {
             sobaId: soba.id,
             indeksRunde: soba.indeksRunde,
@@ -1181,11 +1201,12 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
         nastavakAt
     });
 
-    soba.timeoutSledecaRunda = setTimeout(() => {
-        if (kvizSobe[soba.id] !== soba || soba.status !== 'u_igri') return;
-        if (poslednje) zakljuciKvizMec(soba, 'zavrseno');
-        else pokreniKvizRundu(soba);
-    }, trajanjePauzeMs);
+        soba.timeoutSledecaRunda = setTimeout(() => {
+            if (kvizSobe[soba.id] !== soba || soba.status !== 'u_igri') return;
+            if (poslednje) zakljuciKvizMec(soba, 'zavrseno');
+            else pokreniKvizRundu(soba);
+        }, trajanjePauzeMs);
+    }, KVIZ_PAUZA_POSLEDNJE_PITANJE_MS);
 }
 
 function napraviOdgovorTestBota(tip, pitanje) {

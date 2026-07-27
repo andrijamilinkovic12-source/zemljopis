@@ -674,12 +674,12 @@ const KvizManager = {
 
     prikaziPovratneInformacije: function(podaci) {
         const okvir = document.getElementById('kviz-pauza-povratna');
-        if (!okvir) return;
+        if (!okvir) return false;
         const igraci = Array.isArray(podaci.povratneInformacije) ? podaci.povratneInformacije : [];
         okvir.replaceChildren();
         if (igraci.length === 0) {
             okvir.hidden = true;
-            return;
+            return false;
         }
         const naslov = document.createElement('p');
         naslov.className = 'kviz-feedback-title';
@@ -726,6 +726,7 @@ const KvizManager = {
         });
         okvir.append(naslov, mreza);
         okvir.hidden = false;
+        return true;
     },
 
     opisRunde: function(tip, naziv) {
@@ -868,9 +869,8 @@ const KvizManager = {
 
         tabela.replaceChildren();
         tabela.style.setProperty('--broj-rundi', String(indeksi.length));
-        tabela.style.setProperty('--ukupno-odlaganje', `${300 + indeksi.length * 105}ms`);
-        tabela.classList.toggle('kviz-scoreboard-dense', indeksi.length >= 4);
-        tabela.classList.toggle('kviz-scoreboard-compact', indeksi.length >= 6);
+        tabela.style.setProperty('--ukupno-odlaganje', `${360 + indeksi.length * 78}ms`);
+        tabela.classList.remove('kviz-scoreboard-dense', 'kviz-scoreboard-compact');
         const zaglavlje = document.createElement('div');
         zaglavlje.className = 'kviz-scoreboard-players';
         zaglavlje.append(
@@ -896,7 +896,7 @@ const KvizManager = {
             const protivnik = rezultati.find(rezultat => rezultat.playerId !== this.igracId()) || {};
             const red = document.createElement('article');
             red.className = `kviz-scoreboard-row${redniBroj === indeksi.length - 1 ? ' latest' : ''}`;
-            red.style.setProperty('--ulaz-odlaganje', `${250 + redniBroj * 105}ms`);
+            red.style.setProperty('--ulaz-odlaganje', `${300 + redniBroj * 78}ms`);
             red.setAttribute('aria-label', `Runda ${indeks + 1}, ${opis.naziv}: ${Number(ja.poeniRunde) || 0} prema ${Number(protivnik.poeniRunde) || 0}`);
             const mojiPoeni = document.createElement('b');
             mojiPoeni.className = 'kviz-scoreboard-points mine';
@@ -943,7 +943,7 @@ const KvizManager = {
         const tabela = document.getElementById('kviz-final-rounds');
         if (!tabela) return;
         tabela.replaceChildren();
-        Object.keys(this.rezultatiPoRundama).map(Number).sort((a, b) => a - b).forEach(indeks => {
+        Object.keys(this.rezultatiPoRundama).map(Number).sort((a, b) => a - b).forEach((indeks, redniBroj) => {
             const rezultati = this.rezultatiPoRundama[indeks] || [];
             const podaciRunde = this.informacijeRundi[indeks] || {};
             const opis = this.opisRunde(podaciRunde.tip, podaciRunde.naziv);
@@ -951,6 +951,8 @@ const KvizManager = {
             const protivnik = rezultati.find(rezultat => rezultat.playerId !== this.igracId()) || {};
             const red = document.createElement('article');
             red.className = 'kviz-final-round-row';
+            red.style.setProperty('--kviz-final-delay', `${260 + redniBroj * 60}ms`);
+            red.setAttribute('aria-label', `Runda ${indeks + 1}, ${opis.naziv}: ${Number(ja.poeniRunde) || 0} prema ${Number(protivnik.poeniRunde) || 0}`);
             const naziv = document.createElement('div');
             naziv.className = 'kviz-final-round-name';
             const broj = document.createElement('span');
@@ -970,17 +972,20 @@ const KvizManager = {
         });
     },
 
-    pokreniAnimacijuRezultata: function(klasa) {
+    pokreniAnimacijuRezultata: function(faza, klasa = '') {
         const pauza = document.getElementById('kviz-pauza-runde');
         if (!pauza) return;
         pauza.classList.remove(
             'kviz-score-animate',
+            'kviz-pause-question',
+            'kviz-pause-round',
             'kviz-brzopotezne-score',
             'kviz-brzopotezne-final',
             'kviz-spojnice-score',
             'kviz-spojnice-final'
         );
         if (klasa) pauza.classList.add(klasa);
+        if (faza) pauza.classList.add(`kviz-pause-${faza}`);
         void pauza.offsetWidth;
         pauza.classList.add('kviz-score-animate');
     },
@@ -1016,7 +1021,8 @@ const KvizManager = {
         if (napredak) napredak.hidden = false;
         if (napredakFill) napredakFill.style.width = `${Math.round((redniBroj / ukupno) * 100)}%`;
         this.postaviIkoneRunde(podaci.tip, this.aktivnaRunda?.naziv);
-        this.prikaziPovratneInformacije(podaci);
+        const imaPovratnuInformaciju = this.prikaziPovratneInformacije(podaci);
+        pauza.classList.toggle('kviz-question-has-feedback', imaPovratnuInformaciju);
         this.postaviOznakePauze({
             obrva: 'ZEMLJOPIS KVIZ',
             mojaOznaka: '',
@@ -1034,7 +1040,10 @@ const KvizManager = {
         this.nastavakAt = Number(podaci.nastavakAt) || 0;
         pauza.hidden = false;
         document.getElementById('kviz-igra')?.classList.add('kviz-round-paused');
-        this.pokreniAnimacijuRezultata(brzo ? 'kviz-brzopotezne-score' : 'kviz-spojnice-score');
+        this.pokreniAnimacijuRezultata(
+            'question',
+            brzo ? 'kviz-brzopotezne-score' : (podaci.tip === 'spojnice' ? 'kviz-spojnice-score' : '')
+        );
         this.pokreniPauzaTajmer();
     },
 
@@ -1060,6 +1069,7 @@ const KvizManager = {
         const pauza = document.getElementById('kviz-pauza-runde');
         if (!pauza) return;
         pauza.classList.remove('kviz-podpitanje-pauza');
+        pauza.classList.remove('kviz-question-has-feedback');
         delete pauza.dataset.kvizTip;
         const pitanjePauze = document.getElementById('kviz-pauza-pitanje');
         const napredakPauze = document.getElementById('kviz-pauza-napredak');
@@ -1099,7 +1109,10 @@ const KvizManager = {
         pauza.hidden = false;
         pauza.classList.add('kviz-show-round-scoreboard');
         document.getElementById('kviz-igra')?.classList.add('kviz-round-paused');
-        this.pokreniAnimacijuRezultata(brzo ? 'kviz-brzopotezne-final' : (spojnice ? 'kviz-spojnice-final' : ''));
+        this.pokreniAnimacijuRezultata(
+            'round',
+            brzo ? 'kviz-brzopotezne-final' : (spojnice ? 'kviz-spojnice-final' : '')
+        );
         this.pokreniPauzaTajmer();
     },
 
@@ -1108,7 +1121,7 @@ const KvizManager = {
         this.nastavakAt = 0;
         const pauza = document.getElementById('kviz-pauza-runde');
         if (pauza) pauza.hidden = true;
-        if (pauza) pauza.classList.remove('kviz-podpitanje-pauza');
+        if (pauza) pauza.classList.remove('kviz-podpitanje-pauza', 'kviz-question-has-feedback');
         if (pauza) delete pauza.dataset.kvizTip;
         const pitanjePauze = document.getElementById('kviz-pauza-pitanje');
         const napredakPauze = document.getElementById('kviz-pauza-napredak');
@@ -1116,6 +1129,8 @@ const KvizManager = {
         if (napredakPauze) napredakPauze.hidden = true;
         if (pauza) pauza.classList.remove(
             'kviz-score-animate',
+            'kviz-pause-question',
+            'kviz-pause-round',
             'kviz-brzopotezne-score',
             'kviz-brzopotezne-final',
             'kviz-spojnice-score',
@@ -1235,6 +1250,15 @@ const KvizManager = {
         this.prikaziKrajnjuTabeluRundi();
         const ikona = document.getElementById('kviz-result-icon');
         if (ikona) ikona.classList.toggle('loss', !jeNereseno && !pobedio);
+        this.pokreniAnimacijuKrajaMeca();
+    },
+
+    pokreniAnimacijuKrajaMeca: function() {
+        const kraj = document.getElementById('kviz-kraj');
+        if (!kraj) return;
+        kraj.classList.remove('kviz-match-result-enter');
+        void kraj.offsetWidth;
+        kraj.classList.add('kviz-match-result-enter');
     },
 
     primiPredaju: function(podaci) {

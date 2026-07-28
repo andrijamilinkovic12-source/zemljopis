@@ -18056,10 +18056,7 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
 }
 
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-eyebrow {
-    margin: 0;
-    color: var(--kviz-clay-gold);
-    font-size: 0.64rem;
-    letter-spacing: 0.1em;
+    display: none;
 }
 
 .kviz-round-break.kviz-podpitanje-pauza h4 {
@@ -18067,6 +18064,42 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     color: #fff4e5;
     font-size: clamp(1.08rem, 4.8vw, 1.28rem);
     line-height: 1.1;
+    text-transform: uppercase;
+}
+
+/* U prelazu između pitanja ostaje samo naziv runde, uz diskretan njen simbol u pozadini. */
+.kviz-break-round-watermark {
+    display: none;
+    pointer-events: none;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza {
+    isolation: isolate;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza > :not(.kviz-break-round-watermark) {
+    position: relative;
+    z-index: 1;
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-round-watermark {
+    position: absolute;
+    z-index: 0;
+    top: -0.4rem;
+    left: 50%;
+    display: block;
+    width: clamp(130px, 43vw, 188px);
+    aspect-ratio: 1;
+    opacity: 0.13;
+    transform: translateX(-50%) rotate(-12deg);
+    filter: saturate(0.82) drop-shadow(0 8px 14px rgba(6, 4, 35, 0.45));
+}
+
+.kviz-round-break.kviz-podpitanje-pauza .kviz-break-round-watermark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-subtitle {

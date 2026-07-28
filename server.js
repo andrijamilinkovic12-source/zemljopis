@@ -213,6 +213,7 @@ const KVIZ_PAUZA_IZMEDJU_OBLASTI_BRZOPOTEZNE_MS = 6000;
 const KVIZ_PAUZA_IZMEDJU_SPOJNICA_MS = 6500;
 const KVIZ_PAUZA_POSLEDNJE_PITANJE_MS = 4500;
 const KVIZ_ODBROJAVANJE_POCETKA_MS = 3200;
+const KVIZ_TIPOVI_SA_BONUSOM_BRZINE = new Set(['anagram', 'uljez', 'emoji']);
 // Privremeno za interno testiranje: svaki kviz se odmah pokreće protiv Atlas Bota.
 // Za povratak na javno uparivanje dovoljno je na serveru postaviti KVIZ_TEST_BOT=false.
 const KVIZ_TEST_BOT_OMOGUCEN = process.env.KVIZ_TEST_BOT !== 'false';
@@ -1985,8 +1986,7 @@ const KVIZ_RUNDE = [
         tip: 'pikado',
         naziv: 'Geografski pikado',
         kategorija: 'VELIKO FINALE · GRADOVI',
-        brojPitanja: 3,
-        mesajPitanja: false,
+        brojPitanja: 6,
         pitanja: [
             {
                 id: 'pariz', kategorija: 'GRADOVI · FRANCUSKA',
@@ -2563,6 +2563,8 @@ function upisiKvizOdgovor(soba, igrac, odgovor) {
     soba.odgovori[igrac.id] = {
         poslat: true,
         bonus: 0,
+        bonusBrzina: 0,
+        odgovorioAt: Date.now(),
         odgovor: odgovor && typeof odgovor === 'object' ? odgovor : {},
         ...proceniKvizOdgovor(runda.tip, pitanje, odgovor)
     };
@@ -2584,6 +2586,7 @@ function napraviKvizRezultate(soba) {
             tacno: Number(zbirRunde.tacnih) > 0,
             tacnih: Number(zbirRunde.tacnih) || 0,
             bonus: Number(zbirRunde.bonus) || 0,
+            bonusBrzina: Number(zbirRunde.bonusBrzina) || 0,
             poeniOblasti: Number(odgovor.poeni) || 0,
             poeniRunde: Number(zbirRunde.poeni) || 0,
             udaljenost: typeof zbirRunde.udaljenost === 'number' ? zbirRunde.udaljenost : null,
@@ -2591,6 +2594,22 @@ function napraviKvizRezultate(soba) {
             tacnihUkupno: Number(zbir.tacnih) || 0
         };
     });
+}
+
+function dodeliKvizBonusBrzine(soba, runda) {
+    if (!KVIZ_TIPOVI_SA_BONUSOM_BRZINE.has(runda?.tip)) return;
+
+    const tacniOdgovori = soba.igraci
+        .map(igrac => soba.odgovori[igrac.id])
+        .filter(odgovor => odgovor?.tacno && Number.isFinite(odgovor.odgovorioAt))
+        .sort((prvi, drugi) => prvi.odgovorioAt - drugi.odgovorioAt);
+    const prviTacni = tacniOdgovori[0];
+    const drugiTacni = tacniOdgovori[1];
+
+    if (!prviTacni || prviTacni.odgovorioAt === drugiTacni?.odgovorioAt) return;
+    prviTacni.bonus += 1;
+    prviTacni.bonusBrzina = 1;
+    prviTacni.poeni += 1;
 }
 
 function napraviKvizPovratneInformacije(soba, runda, pitanje) {
@@ -2673,6 +2692,8 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
     const pitanje = trenutnoKvizPitanje(soba);
     if (!runda || !pitanje) return zakljuciKvizMec(soba, 'zavrseno');
 
+    dodeliKvizBonusBrzine(soba, runda);
+
     if (runda.tip === 'brzopotezne') {
         soba.igraci.forEach(igrac => {
             const mojOdgovor = soba.odgovori[igrac.id];
@@ -2687,15 +2708,16 @@ function zakljuciKvizRundu(soba, razlog = 'svi_odgovorili') {
     }
 
     soba.igraci.forEach(igrac => {
-        const odgovor = soba.odgovori[igrac.id] || { poslat: false, tacno: false, tacnih: 0, poeni: 0, bonus: 0 };
+        const odgovor = soba.odgovori[igrac.id] || { poslat: false, tacno: false, tacnih: 0, poeni: 0, bonus: 0, bonusBrzina: 0 };
         const zbir = soba.rezultati[igrac.playerId] || { ukupnoPoena: 0, tacnih: 0 };
-        const zbirRunde = soba.rezultatAktivneRunde[igrac.playerId] || { poslat: false, poeni: 0, tacnih: 0, bonus: 0, udaljenost: null };
+        const zbirRunde = soba.rezultatAktivneRunde[igrac.playerId] || { poslat: false, poeni: 0, tacnih: 0, bonus: 0, bonusBrzina: 0, udaljenost: null };
         zbir.ukupnoPoena += Number(odgovor.poeni) || 0;
         zbir.tacnih += Number(odgovor.tacnih) || 0;
         zbirRunde.poslat = zbirRunde.poslat || Boolean(odgovor.poslat);
         zbirRunde.poeni += Number(odgovor.poeni) || 0;
         zbirRunde.tacnih += Number(odgovor.tacnih) || 0;
         zbirRunde.bonus += Number(odgovor.bonus) || 0;
+        zbirRunde.bonusBrzina += Number(odgovor.bonusBrzina) || 0;
         if (typeof odgovor.udaljenost === 'number') zbirRunde.udaljenost = odgovor.udaljenost;
         soba.rezultatAktivneRunde[igrac.playerId] = zbirRunde;
     });
@@ -2879,7 +2901,7 @@ function pokreniKvizRundu(soba) {
     }
     soba.indeksPitanja = 0;
     soba.rezultatAktivneRunde = Object.fromEntries(soba.igraci.map(igrac => [
-        igrac.playerId, { poslat: false, poeni: 0, tacnih: 0, bonus: 0, udaljenost: null }
+        igrac.playerId, { poslat: false, poeni: 0, tacnih: 0, bonus: 0, bonusBrzina: 0, udaljenost: null }
     ]));
     pokreniKvizPitanje(soba);
 }
@@ -6649,5 +6671,7 @@ module.exports.kvizTestApi = {
     KVIZ_RUNDE,
     pripremiKvizRunde,
     KVIZ_TEST_BOT_OMOGUCEN,
-    KVIZ_TEST_BOT
+    KVIZ_TEST_BOT,
+    KVIZ_TIPOVI_SA_BONUSOM_BRZINE,
+    dodeliKvizBonusBrzine
 };

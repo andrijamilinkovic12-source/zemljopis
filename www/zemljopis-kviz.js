@@ -220,10 +220,10 @@ const KvizManager = {
         const uputstva = {
             brzopotezne: 'Upiši tri pojma i pošalji odgovor.',
             spojnice: 'Dodirni pojam levo, zatim njegov par desno.',
-            anagram: 'Složi slova u tačan pojam.',
-            uljez: 'Izaberi pojam koji ne pripada grupi.',
+            anagram: 'Složi slova — prvi tačan odgovor donosi +1.',
+            uljez: 'Izaberi uljeza — prvi tačan odgovor donosi +1.',
             misterija: 'Pogodi pojam na osnovu tragova.',
-            emoji: 'Prepoznaj pojam na osnovu emodžija.',
+            emoji: 'Prepoznaj pojam — prvi tačan odgovor donosi +1.',
             pikado: 'Postavi pin što bliže traženom gradu.'
         };
         return uputstva[tip] || 'Odgovori pre isteka vremena.';
@@ -750,11 +750,11 @@ const KvizManager = {
             },
             anagram: {
                 naziv: 'MUTNA VODA', slika: 'kviz-round-mutna-voda-v1.png', varijanta: 'water',
-                objasnjenje: 'Složi ispretumbana slova u tačan pojam pre isteka vremena.'
+                objasnjenje: 'Složi ispretumbana slova u tačan pojam. Prvi tačan odgovor osvaja +1 bonus za brzinu.'
             },
             uljez: {
                 naziv: 'PRONAĐI ULJEZA', slika: 'kviz-round-uljez-v1.png', varijanta: 'odd',
-                objasnjenje: 'Od četiri ponuđena pojma pronađi onaj koji ne pripada istoj grupi kao ostala tri.'
+                objasnjenje: 'Od četiri ponuđena pojma pronađi onaj koji ne pripada istoj grupi kao ostala tri. Prvi tačan odgovor osvaja +1 bonus za brzinu.'
             },
             misterija: {
                 naziv: 'KO SAM JA?', slika: 'kviz-round-misterija-v1.png', varijanta: 'mystery',
@@ -762,7 +762,7 @@ const KvizManager = {
             },
             emoji: {
                 naziv: 'EMODŽI GEOGRAFIJA', slika: 'kviz-round-emoji-v1.png', varijanta: 'emoji',
-                objasnjenje: 'Pročitaj emodžije kao tragove i upiši pojam koji predstavljaju.'
+                objasnjenje: 'Pročitaj emodžije kao tragove i upiši pojam koji predstavljaju. Prvi tačan odgovor osvaja +1 bonus za brzinu.'
             },
             pikado: {
                 naziv: 'GEOGRAFSKI PIKADO', slika: 'kviz-round-pikado-v1.png', varijanta: 'dart',
@@ -818,6 +818,8 @@ const KvizManager = {
         this.postaviIkonuRunde(document.getElementById('kviz-pauza-igra-ikona'), opis, 'kviz-round-icon');
         this.postaviIkonuRunde(document.getElementById('kviz-pauza-moja-ikona'), opis, 'kviz-break-score-icon');
         this.postaviIkonuRunde(document.getElementById('kviz-pauza-protivnik-ikona'), opis, 'kviz-break-score-icon');
+        const watermarkIkona = document.getElementById('kviz-pauza-watermark-ikona');
+        if (watermarkIkona) watermarkIkona.src = `assets/${opis.slika}`;
         this.postaviTekst('kviz-pauza-igra-naziv', opis.naziv);
     },
 
@@ -1031,7 +1033,7 @@ const KvizManager = {
         const imaPovratnuInformaciju = this.prikaziPovratneInformacije(podaci);
         pauza.classList.toggle('kviz-question-has-feedback', imaPovratnuInformaciju);
         this.postaviOznakePauze({
-            obrva: 'ZEMLJOPIS KVIZ',
+            obrva: '',
             mojaOznaka: '',
             protivnickaOznaka: '',
             ukupnoOznaka: ''
@@ -1187,6 +1189,7 @@ const KvizManager = {
 
     porukaRezultataRunde: function(mojRezultat, podaci) {
         if (!mojRezultat.poslat) return 'Vreme je isteklo pre slanja odgovora.';
+        const bonusBrzine = Number(mojRezultat.bonusBrzina) ? ' + bonus za brzinu!' : '';
         if (podaci.tip === 'brzopotezne') {
             const bonus = Number(mojRezultat.bonus) ? ' + bonus za originalnost!' : '';
             return `Tačnih pojmova: ${mojRezultat.tacnih || 0}. Osvojeno: +${mojRezultat.poeniRunde || 0}.${bonus}`;
@@ -1198,7 +1201,7 @@ const KvizManager = {
                 : `Pin je predaleko za poene.${udaljenost}`;
         }
         return mojRezultat.tacno
-            ? `Tačno! Osvojeno: +${mojRezultat.poeniRunde || 0}.`
+            ? `Tačno! Osvojeno: +${mojRezultat.poeniRunde || 0}.${bonusBrzine}`
             : 'Ovog puta odgovor nije tačan.';
     },
 

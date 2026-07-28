@@ -143,7 +143,7 @@ const KvizManager = {
         this.prikaziSekciju('igra');
         this.vratiKvizNaPocetak();
         this.postaviTekst('kviz-moje-ime', this.mojeIme);
-        this.postaviTekst('kviz-protivnik-ime', this.protivnik.ime || 'Protivnik');
+        this.postaviTekst('kviz-protivnik-ime', this.protivnik.ime || 'Igrač');
         this.postaviAvatareDuela();
         this.postaviTekst('kviz-moji-poeni', '0');
         this.postaviTekst('kviz-protivnik-poeni', '0');
@@ -701,7 +701,9 @@ const KvizManager = {
             const zaglavlje = document.createElement('div');
             zaglavlje.className = 'kviz-feedback-player-head';
             const ime = document.createElement('b');
-            ime.textContent = igrac.playerId === this.igracId() ? 'TI' : (igrac.ime || 'PROTIVNIK');
+            ime.textContent = igrac.ime
+                || (igrac.playerId === this.igracId() ? this.mojeIme : this.protivnik?.ime)
+                || 'Igrač';
             const poeni = document.createElement('span');
             poeni.textContent = `+${Number(igrac.poeni) || 0}`;
             zaglavlje.append(ime, poeni);
@@ -861,7 +863,7 @@ const KvizManager = {
         slika.draggable = false;
         const tekst = document.createElement('div');
         const naziv = document.createElement('b');
-        naziv.textContent = ime || (moje ? this.mojeIme : 'Protivnik');
+        naziv.textContent = ime || (moje ? this.mojeIme : this.protivnik?.ime) || 'Igrač';
         tekst.append(naziv);
         igrac.append(slika, tekst);
         return igrac;
@@ -890,7 +892,7 @@ const KvizManager = {
             }),
             Object.assign(document.createElement('span'), { className: 'kviz-scoreboard-versus', textContent: 'PO RUNDAMA' }),
             this.napraviZaglavljeTabeleIgraca({
-                ime: protivnickiTrenutniRezultat.ime || this.protivnik?.ime || 'Protivnik',
+                ime: protivnickiTrenutniRezultat.ime || this.protivnik?.ime || 'Igrač',
                 avatar: this.protivnik?.avatar || 'atlas'
             })
         );
@@ -970,9 +972,9 @@ const KvizManager = {
             const poeni = document.createElement('div');
             poeni.className = 'kviz-final-round-points';
             poeni.append(
-                this.napraviKrajnjiTokenRunde(opis, Number(ja.poeniRunde) || 0, 'Ti'),
+                this.napraviKrajnjiTokenRunde(opis, Number(ja.poeniRunde) || 0, this.mojeIme || 'Igrač'),
                 Object.assign(document.createElement('span'), { textContent: ':' }),
-                this.napraviKrajnjiTokenRunde(opis, Number(protivnik.poeniRunde) || 0, 'Protivnik')
+                this.napraviKrajnjiTokenRunde(opis, Number(protivnik.poeniRunde) || 0, this.protivnik?.ime || 'Igrač')
             );
             red.append(naziv, poeni);
             tabela.appendChild(red);
@@ -1089,14 +1091,14 @@ const KvizManager = {
         this.prikaziPovratneInformacije(podaci);
         this.postaviOznakePauze(brzo ? {
             obrva: 'KONAČAN REZULTAT PRVE IGRE',
-            mojaOznaka: 'TI · SVE 4 OBLASTI',
-            protivnickaOznaka: 'PROTIVNIK · SVE 4 OBLASTI',
+            mojaOznaka: '',
+            protivnickaOznaka: '',
             ukupnoOznaka: 'UKUPNO U MEČU',
             prikaziLogo: false
         } : {
             obrva: 'REZULTAT RUNDE',
-            mojaOznaka: 'TI · OVA RUNDA',
-            protivnickaOznaka: 'PROTIVNIK · OVA RUNDA',
+            mojaOznaka: '',
+            protivnickaOznaka: '',
             ukupnoOznaka: 'UKUPNO',
             prikaziLogo: false
         });
@@ -1277,7 +1279,7 @@ const KvizManager = {
             pobednikPlayerIds: [this.igracId()],
             rezultati: podaci.rezultati || [
                 { playerId: this.igracId(), ime: this.mojeIme, ukupnoPoena: Number(document.getElementById('kviz-moji-poeni')?.textContent) || 0 },
-                { playerId: this.protivnik?.playerId || 'protivnik', ime: this.protivnik?.ime || 'Protivnik', ukupnoPoena: Number(document.getElementById('kviz-protivnik-poeni')?.textContent) || 0 }
+                { playerId: this.protivnik?.playerId || 'protivnik', ime: this.protivnik?.ime || 'Igrač', ukupnoPoena: Number(document.getElementById('kviz-protivnik-poeni')?.textContent) || 0 }
             ]
         });
     },

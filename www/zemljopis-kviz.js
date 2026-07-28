@@ -860,11 +860,9 @@ const KvizManager = {
         slika.alt = '';
         slika.draggable = false;
         const tekst = document.createElement('div');
-        const oznaka = document.createElement('span');
-        oznaka.textContent = moje ? 'TI' : 'PROTIVNIK';
         const naziv = document.createElement('b');
         naziv.textContent = ime || (moje ? this.mojeIme : 'Protivnik');
-        tekst.append(oznaka, naziv);
+        tekst.append(naziv);
         igrac.append(slika, tekst);
         return igrac;
     },
@@ -1355,6 +1353,8 @@ const KvizManager = {
             const sekcija = document.getElementById(id);
             if (sekcija) sekcija.hidden = ime !== naziv;
         });
+        const ekran = document.getElementById('zemljopis-kviz-screen');
+        if (ekran) ekran.classList.toggle('kviz-showing-result', naziv === 'kraj');
     },
 
     prikaziCekanje: function(ceka) {

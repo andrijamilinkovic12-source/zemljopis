@@ -1,45 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" role="img" aria-label="Nema karta Evrope">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" role="img" aria-label="Nema karta Evrope sa granicama država">
   <defs>
-    <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0b3e67"/>
-      <stop offset="1" stop-color="#071b45"/>
-    </linearGradient>
-    <linearGradient id="land" x1="0" y1="0" x2="0.8" y2="1">
-      <stop offset="0" stop-color="#7fc2aa"/>
-      <stop offset="1" stop-color="#40877d"/>
-    </linearGradient>
-    <pattern id="grid" width="100" height="62" patternUnits="userSpaceOnUse">
-      <path d="M100 0H0V62" fill="none" stroke="#bdefff" stroke-opacity=".12" stroke-width="1"/>
-    </pattern>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="9" stdDeviation="10" flood-color="#00142f" flood-opacity=".52"/>
-    </filter>
+    <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#315c71"/><stop offset="1" stop-color="#172d4b"/></linearGradient>
+    <linearGradient id="landA" x1="0" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#e3cf9d"/><stop offset=".46" stop-color="#b8b47e"/><stop offset="1" stop-color="#718d71"/></linearGradient>
+    <linearGradient id="landB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8c48f"/><stop offset="1" stop-color="#78917a"/></linearGradient>
+    <linearGradient id="landC" x1="0" y1="0" x2=".7" y2="1"><stop offset="0" stop-color="#d1bb87"/><stop offset="1" stop-color="#668574"/></linearGradient>
+    <pattern id="grid" width="100" height="62" patternUnits="userSpaceOnUse"><path d="M100 0H0V62" fill="none" stroke="#f0e5c5" stroke-opacity=".055" stroke-width="1"/></pattern>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="9" stdDeviation="10" flood-color="#11162e" flood-opacity=".58"/></filter>
   </defs>
   <rect width="1000" height="620" rx="34" fill="url(#sea)"/>
   <rect width="1000" height="620" rx="34" fill="url(#grid)"/>
-  <g fill="url(#land)" stroke="#d3fff0" stroke-opacity=".55" stroke-width="3" stroke-linejoin="round" filter="url(#shadow)">
-    <path d="M87 425 111 387 158 374 187 349 228 356 255 383 266 423 240 453 190 466 145 449Z"/>
-    <path d="M164 310 187 275 221 264 250 282 241 325 211 345 182 338Z"/>
-    <path d="M262 374 280 330 315 305 353 292 392 306 424 284 465 298 484 327 469 355 490 379 468 401 434 396 413 424 373 426 336 409 304 414Z"/>
-    <path d="M314 237 333 195 375 169 419 178 431 213 403 247 364 262Z"/>
-    <path d="M428 264 455 238 493 247 517 278 504 311 471 307Z"/>
-    <path d="M489 333 523 318 556 341 568 380 549 412 529 438 511 416 515 384Z"/>
-    <path d="M521 407 550 390 588 407 612 438 597 470 570 455 548 475 530 451Z"/>
-    <path d="M570 330 609 301 647 312 686 300 735 318 773 311 812 332 839 362 825 397 785 405 753 429 710 414 674 438 637 419 602 420 584 386Z"/>
-    <path d="M637 255 684 221 739 214 790 235 812 277 784 309 739 301 700 325 662 306Z"/>
-    <path d="M782 447 815 430 848 446 864 477 847 508 816 489Z"/>
-    <path d="M505 191 527 159 558 154 576 178 561 209 530 214Z"/>
+  <!-- Ujednačena evropska projekcija: zapad je levo, sever gore. -->
+  <g stroke="#fff0c7" stroke-opacity=".72" stroke-width="2.3" stroke-linejoin="round" filter="url(#shadow)">
+    <!-- Iberijsko poluostrvo -->
+    <path d="M48 478 76 463 92 476 91 559 65 570 45 545 38 510Z" fill="url(#landC)"/>
+    <path d="M92 447 151 432 212 451 230 487 211 537 170 552 125 544 91 559 92 476Z" fill="url(#landA)"/>
+    <!-- Ostrva zapadne Evrope -->
+    <path d="M107 293 132 276 158 289 157 319 142 345 117 340 100 320Z" fill="url(#landB)"/>
+    <path d="M206 279 232 259 254 275 263 308 249 342 228 360 210 335 214 310 199 296Z" fill="url(#landA)"/>
+    <path d="M42 156 74 139 107 151 111 176 88 190 53 183Z" fill="url(#landB)"/>
+    <!-- Zapadna i srednja Evropa -->
+    <path d="M214 386 236 345 273 330 319 343 358 365 381 410 363 451 334 483 286 479 250 457 230 487 212 451Z" fill="url(#landA)"/>
+    <path d="M334 362 355 345 373 355 371 379 353 389Z" fill="url(#landC)"/>
+    <path d="M352 343 365 329 381 337 379 354 363 360Z" fill="url(#landB)"/>
+    <path d="M371 379 405 331 464 322 504 350 499 392 465 418 412 411 381 410Z" fill="url(#landB)"/>
+    <path d="M425 419 455 411 478 429 470 452 443 455 418 443Z" fill="url(#landC)"/>
+    <path d="M464 405 501 393 528 409 521 434 488 442 470 452 478 429Z" fill="url(#landA)"/>
+    <path d="M485 444 523 434 548 450 540 469 507 476 477 465Z" fill="url(#landB)"/>
+    <path d="M504 350 548 337 582 360 569 393 528 409 501 393Z" fill="url(#landC)"/>
+    <path d="M548 337 600 321 650 336 662 371 626 394 569 393 582 360Z" fill="url(#landA)"/>
+    <!-- Skandinavija i sever -->
+    <path d="M354 305 342 254 360 208 385 164 414 112 444 75 469 93 465 135 443 175 427 221 410 266 389 306Z" fill="url(#landC)"/>
+    <path d="M414 112 454 91 501 107 535 148 526 193 500 234 488 278 463 307 429 286 427 221 443 175 465 135 469 93Z" fill="url(#landA)"/>
+    <path d="M501 107 546 102 596 130 635 177 630 219 598 260 548 265 526 193 535 148Z" fill="url(#landB)"/>
+    <path d="M452 283 483 276 506 293 493 315 464 322 445 305Z" fill="url(#landA)"/>
+    <!-- Istok Evrope -->
+    <path d="M600 321 636 282 697 276 748 300 752 347 712 373 662 371 650 336Z" fill="url(#landB)"/>
+    <path d="M697 276 768 256 840 277 897 316 919 365 882 391 826 380 785 397 752 347 748 300Z" fill="url(#landA)"/>
+    <path d="M712 373 752 347 785 397 766 438 730 454 694 430Z" fill="url(#landC)"/>
+    <path d="M662 371 712 373 694 430 660 448 628 423 626 394Z" fill="url(#landB)"/>
+    <path d="M626 394 660 448 635 475 599 466 569 449 569 393Z" fill="url(#landA)"/>
+    <path d="M635 475 660 448 694 430 730 454 719 485 682 499 653 493Z" fill="url(#landC)"/>
+    <!-- Balkan, Grčka i Italija -->
+    <path d="M540 469 569 449 599 466 596 493 569 510 539 498Z" fill="url(#landC)"/>
+    <path d="M521 434 548 450 540 469 569 510 557 530 533 515 516 482 507 476Z" fill="url(#landA)"/>
+    <path d="M565 507 596 493 624 509 617 535 592 548 570 535Z" fill="url(#landB)"/>
+    <path d="M617 535 642 518 671 530 681 558 664 584 647 564 630 550Z" fill="url(#landC)"/>
+    <path d="M692 512 716 500 740 516 753 548 737 579 719 551 701 542Z" fill="url(#landA)"/>
+    <path d="M425 419 407 446 419 474 435 493 440 528 458 554 474 545 469 511 484 485 477 465 470 452 443 455Z" fill="url(#landA)"/>
+    <path d="M391 451 405 455 415 478 404 497 391 477Z" fill="url(#landC)"/>
+    <path d="M461 558 478 570 488 587 478 599 465 585Z" fill="url(#landB)"/>
+    <path d="M505 560 522 571 528 590 514 600 500 581Z" fill="url(#landB)"/>
+    <path d="M677 572 696 580 705 598 688 606 674 590Z" fill="url(#landB)"/>
   </g>
-  <g fill="none" stroke="#e0fff2" stroke-opacity=".34" stroke-width="2" stroke-linecap="round">
-    <path d="M282 351 314 374 338 355 366 383 399 358 430 379 461 352"/>
-    <path d="M335 305 355 340 390 306 412 348 447 318"/>
-    <path d="M490 333 510 357 543 341 555 374"/>
-    <path d="M588 349 620 368 647 344 679 367 710 339 744 366 785 346"/>
-    <path d="M610 406 639 386 674 414 700 384 734 408 759 380 790 401"/>
+  <!-- Diskretne unutrašnje granice čine kartu čitljivom bez naziva država. -->
+  <g fill="none" stroke="#fff9e4" stroke-opacity=".38" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M92 476 125 493 151 490 180 469 212 451M125 544 151 518 181 512 211 537"/>
+    <path d="M236 345 262 376 252 417 286 479M273 330 292 370 319 343M319 343 336 389 363 451"/>
+    <path d="M381 410 405 384 431 390 464 405M405 331 425 360 412 411M464 322 470 352 499 392M504 350 540 370 548 337"/>
+    <path d="M548 337 579 350 600 321M600 321 617 353 650 336M662 371 688 395 712 373M712 373 730 408 766 438M660 448 682 468 719 485"/>
+    <path d="M540 469 558 481 569 510M569 449 584 470 596 493M596 493 610 510 624 509M617 535 635 542 647 564"/>
+    <path d="M427 221 452 235 488 278M463 307 483 292 506 293M526 193 553 211 598 260"/>
   </g>
-  <g fill="#d9fff3" fill-opacity=".7">
-    <circle cx="105" cy="102" r="3"/><circle cx="152" cy="133" r="2"/><circle cx="885" cy="190" r="3"/><circle cx="918" cy="516" r="2"/>
-  </g>
-  <path d="M68 73h56M96 45v56" stroke="#d3fff0" stroke-opacity=".65" stroke-width="3" stroke-linecap="round"/>
-  <path d="M96 45 85 68h22Z" fill="#ffd96a"/>
+  <g fill="#d9fff3" fill-opacity=".68"><circle cx="84" cy="235" r="2"/><circle cx="894" cy="212" r="3"/><circle cx="930" cy="504" r="2"/></g>
+  <path d="M68 73h56M96 45v56" stroke="#f6e5bc" stroke-opacity=".62" stroke-width="3" stroke-linecap="round"/>
+  <path d="M96 45 85 68h22Z" fill="#e9bc76"/>
 </svg>

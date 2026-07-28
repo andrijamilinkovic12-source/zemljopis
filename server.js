@@ -2130,65 +2130,324 @@ const KVIZ_RUNDE = [
                 id: 'lisabon-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Lisabonu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Lisabon', cilj: { x: 14.5, y: 66.7 }
+                mapa: 'evropa', grad: 'Lisabon', cilj: { x: 5.4, y: 90.0 }
             },
             {
                 id: 'madrid-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Madridu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Madrid', cilj: { x: 18.5, y: 64.4 }
+                mapa: 'evropa', grad: 'Madrid', cilj: { x: 15.7, y: 85.3 }
             },
             {
                 id: 'dablin-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Dablinu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Dablin', cilj: { x: 20.5, y: 48.8 }
+                mapa: 'evropa', grad: 'Dablin', cilj: { x: 10.8, y: 50.5 }
             },
             {
                 id: 'london-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Londonu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'London', cilj: { x: 37.3, y: 35.0 }
+                mapa: 'evropa', grad: 'London', cilj: { x: 22.4, y: 55.5 }
             },
             {
                 id: 'pariz-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Parizu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Pariz', cilj: { x: 37.0, y: 55.5 }
+                mapa: 'evropa', grad: 'Pariz', cilj: { x: 27.1, y: 62.7 }
             },
             {
                 id: 'berlin-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Berlinu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Berlin', cilj: { x: 45.5, y: 51.0 }
+                mapa: 'evropa', grad: 'Berlin', cilj: { x: 48.0, y: 55.5 }
             },
             {
                 id: 'prag-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Pragu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Prag', cilj: { x: 45.5, y: 56.2 }
+                mapa: 'evropa', grad: 'Prag', cilj: { x: 51.7, y: 59.2 }
             },
             {
                 id: 'budimpesta-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Budimpešti.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Budimpešta', cilj: { x: 53.0, y: 59.7 }
+                mapa: 'evropa', grad: 'Budimpešta', cilj: { x: 60.4, y: 66.3 }
             },
             {
                 id: 'atina-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Atini.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Atina', cilj: { x: 56.8, y: 71.5 }
+                mapa: 'evropa', grad: 'Atina', cilj: { x: 70.5, y: 89.0 }
             },
             {
                 id: 'bukurest-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Bukureštu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Bukurešt', cilj: { x: 66.0, y: 62.0 }
+                mapa: 'evropa', grad: 'Bukurešt', cilj: { x: 74.0, y: 70.0 }
             }
         ]
     }
 ];
+
+// Proširena baza: po dvadeset novih zadataka za svaku od sedam rundi.
+const napraviKvizTrojku = (id, kategorija, pitanje, prihvaceni) => ({
+    id, kategorija, pitanje,
+    uputstvo: 'Svaki tačan pojam nosi 1 bod. +1 bonus ako imaš pojam koji protivnik nema.',
+    trajanjeMs: 45000, trazeno: 3, prihvaceni
+});
+const napraviKvizSpojnice = (id, kategorija, pitanje, parovi) => ({
+    id, kategorija, pitanje, uputstvo: 'Svaki pravilno spojen par nosi 1 bod.', trajanjeMs: 55000, parovi
+});
+const napraviKvizAnagram = (id, kategorija, pitanje, resenje) => ({
+    id, kategorija, pitanje,
+    uputstvo: 'Dodirni slova redom i složi tačan geografski pojam.',
+    trajanjeMs: 30000,
+    slova: Array.from(resenje.replaceAll(' ', '').toLocaleUpperCase('sr-Latn-RS')),
+    prihvaceni: [resenje], resenje, poeni: 3
+});
+const napraviKvizUljeza = (id, kategorija, pitanje, opcije, uljezIndeks, objasnjenje) => ({
+    id, kategorija, pitanje, uputstvo: 'Odaberi uljeza.', trajanjeMs: 25000,
+    opcije, uljezIndeks, objasnjenje, poeni: 2
+});
+const napraviKvizMisteriju = (id, kategorija, tragovi, prihvaceni) => ({
+    id, kategorija,
+    pitanje: 'Pogodi pojam što ranije — svaki novi trag donosi manje poena.',
+    uputstvo: 'Pogađaj odmah ili sačekaj sledeći trag.', trajanjeMs: 33000,
+    tragovi, prihvaceni
+});
+const napraviKvizEmoji = (id, kategorija, pitanje, emoji, resenje, prihvaceni = [resenje]) => ({
+    id, kategorija, pitanje, uputstvo: 'Upiši naziv pojma.', trajanjeMs: 28000,
+    emoji, prihvaceni, resenje, poeni: 3
+});
+const napraviKvizPikado = (id, kategorija, grad, mapa, cilj) => ({
+    id, kategorija, grad, mapa, cilj,
+    pitanje: `Postavi pin što bliže ${grad}.`,
+    uputstvo: 'Klikni na nemu kartu i zaključaš pin kada si siguran/na.', trajanjeMs: 40000
+});
+
+const KVIZ_DODATNA_PITANJA = {
+    'brzopotezne-trojke': [
+        napraviKvizTrojku('plus-gradovi-r', 'GRADOVI', 'Napiši tačno tri grada na slovo R.', ['Rim', 'Rabat', 'Riga', 'Rijeka', 'Roterdam', 'Rodos']),
+        napraviKvizTrojku('plus-gradovi-l', 'GRADOVI', 'Napiši tačno tri grada na slovo L.', ['London', 'Lisabon', 'Lima', 'Lion', 'Ljubljana', 'Los Anđeles']),
+        napraviKvizTrojku('plus-drzave-i', 'DRŽAVE', 'Napiši tačno tri države na slovo I.', ['Indija', 'Indonezija', 'Irak', 'Iran', 'Irska', 'Island', 'Izrael', 'Italija']),
+        napraviKvizTrojku('plus-drzave-t', 'DRŽAVE', 'Napiši tačno tri države na slovo T.', ['Tadžikistan', 'Tajland', 'Tanzanija', 'Togo', 'Tonga', 'Tunis', 'Turska', 'Turkmenistan']),
+        napraviKvizTrojku('plus-reke-s', 'REKE', 'Napiši tačno tri reke na slovo S.', ['Sava', 'Sena', 'San', 'Sutlej', 'Salvin']),
+        napraviKvizTrojku('plus-reke-k', 'REKE', 'Napiši tačno tri reke na slovo K.', ['Kolorado', 'Kongo', 'Kura', 'Kuban', 'Kaveri']),
+        napraviKvizTrojku('plus-reke-v', 'REKE', 'Napiši tačno tri reke na slovo V.', ['Vardar', 'Visla', 'Volga', 'Vrbas', 'Vltava']),
+        napraviKvizTrojku('plus-planine-p', 'PLANINE', 'Napiši tačno tri planine ili planinska masiva na slovo P.', ['Pamir', 'Pind', 'Pirineji', 'Prokletije']),
+        napraviKvizTrojku('plus-planine-h', 'PLANINE', 'Napiši tačno tri planine ili planinska masiva na slovo H.', ['Himalaji', 'Hindu Kuš', 'Hekla', 'Hercinidi']),
+        napraviKvizTrojku('plus-biljke-l', 'BILJKE', 'Napiši tačno tri biljke na slovo L.', ['Lavanda', 'Limun', 'Lešnik', 'Lipa', 'Lala']),
+        napraviKvizTrojku('plus-biljke-k', 'BILJKE', 'Napiši tačno tri biljke na slovo K.', ['Kamilica', 'Kesten', 'Kukuruz', 'Kupus', 'Krompir']),
+        napraviKvizTrojku('plus-zivotinje-m', 'ŽIVOTINJE', 'Napiši tačno tri životinje na slovo M.', ['Medved', 'Majmun', 'Meduza', 'Miš', 'Morski pas']),
+        napraviKvizTrojku('plus-zivotinje-v', 'ŽIVOTINJE', 'Napiši tačno tri životinje na slovo V.', ['Vuk', 'Vidra', 'Veverica', 'Vrana', 'Vombat']),
+        napraviKvizTrojku('plus-zivotinje-d', 'ŽIVOTINJE', 'Napiši tačno tri životinje na slovo D.', ['Dabar', 'Delfin', 'Divlja svinja', 'Divokoza', 'Detlić']),
+        napraviKvizTrojku('plus-predmeti-r', 'PREDMETI', 'Napiši tačno tri predmeta na slovo R.', ['Ranac', 'Ravnalo', 'Radio', 'Računar', 'Rukavice']),
+        napraviKvizTrojku('plus-predmeti-l', 'PREDMETI', 'Napiši tačno tri predmeta na slovo L.', ['Lampa', 'Laptop', 'Lenjir', 'Lopta', 'Lupa']),
+        napraviKvizTrojku('plus-predmeti-p', 'PREDMETI', 'Napiši tačno tri predmeta na slovo P.', ['Papir', 'Pernica', 'Peškir', 'Punjač', 'Pribor']),
+        napraviKvizTrojku('plus-ostrva-b', 'OSTRVA', 'Napiši tačno tri ostrva na slovo B.', ['Bali', 'Barbados', 'Brač', 'Borneo']),
+        napraviKvizTrojku('plus-pustinje-s', 'PUSTINJE', 'Napiši tačno tri pustinje na slovo S.', ['Sahara', 'Sonora', 'Sirijska pustinja']),
+        napraviKvizTrojku('plus-jezera-v', 'JEZERA', 'Napiši tačno tri jezera na slovo V.', ['Viktorijino jezero', 'Venern', 'Vostok'])
+    ],
+    'geografske-spojnice': [
+        napraviKvizSpojnice('plus-prestonice-sveta', 'DRŽAVE I PRESTONICE', 'Spoji države sa njihovim prestonicama.', [
+            { levo: 'Kanada', desno: 'Otava' }, { levo: 'Australija', desno: 'Kanbera' }, { levo: 'Brazil', desno: 'Brazilija' },
+            { levo: 'Nigerija', desno: 'Abudža' }, { levo: 'Kazahstan', desno: 'Astana' }, { levo: 'Novi Zeland', desno: 'Velington' }
+        ]),
+        napraviKvizSpojnice('plus-gradovi-reke-svet', 'GRADOVI I REKE', 'Spoji gradove sa rekama na kojima leže.', [
+            { levo: 'Budimpešta', desno: 'Dunav' }, { levo: 'Prag', desno: 'Vltava' }, { levo: 'Kairo', desno: 'Nil' },
+            { levo: 'Bagdad', desno: 'Tigar' }, { levo: 'London', desno: 'Temza' }, { levo: 'Sevilja', desno: 'Gvadalkivir' }
+        ]),
+        napraviKvizSpojnice('plus-drzave-znamenitosti', 'DRŽAVE I ZNAMENITOSTI', 'Spoji državu sa poznatom znamenitošću.', [
+            { levo: 'Australija', desno: 'Uluru' }, { levo: 'Jordan', desno: 'Petra' }, { levo: 'Kambodža', desno: 'Angkor Vat' },
+            { levo: 'Peru', desno: 'Maču Pikču' }, { levo: 'Indija', desno: 'Tadž Mahal' }, { levo: 'Grčka', desno: 'Akropolj' }
+        ]),
+        napraviKvizSpojnice('plus-jezera-drzave', 'JEZERA I DRŽAVE', 'Spoji jezera sa državama u kojima se nalaze.', [
+            { levo: 'Rusija', desno: 'Bajkalsko jezero' }, { levo: 'Tanzanija', desno: 'Viktorijino jezero' }, { levo: 'Bolivija', desno: 'Titikaka' },
+            { levo: 'Mađarska', desno: 'Balaton' }, { levo: 'Kanada', desno: 'Veliko Medveđe jezero' }, { levo: 'Finska', desno: 'Sajma' }
+        ]),
+        napraviKvizSpojnice('plus-planine-drzave', 'PLANINE I DRŽAVE', 'Spoji planinu sa državom u kojoj se nalazi.', [
+            { levo: 'Nepal', desno: 'Everest' }, { levo: 'Tanzanija', desno: 'Kilimandžaro' }, { levo: 'Japan', desno: 'Fudži' },
+            { levo: 'Grčka', desno: 'Olimp' }, { levo: 'Argentina', desno: 'Akonkagva' }, { levo: 'Francuska', desno: 'Mon Blan' }
+        ]),
+        napraviKvizSpojnice('plus-ostrva-polozaj', 'OSTRVA I DRŽAVE', 'Spoji ostrvo sa državom ili okeanom kojem pripada.', [
+            { levo: 'Grenland', desno: 'Danska' }, { levo: 'Sicilija', desno: 'Italija' }, { levo: 'Hokaido', desno: 'Japan' },
+            { levo: 'Tasmanija', desno: 'Australija' }, { levo: 'Madagaskar', desno: 'Indijski okean' }, { levo: 'Kuba', desno: 'Karipsko more' }
+        ]),
+        napraviKvizSpojnice('plus-mora-okeani', 'MORA I OKEANI', 'Spoji more sa okeanom ili oblašću kojoj pripada.', [
+            { levo: 'Jonsko more', desno: 'Sredozemno more' }, { levo: 'Koralno more', desno: 'Australija' }, { levo: 'Arabijsko more', desno: 'Indijski okean' },
+            { levo: 'Barencovo more', desno: 'Severni ledeni okean' }, { levo: 'Tasmanovo more', desno: 'Novi Zeland' }, { levo: 'Sargaško more', desno: 'Atlantski okean' }
+        ]),
+        napraviKvizSpojnice('plus-gradovi-drzave', 'GRADOVI I DRŽAVE', 'Spoji grad sa državom u kojoj se nalazi.', [
+            { levo: 'Kito', desno: 'Ekvador' }, { levo: 'La Paz', desno: 'Bolivija' }, { levo: 'Hanoj', desno: 'Vijetnam' },
+            { levo: 'Ulan Bator', desno: 'Mongolija' }, { levo: 'Kigali', desno: 'Ruanda' }, { levo: 'Talin', desno: 'Estonija' }
+        ]),
+        napraviKvizSpojnice('plus-gradovi-kontinenti', 'GRADOVI I KONTINENTI', 'Spoji grad sa kontinentom na kojem se nalazi.', [
+            { levo: 'Lima', desno: 'Južna Amerika' }, { levo: 'Nairobi', desno: 'Afrika' }, { levo: 'Bangkok', desno: 'Azija' },
+            { levo: 'Oslo', desno: 'Evropa' }, { levo: 'Kanbera', desno: 'Australija i Okeanija' }, { levo: 'Otava', desno: 'Severna Amerika' }
+        ]),
+        napraviKvizSpojnice('plus-pustinje-drzave', 'PUSTINJE I DRŽAVE', 'Spoji pustinju sa državom u kojoj se najvećim delom nalazi.', [
+            { levo: 'Atakama', desno: 'Čile' }, { levo: 'Namib', desno: 'Namibija' }, { levo: 'Gobi', desno: 'Mongolija' },
+            { levo: 'Kalahari', desno: 'Bocvana' }, { levo: 'Takla Makan', desno: 'Kina' }, { levo: 'Rub el-Hali', desno: 'Saudijska Arabija' }
+        ]),
+        napraviKvizSpojnice('plus-balkan-prestonice', 'BALKAN I PRESTONICE', 'Spoji balkansku državu sa njenom prestonicom.', [
+            { levo: 'Slovenija', desno: 'Ljubljana' }, { levo: 'Hrvatska', desno: 'Zagreb' }, { levo: 'Crna Gora', desno: 'Podgorica' },
+            { levo: 'Severna Makedonija', desno: 'Skoplje' }, { levo: 'Albanija', desno: 'Tirana' }, { levo: 'Bugarska', desno: 'Sofija' }
+        ]),
+        napraviKvizSpojnice('plus-reke-usca', 'REKE I UŠĆA', 'Spoji reku sa morem ili zalivom u koji se uliva.', [
+            { levo: 'Dunav', desno: 'Crno more' }, { levo: 'Volga', desno: 'Kaspijsko jezero' }, { levo: 'Nil', desno: 'Sredozemno more' },
+            { levo: 'Amazon', desno: 'Atlantski okean' }, { levo: 'Misisipi', desno: 'Meksički zaliv' }, { levo: 'Jangce', desno: 'Istočnokinesko more' }
+        ]),
+        napraviKvizSpojnice('plus-zivotinje-kontinenti', 'ŽIVOTINJE I KONTINENTI', 'Spoji životinju sa kontinentom za koji je karakteristična.', [
+            { levo: 'Koala', desno: 'Australija i Okeanija' }, { levo: 'Lama', desno: 'Južna Amerika' }, { levo: 'Panda', desno: 'Azija' },
+            { levo: 'Pingvin', desno: 'Antarktik' }, { levo: 'Bizon', desno: 'Severna Amerika' }, { levo: 'Žirafa', desno: 'Afrika' }
+        ]),
+        napraviKvizSpojnice('plus-biljke-drzave', 'BILJKE I DRŽAVE', 'Spoji biljku sa državom za koju je prepoznatljiva.', [
+            { levo: 'Tulipan', desno: 'Holandija' }, { levo: 'Cedar', desno: 'Liban' }, { levo: 'Baobab', desno: 'Madagaskar' },
+            { levo: 'Javor', desno: 'Kanada' }, { levo: 'Maslina', desno: 'Grčka' }, { levo: 'Bambus', desno: 'Kina' }
+        ]),
+        napraviKvizSpojnice('plus-valute-drzave', 'DRŽAVE I VALUTE', 'Spoji državu sa njenom valutom.', [
+            { levo: 'Japan', desno: 'Jen' }, { levo: 'Indija', desno: 'Rupija' }, { levo: 'Švajcarska', desno: 'Franak' },
+            { levo: 'Meksiko', desno: 'Peso' }, { levo: 'Mađarska', desno: 'Forinta' }, { levo: 'Češka', desno: 'Kruna' }
+        ]),
+        napraviKvizSpojnice('plus-drzave-reke', 'DRŽAVE I REKE', 'Spoji državu sa poznatom rekom koja kroz nju protiče.', [
+            { levo: 'Nemačka', desno: 'Rajna' }, { levo: 'Portugal', desno: 'Tajo' }, { levo: 'Srbija', desno: 'Morava' },
+            { levo: 'Francuska', desno: 'Loara' }, { levo: 'Kina', desno: 'Jangce' }, { levo: 'SAD', desno: 'Kolorado' }
+        ]),
+        napraviKvizSpojnice('plus-vulkani-drzave', 'VULKANI I DRŽAVE', 'Spoji vulkan sa državom ili oblašću u kojoj se nalazi.', [
+            { levo: 'Vezuv', desno: 'Italija' }, { levo: 'Etna', desno: 'Sicilija' }, { levo: 'Fudži', desno: 'Japan' },
+            { levo: 'Kilimandžaro', desno: 'Tanzanija' }, { levo: 'Hekla', desno: 'Island' }, { levo: 'Krakatau', desno: 'Indonezija' }
+        ]),
+        napraviKvizSpojnice('plus-gradovi-znamenitosti', 'GRADOVI I ZNAMENITOSTI', 'Spoji grad sa znamenitošću po kojoj je poznat.', [
+            { levo: 'Pariz', desno: 'Ajfelov toranj' }, { levo: 'Rio de Žaneiro', desno: 'Hrist Spasitelj' }, { levo: 'Sidnej', desno: 'Opera' },
+            { levo: 'Moskva', desno: 'Kremlj' }, { levo: 'Njujork', desno: 'Kip slobode' }, { levo: 'Peking', desno: 'Kineski zid' }
+        ]),
+        napraviKvizSpojnice('plus-prestonice-pet-kontinenata', 'DRŽAVE I PRESTONICE', 'Spoji državu sa njenom prestonicom.', [
+            { levo: 'Norveška', desno: 'Oslo' }, { levo: 'Južna Koreja', desno: 'Seul' }, { levo: 'Etiopija', desno: 'Adis Abeba' },
+            { levo: 'Kolumbija', desno: 'Bogota' }, { levo: 'Portugal', desno: 'Lisabon' }, { levo: 'Maroko', desno: 'Rabat' }
+        ]),
+        napraviKvizSpojnice('plus-obale-drzave', 'OBLASTI I DRŽAVE', 'Spoji poznati zaliv sa državom uz koju se nalazi.', [
+            { levo: 'Bengalski zaliv', desno: 'Bangladeš' }, { levo: 'Biskajski zaliv', desno: 'Francuska' }, { levo: 'Kalifornijski zaliv', desno: 'Meksiko' },
+            { levo: 'Omanski zaliv', desno: 'Oman' }, { levo: 'Hudsonov zaliv', desno: 'Kanada' }, { levo: 'Alašski zaliv', desno: 'SAD' }
+        ])
+    ],
+    'mutna-voda': [
+        napraviKvizAnagram('plus-amazon', 'REKE', 'Koja velika južnoamerička reka je skrivena u slovima?', 'Amazon'),
+        napraviKvizAnagram('plus-nil', 'REKE', 'Koja afrička reka je skrivena u slovima?', 'Nil'),
+        napraviKvizAnagram('plus-volga', 'REKE', 'Koja najduža evropska reka je skrivena u slovima?', 'Volga'),
+        napraviKvizAnagram('plus-temza', 'REKE', 'Koja reka protiče kroz London?', 'Temza'),
+        napraviKvizAnagram('plus-sena', 'REKE', 'Koja reka protiče kroz Pariz?', 'Sena'),
+        napraviKvizAnagram('plus-alpi', 'PLANINE', 'Koji planinski venac je skriven u slovima?', 'Alpi'),
+        napraviKvizAnagram('plus-andi', 'PLANINE', 'Koji planinski venac se pruža uz zapad Južne Amerike?', 'Andi'),
+        napraviKvizAnagram('plus-atlas', 'PLANINE', 'Koji afrički planinski venac je skriven u slovima?', 'Atlas'),
+        napraviKvizAnagram('plus-everest', 'PLANINE', 'Koji najviši vrh sveta je skriven u slovima?', 'Everest'),
+        napraviKvizAnagram('plus-olimp', 'PLANINE', 'Koja grčka planina je skrivena u slovima?', 'Olimp'),
+        napraviKvizAnagram('plus-pamir', 'PLANINE', 'Koji planinski masiv u Aziji je skriven u slovima?', 'Pamir'),
+        napraviKvizAnagram('plus-kairo', 'GRADOVI', 'Koji glavni grad Egipta je skriven u slovima?', 'Kairo'),
+        napraviKvizAnagram('plus-tokio', 'GRADOVI', 'Koji glavni grad Japana je skriven u slovima?', 'Tokio'),
+        napraviKvizAnagram('plus-lima', 'GRADOVI', 'Koji glavni grad Perua je skriven u slovima?', 'Lima'),
+        napraviKvizAnagram('plus-oslo', 'GRADOVI', 'Koji glavni grad Norveške je skriven u slovima?', 'Oslo'),
+        napraviKvizAnagram('plus-riga', 'GRADOVI', 'Koji glavni grad Letonije je skriven u slovima?', 'Riga'),
+        napraviKvizAnagram('plus-peru', 'DRŽAVE', 'Koja država Anda je skrivena u slovima?', 'Peru'),
+        napraviKvizAnagram('plus-mali', 'DRŽAVE', 'Koja afrička država je skrivena u slovima?', 'Mali'),
+        napraviKvizAnagram('plus-kuba', 'DRŽAVE', 'Koja ostrvska država Kariba je skrivena u slovima?', 'Kuba'),
+        napraviKvizAnagram('plus-jemen', 'DRŽAVE', 'Koja država na Arabijskom poluostrvu je skrivena u slovima?', 'Jemen')
+    ],
+    'pronadji-uljeza': [
+        napraviKvizUljeza('plus-nordijske-prestonice', 'GRADOVI I DRŽAVE', 'Tri pojma su nordijske prestonice, a jedan je država.', ['Oslo', 'Helsinki', 'Stokholm', 'Švedska'], 3, 'Švedska je država, dok su Oslo, Helsinki i Stokholm prestonice.'),
+        napraviKvizUljeza('plus-reke-peru', 'REKE I DRŽAVE', 'Tri pojma su velike reke, a jedan je država.', ['Amazon', 'Kongo', 'Misisipi', 'Peru'], 3, 'Peru je država, dok su ostali pojmovi reke.'),
+        napraviKvizUljeza('plus-planine-sahara', 'PLANINE I PUSTINJE', 'Tri pojma su planinski venci, a jedan je pustinja.', ['Alpi', 'Andi', 'Himalaji', 'Sahara'], 3, 'Sahara je pustinja, dok su ostali pojmovi planinski venci.'),
+        napraviKvizUljeza('plus-azija-rim', 'DRŽAVE I GRADOVI', 'Tri pojma su ostrvske države Azije, a jedan je grad.', ['Japan', 'Indonezija', 'Filipini', 'Rim'], 3, 'Rim je grad, dok su ostali pojmovi ostrvske države Azije.'),
+        napraviKvizUljeza('plus-jezera-dunav', 'JEZERA I REKE', 'Tri pojma su jezera, a jedan je reka.', ['Viktorijino jezero', 'Bajkalsko jezero', 'Titikaka', 'Dunav'], 3, 'Dunav je reka, dok su ostali pojmovi jezera.'),
+        napraviKvizUljeza('plus-prestonice-evropa', 'GRADOVI I KONTINENTI', 'Tri pojma su evropske prestonice, a jedan je kontinent.', ['Madrid', 'Lisabon', 'Rim', 'Evropa'], 3, 'Evropa je kontinent, dok su ostali pojmovi gradovi.'),
+        napraviKvizUljeza('plus-reke-pariz', 'REKE I GRADOVI', 'Tri pojma su reke, a jedan je grad.', ['Nil', 'Sena', 'Temza', 'Pariz'], 3, 'Pariz je grad, dok su ostali pojmovi reke.'),
+        napraviKvizUljeza('plus-drzave-amazon', 'DRŽAVE I REKE', 'Tri pojma su države Južne Amerike, a jedan je reka.', ['Brazil', 'Argentina', 'Peru', 'Amazon'], 3, 'Amazon je reka, dok su Brazil, Argentina i Peru države Južne Amerike.'),
+        napraviKvizUljeza('plus-ostrva-indonezija', 'OSTRVA I DRŽAVE', 'Tri pojma su ostrva Indonezije, a jedan je država.', ['Java', 'Sumatra', 'Borneo', 'Indonezija'], 3, 'Indonezija je država, dok su ostali pojmovi ostrva.'),
+        napraviKvizUljeza('plus-zivotinje-kaktus', 'ŽIVOTINJE I BILJKE', 'Tri pojma su velike mačke, a jedan je biljka.', ['Tigar', 'Lav', 'Jaguar', 'Kaktus'], 3, 'Kaktus je biljka, dok su ostali pojmovi životinje.'),
+        napraviKvizUljeza('plus-ostrva-tasmanija', 'OSTRVA I DRŽAVE', 'Tri pojma su velika ostrva, a jedan je država.', ['Tasmanija', 'Borneo', 'Madagaskar', 'Australija'], 3, 'Australija je država i kontinent, dok su ostali pojmovi ostrva.'),
+        napraviKvizUljeza('plus-vulkani-nil', 'VULKANI I REKE', 'Tri pojma su vulkani, a jedan je reka.', ['Etna', 'Vezuv', 'Fudži', 'Nil'], 3, 'Nil je reka, dok su ostali pojmovi vulkani.'),
+        napraviKvizUljeza('plus-glavni-gradovi-kilimandzaro', 'GRADOVI I PLANINE', 'Tri pojma su glavni gradovi, a jedan je planina.', ['Kairo', 'Lima', 'Oslo', 'Kilimandžaro'], 3, 'Kilimandžaro je planina, dok su ostali pojmovi glavni gradovi.'),
+        napraviKvizUljeza('plus-pustinje-pingvin', 'PUSTINJE I ŽIVOTINJE', 'Tri pojma su pustinje, a jedan je životinja.', ['Gobi', 'Namib', 'Atakama', 'Pingvin'], 3, 'Pingvin je životinja, dok su ostali pojmovi pustinje.'),
+        napraviKvizUljeza('plus-okeani-alpi', 'OKEANI I PLANINE', 'Tri pojma su okeani, a jedan je planinski venac.', ['Atlantski okean', 'Tihi okean', 'Indijski okean', 'Alpi'], 3, 'Alpi su planinski venac, dok su ostali pojmovi okeani.'),
+        napraviKvizUljeza('plus-prestonice-australija', 'GRADOVI I DRŽAVE', 'Tri pojma su prestonice, a jedan je država.', ['Kanbera', 'Otava', 'Rabat', 'Australija'], 3, 'Australija je država, dok su ostali pojmovi prestonice.'),
+        napraviKvizUljeza('plus-kontinenti-japan', 'KONTINENTI I DRŽAVE', 'Tri pojma su kontinenti, a jedan je država.', ['Afrika', 'Evropa', 'Azija', 'Japan'], 3, 'Japan je država, dok su ostali pojmovi kontinenti.'),
+        napraviKvizUljeza('plus-biljke-kompas', 'BILJKE I PREDMETI', 'Tri pojma su biljke, a jedan je predmet.', ['Bambus', 'Lavanda', 'Maslina', 'Kompas'], 3, 'Kompas je predmet, dok su ostali pojmovi biljke.'),
+        napraviKvizUljeza('plus-balkan-berlin', 'GRADOVI I DRŽAVE', 'Tri pojma su balkanske prestonice, a jedan je grad van Balkana.', ['Beograd', 'Sofija', 'Tirana', 'Berlin'], 3, 'Berlin je van Balkana, dok su ostali pojmovi balkanske prestonice.'),
+        napraviKvizUljeza('plus-reke-atlas', 'REKE I PLANINE', 'Tri pojma su reke, a jedan je planinski venac.', ['Rajna', 'Loara', 'Tajo', 'Atlas'], 3, 'Atlas je planinski venac, dok su ostali pojmovi reke.')
+    ],
+    'ko-sam-ja': [
+        napraviKvizMisteriju('plus-amazon-misterija', 'REKE', ['Ja sam najvodnija reka sveta.', 'Protičem kroz najveću tropsku šumu Južne Amerike.', 'Ulivam se u Atlantski okean.'], ['Amazon', 'Amazonka']),
+        napraviKvizMisteriju('plus-sahara-misterija', 'PUSTINJE', ['Ja sam najveća topla pustinja na svetu.', 'Nalazim se u severnoj Africi.', 'Poznata sam po dinama i oazama.'], ['Sahara']),
+        napraviKvizMisteriju('plus-japan-misterija', 'DRŽAVE', ['Ja sam ostrvska država u istočnoj Aziji.', 'Moj najviši vrh je Fudži.', 'Moja prestonica je Tokio.'], ['Japan']),
+        napraviKvizMisteriju('plus-brazil-misterija', 'DRŽAVE', ['Ja sam najveća država Južne Amerike.', 'U meni se nalazi najveći deo Amazonije.', 'Moj službeni jezik je portugalski.'], ['Brazil', 'Brasil']),
+        napraviKvizMisteriju('plus-australija-misterija', 'DRŽAVE', ['Ja sam država i kontinent na južnoj hemisferi.', 'Kod mene žive kenguri i koale.', 'Moja prestonica je Kanbera.'], ['Australija']),
+        napraviKvizMisteriju('plus-nil-misterija', 'REKE', ['Ja sam velika afrička reka.', 'Protičem kroz Kairo.', 'Ulivam se u Sredozemno more.'], ['Nil']),
+        napraviKvizMisteriju('plus-himalaji-misterija', 'PLANINE', ['Ja sam najviši planinski venac sveta.', 'U meni se nalazi Everest.', 'Pružam se kroz više država Azije.'], ['Himalaji']),
+        napraviKvizMisteriju('plus-novi-zeland-misterija', 'DRŽAVE I OSTRVA', ['Ja sam ostrvska država u jugozapadnom Pacifiku.', 'Moj glavni grad je Velington.', 'Poznat/a sam po maorijskoj kulturi i kiviju.'], ['Novi Zeland', 'New Zealand']),
+        napraviKvizMisteriju('plus-grenland-misterija', 'OSTRVA', ['Ja sam najveće ostrvo na svetu.', 'Veći deo moje površine prekriva led.', 'Politički pripadam Kraljevini Danskoj.'], ['Grenland', 'Greenland']),
+        napraviKvizMisteriju('plus-kenija-misterija', 'DRŽAVE', ['Ja sam država u istočnoj Africi.', 'Moja prestonica je Nairobi.', 'Kod mene se nalazi veliki deo rezervata Masai Mara.'], ['Kenija']),
+        napraviKvizMisteriju('plus-norveska-misterija', 'DRŽAVE', ['Ja sam nordijska država Evrope.', 'Moja prestonica je Oslo.', 'Poznat/a sam po fjordovima.'], ['Norveška', 'Norway']),
+        napraviKvizMisteriju('plus-meksiko-misterija', 'DRŽAVE', ['Ja sam država Severne Amerike.', 'Na severu se graničim sa SAD.', 'Poznat/a sam po tekili i astečkom nasleđu.'], ['Meksiko', 'Mexico']),
+        napraviKvizMisteriju('plus-indonezija-misterija', 'DRŽAVE I OSTRVA', ['Ja sam država sastavljena od hiljada ostrva.', 'Nalazim se između Indijskog i Tihog okeana.', 'Java i Sumatra su deo moje teritorije.'], ['Indonezija']),
+        napraviKvizMisteriju('plus-kanada-misterija', 'DRŽAVE', ['Ja sam druga država sveta po površini.', 'Moj prepoznatljivi simbol je javorov list.', 'Moja prestonica je Otava.'], ['Kanada', 'Canada']),
+        napraviKvizMisteriju('plus-cile-misterija', 'DRŽAVE', ['Ja sam veoma izdužena država Južne Amerike.', 'Na istoku me prati planinski venac Andi.', 'Moja prestonica je Santjago.'], ['Čile', 'Chile']),
+        napraviKvizMisteriju('plus-island-misterija', 'DRŽAVE', ['Ja sam ostrvska država severnog Atlantika.', 'Poznat/a sam po gejzirima i vulkanima.', 'Moja prestonica je Rejkjavik.'], ['Island', 'Iceland']),
+        napraviKvizMisteriju('plus-zanzibar-misterija', 'OSTRVA', ['Ja sam ostrvo uz istočnu obalu Afrike.', 'Pripadam Tanzaniji.', 'Poznat/a sam po začinima i belim plažama.'], ['Zanzibar']),
+        napraviKvizMisteriju('plus-gobi-misterija', 'PUSTINJE', ['Ja sam velika hladna pustinja Azije.', 'Prostirem se preko Mongolije i Kine.', 'Moje ime ima četiri slova.'], ['Gobi']),
+        napraviKvizMisteriju('plus-viktorijini-slapovi-misterija', 'PRIRODNA GEOGRAFIJA', ['Ja sam ogromni vodopad na reci Zambezi.', 'Nalazim se na granici Zambije i Zimbabvea.', 'Ime sam dobio/la po britanskoj kraljici.'], ['Viktorijini slapovi', 'Viktorijini vodopadi', 'Victoria Falls']),
+        napraviKvizMisteriju('plus-veliki-koralni-greben-misterija', 'PRIRODNA GEOGRAFIJA', ['Ja sam najveći sistem koralnih grebena na svetu.', 'Nalazim se uz severoistočnu obalu Australije.', 'Vidljiv/a sam i iz svemira.'], ['Veliki koralni greben', 'Great Barrier Reef'])
+    ],
+    'emoji-geografija': [
+        napraviKvizEmoji('plus-sidnej-emoji', 'GRADOVI', 'Koji grad predstavljaju emodžiji?', '🎭  🌉  🇦🇺', 'Sidnej', ['Sidnej', 'Sydney']),
+        napraviKvizEmoji('plus-venecija-emoji', 'GRADOVI', 'Koji grad predstavljaju emodžiji?', '🎭  🚣  🇮🇹', 'Venecija', ['Venecija', 'Venice']),
+        napraviKvizEmoji('plus-istanbul-emoji', 'GRADOVI', 'Koji grad predstavljaju emodžiji?', '🕌  🫖  🇹🇷', 'Istanbul'),
+        napraviKvizEmoji('plus-kanada-emoji', 'DRŽAVE', 'Koju državu predstavljaju emodžiji?', '🍁  🏒  🇨🇦', 'Kanada', ['Kanada', 'Canada']),
+        napraviKvizEmoji('plus-svajcarska-emoji', 'DRŽAVE', 'Koju državu predstavljaju emodžiji?', '🧀  ⌚  🇨🇭', 'Švajcarska', ['Švajcarska', 'Svjcarska', 'Switzerland']),
+        napraviKvizEmoji('plus-irska-emoji', 'DRŽAVE', 'Koju državu predstavljaju emodžiji?', '☘️  🪕  🇮🇪', 'Irska', ['Irska', 'Ireland']),
+        napraviKvizEmoji('plus-holandija-emoji', 'DRŽAVE', 'Koju državu predstavljaju emodžiji?', '🌷  🚲  🇳🇱', 'Holandija', ['Holandija', 'Nizozemska', 'Netherlands']),
+        napraviKvizEmoji('plus-meksiko-siti-emoji', 'GRADOVI', 'Koji grad predstavljaju emodžiji?', '🏙️  🌮  🇲🇽', 'Meksiko Siti', ['Meksiko Siti', 'Mexico City']),
+        napraviKvizEmoji('plus-rio-emoji', 'GRADOVI', 'Koji grad predstavljaju emodžiji?', '🏖️  ⚽  🇧🇷', 'Rio de Žaneiro', ['Rio de Žaneiro', 'Rio de Janeiro', 'Rio']),
+        napraviKvizEmoji('plus-buenos-ajres-emoji', 'GRADOVI', 'Koji grad predstavljaju emodžiji?', '💃  🥩  🇦🇷', 'Buenos Ajres', ['Buenos Ajres', 'Buenos Aires']),
+        napraviKvizEmoji('plus-nairobi-emoji', 'GRADOVI', 'Koji grad predstavljaju emodžiji?', '🦁  🌍  🇰🇪', 'Nairobi'),
+        napraviKvizEmoji('plus-kejptaun-emoji', 'GRADOVI', 'Koji grad predstavljaju emodžiji?', '🐧  ⛰️  🇿🇦', 'Kejptaun', ['Kejptaun', 'Cape Town']),
+        napraviKvizEmoji('plus-marakes-emoji', 'GRADOVI', 'Koji grad predstavljaju emodžiji?', '🕌  🏜️  🇲🇦', 'Marakeš', ['Marakeš', 'Marrakesh']),
+        napraviKvizEmoji('plus-bangkok-emoji', 'GRADOVI', 'Koji grad predstavljaju emodžiji?', '🛕  🐘  🇹🇭', 'Bangkok'),
+        napraviKvizEmoji('plus-seul-emoji', 'GRADOVI', 'Koji grad predstavljaju emodžiji?', '🎤  🍜  🇰🇷', 'Seul', ['Seul', 'Seoul']),
+        napraviKvizEmoji('plus-peking-emoji', 'GRADOVI', 'Koji grad predstavljaju emodžiji?', '🧱  🦆  🇨🇳', 'Peking', ['Peking', 'Beijing']),
+        napraviKvizEmoji('plus-fudzi-emoji', 'PLANINE', 'Koju planinu predstavljaju emodžiji?', '🗻  🌸  🇯🇵', 'Fudži', ['Fudži', 'Fuji', 'Mount Fuji']),
+        napraviKvizEmoji('plus-island-emoji', 'DRŽAVE', 'Koju državu predstavljaju emodžiji?', '🌋  🧊  🇮🇸', 'Island', ['Island', 'Iceland']),
+        napraviKvizEmoji('plus-galapagos-emoji', 'OSTRVA', 'Koja ostrva predstavljaju emodžiji?', '🐢  🌋  🇪🇨', 'Galapagos', ['Galapagos', 'Galapagoska ostrva']),
+        napraviKvizEmoji('plus-koralni-greben-emoji', 'PRIRODNA GEOGRAFIJA', 'Koji prirodni fenomen predstavljaju emodžiji?', '🐠  🪸  🇦🇺', 'Veliki koralni greben', ['Veliki koralni greben', 'Great Barrier Reef'])
+    ],
+    'geografski-pikado': [
+        napraviKvizPikado('plus-ren', 'GRADOVI · FRANCUSKA', 'Ren', 'francuska', { x: 33.5, y: 43.5 }),
+        napraviKvizPikado('plus-dizon', 'GRADOVI · FRANCUSKA', 'Dižon', 'francuska', { x: 60.0, y: 43.0 }),
+        napraviKvizPikado('plus-monpelje', 'GRADOVI · FRANCUSKA', 'Monpelje', 'francuska', { x: 56.5, y: 68.5 }),
+        napraviKvizPikado('plus-brest', 'GRADOVI · FRANCUSKA', 'Brest', 'francuska', { x: 24.0, y: 42.0 }),
+        napraviKvizPikado('plus-klermon-feran', 'GRADOVI · FRANCUSKA', 'Klermon-Feran', 'francuska', { x: 51.0, y: 55.0 }),
+        napraviKvizPikado('plus-firenca', 'GRADOVI · ITALIJA', 'Firenca', 'italija', { x: 49.0, y: 33.5 }),
+        napraviKvizPikado('plus-djenova', 'GRADOVI · ITALIJA', 'Đenova', 'italija', { x: 39.0, y: 29.0 }),
+        napraviKvizPikado('plus-bari', 'GRADOVI · ITALIJA', 'Bari', 'italija', { x: 63.0, y: 47.0 }),
+        napraviKvizPikado('plus-kaljari', 'GRADOVI · ITALIJA', 'Kaljari', 'italija', { x: 30.0, y: 65.0 }),
+        napraviKvizPikado('plus-verona', 'GRADOVI · ITALIJA', 'Verona', 'italija', { x: 47.0, y: 20.5 }),
+        napraviKvizPikado('plus-subotica', 'GRADOVI · SRBIJA', 'Subotica', 'srbija', { x: 36.3, y: 17.5 }),
+        napraviKvizPikado('plus-zrenjanin', 'GRADOVI · SRBIJA', 'Zrenjanin', 'srbija', { x: 48.0, y: 30.0 }),
+        napraviKvizPikado('plus-cacak', 'GRADOVI · SRBIJA', 'Čačak', 'srbija', { x: 43.0, y: 50.0 }),
+        napraviKvizPikado('plus-uzice', 'GRADOVI · SRBIJA', 'Užice', 'srbija', { x: 37.5, y: 54.0 }),
+        napraviKvizPikado('plus-vranje', 'GRADOVI · SRBIJA', 'Vranje', 'srbija', { x: 62.0, y: 70.0 }),
+        napraviKvizPikado('plus-bec-evropa', 'GRADOVI · EVROPA', 'Beč', 'evropa', { x: 51.0, y: 67.5 }),
+        napraviKvizPikado('plus-zagreb-evropa', 'GRADOVI · EVROPA', 'Zagreb', 'evropa', { x: 53.0, y: 72.0 }),
+        napraviKvizPikado('plus-skoplje-evropa', 'GRADOVI · EVROPA', 'Skoplje', 'evropa', { x: 62.0, y: 83.0 }),
+        napraviKvizPikado('plus-varsava-evropa', 'GRADOVI · EVROPA', 'Varšava', 'evropa', { x: 62.3, y: 53.5 }),
+        napraviKvizPikado('plus-kopenhagen-evropa', 'GRADOVI · EVROPA', 'Kopenhagen', 'evropa', { x: 46.4, y: 44.2 })
+    ]
+};
+
+Object.entries(KVIZ_DODATNA_PITANJA).forEach(([rundaId, pitanja]) => {
+    const runda = KVIZ_RUNDE.find(kvizRunda => kvizRunda.id === rundaId);
+    if (!runda) throw new Error(`Nepoznata kviz runda: ${rundaId}`);
+    runda.pitanja.push(...pitanja);
+});
 
 function promesajKvizStavke(stavke) {
     const kopija = [...stavke];

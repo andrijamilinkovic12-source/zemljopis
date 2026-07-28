@@ -18669,9 +18669,15 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Konačan rezultat koristi isti ritam, bez istovremenog iskakanja svih kartica. */
+/* Konačan rezultat ostaje ceo u ekranu, a komande se oslanjaju na donju bezbednu zonu. */
+#zemljopis-kviz-screen.kviz-showing-result {
+    padding-bottom: max(1px, env(safe-area-inset-bottom, 0px));
+}
+
 .kviz-result {
     min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
     gap: 0;
     padding: 0;
     overflow: hidden;
@@ -18686,26 +18692,109 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: none;
+    overflow: hidden;
     box-sizing: border-box;
-    padding: 1.2rem 0 0.55rem;
+    padding: clamp(0.28rem, 1.3vh, 0.58rem) 0 0.2rem;
 }
 
 .kviz-result-actions {
     width: min(100%, 356px);
     flex: 0 0 auto;
     display: grid;
-    gap: 0.48rem;
+    gap: 0.32rem;
+    margin-top: auto;
     box-sizing: border-box;
-    padding: 0.55rem 0 calc(0.7rem + env(safe-area-inset-bottom));
+    padding: 0.24rem 0 1px;
 }
 
 .kviz-result-actions .kviz-primary-btn,
 .kviz-result-actions .kviz-secondary-btn {
     width: 100%;
     margin: 0;
+    min-height: 42px;
+    font-size: 0.66rem;
+}
+
+.kviz-result .kviz-result-icon {
+    width: clamp(46px, 12vw, 58px);
+    margin: 0 0 0.28rem;
+    font-size: clamp(1.45rem, 5.8vw, 1.85rem);
+}
+
+.kviz-result .kviz-eyebrow { margin-bottom: 0.24rem; }
+.kviz-result h3 { font-size: clamp(1.08rem, 4.4vw, 1.3rem); }
+
+.kviz-result .kviz-final-rounds {
+    width: min(100%, 356px);
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 0.28rem;
+    margin: 0.38rem auto 0.42rem;
+}
+
+.kviz-result .kviz-final-round-row {
+    grid-column: span 2;
+    min-width: 0;
+    min-height: 42px;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 0.12rem;
+    padding: 0.22rem 0.12rem;
+    border-radius: 12px;
+}
+
+/* Sedma karta zadržava simetričan drugi red (tri umesto četiri runde). */
+.kviz-result .kviz-final-round-row:nth-child(5) { grid-column: 2 / span 2; }
+
+.kviz-result .kviz-final-round-name {
+    display: block;
+    min-height: 0;
+    text-align: center;
+}
+
+.kviz-result .kviz-final-round-name span {
+    display: block;
+    color: #e7d4ff;
+    font-size: 0.39rem;
+    letter-spacing: 0.05em;
+    line-height: 1;
+}
+
+.kviz-result .kviz-final-round-name b { display: none; }
+.kviz-result .kviz-final-round-points { gap: 0.1rem; font-size: 0.54rem; }
+
+.kviz-result .kviz-final-round-token {
+    width: clamp(23px, 7vw, 28px);
+    border-radius: 9px 11px 9px 12px;
+}
+
+.kviz-result .kviz-final-round-token > b {
+    min-width: 13px;
+    min-height: 12px;
+    margin-top: 0.2rem;
+    padding: 0 0.05rem;
+    border-radius: 5px;
+    font-size: 0.62rem;
+}
+
+.kviz-result .kviz-final-score {
+    gap: 0.42rem;
+    margin: 0.34rem 0 0;
+}
+
+.kviz-result .kviz-final-score b { font-size: clamp(1.9rem, 8vw, 2.35rem); }
+.kviz-result .kviz-final-score span { font-size: 1.25rem; }
+.kviz-result-scroll > #kviz-result-copy { margin: 0.28rem 0 0; font-size: 0.72rem; line-height: 1.28; }
+
+@media (max-height: 670px) {
+    .kviz-result .kviz-result-icon { width: 44px; margin-bottom: 0.2rem; font-size: 1.35rem; }
+    .kviz-result .kviz-final-rounds { gap: 0.22rem; margin: 0.26rem auto 0.3rem; }
+    .kviz-result .kviz-final-round-row { min-height: 38px; padding-block: 0.16rem; }
+    .kviz-result .kviz-final-round-token { width: 22px; }
+    .kviz-result .kviz-final-score { margin-top: 0.2rem; }
+    .kviz-result .kviz-final-score b { font-size: 1.78rem; }
+    .kviz-result-actions { gap: 0.24rem; padding-top: 0.16rem; }
+    .kviz-result-actions .kviz-primary-btn,
+    .kviz-result-actions .kviz-secondary-btn { min-height: 38px; }
 }
 
 .kviz-result.kviz-match-result-enter .kviz-result-icon { animation: kvizResultMedallion 580ms cubic-bezier(.16,.9,.26,1.16) both; }

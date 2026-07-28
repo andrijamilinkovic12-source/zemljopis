@@ -16301,6 +16301,9 @@ body[data-tema] #main-menu .circle-overlay.active {
 .kviz-game.kviz-round-paused > .kviz-question,
 .kviz-game.kviz-round-paused > .kviz-round-content,
 .kviz-game.kviz-round-paused > .kviz-answer-status { visibility: hidden; }
+
+/* Pomeren prelaz ostaje iste veličine, ali njegov donji rub ne sme da iseče interni skrol kontejner. */
+.kviz-game.kviz-round-paused { overflow: visible; }
 .kviz-break-eyebrow {
     color: #9fefff;
     font-size: 0.6rem;

@@ -845,14 +845,18 @@
         </section>
 
         <section id="kviz-kraj" class="kviz-result" hidden aria-live="polite">
-            <span id="kviz-result-icon" class="kviz-result-icon" aria-hidden="true"><i class="fa-solid fa-trophy"></i></span>
-            <p id="kviz-result-eyebrow" class="kviz-eyebrow">REZULTAT MEČA</p>
-            <h3 id="kviz-result-title">Meč je završen</h3>
-            <div id="kviz-final-rounds" class="kviz-final-rounds" aria-label="Rezultati po rundama"></div>
-            <div class="kviz-final-score"><b id="kviz-final-moji">0</b><span>:</span><b id="kviz-final-protivnik">0</b></div>
-            <p id="kviz-result-copy">Dobro odigrano!</p>
-            <button class="kviz-primary-btn" type="button" onclick="KvizManager.igrajPonovo()"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> IGRAJ PONOVO</button>
-            <button class="kviz-secondary-btn" type="button" onclick="KvizManager.nazadUMeni()">Nazad u meni</button>
+            <div class="kviz-result-scroll">
+                <span id="kviz-result-icon" class="kviz-result-icon" aria-hidden="true"><i class="fa-solid fa-trophy"></i></span>
+                <p id="kviz-result-eyebrow" class="kviz-eyebrow">REZULTAT MEČA</p>
+                <h3 id="kviz-result-title">Meč je završen</h3>
+                <div id="kviz-final-rounds" class="kviz-final-rounds" aria-label="Rezultati po rundama"></div>
+                <div class="kviz-final-score"><b id="kviz-final-moji">0</b><span>:</span><b id="kviz-final-protivnik">0</b></div>
+                <p id="kviz-result-copy">Dobro odigrano!</p>
+            </div>
+            <div class="kviz-result-actions" aria-label="Akcije nakon meča">
+                <button class="kviz-primary-btn" type="button" onclick="KvizManager.igrajPonovo()"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> IGRAJ PONOVO</button>
+                <button class="kviz-secondary-btn" type="button" onclick="KvizManager.nazadUMeni()">Nazad u meni</button>
+            </div>
         </section>
     </div>
 

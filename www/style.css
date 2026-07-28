@@ -16062,7 +16062,7 @@ body[data-tema] #main-menu .circle-overlay.active {
 }
 
 .kviz-lobi > p:not(.kviz-status),
-.kviz-result > p:not(.kviz-eyebrow) {
+.kviz-result-scroll > p:not(.kviz-eyebrow) {
     max-width: 330px;
     margin: 0.8rem 0 1.15rem;
     color: #d7e8f6;
@@ -16739,7 +16739,7 @@ body[data-tema] #main-menu .circle-overlay.active {
 }
 
 .kviz-lobi > p:not(.kviz-status),
-.kviz-result > p:not(.kviz-eyebrow) { color: #e1d9ee; }
+.kviz-result-scroll > p:not(.kviz-eyebrow) { color: #e1d9ee; }
 
 .kviz-rules span {
     border: 1px solid rgba(250, 220, 255, 0.14);
@@ -18638,9 +18638,41 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
 
 /* Konačan rezultat koristi isti ritam, bez istovremenog iskakanja svih kartica. */
 .kviz-result {
+    min-height: 0;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+    justify-content: stretch;
+}
+
+.kviz-result-scroll {
+    width: 100%;
+    min-height: 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: none;
+    box-sizing: border-box;
+    padding: 1.2rem 0 0.55rem;
+}
+
+.kviz-result-actions {
+    width: min(100%, 356px);
+    flex: 0 0 auto;
+    display: grid;
+    gap: 0.48rem;
+    box-sizing: border-box;
+    padding: 0.55rem 0 calc(0.7rem + env(safe-area-inset-bottom));
+}
+
+.kviz-result-actions .kviz-primary-btn,
+.kviz-result-actions .kviz-secondary-btn {
+    width: 100%;
+    margin: 0;
 }
 
 .kviz-result.kviz-match-result-enter .kviz-result-icon { animation: kvizResultMedallion 580ms cubic-bezier(.16,.9,.26,1.16) both; }

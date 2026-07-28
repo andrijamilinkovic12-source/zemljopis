@@ -484,8 +484,8 @@ const BazaPodataka = {
             "ZEMLJANI VUK", "ZLATNA KRTICA", "ZORILA"
         ],
         predmet: [
-            "AJNCER", "AKUMULATOR", "AKVARIJUM", "ALARM", "ALAT", "ALBUM", "ALKA", "AMAJLIJA", "AMFORA", "AMPULA", 
-            "AMREL", "ANTENA", "APARAT", "ASFALT", "ASPIRIN", "ASURA", "AŠOV", "AUTO", "AUTOMAT", "AVAN", "AVION", 
+            "ADAPTER", "AGREGAT", "AJNCER", "AKU-BUŠILICA", "AKUMULATOR", "AKVAREL", "AKVARIJUM", "ALARM", "ALAT", "ALBUM", "ALKA", "ALKOMETAR", "ALTERNATOR", "ALUMINIJUMSKA FOLIJA", "AMAJLIJA", "AMFORA", "AMORTIZER", "AMPULA",
+            "AMREL", "ANLASER", "ANORAK", "ANTENA", "APARAT", "APARAT ZA BRIJANJE", "APARAT ZA GAŠENJE POŽARA", "APARAT ZA KAFU", "APLIKATOR", "ASFALT", "ASPIRATOR", "ASPIRIN", "ASURA", "AŠOV", "ATLAS", "AUTO", "AUTO-SEDIŠTE", "AUTOBUS", "AUTOMAT", "AVAN", "AVION",
             "BADEMANTIL", "BAGER", "BAKAR", "BAKLJA", "BAKRAČ", "BALDAHIN", "BALETANKE", "BALON", "BANDERA", 
             "BAROMETAR", "BATERIJA", "BAZEN", "BEDEM", "BEDŽ", "BELEŽNICA", "BICIKL", "BIDE", "BILIJAR", "BINA", 
             "BISTA", "BLENDER", "BLOK", "BLUZA", "BOCA", "BODEŽ", "BOJLER", "BOKAL", "BOMBA", "BOMBONA", "BOVA", 
@@ -779,7 +779,12 @@ const BazaPodataka = {
             "KOMPJUTER": "RAČUNAR",
             "TV": "TELEVIZOR",
             "DEKA": "ĆEBE",
-            "ŠALICA": "ŠOLJA"
+            "ŠALICA": "ŠOLJA",
+            "AUTOMOBIL": "AUTO",
+            "AUTO SEDIŠTE": "AUTO-SEDIŠTE",
+            "AUTOSEDIŠTE": "AUTO-SEDIŠTE",
+            "AKU BUŠILICA": "AKU-BUŠILICA",
+            "AKUBUŠILICA": "AKU-BUŠILICA"
         }
     },
 

@@ -125,10 +125,10 @@ def ring_path(points: list[tuple[float, float]], setup: tuple[float, float, floa
     return "".join(commands)
 
 
-def build_land_paths(topology: dict) -> str:
+def build_land_path(topology: dict) -> str:
     arcs = decode_arcs(topology)
     setup = project_setup()
-    country_paths: list[str] = []
+    country_rings_all: list[str] = []
     for geometry in topology["objects"]["countries"]["geometries"]:
         if int(geometry.get("id", -1)) not in EUROPE_COUNTRIES:
             continue
@@ -142,20 +142,23 @@ def build_land_paths(topology: dict) -> str:
             for hole in polygon[1:]:
                 country_rings.append(ring_path(normalize_longitudes(join_ring(hole, arcs)), setup))
         if country_rings:
-            country_paths.append(f'<path d="{"".join(country_rings)}"/>')
-    return "\n      ".join(country_paths)
+            # One compound path makes the continent read as a single land mass.
+            # The individual countries still supply accurate coastlines, but they
+            # no longer restart the gradient or create visual seams between them.
+            country_rings_all.extend(country_rings)
+    return "".join(country_rings_all)
 
 
 def main() -> None:
     topology = json.loads(SOURCE.read_text(encoding="utf-8"))
-    land = build_land_paths(topology)
+    land = build_land_path(topology)
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {VIEW_W} {VIEW_H}" role="img" aria-label="Karta Evrope">
   <defs>
     <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#315c71"/><stop offset="1" stop-color="#172d4b"/></linearGradient>
-    <linearGradient id="land" x1="0" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#e3cf9d"/><stop offset=".46" stop-color="#b8b47e"/><stop offset="1" stop-color="#718d71"/></linearGradient>
+    <linearGradient id="land" gradientUnits="userSpaceOnUse" x1="250" y1="82" x2="760" y2="590"><stop offset="0" stop-color="#e3cf9d"/><stop offset=".46" stop-color="#b8b47e"/><stop offset="1" stop-color="#718d71"/></linearGradient>
     <pattern id="grid" width="100" height="62" patternUnits="userSpaceOnUse"><path d="M100 0H0V62" fill="none" stroke="#f0e5c5" stroke-opacity=".055" stroke-width="1"/></pattern>
     <filter id="land-effect" x="-10%" y="-10%" width="120%" height="120%">
-      <feMorphology in="SourceAlpha" operator="dilate" radius="2.5" result="expanded"/>
+      <feMorphology in="SourceAlpha" operator="dilate" radius="3" result="expanded"/>
       <feFlood flood-color="#fff0c7" flood-opacity=".73" result="outline-color"/>
       <feComposite in="outline-color" in2="expanded" operator="in" result="outline"/>
       <feDropShadow in="SourceAlpha" dx="0" dy="9" stdDeviation="10" flood-color="#11162e" flood-opacity=".58" result="shadow"/>
@@ -167,14 +170,14 @@ def main() -> None:
     <rect width="1000" height="620" fill="url(#sea)"/>
     <rect width="1000" height="620" fill="url(#grid)"/>
     <g fill="url(#land)" fill-rule="evenodd" filter="url(#land-effect)" shape-rendering="geometricPrecision">
-      {land}
+      <path d="{land}"/>
     </g>
   </g>
   <path d="M68 73h56M96 45v56" stroke="#f6e5bc" stroke-opacity=".62" stroke-width="3" stroke-linecap="round"/><path d="M96 45 85 68h22Z" fill="#e9bc76"/>
 </svg>
 '''
     TARGET.write_text(svg, encoding="utf-8", newline="\n")
-    print(f"Generated {TARGET} with {land.count('<path')} country shapes.")
+    print(f"Generated {TARGET} as one seamless Europe land path.")
 
 
 if __name__ == "__main__":

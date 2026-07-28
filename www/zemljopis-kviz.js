@@ -412,6 +412,18 @@ const KvizManager = {
             italija: { datoteka: 'kviz-pikado-italija.svg', naziv: 'Italije' },
             nemacka: { datoteka: 'kviz-pikado-nemacka.svg', naziv: 'Nemačke' },
             grcka: { datoteka: 'kviz-pikado-grcka.svg', naziv: 'Grčke' },
+            portugal: { datoteka: 'kviz-pikado-portugal.svg', naziv: 'Portugala' },
+            spanija: { datoteka: 'kviz-pikado-spanija.svg', naziv: 'Španije' },
+            irska: { datoteka: 'kviz-pikado-irska.svg', naziv: 'Irske' },
+            'ujedinjeno-kraljevstvo': { datoteka: 'kviz-pikado-ujedinjeno-kraljevstvo.svg', naziv: 'Ujedinjenog Kraljevstva' },
+            ceska: { datoteka: 'kviz-pikado-ceska.svg', naziv: 'Češke' },
+            madjarska: { datoteka: 'kviz-pikado-madjarska.svg', naziv: 'Mađarske' },
+            rumunija: { datoteka: 'kviz-pikado-rumunija.svg', naziv: 'Rumunije' },
+            austrija: { datoteka: 'kviz-pikado-austrija.svg', naziv: 'Austrije' },
+            hrvatska: { datoteka: 'kviz-pikado-hrvatska.svg', naziv: 'Hrvatske' },
+            'severna-makedonija': { datoteka: 'kviz-pikado-severna-makedonija.svg', naziv: 'Severne Makedonije' },
+            poljska: { datoteka: 'kviz-pikado-poljska.svg', naziv: 'Poljske' },
+            danska: { datoteka: 'kviz-pikado-danska.svg', naziv: 'Danske' },
             evropa: { datoteka: 'kviz-pikado-europa.svg', naziv: 'Evrope' }
         };
         (runda.izazovi || []).forEach((izazov, indeks) => {

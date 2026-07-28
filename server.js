@@ -2127,64 +2127,64 @@ const KVIZ_RUNDE = [
                 mapa: 'srbija', grad: 'Prizren', cilj: { x: 48.32, y: 82.71 }
             },
             {
-                id: 'lisabon-evropa', kategorija: 'GRADOVI · EVROPA',
+                id: 'lisabon-evropa', kategorija: 'GRADOVI · PORTUGAL',
                 pitanje: 'Postavi pin što bliže Lisabonu.',
-                uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Lisabon', cilj: { x: 21.67, y: 84.82 }
+                uputstvo: 'Klikni na nemu kartu Portugala i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'portugal', grad: 'Lisabon', cilj: { x: 40.21, y: 64.01 }
             },
             {
-                id: 'madrid-evropa', kategorija: 'GRADOVI · EVROPA',
+                id: 'madrid-evropa', kategorija: 'GRADOVI · ŠPANIJA',
                 pitanje: 'Postavi pin što bliže Madridu.',
-                uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Madrid', cilj: { x: 27.45, y: 82.15 }
+                uputstvo: 'Klikni na nemu kartu Španije i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'spanija', grad: 'Madrid', cilj: { x: 44.39, y: 42.29 }
             },
             {
-                id: 'dablin-evropa', kategorija: 'GRADOVI · EVROPA',
+                id: 'dablin-evropa', kategorija: 'GRADOVI · IRSKA',
                 pitanje: 'Postavi pin što bliže Dablinu.',
-                uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Dablin', cilj: { x: 24.73, y: 59.03 }
+                uputstvo: 'Klikni na nemu kartu Irske i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'irska', grad: 'Dablin', cilj: { x: 65.28, y: 52.34 }
             },
             {
-                id: 'london-evropa', kategorija: 'GRADOVI · EVROPA',
+                id: 'london-evropa', kategorija: 'GRADOVI · UJEDINJENO KRALJEVSTVO',
                 pitanje: 'Postavi pin što bliže Londonu.',
-                uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'London', cilj: { x: 31.25, y: 62.69 }
+                uputstvo: 'Klikni na nemu kartu Ujedinjenog Kraljevstva i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'ujedinjeno-kraljevstvo', grad: 'London', cilj: { x: 58.70, y: 80.55 }
             },
             {
-                id: 'pariz-evropa', kategorija: 'GRADOVI · EVROPA',
+                id: 'pariz-evropa', kategorija: 'GRADOVI · FRANCUSKA',
                 pitanje: 'Postavi pin što bliže Parizu.',
-                uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Pariz', cilj: { x: 33.89, y: 67.73 }
+                uputstvo: 'Klikni na nemu kartu Francuske i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'francuska', grad: 'Pariz', cilj: { x: 50.48, y: 28.62 }
             },
             {
                 id: 'berlin-nemacka', kategorija: 'GRADOVI · NEMAČKA',
                 pitanje: 'Postavi pin što bliže Berlinu.',
                 uputstvo: 'Klikni na nemu kartu Nemačke i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'nemacka', grad: 'Berlin', cilj: { x: 66.6, y: 37.8 }
+                mapa: 'nemacka', grad: 'Berlin', cilj: { x: 62.19, y: 37.26 }
             },
             {
-                id: 'prag-evropa', kategorija: 'GRADOVI · EVROPA',
+                id: 'prag-evropa', kategorija: 'GRADOVI · ČEŠKA',
                 pitanje: 'Postavi pin što bliže Pragu.',
-                uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Prag', cilj: { x: 46.74, y: 65.44 }
+                uputstvo: 'Klikni na nemu kartu Češke i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'ceska', grad: 'Prag', cilj: { x: 38.30, y: 42.50 }
             },
             {
-                id: 'budimpesta-evropa', kategorija: 'GRADOVI · EVROPA',
+                id: 'budimpesta-evropa', kategorija: 'GRADOVI · MAĐARSKA',
                 pitanje: 'Postavi pin što bliže Budimpešti.',
-                uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Budimpešta', cilj: { x: 51.64, y: 70.19 }
+                uputstvo: 'Klikni na nemu kartu Mađarske i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'madjarska', grad: 'Budimpešta', cilj: { x: 44.90, y: 41.18 }
             },
             {
                 id: 'atina-grcka', kategorija: 'GRADOVI · GRČKA',
                 pitanje: 'Postavi pin što bliže Atini.',
                 uputstvo: 'Klikni na nemu kartu Grčke i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'grcka', grad: 'Atina', cilj: { x: 48.6, y: 53.7 }
+                mapa: 'grcka', grad: 'Atina', cilj: { x: 48.81, y: 54.53 }
             },
             {
-                id: 'bukurest-evropa', kategorija: 'GRADOVI · EVROPA',
+                id: 'bukurest-evropa', kategorija: 'GRADOVI · RUMUNIJA',
                 pitanje: 'Postavi pin što bliže Bukureštu.',
-                uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Bukurešt', cilj: { x: 59.15, y: 75.55 }
+                uputstvo: 'Klikni na nemu kartu Rumunije i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'rumunija', grad: 'Bukurešt', cilj: { x: 58.70, y: 77.89 }
             }
         ]
     }
@@ -2435,11 +2435,11 @@ const KVIZ_DODATNA_PITANJA = {
         napraviKvizPikado('plus-cacak', 'GRADOVI · SRBIJA', 'Čačak', 'srbija', { x: 43.0, y: 50.0 }),
         napraviKvizPikado('plus-uzice', 'GRADOVI · SRBIJA', 'Užice', 'srbija', { x: 37.5, y: 54.0 }),
         napraviKvizPikado('plus-vranje', 'GRADOVI · SRBIJA', 'Vranje', 'srbija', { x: 62.0, y: 70.0 }),
-        napraviKvizPikado('plus-bec-evropa', 'GRADOVI · EVROPA', 'Beč', 'evropa', { x: 51.0, y: 67.5 }),
-        napraviKvizPikado('plus-zagreb-evropa', 'GRADOVI · EVROPA', 'Zagreb', 'evropa', { x: 53.0, y: 72.0 }),
-        napraviKvizPikado('plus-skoplje-evropa', 'GRADOVI · EVROPA', 'Skoplje', 'evropa', { x: 62.0, y: 83.0 }),
-        napraviKvizPikado('plus-varsava-evropa', 'GRADOVI · EVROPA', 'Varšava', 'evropa', { x: 62.3, y: 53.5 }),
-        napraviKvizPikado('plus-kopenhagen-evropa', 'GRADOVI · EVROPA', 'Kopenhagen', 'evropa', { x: 46.4, y: 44.2 })
+        napraviKvizPikado('plus-bec-evropa', 'GRADOVI · AUSTRIJA', 'Beč', 'austrija', { x: 80.92, y: 37.81 }),
+        napraviKvizPikado('plus-zagreb-evropa', 'GRADOVI · HRVATSKA', 'Zagreb', 'hrvatska', { x: 45.82, y: 23.78 }),
+        napraviKvizPikado('plus-skoplje-evropa', 'GRADOVI · SEVERNA MAKEDONIJA', 'Skoplje', 'severna-makedonija', { x: 42.41, y: 29.10 }),
+        napraviKvizPikado('plus-varsava-evropa', 'GRADOVI · POLJSKA', 'Varšava', 'poljska', { x: 60.13, y: 46.91 }),
+        napraviKvizPikado('plus-kopenhagen-evropa', 'GRADOVI · DANSKA', 'Kopenhagen', 'danska', { x: 69.55, y: 63.32 })
     ]
 };
 

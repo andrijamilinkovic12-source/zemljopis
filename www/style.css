@@ -16541,6 +16541,188 @@ body[data-tema] #main-menu .circle-overlay.active {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 3px 5px rgba(22, 10, 45, 0.28);
 }
 
+/* Pronalaženje meča: igrači se sreću, zatim počinje zajedničko odbrojavanje. */
+.kviz-match-intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10010;
+    display: none;
+    place-items: center;
+    padding: max(1.2rem, env(safe-area-inset-top)) 1.1rem max(1.2rem, env(safe-area-inset-bottom));
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 50% 49%, rgba(255, 193, 107, 0.2), transparent 16%),
+        radial-gradient(circle at 23% 52%, rgba(67, 200, 255, 0.16), transparent 34%),
+        radial-gradient(circle at 77% 52%, rgba(245, 89, 145, 0.18), transparent 34%),
+        linear-gradient(150deg, #101939 0%, #241d4c 50%, #102946 100%);
+}
+
+.kviz-match-intro-overlay::before,
+.kviz-match-intro-overlay::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    width: min(84vw, 390px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(255, 235, 202, 0.16);
+    border-radius: 49% 51% 56% 44% / 46% 53% 47% 54%;
+    box-shadow: inset 0 0 48px rgba(255, 223, 185, 0.04), 0 0 48px rgba(88, 142, 255, 0.12);
+}
+
+.kviz-match-intro-overlay::before { transform: rotate(-18deg); }
+.kviz-match-intro-overlay::after { width: min(62vw, 286px); transform: rotate(28deg); border-color: rgba(255, 162, 191, 0.22); }
+
+.kviz-match-intro-overlay.is-active {
+    display: grid;
+    opacity: 1;
+    pointer-events: auto;
+    animation: kvizMatchIntroAppear 180ms ease-out both;
+}
+
+.kviz-match-intro-overlay.is-closing { animation: kvizMatchIntroClose 230ms ease-in both; }
+
+.kviz-match-intro-stage {
+    width: min(100%, 420px);
+    display: grid;
+    justify-items: center;
+    color: #fff5e9;
+    text-align: center;
+}
+
+.kviz-match-intro-kicker {
+    margin: 0 0 1.1rem;
+    padding: 0.36rem 0.72rem;
+    border: 1px solid rgba(255, 230, 202, 0.25);
+    border-radius: 999px;
+    background: rgba(255, 237, 216, 0.09);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 7px 18px rgba(8, 7, 28, 0.28);
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    animation: kvizMatchIntroRise 360ms 70ms cubic-bezier(.18,.86,.28,1) both;
+}
+
+.kviz-match-intro-players {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 3.9rem minmax(0, 1fr);
+    align-items: center;
+}
+
+.kviz-match-intro-player {
+    min-width: 0;
+    display: grid;
+    justify-items: center;
+    gap: 0.55rem;
+}
+
+.kviz-match-intro-avatar {
+    width: clamp(4.9rem, 23vw, 6.7rem);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 2px solid rgba(255, 239, 215, 0.69);
+    border-radius: 50%;
+    background: linear-gradient(145deg, rgba(100, 211, 255, 0.46), rgba(73, 54, 152, 0.72));
+    box-shadow: 0 0 0 5px rgba(130, 218, 255, 0.12), 0 13px 26px rgba(5, 11, 44, 0.4), inset 0 2px 2px rgba(255, 255, 255, 0.26);
+}
+
+.kviz-match-intro-player--rival .kviz-match-intro-avatar {
+    border-color: rgba(255, 222, 211, 0.72);
+    background: linear-gradient(145deg, rgba(255, 151, 176, 0.5), rgba(118, 48, 108, 0.75));
+    box-shadow: 0 0 0 5px rgba(255, 135, 174, 0.12), 0 13px 26px rgba(5, 11, 44, 0.4), inset 0 2px 2px rgba(255, 255, 255, 0.26);
+}
+
+.kviz-match-intro-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.kviz-match-intro-player strong {
+    width: 100%;
+    overflow: hidden;
+    color: #fff5e9;
+    font-size: clamp(0.72rem, 3.3vw, 0.92rem);
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.38);
+}
+
+.kviz-match-intro-player--mine { animation: kvizMatchIntroEnterLeft 690ms cubic-bezier(.16,.87,.24,1) both; }
+.kviz-match-intro-player--rival { animation: kvizMatchIntroEnterRight 690ms cubic-bezier(.16,.87,.24,1) both; }
+
+.kviz-match-intro-versus {
+    position: relative;
+    width: 3.15rem;
+    height: 3.15rem;
+    display: grid;
+    place-items: center;
+    border: 2px solid rgba(255, 242, 207, 0.72);
+    border-radius: 50%;
+    background: radial-gradient(circle at 33% 27%, #fff8d6 0 8%, #f9c765 25%, #ec795f 63%, #a93f7c 100%);
+    box-shadow: 0 0 0 6px rgba(255, 202, 106, 0.13), 0 0 32px rgba(255, 181, 77, 0.62), inset 0 2px 2px rgba(255, 255, 255, 0.42);
+    animation: kvizMatchIntroCollision 540ms 500ms cubic-bezier(.18,.88,.28,1) both;
+}
+
+.kviz-match-intro-versus i {
+    position: absolute;
+    top: -0.75rem;
+    color: #fff6cf;
+    font-size: 0.96rem;
+    filter: drop-shadow(0 2px 4px rgba(97, 30, 34, 0.48));
+}
+
+.kviz-match-intro-versus b { color: #54264d; font-size: 0.67rem; font-weight: 950; letter-spacing: 0.08em; }
+
+.kviz-match-intro-countdown {
+    display: grid;
+    justify-items: center;
+    gap: 0.25rem;
+    margin-top: 1.35rem;
+    animation: kvizMatchIntroCountdownReveal 260ms 650ms ease-out both;
+}
+
+.kviz-match-intro-countdown > span {
+    color: rgba(255, 242, 221, 0.84);
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+}
+
+.kviz-match-intro-countdown b {
+    min-width: 1.35em;
+    color: #fff5d1;
+    font-size: clamp(3.65rem, 17vw, 5.4rem);
+    font-weight: 950;
+    line-height: 0.9;
+    text-shadow: 0 4px 0 #a74a70, 0 0 26px rgba(255, 198, 96, 0.6);
+}
+
+.kviz-match-intro-countdown b.is-ticking { animation: kvizMatchIntroNumber 430ms cubic-bezier(.18,.88,.28,1) both; }
+
+@keyframes kvizMatchIntroAppear { from { opacity: 0; } to { opacity: 1; } }
+@keyframes kvizMatchIntroClose { to { opacity: 0; transform: scale(1.02); } }
+@keyframes kvizMatchIntroRise { from { opacity: 0; transform: translateY(-10px) scale(.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes kvizMatchIntroEnterLeft { from { opacity: 0; transform: translateX(-56vw) scale(.72) rotate(-9deg); } 72% { opacity: 1; transform: translateX(.28rem) scale(1.035) rotate(1deg); } to { opacity: 1; transform: translateX(0) scale(1); } }
+@keyframes kvizMatchIntroEnterRight { from { opacity: 0; transform: translateX(56vw) scale(.72) rotate(9deg); } 72% { opacity: 1; transform: translateX(-.28rem) scale(1.035) rotate(-1deg); } to { opacity: 1; transform: translateX(0) scale(1); } }
+@keyframes kvizMatchIntroCollision { from { opacity: 0; transform: scale(.15) rotate(-100deg); } 54% { opacity: 1; transform: scale(1.25) rotate(12deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+@keyframes kvizMatchIntroCountdownReveal { from { opacity: 0; transform: translateY(10px) scale(.86); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes kvizMatchIntroNumber { from { transform: scale(.64); opacity: .25; } 68% { transform: scale(1.16); opacity: 1; } to { transform: scale(1); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .kviz-match-intro-overlay.is-active,
+    .kviz-match-intro-overlay.is-closing,
+    .kviz-match-intro-kicker,
+    .kviz-match-intro-player--mine,
+    .kviz-match-intro-player--rival,
+    .kviz-match-intro-versus,
+    .kviz-match-intro-countdown,
+    .kviz-match-intro-countdown b.is-ticking { animation-duration: 1ms !important; }
+}
+
 #zemljopis-kviz-screen.kviz-entering .kviz-screen-header,
 #zemljopis-kviz-screen.kviz-entering .kviz-lobi,
 #zemljopis-kviz-screen.kviz-entering .kviz-game,

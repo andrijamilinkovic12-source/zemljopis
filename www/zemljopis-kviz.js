@@ -19,6 +19,8 @@ const KvizManager = {
     ulazakTajmer: null,
     pocetakMecaAt: 0,
     pocetakMecaTajmer: null,
+    uvodMecaAktivan: false,
+    uvodMecaTajmer: null,
     obavestenjeVezeTajmer: null,
     otvaranjeUToku: false,
     mojeIme: 'Igrač',
@@ -145,6 +147,7 @@ const KvizManager = {
         this.postaviTekst('kviz-moje-ime', this.mojeIme);
         this.postaviTekst('kviz-protivnik-ime', this.protivnik.ime || 'Igrač');
         this.postaviAvatareDuela();
+        this.prikaziUvodMeca();
         this.postaviTekst('kviz-moji-poeni', '0');
         this.postaviTekst('kviz-protivnik-poeni', '0');
         this.prikaziNapredak(0, 1);
@@ -160,6 +163,7 @@ const KvizManager = {
         clearTimeout(this.spojniceTajmer);
         this.spojniceTajmer = null;
         this.zaustaviOdbrojavanjePocetka();
+        this.sakrijUvodMeca();
         this.sakrijObavestenjeVeze();
         this.sakrijPauzuRunde();
         this.vratiKvizNaPocetak();
@@ -1328,6 +1332,7 @@ const KvizManager = {
     resetujStanje: function() {
         this.zaustaviTajmer();
         this.zaustaviOdbrojavanjePocetka();
+        this.sakrijUvodMeca(true);
         this.sakrijObavestenjeVeze();
         this.sakrijPauzuRunde();
         this.sobaId = null;
@@ -1393,6 +1398,7 @@ const KvizManager = {
         const osvezi = () => {
             const preostalo = Math.max(0, Math.ceil((this.pocetakMecaAt - this.serverSada()) / 1000));
             this.postaviTekst('kviz-tajmer', String(preostalo));
+            this.osveziUvodMeca(preostalo);
             if (preostalo <= 0) this.zaustaviOdbrojavanjePocetka();
         };
         osvezi();
@@ -1402,6 +1408,64 @@ const KvizManager = {
     zaustaviOdbrojavanjePocetka: function() {
         if (this.pocetakMecaTajmer) clearInterval(this.pocetakMecaTajmer);
         this.pocetakMecaTajmer = null;
+    },
+
+    prikaziUvodMeca: function() {
+        const overlay = document.getElementById('kviz-match-intro');
+        if (!overlay) return;
+
+        const mojeIme = this.mojeIme || 'Igrač';
+        const protivnickoIme = this.protivnik?.ime || 'Igrač';
+        this.postaviTekst('kviz-match-intro-moje-ime', mojeIme);
+        this.postaviTekst('kviz-match-intro-protivnik-ime', protivnickoIme);
+
+        const mojAvatar = document.getElementById('kviz-match-intro-moj-avatar');
+        const protivnickiAvatar = document.getElementById('kviz-match-intro-protivnik-avatar');
+        if (mojAvatar) mojAvatar.src = this.izvorAvatara(this.mojAvatar);
+        if (protivnickiAvatar) protivnickiAvatar.src = this.izvorAvatara(this.protivnik?.avatar || 'atlas');
+
+        clearTimeout(this.uvodMecaTajmer);
+        overlay.classList.remove('is-closing', 'is-active');
+        void overlay.offsetWidth;
+        overlay.classList.add('is-active');
+        overlay.setAttribute('aria-hidden', 'false');
+        this.uvodMecaAktivan = true;
+        const broj = document.getElementById('kviz-match-intro-broj');
+        if (broj) broj.textContent = '';
+        this.osveziUvodMeca(Math.max(0, Math.ceil((this.pocetakMecaAt - this.serverSada()) / 1000)));
+    },
+
+    osveziUvodMeca: function(preostalo) {
+        if (!this.uvodMecaAktivan) return;
+        const broj = document.getElementById('kviz-match-intro-broj');
+        if (!broj) return;
+
+        const tekst = preostalo > 0 ? String(Math.min(3, Math.max(1, Number(preostalo)))) : 'START';
+        if (broj.textContent === tekst) return;
+        broj.textContent = tekst;
+        broj.setAttribute('aria-label', tekst === 'START' ? 'Duel počinje' : `Početak za ${tekst}`);
+        broj.classList.remove('is-ticking');
+        void broj.offsetWidth;
+        broj.classList.add('is-ticking');
+    },
+
+    sakrijUvodMeca: function(odmah = false) {
+        const overlay = document.getElementById('kviz-match-intro');
+        this.uvodMecaAktivan = false;
+        clearTimeout(this.uvodMecaTajmer);
+        if (!overlay) return;
+
+        if (odmah) {
+            overlay.classList.remove('is-active', 'is-closing');
+            overlay.setAttribute('aria-hidden', 'true');
+            return;
+        }
+
+        overlay.classList.add('is-closing');
+        this.uvodMecaTajmer = setTimeout(() => {
+            overlay.classList.remove('is-active', 'is-closing');
+            overlay.setAttribute('aria-hidden', 'true');
+        }, 230);
     },
 
     zaustaviTajmer: function() {

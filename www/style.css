@@ -18228,6 +18228,12 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     border-radius: 18px;
 }
 
+/* Velike kartice prelaza dišu ispod gornje navigacije, kao i kartice igrača. */
+.kviz-round-break.kviz-podpitanje-pauza,
+.kviz-round-break.kviz-show-round-scoreboard {
+    transform: translateY(clamp(0.5rem, 1.15vh, 0.62rem));
+}
+
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-game-logo,
 .kviz-round-break.kviz-podpitanje-pauza .kviz-round-scoreboard,
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-game-table,
@@ -18274,7 +18280,10 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     aspect-ratio: 1;
     opacity: 0.13;
     transform: translateX(-50%) rotate(-12deg);
-    filter: saturate(0.82) drop-shadow(0 8px 14px rgba(6, 4, 35, 0.45));
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    filter: saturate(0.82);
 }
 
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-round-watermark img {
@@ -18282,6 +18291,9 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    mix-blend-mode: screen;
+    -webkit-mask-image: radial-gradient(ellipse 47% 48% at 50% 50%, #000 42%, rgba(0, 0, 0, 0.74) 62%, transparent 79%);
+    mask-image: radial-gradient(ellipse 47% 48% at 50% 50%, #000 42%, rgba(0, 0, 0, 0.74) 62%, transparent 79%);
 }
 
 .kviz-round-break.kviz-podpitanje-pauza .kviz-break-subtitle {

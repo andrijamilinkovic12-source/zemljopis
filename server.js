@@ -2130,61 +2130,61 @@ const KVIZ_RUNDE = [
                 id: 'lisabon-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Lisabonu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Lisabon', cilj: { x: 5.4, y: 90.0 }
+                mapa: 'evropa', grad: 'Lisabon', cilj: { x: 21.67, y: 84.82 }
             },
             {
                 id: 'madrid-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Madridu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Madrid', cilj: { x: 15.7, y: 85.3 }
+                mapa: 'evropa', grad: 'Madrid', cilj: { x: 27.45, y: 82.15 }
             },
             {
                 id: 'dablin-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Dablinu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Dablin', cilj: { x: 10.8, y: 50.5 }
+                mapa: 'evropa', grad: 'Dablin', cilj: { x: 24.73, y: 59.03 }
             },
             {
                 id: 'london-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Londonu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'London', cilj: { x: 22.4, y: 55.5 }
+                mapa: 'evropa', grad: 'London', cilj: { x: 31.25, y: 62.69 }
             },
             {
                 id: 'pariz-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Parizu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Pariz', cilj: { x: 27.1, y: 62.7 }
+                mapa: 'evropa', grad: 'Pariz', cilj: { x: 33.89, y: 67.73 }
             },
             {
-                id: 'berlin-evropa', kategorija: 'GRADOVI · EVROPA',
+                id: 'berlin-nemacka', kategorija: 'GRADOVI · NEMAČKA',
                 pitanje: 'Postavi pin što bliže Berlinu.',
-                uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Berlin', cilj: { x: 48.0, y: 55.5 }
+                uputstvo: 'Klikni na nemu kartu Nemačke i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'nemacka', grad: 'Berlin', cilj: { x: 66.6, y: 37.8 }
             },
             {
                 id: 'prag-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Pragu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Prag', cilj: { x: 51.7, y: 59.2 }
+                mapa: 'evropa', grad: 'Prag', cilj: { x: 46.74, y: 65.44 }
             },
             {
                 id: 'budimpesta-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Budimpešti.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Budimpešta', cilj: { x: 60.4, y: 66.3 }
+                mapa: 'evropa', grad: 'Budimpešta', cilj: { x: 51.64, y: 70.19 }
             },
             {
-                id: 'atina-evropa', kategorija: 'GRADOVI · EVROPA',
+                id: 'atina-grcka', kategorija: 'GRADOVI · GRČKA',
                 pitanje: 'Postavi pin što bliže Atini.',
-                uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Atina', cilj: { x: 70.5, y: 89.0 }
+                uputstvo: 'Klikni na nemu kartu Grčke i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
+                mapa: 'grcka', grad: 'Atina', cilj: { x: 48.6, y: 53.7 }
             },
             {
                 id: 'bukurest-evropa', kategorija: 'GRADOVI · EVROPA',
                 pitanje: 'Postavi pin što bliže Bukureštu.',
                 uputstvo: 'Klikni na nemu kartu Evrope i zaključaš pin kada si siguran/na.', trajanjeMs: 40000,
-                mapa: 'evropa', grad: 'Bukurešt', cilj: { x: 74.0, y: 70.0 }
+                mapa: 'evropa', grad: 'Bukurešt', cilj: { x: 59.15, y: 75.55 }
             }
         ]
     }

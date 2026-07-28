@@ -410,6 +410,8 @@ const KvizManager = {
             francuska: { datoteka: 'kviz-pikado-francuska.svg', naziv: 'Francuske' },
             srbija: { datoteka: 'kviz-pikado-srbija.svg', naziv: 'Srbije' },
             italija: { datoteka: 'kviz-pikado-italija.svg', naziv: 'Italije' },
+            nemacka: { datoteka: 'kviz-pikado-nemacka.svg', naziv: 'Nemačke' },
+            grcka: { datoteka: 'kviz-pikado-grcka.svg', naziv: 'Grčke' },
             evropa: { datoteka: 'kviz-pikado-europa.svg', naziv: 'Evrope' }
         };
         (runda.izazovi || []).forEach((izazov, indeks) => {

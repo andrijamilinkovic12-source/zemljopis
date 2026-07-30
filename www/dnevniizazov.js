@@ -26,7 +26,6 @@ const DnevniIzazovManager = {
     rokAt: null,
     introTajmer: null,
     ulazakTajmer: null,
-    aktivacijaUnosaTajmer: null,
     introTrajanjeMs: 5200,
     x2PreuzimanjeUToku: false,
     poslednjiRezultat: null,
@@ -219,7 +218,7 @@ const DnevniIzazovManager = {
                 KeyboardManager.hideKeyboard();
             }
 
-            // Polja se pripremaju dok uvod traje, a tastatura ostaje skrivena do ulaska u sobu.
+            // Polja se pripremaju dok uvod traje, a tastatura ostaje skrivena dok igrač ne izabere polje.
             this.pripremiPrikazIgre();
 
             const preostaloDoStarta = this.pocetakIgreAt
@@ -285,9 +284,6 @@ const DnevniIzazovManager = {
 
     pokreniTajmerIUnos: function() {
         this.pokreniTajmerDoRoka(this.rokAt || (this.sadaServer() + 60000));
-
-        clearTimeout(this.aktivacijaUnosaTajmer);
-        this.aktivacijaUnosaTajmer = setTimeout(() => this.aktivirajPrviUnos(), 240);
     },
 
     pokreniIgruIzServera: function() {
@@ -298,7 +294,7 @@ const DnevniIzazovManager = {
     },
 
     pripremiPrikazIgre: function() {
-        this.prikaziZadatke({ aktivirajPrviUnos: false });
+        this.prikaziZadatke();
     },
 
     pokreniBlagiUlazakUSobu: function() {
@@ -312,21 +308,7 @@ const DnevniIzazovManager = {
         this.ulazakTajmer = setTimeout(() => ekran.classList.remove('dnevni-entering'), 720);
     },
 
-    aktivirajPrviUnos: function() {
-        const prvoPolje = document.getElementById('dnevni-input-0');
-        if (!prvoPolje) return;
-
-        if (typeof KeyboardManager !== 'undefined') {
-            KeyboardManager.setActiveInput(prvoPolje);
-            KeyboardManager.showKeyboard();
-            setTimeout(() => KeyboardManager.scrollInputIntoView(prvoPolje), 280);
-        } else {
-            prvoPolje.focus();
-        }
-    },
-
-    prikaziZadatke: function(opcije = {}) {
-        const aktivirajPrviUnos = opcije.aktivirajPrviUnos !== false;
+    prikaziZadatke: function() {
         const kontejner = document.getElementById('dnevni-izazov-polja');
         if (!kontejner || !this.dnevniPodaci) return;
 
@@ -403,8 +385,6 @@ const DnevniIzazovManager = {
                 dugmePotvrde.addEventListener('click', () => this.potvrdiUnos());
             }
             this.azurirajDugmePotvrde();
-
-            if (aktivirajPrviUnos) this.aktivirajPrviUnos();
         }, 100);
     },
 

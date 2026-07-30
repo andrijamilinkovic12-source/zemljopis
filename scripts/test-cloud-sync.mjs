@@ -13,9 +13,11 @@ const port = String(3400 + Math.floor(Math.random() * 500));
 const spoljasnjiServer = process.env.TEST_SERVER_URL || "";
 const url = spoljasnjiServer || `http://127.0.0.1:${port}`;
 const profilKljuc = `profil_test_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
+const drugiProfilKljuc = `profil_test_drugi_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
 const googleUid = `google_test_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
 const nadimak = `Test${Date.now().toString(36).slice(-6)}`;
 const promenjenNadimak = `${nadimak}X`;
+const drugiNadimak = `${nadimak}Drugi`;
 
 function sacekaj(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -73,6 +75,7 @@ function proveri(uslov, poruka) {
 let serverProces;
 let socket;
 let drugiSocket;
+let treciSocket;
 
 try {
     if (!spoljasnjiServer) {
@@ -167,20 +170,79 @@ try {
     socket.disconnect();
     drugiSocket = await povezi(io);
 
-    const prijava = await emitAck(drugiSocket, "prijavaProfila", { profilKljuc });
-    proveri(prijava.uspeh === true, "Ponovna prijava nije uspela.");
-    proveri(prijava.profil.playerId === playerId, "Ponovna prijava nije vratila isti playerId.");
-    proveri(prijava.profil.googlePovezan === true, "Ponovna prijava nije vratila Google profil.");
-    proveri(prijava.profil.googleUid === googleUid, "Ponovna prijava nije vratila Google UID.");
+    // Lokalni ključ nije zamena za Google identitet: posle reinstalacije mora Google prijava.
+    const prijavaLokalnimKljucem = await emitAck(drugiSocket, "prijavaProfila", { profilKljuc });
+    proveri(
+        prijavaLokalnimKljucem.uspeh === false && prijavaLokalnimKljucem.kod === "GOOGLE_PRIJAVA_OBAVEZNA",
+        "Google profil se ne sme otvoriti samo lokalnim ključem."
+    );
+    const izmenaBezGooglePrijave = await emitAck(drugiSocket, "registrujProfil", {
+        nadimak: `${promenjenNadimak}X`,
+        avatar: "atlas",
+        profilKljuc
+    });
+    proveri(
+        izmenaBezGooglePrijave.uspeh === false && izmenaBezGooglePrijave.kod === "GOOGLE_PRIJAVA_OBAVEZNA",
+        "Google profil se ne sme izmeniti samo lokalnim ključem."
+    );
+
+    const prijava = await emitAck(drugiSocket, "prijavaGoogleNaloga", { googleUid });
+    proveri(prijava.uspeh === true, "Google prijava posle reinstalacije nije uspela.");
+    proveri(prijava.profil.playerId === playerId, "Google prijava nije vratila isti playerId.");
+    proveri(prijava.profil.googlePovezan === true, "Google prijava nije vratila Google profil.");
+    proveri(prijava.profil.googleUid === googleUid, "Google prijava nije vratila Google UID.");
     proveri(prijava.profil.sinhronizacija.napredak.podesavanja.tema === "zlatna", "Cloud napredak nije učitan.");
     proveri(prijava.profil.sinhronizacija.napredak.riznica.dukati === 1200, "Cloud riznica nije vratila tačno stanje dukata.");
     proveri(prijava.profil.dukati === 1200, "Profil nije uskladio dukate sa cloud riznicom.");
     proveri(prijava.profil.tokeni === 2, "Profil nije uskladio tokene sa cloud stanjem.");
 
-    console.log("OK: cloud sync, Google UID migracija, playerId i promena nadimka rade.");
+    // Drugi gost profil na istom Google nalogu ne sme obrisati prva ostvarenja.
+    treciSocket = await povezi(io);
+    const drugaRegistracija = await emitAck(treciSocket, "registrujProfil", {
+        nadimak: drugiNadimak,
+        avatar: "orion",
+        profilKljuc: drugiProfilKljuc
+    });
+    proveri(drugaRegistracija.uspeh === true, "Drugi lokalni profil nije registrovan.");
+    const drugiNapredak = await emitAck(treciSocket, "sacuvajCloudNapredak", {
+        revizija: drugaRegistracija.profil.sinhronizacija.revizija,
+        napredak: {
+            verzija: 1,
+            trofeji: [{ id: "t2", napredak: 4, preuzeto: true }],
+            riznica: { dukati: 900, podaci: { teme: [{ id: "tema_zelena", kupljeno: true }] } },
+            tokeni: { stanje: 3, datum: "test-drugi" },
+            kvartal: { sezonskiPojmovi: 9, svaVremenaPojmovi: 31 },
+            prijatelji: { lista: [], zahtevi: [] }
+        }
+    });
+    proveri(drugiNapredak.uspeh === true, "Drugi lokalni napredak nije sačuvan.");
+
+    const drugoPovezivanje = await emitAck(treciSocket, "poveziGoogleNalog", {
+        googleUid,
+        profilKljuc: drugiProfilKljuc,
+        napredak: {
+            verzija: 1,
+            trofeji: [{ id: "t2", napredak: 4, preuzeto: true }],
+            riznica: { dukati: 900, podaci: { teme: [{ id: "tema_zelena", kupljeno: true }] } },
+            tokeni: { stanje: 3, datum: "test-drugi" },
+            kvartal: { sezonskiPojmovi: 9, svaVremenaPojmovi: 31 },
+            prijatelji: { lista: [], zahtevi: [] }
+        }
+    });
+    proveri(
+        drugoPovezivanje.uspeh === true,
+        `Spajanje drugog gost profila nije uspelo: ${JSON.stringify(drugoPovezivanje)}`
+    );
+    proveri(drugoPovezivanje.migracija.spojenoSaPostojecimGoogleProfilom === true, "Drugi profil nije označen kao spojena migracija.");
+    const trofeji = drugoPovezivanje.profil.sinhronizacija.napredak.trofeji || [];
+    proveri(trofeji.some(t => t.id === "t1" && t.preuzeto), "Prvo ostvarenje je izgubljeno pri spajanju.");
+    proveri(trofeji.some(t => t.id === "t2" && t.napredak === 4), "Drugo ostvarenje nije sačuvano pri spajanju.");
+
+    console.log("OK: cloud sync, bezbedna Google migracija, oporavak posle reinstalacije i spajanje napretka rade.");
 } finally {
     if (socket) socket.disconnect();
     if (drugiSocket) drugiSocket.disconnect();
+    if (treciSocket) treciSocket.disconnect();
 
     if (process.env.MONGO_URI) {
         try {
@@ -189,6 +251,8 @@ try {
                 $or: [
                     { profilKljuc },
                     { povezaniProfilKljucevi: profilKljuc },
+                    { profilKljuc: drugiProfilKljuc },
+                    { povezaniProfilKljucevi: drugiProfilKljuc },
                     { googleUid }
                 ]
             });

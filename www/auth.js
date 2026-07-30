@@ -2,10 +2,10 @@
 
 const GoogleAuthManager = {
     povezivanjeUToku: false,
-    googlePrijavaAktivna: false,
+    googlePrijavaAktivna: true,
 
     prikaziGoogleUPripremi: function() {
-        const poruka = "Google prijava je u pripremi. Za sada uđi kao gost i izaberi ime i avatar.";
+        const poruka = "Google prijava trenutno nije dostupna na ovom uređaju. Proveri internet i ažuriraj aplikaciju.";
         if (typeof PodesavanjaManager !== "undefined") {
             PodesavanjaManager.postaviSetupPoruku(poruka);
             PodesavanjaManager.azurirajProfilOpcije();
@@ -42,32 +42,32 @@ const GoogleAuthManager = {
         };
     },
 
-    pokusajPrilagodjeniAdapter: async function() {
+    pokusajPrilagodjeniAdapter: async function(nonce) {
         if (
             window.ZemljopisGoogleAuth
             && typeof window.ZemljopisGoogleAuth.signIn === "function"
         ) {
-            return this.normalizujOdgovor(await window.ZemljopisGoogleAuth.signIn());
+            return this.normalizujOdgovor(await window.ZemljopisGoogleAuth.signIn({ nonce }));
         }
         return null;
     },
 
-    pokusajCapacitorFirebase: async function() {
+    pokusajCapacitorFirebase: async function(nonce) {
         const plugin = window.Capacitor
             && window.Capacitor.Plugins
             && window.Capacitor.Plugins.FirebaseAuthentication;
         if (!plugin || typeof plugin.signInWithGoogle !== "function") return null;
 
-        return this.normalizujOdgovor(await plugin.signInWithGoogle());
+        return this.normalizujOdgovor(await plugin.signInWithGoogle({ nonce }));
     },
 
-    pokusajCapacitorGoogle: async function() {
+    pokusajCapacitorGoogle: async function(nonce) {
         const plugin = window.Capacitor
             && window.Capacitor.Plugins
             && window.Capacitor.Plugins.GoogleAuth;
         if (!plugin || typeof plugin.signIn !== "function") return null;
 
-        return this.normalizujOdgovor(await plugin.signIn());
+        return this.normalizujOdgovor(await plugin.signIn({ nonce }));
     },
 
     dohvatiDevIdentitet: function() {
@@ -88,11 +88,11 @@ const GoogleAuthManager = {
         return { googleUid: ociscen };
     },
 
-    dohvatiGoogleIdentitet: async function() {
+    dohvatiGoogleIdentitet: async function(nonce) {
         const pokusaji = [
-            () => this.pokusajPrilagodjeniAdapter(),
-            () => this.pokusajCapacitorFirebase(),
-            () => this.pokusajCapacitorGoogle()
+            () => this.pokusajPrilagodjeniAdapter(nonce),
+            () => this.pokusajCapacitorFirebase(nonce),
+            () => this.pokusajCapacitorGoogle(nonce)
         ];
 
         for (const pokusaj of pokusaji) {
@@ -104,6 +104,23 @@ const GoogleAuthManager = {
         if (devIdentitet) return devIdentitet;
 
         throw new Error("Google prijava nije dostupna na ovom uređaju.");
+    },
+
+    zahtevajGoogleNonce: function() {
+        return new Promise((resolve, reject) => {
+            if (!Game.socket || !Game.socket.connected) {
+                reject(new Error("Za Google prijavu potrebna je internet veza."));
+                return;
+            }
+
+            Game.socket.timeout(10000).emit("zatraziGoogleNonce", (greska, odgovor) => {
+                if (greska || !odgovor || !odgovor.uspeh || !odgovor.nonce) {
+                    reject(new Error("Bezbedna potvrda Google prijave trenutno nije dostupna."));
+                    return;
+                }
+                resolve(String(odgovor.nonce));
+            });
+        });
     },
 
     posaljiServeru: function(identitet) {
@@ -179,6 +196,19 @@ const GoogleAuthManager = {
         }
     },
 
+    odjaviNativniNalog: async function() {
+        const plugin = window.Capacitor
+            && window.Capacitor.Plugins
+            && window.Capacitor.Plugins.GoogleAuth;
+        if (!plugin || typeof plugin.signOut !== "function") return;
+
+        try {
+            await plugin.signOut();
+        } catch (error) {
+            console.warn("Native Google sesija nije očišćena.", error);
+        }
+    },
+
     poveziTrenutniProfil: async function() {
         if (!this.googlePrijavaAktivna) {
             this.prikaziGoogleUPripremi();
@@ -186,6 +216,17 @@ const GoogleAuthManager = {
         }
         if (this.povezivanjeUToku) return;
         if (typeof PodesavanjaManager === "undefined" || !PodesavanjaManager.zahtevajProfil()) return;
+        if (PodesavanjaManager.postavke.googleUid) {
+            if (typeof UIManager !== "undefined") {
+                UIManager.prikaziObavestenje(
+                    "Google nalog je već povezan",
+                    "Za promenu naloga prvo izaberi Odjavi se, pa se na uvodnom ekranu prijavi preko željenog Google naloga.",
+                    null,
+                    "U redu"
+                );
+            }
+            return;
+        }
 
         this.povezivanjeUToku = true;
         if (typeof PodesavanjaManager.azurirajProfilOpcije === "function") {
@@ -193,7 +234,9 @@ const GoogleAuthManager = {
         }
 
         try {
-            const identitet = await this.dohvatiGoogleIdentitet();
+            const nonce = await this.zahtevajGoogleNonce();
+            const identitet = await this.dohvatiGoogleIdentitet(nonce);
+            identitet.nonce = nonce;
             const odgovor = await this.posaljiServeru(identitet);
 
             if (!odgovor.uspeh) {
@@ -250,8 +293,26 @@ const GoogleAuthManager = {
             if (typeof PodesavanjaManager !== 'undefined') {
                 await PodesavanjaManager.osigurajStabilniProfilKljuc();
             }
-            const identitet = await this.dohvatiGoogleIdentitet();
-            const odgovor = await this.posaljiPrijavuServeru(identitet);
+            if (typeof SinhronizacijaManager !== "undefined") {
+                SinhronizacijaManager.zaustaviZaPromenuProfila();
+            }
+
+            const nonce = await this.zahtevajGoogleNonce();
+            const identitet = await this.dohvatiGoogleIdentitet(nonce);
+            identitet.nonce = nonce;
+            let odgovor = await this.posaljiPrijavuServeru(identitet);
+
+            // Posle reinstalacije localStorage nestaje, ali isti Android uređaj i dalje
+            // može da pronađe svoj nepovezani gost profil. Jednim klikom ga prebacujemo
+            // na upravo potvrđen Google nalog, bez gubitka cloud napretka.
+            if (
+                !odgovor.uspeh
+                && odgovor.kod === 'GOOGLE_PROFIL_NIJE_PRONADJEN'
+                && typeof PodesavanjaManager !== 'undefined'
+                && await PodesavanjaManager.oporaviGostProfilAkoPostoji()
+            ) {
+                odgovor = await this.posaljiServeru(identitet);
+            }
             if (!odgovor.uspeh) {
                 const poruka = odgovor.kod === 'GOOGLE_PROFIL_NIJE_PRONADJEN'
                     ? 'Ovaj Google nalog još nema Zemljopis profil. Napravi profil, pa ga zatim poveži sa Google nalogom u Podešavanjima.'

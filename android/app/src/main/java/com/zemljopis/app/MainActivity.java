@@ -14,6 +14,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(DeviceIdentityPlugin.class);
+        registerPlugin(GoogleAuthPlugin.class);
         getWindow().setBackgroundDrawable(new ColorDrawable(ZEMLJOPIS_LAUNCH_BACKGROUND));
         super.onCreate(savedInstanceState);
 

@@ -16,6 +16,23 @@ const PodesavanjaManager = {
         pismo: "latinica" // Podrazumevano pismo
     },
 
+    napraviPocetnePostavke: function() {
+        return {
+            nadimak: "",
+            avatar: null,
+            profilTip: "lokalni",
+            googleUid: null,
+            profilKljuc: this.generisiProfilKljuc(),
+            androidProfilKljuc: null,
+            stabilniProfilKljucPovezan: false,
+            playerId: null,
+            profilZavrsen: false,
+            zvuk: true,
+            tema: "drzava",
+            pismo: "latinica"
+        };
+    },
+
     introTrajanjeMs: 5200,
     introTajmer: null,
     ulazakTajmer: null,
@@ -545,6 +562,17 @@ const PodesavanjaManager = {
     },
 
     prijaviSeKaoGost: async function() {
+        if (this.postavke.profilTip === "google" || this.postavke.googleUid) {
+            if (typeof UIManager !== "undefined") {
+                UIManager.prikaziObavestenje(
+                    "Potrebna je Google prijava",
+                    "Ovaj napredak je zaštićen Google nalogom. Prijavi se preko Google-a ili se odjavi pa napravi odvojeni gost profil.",
+                    null,
+                    "U redu"
+                );
+            }
+            return;
+        }
         if (this.profilKompletan()) {
             if (typeof Game !== "undefined") Game.profilPrijavljen = true;
             if (typeof UIManager !== "undefined") UIManager.prikaziEkran('main-menu');
@@ -780,6 +808,19 @@ const PodesavanjaManager = {
 
     odjaviProfil: function() {
         const izvrsiOdjavu = () => {
+            const googleProfil = this.postavke.profilTip === "google" || Boolean(this.postavke.googleUid);
+            if (googleProfil) {
+                // Ne ostavljamo cloud podatke prethodnog naloga na zajedničkom uređaju.
+                // Sledeći gost ili Google korisnik počinje iz potpuno odvojenog lokalnog stanja.
+                if (typeof SinhronizacijaManager !== "undefined") {
+                    SinhronizacijaManager.zaustaviZaPromenuProfila();
+                    SinhronizacijaManager.ocistiLokalniNapredakZaDrugiProfil();
+                }
+                this.postavke = this.napraviPocetnePostavke();
+                if (typeof GoogleAuthManager !== "undefined") {
+                    GoogleAuthManager.odjaviNativniNalog();
+                }
+            }
             this.snimiULokalnuMemoriju();
             this.primeniPostavkeGlobalno();
             this.azurirajProfilOpcije();
@@ -795,7 +836,9 @@ const PodesavanjaManager = {
         if (typeof UIManager !== "undefined" && UIManager.prikaziObavestenje) {
             UIManager.prikaziObavestenje(
                 "Odjava",
-                "Bićeš vraćen na uvodni ekran. Gost profil, ime i avatar ostaju sačuvani.",
+                (this.postavke.profilTip === "google" || this.postavke.googleUid)
+                    ? "Bićeš odjavljen, a lokalna kopija zaštićenog Google profila biće uklonjena sa ovog uređaja. Sve ostaje bezbedno sačuvano na Google nalogu."
+                    : "Bićeš vraćen na uvodni ekran. Gost profil, ime i avatar ostaju sačuvani.",
                 izvrsiOdjavu,
                 "Odjavi se"
             );
@@ -944,7 +987,7 @@ const PodesavanjaManager = {
             } else if (googlePovezan) {
                 googleStatus.innerText = this.formatirajTekst("POVEZANO");
             } else {
-                googleStatus.innerText = this.formatirajTekst("USKORO");
+                googleStatus.innerText = this.formatirajTekst("POVEŽI");
             }
         }
         if (profilInfoTip) {
@@ -968,7 +1011,7 @@ const PodesavanjaManager = {
         if (profilGoogleInfo) {
             profilGoogleInfo.innerText = googlePovezan
                 ? "Google nalog je povezan."
-                : "Google prijava je u pripremi. Za sada koristi Igraj kao gost.";
+                : "Poveži Google nalog da sačuvaš napredak i vratiš ga na drugom uređaju.";
         }
         if (odjavaDugme) {
             odjavaDugme.disabled = !profilSpreman;

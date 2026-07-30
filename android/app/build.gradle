@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+def googleWebClientId = (
+    project.findProperty('GOOGLE_WEB_CLIENT_ID')
+        ?: System.getenv('GOOGLE_WEB_CLIENT_ID')
+        ?: ''
+).toString().replace('\\', '\\\\').replace('"', '\\"')
+
 android {
     namespace = "com.zemljopis.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -10,11 +16,15 @@ android {
         versionCode 9
         versionName "1.0.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"${googleWebClientId}\""
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
+    }
+    buildFeatures {
+        buildConfig true
     }
     buildTypes {
         release {
@@ -40,6 +50,9 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+    implementation "androidx.credentials:credentials:1.6.0"
+    implementation "androidx.credentials:credentials-play-services-auth:1.6.0"
+    implementation "com.google.android.libraries.identity.googleid:googleid:1.1.1"
 }
 
 apply from: 'capacitor.build.gradle'

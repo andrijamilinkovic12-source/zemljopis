@@ -3328,7 +3328,7 @@ function preuzmiGoogleJwks() {
     });
 }
 
-async function verifikujGoogleIdToken(idToken) {
+async function verifikujGoogleIdToken(idToken, ocekivaniNonce = null) {
     if (GOOGLE_CLIENT_IDS.length === 0) {
         throw greskaSaKodom("GOOGLE_AUTH_NIJE_PODESEN", "Na serveru nije podešen GOOGLE_CLIENT_ID.");
     }
@@ -3372,16 +3372,43 @@ async function verifikujGoogleIdToken(idToken) {
     if (jwt.payload.iat && Number(jwt.payload.iat) > sada + 300) {
         throw greskaSaKodom("NEISPRAVAN_GOOGLE_TOKEN", "Google token još nije važeći.");
     }
+    if (ocekivaniNonce && jwt.payload.nonce !== ocekivaniNonce) {
+        throw greskaSaKodom("GOOGLE_NONCE_NEISPRAVAN", "Google potvrda prijave nije ispravna.");
+    }
 
     return jwt.payload.sub;
 }
 
-async function potvrdiGoogleIdentitet(podaci = {}) {
+function napraviGoogleNonce() {
+    return crypto.randomBytes(32).toString("base64url");
+}
+
+function preuzmiGoogleNonceZaPotvrdu(socket, nonceKlijenta) {
+    if (GOOGLE_CLIENT_IDS.length === 0) return null;
+
+    const zahtev = socket && socket.data && socket.data.googleNonce;
+    const nonce = String(nonceKlijenta || "");
+    if (!zahtev || zahtev.isticeAt < Date.now() || !nonce || nonce !== zahtev.vrednost) {
+        throw greskaSaKodom(
+            "GOOGLE_NONCE_NEISPRAVAN",
+            "Google prijavu pokreni ponovo. Potvrda prijave je istekla."
+        );
+    }
+
+    return zahtev.vrednost;
+}
+
+function potrosiGoogleNonce(socket) {
+    if (socket && socket.data) delete socket.data.googleNonce;
+}
+
+async function potvrdiGoogleIdentitet(podaci = {}, socket = null) {
     const trazeniUid = String(podaci.googleUid || "").trim();
     const idToken = String(podaci.idToken || podaci.googleIdToken || "").trim();
 
     if (idToken && GOOGLE_CLIENT_IDS.length > 0) {
-        const verifikovanUid = await verifikujGoogleIdToken(idToken);
+        const ocekivaniNonce = preuzmiGoogleNonceZaPotvrdu(socket, podaci.nonce);
+        const verifikovanUid = await verifikujGoogleIdToken(idToken, ocekivaniNonce);
         if (trazeniUid && trazeniUid !== verifikovanUid) {
             throw greskaSaKodom("GOOGLE_UID_SE_NE_POKLAPA", "Google UID se ne poklapa sa tokenom.");
         }
@@ -4055,13 +4082,17 @@ async function preusmeriVezeSpojenogProfila(stariPlayerId, noviPlayerId, ciljniB
     if (!stariPlayerId || !noviPlayerId || stariPlayerId === noviPlayerId) return;
 
     await Promise.all([
-        Igrac.updateMany(
-            { _id: { $ne: ciljniBazaId }, prijatelji: stariPlayerId },
-            {
-                $pull: { prijatelji: stariPlayerId },
-                $addToSet: { prijatelji: noviPlayerId }
-            }
-        ),
+        // MongoDB ne dozvoljava $pull i $addToSet nad istim poljem u jednoj
+        // izmeni. Izvršavamo ih redom, tako da se stari prijatelj nikad ne
+        // duplira i migracija ne puca kada gost ima prijatelje.
+        (async () => {
+            const filter = { _id: { $ne: ciljniBazaId }, prijatelji: stariPlayerId };
+            const vlasnici = await Igrac.find(filter, { _id: 1 }).lean();
+            const vlasnikIds = vlasnici.map(igrac => igrac._id);
+            if (vlasnikIds.length === 0) return;
+            await Igrac.updateMany({ _id: { $in: vlasnikIds } }, { $pull: { prijatelji: stariPlayerId } });
+            await Igrac.updateMany({ _id: { $in: vlasnikIds } }, { $addToSet: { prijatelji: noviPlayerId } });
+        })(),
         Igrac.updateMany(
             { _id: { $ne: ciljniBazaId }, 'zahteviPrijateljstva.playerId': stariPlayerId },
             { $set: { 'zahteviPrijateljstva.$[zahtev].playerId': noviPlayerId } },
@@ -5269,6 +5300,17 @@ function vratiSocketPodatke(...args) {
 io.on('connection', (socket) => {
     console.log(`🟢 Novi igrač se povezao: ${socket.id}`);
 
+    // ID token se potvrđuje i potpisom i jednokratnim nonce-om vezanim za ovu sesiju.
+    // Tako ukradeni ili snimljeni token ne može da se ponovo upotrebi za prijavu.
+    socket.on('zatraziGoogleNonce', (callback = () => {}) => {
+        const nonce = napraviGoogleNonce();
+        socket.data.googleNonce = {
+            vrednost: nonce,
+            isticeAt: Date.now() + (2 * 60 * 1000)
+        };
+        callback({ uspeh: true, nonce, isticeAt: socket.data.googleNonce.isticeAt });
+    });
+
     socket.on('sinhronizujVreme', (...args) => {
         const callback = vratiSocketCallback(...args);
         callback({
@@ -5717,6 +5759,7 @@ io.on('connection', (socket) => {
         const nadimakNormalizovan = normalizujNadimak(nadimak);
         const profilKljuc = podaci && podaci.profilKljuc;
         const avatar = podaci && podaci.avatar;
+        const prijavljeniIgrac = onlineIgraci[socket.id];
 
         if (!profilKljucJeIspravan(profilKljuc)) {
             return callback({ uspeh: false, kod: "NEISPRAVAN_PROFIL", poruka: "Profil nije ispravan. Ponovo pokreni aplikaciju." });
@@ -5730,6 +5773,17 @@ io.on('connection', (socket) => {
 
         try {
             let igrac = await pronadjiIgracaPoProfilKljucu(profilKljuc);
+            if (
+                igrac
+                && igrac.googleUid
+                && (!prijavljeniIgrac || String(prijavljeniIgrac.bazaId) !== String(igrac._id))
+            ) {
+                return callback({
+                    uspeh: false,
+                    kod: "GOOGLE_PRIJAVA_OBAVEZNA",
+                    poruka: "Ovaj profil je zaštićen Google nalogom. Prijavi se preko Google-a."
+                });
+            }
             const zauzetiProfil = await Igrac.findOne({
                 $or: [
                     { nadimakNormalizovan },
@@ -5792,6 +5846,13 @@ io.on('connection', (socket) => {
             const igrac = await pronadjiIgracaPoProfilKljucu(profilKljuc);
             if (!igrac) {
                 return callback({ uspeh: false, kod: "PROFIL_NIJE_PRONADJEN" });
+            }
+            if (igrac.googleUid) {
+                return callback({
+                    uspeh: false,
+                    kod: "GOOGLE_PRIJAVA_OBAVEZNA",
+                    poruka: "Ovaj profil je zaštićen Google nalogom. Prijavi se preko Google-a."
+                });
             }
 
             osigurajIdentitetIgraca(igrac);
@@ -5913,7 +5974,7 @@ io.on('connection', (socket) => {
         }
 
         try {
-            const googleUid = await potvrdiGoogleIdentitet(podaci);
+            const googleUid = await potvrdiGoogleIdentitet(podaci, socket);
             const lokalniNapredak = sanitizujCloudNapredak(podaci && podaci.napredak);
             let lokalniIgrac = prijavljeniIgrac
                 ? await Igrac.findById(prijavljeniIgrac.bazaId)
@@ -5924,11 +5985,20 @@ io.on('connection', (socket) => {
             }
 
             osigurajIdentitetIgraca(lokalniIgrac);
+            if (lokalniIgrac.googleUid && lokalniIgrac.googleUid !== googleUid) {
+                return callback({
+                    uspeh: false,
+                    kod: "GOOGLE_NALOG_PROMENA_OBAVEZNA",
+                    poruka: "Ovaj profil je već povezan sa drugim Google nalogom. Prvo se odjavi pa se prijavi na željeni nalog."
+                });
+            }
             let googleIgrac = await Igrac.findOne({ googleUid });
             const istiProfil = googleIgrac && String(googleIgrac._id) === String(lokalniIgrac._id);
             const ciljniIgrac = googleIgrac || lokalniIgrac;
+            // Lokalni cloud je merodavan i nakon reinstalacije, kada WebView više nema
+            // localStorage. Uvek ga spajamo pre trenutnog paketa sa uređaja.
             const prethodniCloud = googleIgrac
-                ? (googleIgrac.cloudNapredak || {})
+                ? spojiCloudNapredak(googleIgrac.cloudNapredak || {}, lokalniIgrac.cloudNapredak || {})
                 : (lokalniIgrac.cloudNapredak || {});
             const spojeniNapredak = sanitizujCloudNapredak(spojiCloudNapredak(prethodniCloud, lokalniNapredak));
             let spojeniLokalniPlayerId = null;
@@ -5980,6 +6050,7 @@ io.on('connection', (socket) => {
             ciljniIgrac.poslednjaPrijava = new Date();
             primeniNapredakNaBrojkeProfila(ciljniIgrac, spojeniNapredak);
             await ciljniIgrac.save();
+            potrosiGoogleNonce(socket);
 
             if (spojeniLokalniPlayerId) {
                 await preusmeriVezeSpojenogProfila(
@@ -6015,7 +6086,7 @@ io.on('connection', (socket) => {
     // --- DIREKTNA PRIJAVA POSTOJEĆEG GOOGLE PROFILA ---
     socket.on('prijavaGoogleNaloga', async (podaci = {}, callback = () => {}) => {
         try {
-            const googleUid = await potvrdiGoogleIdentitet(podaci);
+            const googleUid = await potvrdiGoogleIdentitet(podaci, socket);
             const igrac = await Igrac.findOne({ googleUid });
             if (!igrac) {
                 return callback({ uspeh: false, kod: "GOOGLE_PROFIL_NIJE_PRONADJEN", poruka: "Za ovaj Google nalog još ne postoji Zemljopis profil." });
@@ -6031,6 +6102,7 @@ io.on('connection', (socket) => {
             osigurajIdentitetIgraca(igrac);
             igrac.poslednjaPrijava = new Date();
             await igrac.save();
+            potrosiGoogleNonce(socket);
             prijaviOnlineIgraca(socket, igrac);
             callback({ uspeh: true, googleUid, profil: podaciProfilaZaKlijenta(igrac) });
         } catch (error) {

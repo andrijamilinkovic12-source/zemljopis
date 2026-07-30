@@ -9,6 +9,18 @@ const SinhronizacijaManager = {
     primenaUToku: false,
     slanjeNakonPrimene: false,
     tajmerSlanja: null,
+    profilNaCekanju: null,
+    generacijaProfila: 0,
+    kljuceviNapretka: [
+        "zemljopis_riznica",
+        "zemljopis_trofeji",
+        "zemljopis_dnevni_izazov",
+        "zemljopis_tokeni_stanje",
+        "zemljopis_datum_tokena",
+        "zemljopis_kvartal",
+        "zemljopis_prijatelji_detalji",
+        "zemljopis_zahtevi"
+    ],
 
     procitajJSON: function(kljuc, podrazumevano) {
         const vrednost = localStorage.getItem(kljuc);
@@ -52,9 +64,68 @@ const SinhronizacijaManager = {
         };
     },
 
+    zaustaviZaPromenuProfila: function() {
+        clearTimeout(this.tajmerSlanja);
+        this.tajmerSlanja = null;
+        this.slanjeNakonPrimene = false;
+        this.spreman = false;
+        this.generacijaProfila += 1;
+    },
+
+    ocistiLokalniNapredakZaDrugiProfil: function() {
+        this.kljuceviNapretka.forEach(kljuc => localStorage.removeItem(kljuc));
+
+        if (typeof PodesavanjaManager !== "undefined") {
+            PodesavanjaManager.postavke.zvuk = true;
+            PodesavanjaManager.postavke.tema = "drzava";
+            PodesavanjaManager.postavke.pismo = "latinica";
+            PodesavanjaManager.snimiULokalnuMemoriju();
+            PodesavanjaManager.primeniPostavkeGlobalno();
+        }
+        if (typeof RiznicaManager !== "undefined") {
+            RiznicaManager.init();
+            RiznicaManager.azurirajPrikazDukata();
+        }
+        if (typeof TrofejiManager !== "undefined") TrofejiManager.init();
+        if (typeof DnevniIzazovManager !== "undefined") DnevniIzazovManager.dnevniPodaci = null;
+        if (typeof TokeniManager !== "undefined") {
+            TokeniManager.tokeni = 3;
+            TokeniManager.azurirajPrikaz();
+        }
+        if (typeof KvartalniNivoManager !== "undefined") {
+            KvartalniNivoManager.statistika = { sezonskiPojmovi: 0, svaVremenaPojmovi: 0 };
+            KvartalniNivoManager.azurirajBedzUMeniju();
+        }
+        if (typeof SobaPrijateljaManager !== "undefined") {
+            SobaPrijateljaManager.prijatelji = [];
+            SobaPrijateljaManager.zahtevi = [];
+        }
+    },
+
+    zavrsiObraduProfila: function() {
+        this.obradaUToku = false;
+        if (!this.profilNaCekanju) return;
+
+        const sledeci = this.profilNaCekanju;
+        this.profilNaCekanju = null;
+        this.obradiProfil(sledeci.profil, sledeci.opcije);
+    },
+
     obradiProfil: function(profil, opcije = {}) {
-        if (!profil || !profil.playerId || this.obradaUToku) return;
+        if (!profil || !profil.playerId) return;
+        if (this.obradaUToku) {
+            this.profilNaCekanju = { profil, opcije };
+            return;
+        }
         if (this.spreman && this.playerId === profil.playerId && !opcije.prisilno) return;
+
+        const promenjenProfil = Boolean(this.playerId && this.playerId !== profil.playerId);
+        if (promenjenProfil) {
+            // Podaci su odvojeni po playerId-u. Bez ovoga bi prazan, nov Google
+            // profil mogao da preuzme trofeje ili kupovine prethodnog korisnika uređaja.
+            this.zaustaviZaPromenuProfila();
+            this.ocistiLokalniNapredakZaDrugiProfil();
+        }
 
         this.obradaUToku = true;
         this.playerId = profil.playerId;
@@ -65,17 +136,17 @@ const SinhronizacijaManager = {
         if (profil.sinhronizacija && profil.sinhronizacija.imaPodatke) {
             this.primeniNapredak(profil.sinhronizacija.napredak || {});
             this.spreman = true;
-            this.obradaUToku = false;
             if (this.slanjeNakonPrimene) {
                 this.slanjeNakonPrimene = false;
                 this.zakaziSlanje();
             }
+            this.zavrsiObraduProfila();
             return;
         }
 
         this.posaljiOdmah(() => {
             this.spreman = true;
-            this.obradaUToku = false;
+            this.zavrsiObraduProfila();
         });
     },
 
@@ -100,6 +171,8 @@ const SinhronizacijaManager = {
             return;
         }
 
+        const generacija = this.generacijaProfila;
+        const playerId = this.playerId;
         Game.socket.timeout(12000).emit(
             "sacuvajCloudNapredak",
             {
@@ -107,6 +180,10 @@ const SinhronizacijaManager = {
                 napredak: this.prikupiLokalniNapredak()
             },
             (greska, odgovor) => {
+                if (generacija !== this.generacijaProfila || playerId !== this.playerId) {
+                    if (typeof zavrseno === "function") zavrseno(false);
+                    return;
+                }
                 if (greska || !odgovor) {
                     console.warn("Sinhronizacija napretka nije uspela.", greska);
                     if (typeof zavrseno === "function") zavrseno(false);

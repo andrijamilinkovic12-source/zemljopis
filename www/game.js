@@ -639,6 +639,13 @@ const Game = {
             return;
         }
 
+        if (PodesavanjaManager.postavke.googleUid || PodesavanjaManager.postavke.profilTip === "google") {
+            // Google profil se nikada ne otvara samo na osnovu lokalnog ključa uređaja.
+            // Potvrda Google identiteta je obavezna posle instalacije, brisanja podataka i odjave.
+            this.profilPrijavljen = false;
+            return;
+        }
+
         if (PodesavanjaManager.profilKompletan()) {
             this.prijaviProfilKljuc(PodesavanjaManager.postavke.profilKljuc, false);
             return;

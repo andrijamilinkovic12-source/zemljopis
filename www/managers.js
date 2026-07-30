@@ -113,6 +113,9 @@ const UIManager = {
         if (overlay.dataset.tranzicijaUToku === 'true') return;
 
         this.podesiTranzicijuVrata(opcije.mod || 'solo', opcije.tipOnlineModa || '');
+        const smanjeniPokret = window.matchMedia
+            && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const trajanjeIzlazaLogotipa = smanjeniPokret ? 220 : 320;
 
         const cekajTransformaciju = (element, rezervnoVreme, callback) => {
             let zavrseno = false;
@@ -149,21 +152,27 @@ const UIManager = {
             }
 
             setTimeout(() => {
-                if (typeof opcije.onPocetakOtvaranja === 'function') {
-                    opcije.onPocetakOtvaranja();
-                }
+                // Logo ostaje potpuno sastavljen dok se ne ugasi. Tek zatim se
+                // skidaju zatvorena vrata, pa polovine ne mogu vidljivo da se
+                // vrate u početne rotirane položaje tokom razdvajanja.
                 overlay.classList.add('opening');
-                overlay.classList.remove('active', 'holding');
 
-                cekajTransformaciju(levaVrata, 2140, () => {
-                    overlay.classList.remove('opening');
-                    overlay.dataset.tranzicijaUToku = 'false';
-                    overlay.setAttribute('aria-hidden', 'true');
-
-                    if (typeof callbackPoOtvaranju === 'function') {
-                        callbackPoOtvaranju();
+                setTimeout(() => {
+                    if (typeof opcije.onPocetakOtvaranja === 'function') {
+                        opcije.onPocetakOtvaranja();
                     }
-                });
+                    overlay.classList.remove('active', 'holding');
+
+                    cekajTransformaciju(levaVrata, 2140, () => {
+                        overlay.classList.remove('opening');
+                        overlay.dataset.tranzicijaUToku = 'false';
+                        overlay.setAttribute('aria-hidden', 'true');
+
+                        if (typeof callbackPoOtvaranju === 'function') {
+                            callbackPoOtvaranju();
+                        }
+                    });
+                }, trajanjeIzlazaLogotipa);
             }, 2200);
         });
     },

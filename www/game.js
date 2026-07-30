@@ -152,6 +152,12 @@ const Game = {
             this.socket.on('podaciProfila', (podaci) => {
                 console.log("📥 Podaci učitani iz baze:", podaci);
 
+                // Sačuvaj identitet pre nego što ga odgovor servera zameni. Ovo je
+                // važno pri svežem pokretanju aplikacije: SinhronizacijaManager tada
+                // još nema playerId, ali localStorage možda pripada drugom nalogu.
+                const prethodniPlayerId = typeof PodesavanjaManager !== 'undefined'
+                    ? PodesavanjaManager.postavke.playerId
+                    : null;
                 if (typeof PodesavanjaManager !== 'undefined' && podaci) {
                     if (podaci.nadimak) PodesavanjaManager.postavke.nadimak = podaci.nadimak;
                     if (podaci.avatar) PodesavanjaManager.postavke.avatar = podaci.avatar;
@@ -186,7 +192,7 @@ const Game = {
                     if (tokeniVelikoEl) tokeniVelikoEl.innerText = podaci.tokeni;
                 }
                 if (typeof SinhronizacijaManager !== 'undefined') {
-                    SinhronizacijaManager.obradiProfil(podaci);
+                    SinhronizacijaManager.obradiProfil(podaci, { prethodniPlayerId });
                 }
             });
 

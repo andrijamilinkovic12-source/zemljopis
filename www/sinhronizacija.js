@@ -119,7 +119,8 @@ const SinhronizacijaManager = {
         }
         if (this.spreman && this.playerId === profil.playerId && !opcije.prisilno) return;
 
-        const promenjenProfil = Boolean(this.playerId && this.playerId !== profil.playerId);
+        const prethodniPlayerId = opcije.prethodniPlayerId || this.playerId;
+        const promenjenProfil = Boolean(prethodniPlayerId && prethodniPlayerId !== profil.playerId);
         if (promenjenProfil) {
             // Podaci su odvojeni po playerId-u. Bez ovoga bi prazan, nov Google
             // profil mogao da preuzme trofeje ili kupovine prethodnog korisnika uređaja.

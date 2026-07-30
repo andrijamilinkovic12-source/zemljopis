@@ -177,6 +177,7 @@ const GoogleAuthManager = {
     primeniProfil: function(odgovor, identitet) {
         const profil = odgovor && odgovor.profil;
         if (!profil || typeof PodesavanjaManager === "undefined") return;
+        const prethodniPlayerId = PodesavanjaManager.postavke.playerId;
 
         if (profil.nadimak) PodesavanjaManager.postavke.nadimak = profil.nadimak;
         if (profil.avatar) PodesavanjaManager.postavke.avatar = profil.avatar;
@@ -189,7 +190,7 @@ const GoogleAuthManager = {
         PodesavanjaManager.azurirajProfilOpcije();
 
         if (typeof SinhronizacijaManager !== "undefined") {
-            SinhronizacijaManager.obradiProfil(profil, { prisilno: true });
+            SinhronizacijaManager.obradiProfil(profil, { prisilno: true, prethodniPlayerId });
         }
         if (typeof Game !== "undefined") {
             Game.profilPrijavljen = true;

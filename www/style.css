@@ -7544,6 +7544,8 @@ body.keyboard-open .dnevni-input-group input {
 }
 .btn-finish { width: 100%; padding: 0.9rem; border-radius: 14px; border: none; background: linear-gradient(45deg, #11998e, #38ef7d); color: #000; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3); cursor: pointer; transition: transform 0.2s; }
 .btn-finish:active { transform: scale(0.97); }
+/* Primary action buttons keep the same solid fill in their disabled state. */
+.btn-finish:disabled { opacity: 1; }
 
 .input-correct { border-color: #38ef7d !important; background: rgba(56, 239, 125, 0.1) !important; }
 .input-wrong { border-color: #ff416c !important; background: rgba(255, 65, 108, 0.1) !important; }

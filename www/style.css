@@ -3,7 +3,8 @@
 .modal-content.chat-rules-content {
     width: min(640px, calc(100vw - 24px));
     max-width: 640px;
-    max-height: min(calc(82vh + 8px), 708px);
+    /* Iskoristi sav slobodan prostor modala, uz siguran razmak od obe ivice ekrana. */
+    max-height: calc(100% - 8px);
     overflow-y: auto;
 }
 

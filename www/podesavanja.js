@@ -1438,12 +1438,18 @@ const PodesavanjaManager = {
 
         const obradi = (cvor) => {
             if (cvor.nodeType === 3) {
+                if (cvor.parentElement && cvor.parentElement.closest('[data-zadrzi-latinicu="true"]')) return;
                 const prevedeno = this.presloviUCirilicu(cvor.nodeValue);
                 if (cvor.nodeValue !== prevedeno) {
                     cvor.nodeValue = prevedeno;
                 }
             } else if (cvor.nodeType === 1) {
-                if (cvor.tagName === "SCRIPT" || cvor.tagName === "STYLE" || cvor.id === "room-code-input") return;
+                if (
+                    cvor.tagName === "SCRIPT"
+                    || cvor.tagName === "STYLE"
+                    || cvor.id === "room-code-input"
+                    || cvor.getAttribute('data-zadrzi-latinicu') === 'true'
+                ) return;
 
                 ["placeholder", "title", "aria-label"].forEach(atribut => {
                     if (!cvor.hasAttribute(atribut)) return;

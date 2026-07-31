@@ -1,7 +1,7 @@
 // globalchat.js - Menadžer za bezbedni Globalni Chat
 
 const GlobalChatManager = {
-    introTrajanjeMs: 640,
+    introTrajanjeMs: 5200,
     introTajmer: null,
     ulazakTajmer: null,
     otvaranjeUToku: false,
@@ -127,8 +127,8 @@ const GlobalChatManager = {
     prikaziIntro: function(callback) {
         const overlay = document.getElementById('global-chat-intro-overlay');
         const smanjeniPokret = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const trajanje = smanjeniPokret ? 120 : this.introTrajanjeMs;
-        const trajanjeZatvaranja = smanjeniPokret ? 80 : Math.min(220, trajanje);
+        const trajanje = smanjeniPokret ? 420 : this.introTrajanjeMs;
+        const trajanjeZatvaranja = smanjeniPokret ? 160 : Math.min(420, trajanje);
 
         if (!overlay) {
             setTimeout(callback, trajanje);

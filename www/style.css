@@ -7,6 +7,11 @@
     overflow-y: auto;
 }
 
+/* Kartica pravila koristi skoro celu širinu ekrana, bez promene vertikalnog ritma modala. */
+#chat-rules-modal {
+    padding-inline: 12px;
+}
+
 .modal-content.chat-rules-content .chat-rules-copy,
 .modal-content.chat-rules-content .chat-rules-copy p,
 .modal-content.chat-rules-content .chat-rules-list {

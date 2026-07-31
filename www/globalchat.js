@@ -20,7 +20,9 @@ const GlobalChatManager = {
                     this.posaljiPoruku();
                 }
             });
+            input.addEventListener('input', () => this.azurirajBrojacZnakova());
         }
+        this.azurirajBrojacZnakova();
         this.azurirajStanjePisanja();
     },
 
@@ -116,6 +118,7 @@ const GlobalChatManager = {
                 UIManager.prikaziEkran('global-chat-screen');
                 this.pokreniBlagiUlazakUSobu();
                 this.azurirajStanjePisanja();
+                requestAnimationFrame(() => this.azurirajBrojacZnakova());
                 this.otvaranjeUToku = false;
             });
         });
@@ -176,6 +179,7 @@ const GlobalChatManager = {
                 return;
             }
             input.value = '';
+            this.azurirajBrojacZnakova();
             input.focus();
         });
     },
@@ -350,6 +354,26 @@ const GlobalChatManager = {
                 : 'Unesi poruku...';
         }
         if (dugme) dugme.disabled = zakljucano;
+    },
+
+    azurirajBrojacZnakova: function() {
+        const input = document.getElementById('chat-input');
+        const brojac = document.getElementById('chat-character-count');
+        if (!input) return;
+
+        const maksimum = Number(input.maxLength) > 0 ? Number(input.maxLength) : 180;
+        if (brojac) brojac.textContent = `${input.value.length}/${maksimum}`;
+
+        if (input.getClientRects().length === 0) {
+            input.style.height = '';
+            input.style.overflowY = 'hidden';
+            return;
+        }
+
+        input.style.height = 'auto';
+        const maksimalnaVisina = 128;
+        input.style.height = `${Math.min(input.scrollHeight, maksimalnaVisina)}px`;
+        input.style.overflowY = input.scrollHeight > maksimalnaVisina ? 'auto' : 'hidden';
     },
 
     jeChatOtvoren: function() {

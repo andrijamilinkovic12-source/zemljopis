@@ -891,7 +891,10 @@
             <div id="chat-messages" class="global-chat-messages" aria-live="polite" aria-label="Poruke globalnog četa"></div>
 
             <div class="global-chat-composer">
-                <input type="text" id="chat-input" class="global-chat-input" placeholder="Unesi poruku..." maxlength="180" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Nova poruka">
+                <div class="global-chat-composer-field">
+                    <textarea id="chat-input" class="global-chat-input" placeholder="Unesi poruku..." maxlength="180" rows="1" wrap="soft" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-label="Nova poruka, najviše 180 znakova" aria-describedby="chat-character-count"></textarea>
+                    <span id="chat-character-count" class="chat-character-count">0/180</span>
+                </div>
                 <button type="button" class="btn-primary global-chat-send" aria-label="Pošalji poruku" onclick="GlobalChatManager.posaljiPoruku()">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>

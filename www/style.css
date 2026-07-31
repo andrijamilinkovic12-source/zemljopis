@@ -1,20 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
 
-.chat-rules-content {
-    width: min(560px, calc(100vw - 32px));
-    max-height: min(78vh, 680px);
+.modal-content.chat-rules-content {
+    width: min(640px, calc(100vw - 24px));
+    max-width: 640px;
+    max-height: min(82vh, 700px);
     overflow-y: auto;
 }
 
-.chat-rules-copy {
+.modal-content.chat-rules-content .chat-rules-copy,
+.modal-content.chat-rules-content .chat-rules-copy p,
+.modal-content.chat-rules-content .chat-rules-list {
     color: #cbd5e0;
-    font-size: 0.92rem;
+    font-size: calc(0.92rem - 1px);
+}
+
+.modal-content.chat-rules-content .chat-rules-copy {
     line-height: 1.52;
     margin-bottom: 1.25rem;
     text-align: left;
 }
 
-.chat-rules-copy p + p {
+.modal-content.chat-rules-content .chat-rules-copy p {
+    line-height: inherit;
+    margin-bottom: 0;
+}
+
+.modal-content.chat-rules-content .chat-rules-copy p + p {
     margin-top: 0.85rem;
 }
 
@@ -14823,13 +14834,22 @@ body[data-tema] #global-chat-screen .global-chat-composer {
     margin-bottom: 0.2rem;
     padding: 0.62rem;
     display: flex;
+    align-items: flex-end;
     gap: 0.5rem;
     border-radius: 12px;
 }
 
-body[data-tema] #global-chat-screen .global-chat-input {
+body[data-tema] #global-chat-screen .global-chat-composer-field {
     flex: 1;
     min-width: 0;
+}
+
+body[data-tema] #global-chat-screen .global-chat-input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 2.86rem;
+    max-height: 8rem;
     padding: 0.72rem 0.85rem;
     border: 1px solid rgba(220, 244, 255, 0.4) !important;
     border-radius: 8px;
@@ -14839,6 +14859,22 @@ body[data-tema] #global-chat-screen .global-chat-input {
     outline: none;
     font-family: 'Poppins', sans-serif;
     font-size: 0.9rem;
+    line-height: 1.35;
+    resize: none;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+body[data-tema] #global-chat-screen .chat-character-count {
+    display: block;
+    margin-top: 0.22rem;
+    color: rgba(255, 255, 255, 0.66);
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-align: right;
 }
 
 body[data-tema] #global-chat-screen .global-chat-input::placeholder {

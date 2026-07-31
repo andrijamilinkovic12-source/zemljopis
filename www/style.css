@@ -3,7 +3,7 @@
 .modal-content.chat-rules-content {
     width: min(640px, calc(100vw - 24px));
     max-width: 640px;
-    max-height: min(82vh, 700px);
+    max-height: min(calc(82vh + 8px), 708px);
     overflow-y: auto;
 }
 
@@ -14,23 +14,27 @@
 
 /* Dodatni prostor pri dnu ostaje dostupan, dok kartica ide blago ka gornjoj bezbednoj zoni. */
 #chat-rules-modal .chat-rules-content {
-    transform: translateY(-8px) scale(0.8);
+    transform: translateY(-4px) scale(0.8);
 }
 
 #chat-rules-modal.active .chat-rules-content {
-    transform: translateY(-8px) scale(1);
+    transform: translateY(-4px) scale(1);
 }
 
 #chat-rules-modal .chat-rules-content h2 {
-    font-size: 1.42rem;
+    font-size: 1.28rem;
     line-height: 1.12;
-    margin-bottom: 0.85rem;
+    margin-bottom: 0.7rem;
+}
+
+#chat-rules-modal .chat-rules-content > div:last-child .menu-btn {
+    padding-block: 0.55rem !important;
 }
 
 /* Na nižim ekranima kompaktnija dugmad uklanjaju potrebu za dodatnim skrolovanjem. */
 @media (max-height: 680px) {
     #chat-rules-modal .chat-rules-content > div:last-child .menu-btn {
-        padding: 0.68rem !important;
+        padding-block: 0.48rem !important;
         font-size: 0.9rem;
     }
 }

@@ -888,10 +888,10 @@
         </div>
         
         <div class="global-chat-content">
-            <div id="chat-messages" class="global-chat-messages" aria-live="polite"></div>
+            <div id="chat-messages" class="global-chat-messages" aria-live="polite" aria-label="Poruke globalnog četa"></div>
 
             <div class="global-chat-composer">
-                <input type="text" id="chat-input" class="global-chat-input" placeholder="Unesi poruku..." maxlength="150" autocomplete="off" autocorrect="off" spellcheck="false">
+                <input type="text" id="chat-input" class="global-chat-input" placeholder="Unesi poruku..." maxlength="180" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Nova poruka">
                 <button type="button" class="btn-primary global-chat-send" aria-label="Pošalji poruku" onclick="GlobalChatManager.posaljiPoruku()">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
@@ -906,15 +906,19 @@
     </div>
 
     <div id="chat-rules-modal" class="modal-overlay">
-        <div class="modal-content" style="border-color: #ff416c; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255, 65, 108, 0.2);">
+        <div class="modal-content chat-rules-content" style="border-color: #ff416c; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255, 65, 108, 0.2);">
             <h2 style="color: #ff416c;"><i class="fa-solid fa-triangle-exclamation"></i> PRAVILA CHATA</h2>
-            <p style="text-align: left; font-size: 0.95rem; margin-bottom: 1.5rem; color: #cbd5e0;">
-                Dobrodošli u Globalni Chat!<br><br>
-                Zabranjeno je: <br>
-                <b style="color: #ff416c;">1.</b> Vređanje na verskoj, rasnoj ili nacionalnoj osnovi.<br>
-                <b style="color: #ff416c;">2.</b> Psovke, spamovanje i širenje mržnje.<br><br>
-                Kršenje ovih pravila rezultiraće <b style="color: #ff416c;">trajnim isključenjem</b> iz igre.
-            </p>
+            <div class="chat-rules-copy">
+                <p>Dobrodošao/la u Globalni Chat. Razgovaraj pristojno i bezbedno.</p>
+                <p>Zabranjeno je:</p>
+                <ul class="chat-rules-list">
+                    <li>vređanje, ponižavanje i govor mržnje prema nekome zbog nacionalnosti, etničke pripadnosti, rase ili boje kože, vere ili uverenja, jezika, porekla, pola, rodnog identiteta, seksualne orijentacije, invaliditeta ili bilo koje druge lične osobine;</li>
+                    <li>pretnje, uznemiravanje, seksualni sadržaj, lažno predstavljanje i objavljivanje tuđih ličnih podataka;</li>
+                    <li>psovke i drugi neprimereni izrazi — filter ih maskira pre objave, ali to ne opravdava kršenje pravila;</li>
+                    <li>spamovanje, ponavljanje poruka i deljenje linkova.</li>
+                </ul>
+                <p>Poruku možeš prijaviti, a igrača utišati. Teža ili ponovljena kršenja mogu dovesti do privremenog utišavanja ili trajnog isključenja iz globalnog četa.</p>
+            </div>
             <div style="display: flex; gap: 0.5rem;">
                 <button class="menu-btn btn-secondary" style="flex: 1; margin: 0; padding: 0.8rem;" onclick="document.getElementById('chat-rules-modal').classList.remove('active')">Odustani</button>
                 <button class="menu-btn btn-primary" style="flex: 1; margin: 0; padding: 0.8rem;" onclick="GlobalChatManager.prihvatiPravila()">Prihvatam</button>

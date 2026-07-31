@@ -8,16 +8,48 @@ const crypto = require('crypto');
 const https = require('https');
 const path = require('path');
 const BazaPodataka = require('./www/bazapodataka.js');
+const ChatFilter = require('./www/chat-filter.js');
 
 const app = express();
 const server = http.createServer(app);
 const WEB_ROOT = path.join(__dirname, 'www');
+const DOZVOLJENI_SOCKET_ORIGINI = new Set([
+    "http://localhost:3000",
+    "https://zemljopis.onrender.com",
+    "capacitor://localhost",
+    "ionic://localhost",
+    ...String(process.env.SOCKET_CORS_ORIGINS || process.env.CORS_ORIGINS || "")
+        .split(",")
+        .map(origin => origin.trim().replace(/\/$/, ""))
+        .filter(Boolean)
+]);
+
+function socketOriginJeDozvoljen(origin) {
+    if (!origin) return true; // Capacitor i server-to-server testovi nemaju Origin zaglavlje.
+    return DOZVOLJENI_SOCKET_ORIGINI.has(String(origin).trim().replace(/\/$/, ""));
+}
 
 const io = new Server(server, {
     cors: {
-        origin: "*", 
-        methods: ["GET", "POST"]
-    }
+        origin: (origin, callback) => {
+            if (socketOriginJeDozvoljen(origin)) {
+                return callback(null, true);
+            }
+            return callback(new Error("Nedozvoljeno poreklo Socket.IO veze."));
+        },
+        methods: ["GET", "POST"],
+        credentials: false
+    },
+    allowRequest: (req, callback) => callback(null, socketOriginJeDozvoljen(req.headers.origin))
+});
+
+app.disable('x-powered-by');
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    next();
 });
 
 const DOZVOLJENI_EFEKTI_RUNDE = new Set([
@@ -147,10 +179,26 @@ const IgracSchema = new mongoose.Schema({
     cloudRevizija: { type: Number, default: 0 },
     lokalnaMigracijaZavrsena: { type: Boolean, default: false },
     cloudAzuriranAt: { type: Date, default: null },
+    chatPravilaPrihvacenaAt: { type: Date, default: null },
+    chatUmutkanDo: { type: Date, default: null },
+    chatBanovanAt: { type: Date, default: null },
+    chatBanovanRazlog: { type: String, default: "" },
     poslednjaPrijava: { type: Date, default: Date.now }
 }, { minimize: false });
 
 const Igrac = mongoose.model('Igrac', IgracSchema);
+
+const ChatPrijavaSchema = new mongoose.Schema({
+    porukaId: { type: String, required: true, index: true },
+    prijavljeniPlayerId: { type: String, required: true, index: true },
+    prijavljeniNadimak: { type: String, required: true },
+    prijaviteljPlayerId: { type: String, required: true },
+    razlog: { type: String, enum: ['uvrede', 'mrznja', 'spam', 'drugo'], default: 'drugo' },
+    tekst: { type: String, required: true, maxlength: 180 },
+    prijavljenoAt: { type: Date, default: Date.now, index: true }
+}, { minimize: false });
+ChatPrijavaSchema.index({ porukaId: 1, prijaviteljPlayerId: 1 }, { unique: true });
+const ChatPrijava = mongoose.model('ChatPrijava', ChatPrijavaSchema);
 
 const KvartalniCiklusSchema = new mongoose.Schema({
     ciklus: { type: String, required: true, unique: true },
@@ -198,7 +246,24 @@ const DNEVNI_DOSTUPNA_SLOVA = Object.fromEntries(DNEVNI_KATEGORIJE.map(kategorij
 
 const MAX_PORUKA_ISTORIJA = 50;
 let istorijaChata = [];
+const originalniTekstoviChatPoruka = new Map();
 const onlineIgraci = {}; 
+const CHAT_MIN_RAZMAK_MS = 1200;
+const CHAT_MAX_PORUKA_U_MINUTU = 8;
+const CHAT_AUTOMATSKI_MUTE_BROJ_PRIJAVA = 3;
+const CHAT_AUTOMATSKI_MUTE_MS = 24 * 60 * 60 * 1000;
+const CHAT_PROZOR_PRIJAVA_MS = 24 * 60 * 60 * 1000;
+const CHAT_MODERATOR_PLAYER_IDS = new Set(
+    String(process.env.CHAT_MODERATOR_PLAYER_IDS || "")
+        .split(",")
+        .map(playerId => playerId.trim())
+        .filter(Boolean)
+);
+const CHAT_BLOKIRANI_IZRAZI = String(process.env.CHAT_BLOKIRANI_IZRAZI || "")
+    .split(",")
+    .map(izraz => izraz.normalize("NFKC").trim().toLocaleLowerCase("sr"))
+    .filter(izraz => izraz.length >= 2 && izraz.length <= 80);
+const chatOgranicenjaPoIgracu = new Map();
 
 // ==========================================
 // ZEMLJOPIS KVIZ — server je jedini izvor tačnih odgovora i poena.
@@ -3211,19 +3276,6 @@ const DOZVOLJENI_AVATARI = new Set([
     "sava", "zara", "vuk", "iris", "leo", "nova"
 ]);
 
-function escapeHTML(str) {
-    if (!str) return "";
-    return str.toString().replace(/[&<>'"]/g, 
-        tag => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            "'": '&#39;',
-            '"': '&quot;'
-        }[tag] || tag)
-    );
-}
-
 function ocistiNadimak(vrednost) {
     return String(vrednost || "")
         .normalize("NFKC")
@@ -4193,6 +4245,132 @@ async function ucitajPrijavljenogIgraca(socket) {
     const prijavljeniIgrac = onlineIgraci[socket.id];
     if (!prijavljeniIgrac) return null;
     return Igrac.findById(prijavljeniIgrac.bazaId);
+}
+
+function normalizujChatTekst(vrednost) {
+    if (typeof vrednost !== "string") return "";
+    // Ne obrađujemo arbitrarnu količinu teksta koju bi napadač poslao mimo UI ograničenja.
+    if (vrednost.length > 720) return vrednost.slice(0, 181);
+    return vrednost
+        .normalize("NFKC")
+        .replace(/[\u0000-\u001F\u007F]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function chatStatusZaIgraca(igrac, sada = Date.now()) {
+    const umutanDo = igrac && igrac.chatUmutkanDo
+        ? new Date(igrac.chatUmutkanDo).getTime()
+        : 0;
+    const banovan = Boolean(igrac && igrac.chatBanovanAt);
+    const umutan = !banovan && Number.isFinite(umutanDo) && umutanDo > sada;
+
+    return {
+        pravilaPrihvacena: Boolean(igrac && igrac.chatPravilaPrihvacenaAt),
+        banovan,
+        umutan,
+        umutanDo: umutan ? new Date(umutanDo).toISOString() : null,
+        poruka: banovan
+            ? "Pristup globalnom četu ti je trajno onemogućen."
+            : (umutan ? "Slanje poruka je privremeno onemogućeno zbog prijava." : ""),
+        moderator: Boolean(igrac && CHAT_MODERATOR_PLAYER_IDS.has(igrac.playerId))
+    };
+}
+
+function posaljiChatStatusIgracu(playerId, status) {
+    Object.values(onlineIgraci).forEach(onlineIgrac => {
+        if (onlineIgrac.playerId === playerId) {
+            io.to(onlineIgrac.id).emit('chatStatusAzuriran', status);
+        }
+    });
+}
+
+function proveriOgranicenjeChata(playerId, tekst, sada = Date.now()) {
+    const stanje = chatOgranicenjaPoIgracu.get(playerId) || {
+        vremena: [],
+        poslednjeVreme: 0,
+        poslednjiTekst: ""
+    };
+    stanje.vremena = stanje.vremena.filter(vreme => vreme > sada - 60 * 1000);
+
+    if (sada - stanje.poslednjeVreme < CHAT_MIN_RAZMAK_MS) {
+        return {
+            dozvoljeno: false,
+            kod: "CHAT_PREBRZO",
+            poruka: "Sačekaj trenutak pre sledeće poruke."
+        };
+    }
+    if (stanje.vremena.length >= CHAT_MAX_PORUKA_U_MINUTU) {
+        return {
+            dozvoljeno: false,
+            kod: "CHAT_OGRANICENJE",
+            poruka: "Dostignut je limit od 8 poruka u minutu."
+        };
+    }
+    if (
+        stanje.poslednjiTekst === tekst.toLocaleLowerCase("sr")
+        && sada - stanje.poslednjeVreme < 30 * 1000
+    ) {
+        return {
+            dozvoljeno: false,
+            kod: "CHAT_DUPLIKAT",
+            poruka: "Istu poruku ne možeš poslati više puta zaredom."
+        };
+    }
+
+    stanje.vremena.push(sada);
+    stanje.poslednjeVreme = sada;
+    stanje.poslednjiTekst = tekst.toLocaleLowerCase("sr");
+    chatOgranicenjaPoIgracu.set(playerId, stanje);
+    return { dozvoljeno: true };
+}
+
+function proveriChatSadrzaj(tekst) {
+    const normalizovan = tekst.normalize("NFKC").toLocaleLowerCase("sr");
+    if (/(?:https?:\/\/|www\.)/iu.test(normalizovan)) {
+        return { dozvoljeno: false, kod: "CHAT_LINK_NIJE_DOZVOLJEN", poruka: "Deljenje linkova nije dozvoljeno u globalnom četu." };
+    }
+    const filtriranaPoruka = ChatFilter.maskirajNeprimerenTekst(tekst, CHAT_BLOKIRANI_IZRAZI);
+    return { dozvoljeno: true, ...filtriranaPoruka };
+}
+
+function normalizujRazlogPrijave(vrednost) {
+    return ['uvrede', 'mrznja', 'spam', 'drugo'].includes(vrednost)
+        ? vrednost
+        : 'drugo';
+}
+
+function porukaChataJeValidna(tekst) {
+    return tekst.length >= 1 && tekst.length <= 180;
+}
+
+function chatPristupJeDozvoljen(status) {
+    return status.pravilaPrihvacena && !status.banovan && !status.umutan;
+}
+
+function chatGreskaZaStatus(status) {
+    if (!status.pravilaPrihvacena) {
+        return { kod: "CHAT_PRAVILA_NISU_PRIHVACENA", poruka: "Prvo prihvati pravila globalnog četa." };
+    }
+    if (status.banovan) return { kod: "CHAT_BANOVAN", poruka: status.poruka };
+    if (status.umutan) return { kod: "CHAT_UMUTKAN", poruka: status.poruka, umutanDo: status.umutanDo };
+    return null;
+}
+
+function jeChatModerator(igrac) {
+    return Boolean(igrac && CHAT_MODERATOR_PLAYER_IDS.has(igrac.playerId));
+}
+
+async function ucitajChatIgracaIliOdgovori(socket, callback) {
+    try {
+        const igrac = await ucitajPrijavljenogIgraca(socket);
+        if (igrac) return igrac;
+        callback({ uspeh: false, kod: "PROFIL_NIJE_PRIJAVLJEN", poruka: "Prvo sačekaj prijavu svog profila." });
+    } catch (error) {
+        console.error("Greška pri proveri chat profila:", error);
+        callback({ uspeh: false, kod: "GRESKA_SERVERA", poruka: "Globalni chat trenutno nije dostupan." });
+    }
+    return null;
 }
 
 function pronadjiOnlineIgracaPoPlayerId(playerId) {
@@ -6744,14 +6922,171 @@ io.on('connection', (socket) => {
         }
     }
 
-    // --- 7. CHAT LOGIKA ---
-    socket.on('traziIstorijuChata', () => socket.emit('istorijaChata', istorijaChata));
+    // --- 7. GLOBALNI CHAT ---
+    // Identitet, pravila i moderacija se proveravaju na serveru. Klijent nikada
+    // ne bira nadimak ni playerId poruke.
+    socket.on('traziChatStatus', async (...args) => {
+        const callback = vratiSocketCallback(...args);
+        const igrac = await ucitajChatIgracaIliOdgovori(socket, callback);
+        if (!igrac) return;
+        callback({ uspeh: true, status: chatStatusZaIgraca(igrac) });
+    });
 
-    socket.on('posaljiGlobalnuPoruku', (podaci) => {
-        const poruka = { id: socket.id, ime: escapeHTML(podaci.ime).substring(0, 20), tekst: escapeHTML(podaci.tekst).substring(0, 200) };
+    socket.on('prihvatiChatPravila', async (...args) => {
+        const callback = vratiSocketCallback(...args);
+        const igrac = await ucitajChatIgracaIliOdgovori(socket, callback);
+        if (!igrac) return;
+
+        try {
+            if (!igrac.chatPravilaPrihvacenaAt) {
+                igrac.chatPravilaPrihvacenaAt = new Date();
+                await igrac.save();
+            }
+            const status = chatStatusZaIgraca(igrac);
+            posaljiChatStatusIgracu(igrac.playerId, status);
+            callback({ uspeh: true, status });
+        } catch (error) {
+            console.error("Greška pri prihvatanju pravila četa:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA", poruka: "Pravila trenutno nije moguće sačuvati." });
+        }
+    });
+
+    socket.on('traziIstorijuChata', async (...args) => {
+        const callback = vratiSocketCallback(...args);
+        const igrac = await ucitajChatIgracaIliOdgovori(socket, callback);
+        if (!igrac) return;
+
+        const status = chatStatusZaIgraca(igrac);
+        const greska = chatGreskaZaStatus(status);
+        if (greska) return callback({ uspeh: false, ...greska, status });
+
+        socket.emit('istorijaChata', istorijaChata);
+        callback({ uspeh: true, status });
+    });
+
+    socket.on('posaljiGlobalnuPoruku', async (podaci = {}, callback = () => {}) => {
+        const igrac = await ucitajChatIgracaIliOdgovori(socket, callback);
+        if (!igrac) return;
+
+        const status = chatStatusZaIgraca(igrac);
+        const greskaStatusa = chatGreskaZaStatus(status);
+        if (greskaStatusa) return callback({ uspeh: false, ...greskaStatusa, status });
+
+        const tekst = normalizujChatTekst(podaci && podaci.tekst);
+        if (!porukaChataJeValidna(tekst)) {
+            return callback({ uspeh: false, kod: "CHAT_NEISPRAVNA_PORUKA", poruka: "Poruka mora imati od 1 do 180 znakova." });
+        }
+        const proveraSadrzaja = proveriChatSadrzaj(tekst);
+        if (!proveraSadrzaja.dozvoljeno) return callback({ uspeh: false, ...proveraSadrzaja });
+
+        const ogranicenje = proveriOgranicenjeChata(igrac.playerId, tekst);
+        if (!ogranicenje.dozvoljeno) return callback({ uspeh: false, ...ogranicenje });
+
+        const poruka = {
+            id: crypto.randomUUID(),
+            playerId: igrac.playerId,
+            ime: igrac.nadimak,
+            tekst: proveraSadrzaja.tekst,
+            poslatoAt: new Date().toISOString()
+        };
+        if (proveraSadrzaja.maskirano) originalniTekstoviChatPoruka.set(poruka.id, tekst);
         istorijaChata.push(poruka);
-        if (istorijaChata.length > MAX_PORUKA_ISTORIJA) istorijaChata.shift(); 
+        if (istorijaChata.length > MAX_PORUKA_ISTORIJA) {
+            const uklonjenaPoruka = istorijaChata.shift();
+            if (uklonjenaPoruka) originalniTekstoviChatPoruka.delete(uklonjenaPoruka.id);
+        }
         io.emit('novaGlobalnaPoruka', poruka);
+        callback({ uspeh: true, poruka });
+    });
+
+    socket.on('prijaviChatPoruku', async (podaci = {}, callback = () => {}) => {
+        const prijavitelj = await ucitajChatIgracaIliOdgovori(socket, callback);
+        if (!prijavitelj) return;
+
+        const porukaId = typeof podaci.porukaId === "string" ? podaci.porukaId.trim() : "";
+        const poruka = istorijaChata.find(stavka => stavka.id === porukaId);
+        if (!poruka) return callback({ uspeh: false, kod: "CHAT_PORUKA_NIJE_PRONADJENA", poruka: "Poruka više nije dostupna za prijavu." });
+        if (poruka.playerId === prijavitelj.playerId) {
+            return callback({ uspeh: false, kod: "CHAT_SOPSTVENA_PORUKA", poruka: "Ne možeš prijaviti svoju poruku." });
+        }
+
+        try {
+            await ChatPrijava.create({
+                porukaId: poruka.id,
+                prijavljeniPlayerId: poruka.playerId,
+                prijavljeniNadimak: poruka.ime,
+                prijaviteljPlayerId: prijavitelj.playerId,
+                razlog: normalizujRazlogPrijave(podaci.razlog),
+                tekst: originalniTekstoviChatPoruka.get(poruka.id) || poruka.tekst,
+                prijavljenoAt: new Date()
+            });
+
+            const od = new Date(Date.now() - CHAT_PROZOR_PRIJAVA_MS);
+            const prijavitelji = await ChatPrijava.distinct('prijaviteljPlayerId', {
+                prijavljeniPlayerId: poruka.playerId,
+                prijavljenoAt: { $gte: od }
+            });
+            const brojPrijava = prijavitelji.length;
+            let automatskaMera = false;
+            if (brojPrijava >= CHAT_AUTOMATSKI_MUTE_BROJ_PRIJAVA) {
+                const prijavljeniIgrac = await Igrac.findOne({ playerId: poruka.playerId });
+                if (prijavljeniIgrac && !prijavljeniIgrac.chatBanovanAt) {
+                    const noviMuteDo = new Date(Date.now() + CHAT_AUTOMATSKI_MUTE_MS);
+                    const stariMuteDo = prijavljeniIgrac.chatUmutkanDo
+                        ? new Date(prijavljeniIgrac.chatUmutkanDo).getTime()
+                        : 0;
+                    if (!Number.isFinite(stariMuteDo) || stariMuteDo < noviMuteDo.getTime()) {
+                        prijavljeniIgrac.chatUmutkanDo = noviMuteDo;
+                        await prijavljeniIgrac.save();
+                        posaljiChatStatusIgracu(
+                            prijavljeniIgrac.playerId,
+                            chatStatusZaIgraca(prijavljeniIgrac)
+                        );
+                        automatskaMera = true;
+                    }
+                }
+            }
+            callback({ uspeh: true, automatskaMera });
+        } catch (error) {
+            if (error && error.code === 11000) {
+                return callback({ uspeh: false, kod: "CHAT_PRIJAVA_VEC_POSLATA", poruka: "Ovu poruku si već prijavio/la." });
+            }
+            console.error("Greška pri prijavi chat poruke:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA", poruka: "Prijavu trenutno nije moguće poslati." });
+        }
+    });
+
+    socket.on('moderirajChatIgraca', async (podaci = {}, callback = () => {}) => {
+        const moderator = await ucitajChatIgracaIliOdgovori(socket, callback);
+        if (!moderator) return;
+        if (!jeChatModerator(moderator)) {
+            return callback({ uspeh: false, kod: "CHAT_NEMA_OVLASCENJE", poruka: "Nemaš ovlašćenje za moderaciju četa." });
+        }
+
+        const playerId = typeof podaci.playerId === "string" ? podaci.playerId.trim() : "";
+        const akcija = typeof podaci.akcija === "string" ? podaci.akcija : "";
+        if (!playerId || playerId === moderator.playerId || !['mute24h', 'ban'].includes(akcija)) {
+            return callback({ uspeh: false, kod: "CHAT_NEISPRAVNA_MODERACIJA" });
+        }
+
+        try {
+            const cilj = await Igrac.findOne({ playerId });
+            if (!cilj) return callback({ uspeh: false, kod: "CHAT_IGRAC_NIJE_PRONADJEN" });
+
+            if (akcija === 'ban') {
+                cilj.chatBanovanAt = new Date();
+                cilj.chatBanovanRazlog = "Odluka moderatora zbog kršenja pravila četa.";
+            } else {
+                cilj.chatUmutkanDo = new Date(Date.now() + CHAT_AUTOMATSKI_MUTE_MS);
+            }
+            await cilj.save();
+            const status = chatStatusZaIgraca(cilj);
+            posaljiChatStatusIgracu(cilj.playerId, status);
+            callback({ uspeh: true, status });
+        } catch (error) {
+            console.error("Greška pri moderaciji četa:", error);
+            callback({ uspeh: false, kod: "GRESKA_SERVERA", poruka: "Moderaciju trenutno nije moguće izvršiti." });
+        }
     });
 
     // --- 8. OFLAJN PRIJATELJI I ZAHTEVI ---

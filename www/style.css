@@ -12,6 +12,29 @@
     padding-inline: 12px;
 }
 
+/* Dodatni prostor pri dnu ostaje dostupan, dok kartica ide blago ka gornjoj bezbednoj zoni. */
+#chat-rules-modal .chat-rules-content {
+    transform: translateY(-8px) scale(0.8);
+}
+
+#chat-rules-modal.active .chat-rules-content {
+    transform: translateY(-8px) scale(1);
+}
+
+#chat-rules-modal .chat-rules-content h2 {
+    font-size: 1.42rem;
+    line-height: 1.12;
+    margin-bottom: 0.85rem;
+}
+
+/* Na nižim ekranima kompaktnija dugmad uklanjaju potrebu za dodatnim skrolovanjem. */
+@media (max-height: 680px) {
+    #chat-rules-modal .chat-rules-content > div:last-child .menu-btn {
+        padding: 0.68rem !important;
+        font-size: 0.9rem;
+    }
+}
+
 .modal-content.chat-rules-content .chat-rules-copy,
 .modal-content.chat-rules-content .chat-rules-copy p,
 .modal-content.chat-rules-content .chat-rules-list {

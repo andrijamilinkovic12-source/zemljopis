@@ -288,6 +288,7 @@ const UIManager = {
 
             const ime = document.createElement('strong');
             ime.className = 'round-winner-name';
+            ime.setAttribute('data-zadrzi-izvorno-pismo', 'true');
             ime.textContent = pobednik.ime || 'Igrač';
 
             const poeni = document.createElement('span');
@@ -434,6 +435,7 @@ const UIManager = {
 
             const ime = document.createElement('strong');
             ime.className = 'final-ranking-name';
+            ime.setAttribute('data-zadrzi-izvorno-pismo', 'true');
             ime.textContent = igrac.ime || 'Igrač';
 
             const statistika = document.createElement('div');
@@ -716,7 +718,12 @@ const UIManager = {
             const mojeIme = typeof PodesavanjaManager !== 'undefined'
                 ? PodesavanjaManager.postavke.nadimak || 'Gost'
                 : 'Gost';
-            document.getElementById('my-player-name').innerText = `👤 Ti (${mojeIme})`;
+            const mojeImeEl = document.getElementById('my-player-name');
+            mojeImeEl.replaceChildren(document.createTextNode('👤 Ti ('));
+            const nadimak = document.createElement('span');
+            nadimak.setAttribute('data-zadrzi-izvorno-pismo', 'true');
+            nadimak.textContent = mojeIme;
+            mojeImeEl.append(nadimak, document.createTextNode(')'));
             document.getElementById('my-player-score').innerText = trenutniSkor;
         }
         
@@ -730,7 +737,7 @@ const UIManager = {
                 podaciProtivnika.forEach(protivnik => {
                     opponentsContainer.innerHTML += `
                         <div class="player-stat opponent-player">
-                            <span class="player-name">🌍 ${protivnik.ime}</span>
+                            <span class="player-name" data-zadrzi-izvorno-pismo="true">🌍 ${protivnik.ime}</span>
                             <span class="player-score">${protivnik.poeni}</span>
                         </div>
                     `;

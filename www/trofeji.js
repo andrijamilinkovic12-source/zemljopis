@@ -18,9 +18,9 @@ const TrofejiManager = {
         { id: 't6', tip: 'pojmovi', naziv: 'Enciklopedija', opis: 'Pronađi ukupno 2000 tačnih pojmova.', uslov: 2000, napredak: 0, preuzeto: false, nagrada: 1500 },
 
         // KATEGORIJA: Multiplayer pobede
-        { id: 't7', tip: 'pobede', naziv: 'Šampion', opis: 'Osvoji 1. mesto u multiplayer meču.', uslov: 1, napredak: 0, preuzeto: false, nagrada: 300 },
-        { id: 't8', tip: 'pobede', naziv: 'Dominacija', opis: 'Osvoji 1. mesto u 10 multiplayer mečeva.', uslov: 10, napredak: 0, preuzeto: false, nagrada: 1000 },
-        { id: 't9', tip: 'pobede', naziv: 'Nepobediv', opis: 'Osvoji 1. mesto u 50 multiplayer mečeva.', uslov: 50, napredak: 0, preuzeto: false, nagrada: 3000 },
+        { id: 't7', tip: 'pobede', naziv: 'Šampion', opis: 'Osvoji 1. mesto u meču za više igrača.', uslov: 1, napredak: 0, preuzeto: false, nagrada: 300 },
+        { id: 't8', tip: 'pobede', naziv: 'Dominacija', opis: 'Osvoji 1. mesto u 10 mečeva za više igrača.', uslov: 10, napredak: 0, preuzeto: false, nagrada: 1000 },
+        { id: 't9', tip: 'pobede', naziv: 'Nepobediv', opis: 'Osvoji 1. mesto u 50 mečeva za više igrača.', uslov: 50, napredak: 0, preuzeto: false, nagrada: 3000 },
 
         // KATEGORIJA: Specijalna dostignuća
         { id: 't10', tip: 'perfektno', naziv: 'Perfekcionista', opis: 'Pronađi svih 7 pojmova u jednoj rundi.', uslov: 1, napredak: 0, preuzeto: false, nagrada: 500 },
@@ -34,11 +34,15 @@ const TrofejiManager = {
         const sacuvano = localStorage.getItem('zemljopis_trofeji');
         if (sacuvano) {
             const parsirano = JSON.parse(sacuvano);
+            if (!Array.isArray(parsirano)) return;
+
             parsirano.forEach(sacuvanaStavka => {
-                let orgStavka = this.podaci.find(s => s.id === sacuvanaStavka.id);
-                if (orgStavka) {
-                    Object.assign(orgStavka, sacuvanaStavka);
-                }
+                const orgStavka = this.podaci.find(s => s.id === sacuvanaStavka.id);
+                if (!orgStavka) return;
+
+                // Napredak je korisnički podatak; naziv, opis i nagrada uvek dolaze iz aktuelne verzije igre.
+                if (Number.isFinite(sacuvanaStavka.napredak)) orgStavka.napredak = sacuvanaStavka.napredak;
+                if (typeof sacuvanaStavka.preuzeto === 'boolean') orgStavka.preuzeto = sacuvanaStavka.preuzeto;
             });
         }
     },

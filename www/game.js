@@ -229,7 +229,7 @@ const Game = {
                 if (podaci.prihvaceno && typeof OnlineIgraciManager !== 'undefined') {
                     OnlineIgraciManager.uspesnoDodatPrijatelj(podaci);
                 } else if (!podaci.prihvaceno) {
-                    UIManager.prikaziObavestenje("Odbijeno", `<b style="color:#ff416c;">${podaci.imePrijatelja}</b> je odbio/la tvoj zahtev za prijateljstvo.`, null, "U redu");
+                    UIManager.prikaziObavestenje("Odbijeno", `<b data-zadrzi-izvorno-pismo="true" style="color:#ff416c;">${podaci.imePrijatelja}</b> je odbio/la tvoj zahtev za prijateljstvo.`, null, "U redu");
                 }
             });
 
@@ -243,7 +243,7 @@ const Game = {
                 const imePosiljaoca = typeof zahtev === "string" ? zahtev : zahtev.ime;
                 UIManager.prikaziObavestenje(
                     "Novi zahtev!", 
-                    `Igrač <b style="color:#f5af19;">${imePosiljaoca}</b> ti je poslao zahtev za prijateljstvo!`, 
+                    `Igrač <b data-zadrzi-izvorno-pismo="true" style="color:#f5af19;">${imePosiljaoca}</b> ti je poslao zahtev za prijateljstvo!`,
                     () => {
                         if (typeof SobaPrijateljaManager !== 'undefined') SobaPrijateljaManager.otvoriEkran();
                     }, 
@@ -272,7 +272,7 @@ const Game = {
                 if (modal) modal.classList.remove('active');
                 UIManager.prikaziObavestenje(
                     "Poziv je otkazan",
-                    `Host <b style="color:#f5af19;">${podaci.ime || "sobe"}</b> je zatvorio sobu pre početka meča.`,
+                    `Host <b data-zadrzi-izvorno-pismo="true" style="color:#f5af19;">${podaci.ime || "sobe"}</b> je zatvorio sobu pre početka meča.`,
                     null,
                     "U redu"
                 );
@@ -362,19 +362,19 @@ const Game = {
                 if (podaci && podaci._dogadjajSobe) return;
                 if (podaci.uIgri && podaci.ime) {
                     let razlogTekst = "je napustio meč.";
-                    if (podaci.razlog === 'varanje' || podaci.razlog === 'anti_cit') razlogTekst = "je izbačen zbog izlaska iz aplikacije (Anti-Cheat).";
+                    if (podaci.razlog === 'varanje' || podaci.razlog === 'anti_cit') razlogTekst = "je izbačen zbog izlaska iz aplikacije (zaštita od varanja).";
                     else if (podaci.razlog === 'diskonekt') razlogTekst = "je izgubio konekciju sa serverom.";
                     
                     UIManager.prikaziObavestenje(
                         "Igrač izbačen/napustio",
-                        `<b style="color:#ff416c;">${podaci.ime}</b> ${razlogTekst}<br><br>U meču je ostalo igrača: <b style="color:#f5af19;">${podaci.ostaloIgraca}</b>.`,
+                        `<b data-zadrzi-izvorno-pismo="true" style="color:#ff416c;">${podaci.ime}</b> ${razlogTekst}<br><br>U meču je ostalo igrača: <b style="color:#f5af19;">${podaci.ostaloIgraca}</b>.`,
                         null,
                         "Nastavi igru"
                     );
                 } else if (podaci.ime && this.trenutnaSoba === podaci.kodSobe) {
                     const broj = `${podaci.ostaloIgraca}/${podaci.max || this.brojIgracaUSobi}`;
                     const naslov = podaci.javna ? "Igrač je odustao" : "Igrač je napustio sobu";
-                    const poruka = `<b style="color:#f5af19;">${podaci.ime}</b> je izašao pre početka meča.<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.`;
+                    const poruka = `<b data-zadrzi-izvorno-pismo="true" style="color:#f5af19;">${podaci.ime}</b> je izašao pre početka meča.<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.`;
                     UIManager.prikaziObavestenje(
                         naslov,
                         podaci.javna
@@ -775,7 +775,7 @@ const Game = {
 
             UIManager.prikaziObavestenje(
                 soba.javna ? "Protivnik se povezao" : "Igrač se povezao",
-                `<b style="color:#38ef7d;">${dogadjaj.ime}</b> je ušao u sobu.<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.`,
+                `<b data-zadrzi-izvorno-pismo="true" style="color:#38ef7d;">${dogadjaj.ime}</b> je ušao u sobu.<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.`,
                 () => {
                     if (soba.javna) this.prikaziCekanjeJavneSobe(soba.brojIgraca, soba.max);
                 },
@@ -790,7 +790,7 @@ const Game = {
 
                 UIManager.prikaziObavestenje(
                     dogadjaj.razlogNaslov || "Igrač je napustio meč",
-                    `<b style="color:#ff416c;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "je napustio meč."}<br><br>U meču je ostalo igrača: <b style="color:#f5af19;">${soba.brojIgraca}</b>.`,
+                    `<b data-zadrzi-izvorno-pismo="true" style="color:#ff416c;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "je napustio meč."}<br><br>U meču je ostalo igrača: <b style="color:#f5af19;">${soba.brojIgraca}</b>.`,
                     null,
                     "Nastavi igru"
                 );
@@ -800,7 +800,7 @@ const Game = {
             if (soba.status === "zavrsena") {
                 UIManager.prikaziObavestenje(
                     dogadjaj.razlogNaslov || "Igrač je završio meč",
-                    `<b style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "je završio meč."}<br><br>Konačni rezultati ostaju sačuvani.`,
+                    `<b data-zadrzi-izvorno-pismo="true" style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "je završio meč."}<br><br>Konačni rezultati ostaju sačuvani.`,
                     null,
                     "U redu"
                 );
@@ -811,7 +811,7 @@ const Game = {
             const mozePokretanje = sobaSpremna && this.jeHost;
             UIManager.prikaziObavestenje(
                 soba.javna ? "Igrač je odustao" : "Igrač je napustio sobu",
-                `<b style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "je napustio sobu."}<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.${soba.javna ? "<br><br>Čekamo novog protivnika." : ""}${sobaSpremna ? `<br><br>${this.jeHost ? "Soba je sada spremna za početak." : "Soba je sada spremna. Čekamo hosta da pokrene meč."}` : ""}`,
+                `<b data-zadrzi-izvorno-pismo="true" style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "je napustio sobu."}<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.${soba.javna ? "<br><br>Čekamo novog protivnika." : ""}${sobaSpremna ? `<br><br>${this.jeHost ? "Soba je sada spremna za početak." : "Soba je sada spremna. Čekamo hosta da pokrene meč."}` : ""}`,
                 () => {
                     if (mozePokretanje) {
                         this.socket.emit('pokreniIgru', this.trenutnaSoba);
@@ -845,7 +845,7 @@ const Game = {
             this.jeHost = false;
             UIManager.prikaziObavestenje(
                 "Soba je zatvorena",
-                `Host <b style="color:#f5af19;">${dogadjaj.ime || "sobe"}</b> je napustio sobu pre početka meča.<br><br>Soba više nije aktivna.`,
+                `Host <b data-zadrzi-izvorno-pismo="true" style="color:#f5af19;">${dogadjaj.ime || "sobe"}</b> je napustio sobu pre početka meča.<br><br>Soba više nije aktivna.`,
                 () => {
                     this.trenutnaSoba = null;
                     this.jeHost = false;
@@ -867,7 +867,7 @@ const Game = {
 
             UIManager.prikaziObavestenje(
                 "🏆 AUTOMATSKA POBEDA 🏆",
-                `${dogadjaj.napustioIme ? `<b style='color:#ff416c'>${dogadjaj.napustioIme}</b> ${poslednjiIzlazak}<br><br>` : ""}Svi protivnici su napustili meč ili su izbačeni.<br><br><b style='color:#38ef7d'>Ostao si jedini igrač i osvojio 1. mesto!</b>`,
+                `${dogadjaj.napustioIme ? `<b data-zadrzi-izvorno-pismo="true" style='color:#ff416c'>${dogadjaj.napustioIme}</b> ${poslednjiIzlazak}<br><br>` : ""}Svi protivnici su napustili meč ili su izbačeni.<br><br><b style='color:#38ef7d'>Ostao si jedini igrač i osvojio 1. mesto!</b>`,
                 () => {
                     this.trenutnaSoba = null;
                     this.jeHost = false;
@@ -883,7 +883,7 @@ const Game = {
             const mozePokretanje = sobaSpremna && this.jeHost;
             UIManager.prikaziObavestenje(
                 "Poziv odbijen",
-                `<b style="color:#f5af19;">${dogadjaj.ime}</b> je odbio poziv za sobu.<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.${sobaSpremna ? `<br><br>${this.jeHost ? "Soba je i dalje spremna za početak." : "Soba je i dalje spremna. Čekamo hosta da pokrene meč."}` : "<br><br>Čekamo ostale pozvane igrače."}`,
+                `<b data-zadrzi-izvorno-pismo="true" style="color:#f5af19;">${dogadjaj.ime}</b> je odbio poziv za sobu.<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.${sobaSpremna ? `<br><br>${this.jeHost ? "Soba je i dalje spremna za početak." : "Soba je i dalje spremna. Čekamo hosta da pokrene meč."}` : "<br><br>Čekamo ostale pozvane igrače."}`,
                 mozePokretanje ? () => this.socket.emit('pokreniIgru', this.trenutnaSoba) : null,
                 mozePokretanje ? "Započni igru" : "U redu"
             );
@@ -894,7 +894,7 @@ const Game = {
             const mozePokretanje = sobaSpremna && this.jeHost;
             UIManager.prikaziObavestenje(
                 "Pozvani igrač nije dostupan",
-                `<b style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "nije više na mreži."}<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.${sobaSpremna ? `<br><br>${this.jeHost ? "Soba je i dalje spremna za početak." : "Soba je i dalje spremna. Čekamo hosta da pokrene meč."}` : "<br><br>Čekamo ostale pozvane igrače."}`,
+                `<b data-zadrzi-izvorno-pismo="true" style="color:#f5af19;">${dogadjaj.ime}</b> ${dogadjaj.razlogTekst || "nije više na mreži."}<br><br>Igrača u sobi: <b style="color:#f5af19;">${broj}</b>.${sobaSpremna ? `<br><br>${this.jeHost ? "Soba je i dalje spremna za početak." : "Soba je i dalje spremna. Čekamo hosta da pokrene meč."}` : "<br><br>Čekamo ostale pozvane igrače."}`,
                 mozePokretanje ? () => this.socket.emit('pokreniIgru', this.trenutnaSoba) : null,
                 mozePokretanje ? "Započni igru" : "U redu"
             );
@@ -1690,7 +1690,7 @@ const Game = {
                 
                 tabelaHtml += `
                     <div style="background: ${bgBoja}; color: ${bojaTeksta}; font-weight: ${fw}; border: ${border}; font-size: min(0.75rem, 1.5vh); padding: min(0.3rem, 0.6vh) min(0.5rem, 1vw); border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${idx + 1}. ${igrac.ime}</span>
+                        <span data-zadrzi-izvorno-pismo="true" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${idx + 1}. ${igrac.ime}</span>
                         <span>${igrac.poeni}</span>
                     </div>`;
             });
@@ -1769,9 +1769,9 @@ const Game = {
 
             let cardHtml = `
                 <div class="summary-card">
-                    <h3>${igrac.ime}</h3>
+                    <h3 data-zadrzi-izvorno-pismo="true">${igrac.ime}</h3>
                     <p style="text-align: center; color: #38ef7d; font-weight: 800; font-size: min(0.9rem, 1.8vh); margin-bottom: min(0.3rem, 0.6vh); padding-bottom: min(0.3rem, 0.6vh); border-bottom: 1px solid rgba(56,239,125,0.2);">
-                        ${this.trenutniMod === 'solo' ? `Tačno u rundi: ${tacnihOveRunde}/7` : `Osvojeno: +${igrac.ukupnoPoena} pts`}
+                        ${this.trenutniMod === 'solo' ? `Tačno u rundi: ${tacnihOveRunde}/7` : `Osvojeno: +${igrac.ukupnoPoena} poena`}
                     </p>
                     <div style="flex: 1; overflow-y: auto; scrollbar-width: none;">
                         ${listHtml}
@@ -1930,7 +1930,7 @@ const Game = {
         } else {
             UIManager.prikaziObavestenje(
                 "Kraj treninga!", 
-                `Svaka čast, <b>${mojNadimak}</b>! Završio/la si svih 6 rundi.<br><br>Tačni odgovori: <b style="color:#38ef7d; font-size:1.2rem;">${this.ukupnoTacnihOdgovora} / 42</b>`,
+                `Svaka čast, <b data-zadrzi-izvorno-pismo="true">${mojNadimak}</b>! Završio/la si svih 6 rundi.<br><br>Tačni odgovori: <b style="color:#38ef7d; font-size:1.2rem;">${this.ukupnoTacnihOdgovora} / 42</b>`,
                 () => this.povratakUMeni(),
                 "Završi" 
             );
@@ -2205,7 +2205,7 @@ const Game = {
                 this.izbaciZbogVremena();
             } else {
                 UIManager.prikaziObavestenje(
-                    "Anti-Cheat upozorenje",
+            "Upozorenje zaštite od varanja",
                     "Izlazak iz aplikacije tokom runde nije dozvoljen. Ako se ponovi, bićeš izbačen iz meča i ostali igrači će dobiti obaveštenje.",
                     null,
                     "Razumem"
@@ -2225,7 +2225,7 @@ const Game = {
         this.jeHost = false;
 
         UIManager.prikaziObavestenje(
-            "Anti-Cheat izbacivanje",
+            "Izbacivanje zbog varanja",
             "Izbačen si iz meča jer si napustio aplikaciju tokom runde. Ostali igrači su obavešteni u realnom vremenu.",
             () => {
                 this.povratakUMeni();
@@ -2239,11 +2239,11 @@ const Game = {
         if (!statusEl) return;
         
         if (this.kazneniPoeni === 0) {
-            statusEl.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Anti-Cheat: <span style="color:#38ef7d;">u igri</span>';
+            statusEl.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Zaštita od varanja: <span style="color:#38ef7d;">u igri</span>';
         } else if (this.kazneniPoeni === 1) {
-            statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Anti-Cheat: <span style="color:#f5af19;">upozorenje</span>';
+            statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Zaštita od varanja: <span style="color:#f5af19;">upozorenje</span>';
         } else {
-            statusEl.innerHTML = '<i class="fa-solid fa-ban"></i> Anti-Cheat: <span style="color:#ff416c;">izbačen</span>';
+            statusEl.innerHTML = '<i class="fa-solid fa-ban"></i> Zaštita od varanja: <span style="color:#ff416c;">izbačen</span>';
         }
     }
 };

@@ -42,7 +42,7 @@
             </div>
             <div class="intro-quote splash-quote" aria-live="polite">
                 <p data-intro-quote-text>„Zemlja je ono što nam je svima zajedničko.”</p>
-                <span data-intro-quote-author>Wendell Berry</span>
+                <span data-intro-quote-author data-zadrzi-izvorno-pismo="true">Wendell Berry</span>
             </div>
             <div class="login-actions splash-actions">
                 <button type="button" class="profile-setup-google login-google-action" id="splash-login-google" onclick="GoogleAuthManager.prijaviPostojeciProfil()">
@@ -215,7 +215,7 @@
         </div>
 
         <div class="top-header-menu">
-            <button class="top-circle-btn global-chat-btn" onclick="GlobalChatManager.proveriIPrikazi()" title="Global Chat" aria-label="Global Chat">
+            <button class="top-circle-btn global-chat-btn" onclick="GlobalChatManager.proveriIPrikazi()" title="GLOBAL CHAT" aria-label="GLOBAL CHAT" data-pismo-naziv-latinica="GLOBAL CHAT" data-pismo-naziv-cirilica="ГЛОБАЛНИ ЧЕТ">
                 <img class="top-menu-icon global-chat-icon" src="assets/global-chat-clay-3d-navy-v3.png" alt="" aria-hidden="true" decoding="async">
             </button>
 
@@ -570,7 +570,7 @@
                         <span class="profile-choice-icon"><i class="fa-brands fa-google"></i></span>
                         <span class="profile-choice-copy">
                             <b>Google nalog</b>
-                            <small>Prijava i cloud profil</small>
+                            <small>Prijava i profil u oblaku</small>
                         </span>
                         <span class="profile-choice-status soon" id="profil-google-status">POVEŽI</span>
                     </button>
@@ -708,7 +708,7 @@
             <div class="input-group"><label data-category-label="predmet" data-category-name="Predmet">Predmet</label><input type="text" class="game-input" data-kategorija="predmet" placeholder="Unesi predmet..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
             
             <div id="anti-cheat-status" style="text-align: center; margin-top: 0.8rem; padding: 0.5rem; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; color: #a0aec0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: none;">
-                <i class="fa-solid fa-shield-halved"></i> Anti-Cheat: <span style="color:#38ef7d;">u igri</span>
+                <i class="fa-solid fa-shield-halved"></i> Zaštita od varanja: <span style="color:#38ef7d;">u igri</span>
             </div>
 
             <div class="stats-panel" id="live-stats-panel">
@@ -884,7 +884,7 @@
         
         <div class="page-heading">
             <img class="page-title-icon global-chat-title-icon" src="assets/global-chat-clay-3d-navy-v3.png" alt="" aria-hidden="true" decoding="async">
-            <h2 class="page-title global-chat-title" data-zadrzi-latinicu="true">GLOBAL CHAT</h2>
+            <h2 class="page-title global-chat-title" data-pismo-tekst-latinica="GLOBAL CHAT" data-pismo-tekst-cirilica="ГЛОБАЛНИ ЧЕТ">GLOBAL CHAT</h2>
         </div>
         
         <div class="global-chat-content">
@@ -912,7 +912,7 @@
         <div class="modal-content chat-rules-content" style="border-color: #ff416c; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255, 65, 108, 0.2);">
             <h2 style="color: #ff416c;"><i class="fa-solid fa-triangle-exclamation"></i> PRAVILA ČETA</h2>
             <div class="chat-rules-copy">
-                <p>Dobrodošao/la u Globalni Chat. Razgovaraj pristojno i bezbedno.</p>
+                <p>Dobrodošao/la u globalni čet. Razgovaraj pristojno i bezbedno.</p>
                 <p>Zabranjeno je:</p>
                 <ul class="chat-rules-list">
                     <li>vređanje, ponižavanje i govor mržnje prema nekome zbog nacionalnosti, etničke pripadnosti, rase ili boje kože, vere ili uverenja, jezika, porekla, pola, rodnog identiteta, seksualne orijentacije, invaliditeta ili bilo koje druge lične osobine;</li>
@@ -933,7 +933,7 @@
         <div class="modal-content" style="border-color: #38bdf8; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(56, 189, 248, 0.2);">
             <h2 style="color: #38bdf8;"><i class="fa-solid fa-user-plus"></i> NOVI ZAHTEV</h2>
             <p style="text-align: center; font-size: 1rem; margin-bottom: 1.5rem; color: #cbd5e0;">
-                Igrač <b id="friend-request-name" style="color: #fff;">Neko</b> želi da postane tvoj prijatelj!
+                Igrač <b id="friend-request-name" data-zadrzi-izvorno-pismo="true" style="color: #fff;">Neko</b> želi da postane tvoj prijatelj!
             </p>
             <div style="display: flex; gap: 0.5rem;">
                 <button id="btn-odbij-zahtev" class="menu-btn btn-secondary" style="flex: 1; margin: 0; padding: 0.8rem;">Odbij</button>
@@ -946,7 +946,7 @@
         <div class="modal-content" style="border-color: #f5af19; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(245, 175, 25, 0.2);">
             <h2 style="color: #f5af19;"><i class="fa-solid fa-gamepad"></i> POZIV ZA IGRU</h2>
             <p style="text-align: center; font-size: 1rem; margin-bottom: 1.5rem; color: #cbd5e0;">
-                <b id="game-invite-name" style="color: #fff;">Neko</b> te poziva u svoju sobu!
+                <b id="game-invite-name" data-zadrzi-izvorno-pismo="true" style="color: #fff;">Neko</b> te poziva u svoju sobu!
             </p>
             <div style="display: flex; gap: 0.5rem;">
                 <button id="btn-odbij-igru" class="menu-btn btn-secondary" style="flex: 1; margin: 0; padding: 0.8rem;" onclick="Game.odbijPozivUSobu()">Odbij</button>
@@ -1117,7 +1117,7 @@
         <div class="global-chat-intro-stage" role="status" aria-live="polite">
             <span class="global-chat-intro-kicker">POVEŽI SE SA SVIMA</span>
             <div class="global-chat-intro-title">
-                <span class="global-chat-intro-word" data-zadrzi-latinicu="true">GLOBAL CHAT</span>
+                <span class="global-chat-intro-word" data-pismo-tekst-latinica="GLOBAL CHAT" data-pismo-tekst-cirilica="ГЛОБАЛНИ ЧЕТ">GLOBAL CHAT</span>
                 <span class="global-chat-intro-globe" aria-hidden="true"><i class="fa-solid fa-globe"></i></span>
             </div>
             <div class="global-chat-intro-hero" aria-hidden="true">
@@ -1532,7 +1532,7 @@
             } else {
                 let html = '';
                 onlineFriends.forEach(p => {
-                    html += `<div style="padding:5px; border-bottom:1px solid rgba(255,255,255,0.1); color:#fff; cursor:pointer; display:flex; align-items:center; gap:5px;" onclick="izaberiPrijateljaZaSobu('${p.ime}')"><i class="fa-solid fa-user-ninja" style="color:#38ef7d;"></i> ${p.ime}</div>`;
+                    html += `<div data-zadrzi-izvorno-pismo="true" style="padding:5px; border-bottom:1px solid rgba(255,255,255,0.1); color:#fff; cursor:pointer; display:flex; align-items:center; gap:5px;" onclick="izaberiPrijateljaZaSobu('${p.ime}')"><i class="fa-solid fa-user-ninja" style="color:#38ef7d;"></i> ${p.ime}</div>`;
                 });
                 dropdown.innerHTML = html;
             }

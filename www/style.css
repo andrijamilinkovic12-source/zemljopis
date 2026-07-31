@@ -17073,6 +17073,10 @@ body[data-tema] #main-menu .circle-overlay.active {
     color: var(--kviz-clay-gold);
 }
 
+body[data-pismo="cirilica"] #kviz-kategorija::before {
+    content: 'ОБЛАСТ:';
+}
+
 #kviz-pitanje {
     display: block;
     margin: 0 0 0.42rem;
@@ -17092,6 +17096,10 @@ body[data-tema] #main-menu .circle-overlay.active {
     font-size: 0.65em;
     font-weight: 800;
     letter-spacing: 0.09em;
+}
+
+body[data-pismo="cirilica"] #kviz-pitanje::before {
+    content: 'ПИТАЊЕ:';
 }
 
 .kviz-hero-icon {
@@ -17911,6 +17919,10 @@ body[data-tema] #main-menu .circle-overlay.active {
     font-weight: 900;
 }
 
+body[data-pismo="cirilica"] .kviz-round-status strong::after {
+    content: 'с';
+}
+
 .kviz-player {
     min-height: 62px;
     padding: 0.48rem 0.52rem;
@@ -18516,6 +18528,10 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     letter-spacing: 0.07em;
 }
 
+body[data-pismo="cirilica"] .kviz-break-question::before {
+    content: 'ПИТАЊЕ:';
+}
+
 .kviz-break-progress {
     width: min(100%, 300px);
     height: 5px;
@@ -18847,6 +18863,10 @@ body.keyboard-open #zemljopis-kviz-screen .kviz-round-submit {
     color: #f4cf8b;
     font-size: 0.68em;
     letter-spacing: 0.13em;
+}
+
+body[data-pismo="cirilica"] .kviz-round-break.kviz-podpitanje-pauza .kviz-break-question::before {
+    content: 'ЗАДАТАК';
 }
 
 /* Autorovo display pravilo za karticu ne sme da pregazi semantički hidden atribut. */

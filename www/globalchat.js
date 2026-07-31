@@ -51,7 +51,7 @@ const GlobalChatManager = {
             this.status = status || null;
             this.azurirajStanjePisanja();
             if (status && (status.banovan || status.umutan) && this.jeChatOtvoren()) {
-                UIManager.prikaziObavestenje('Globalni chat', status.poruka || 'Slanje poruka je trenutno onemogućeno.', null, 'U redu');
+                UIManager.prikaziObavestenje('Globalni čet', status.poruka || 'Slanje poruka je trenutno onemogućeno.', null, 'U redu');
             }
         });
     },
@@ -64,14 +64,14 @@ const GlobalChatManager = {
 
         Game.socket.timeout(8000).emit('traziChatStatus', (greska, odgovor) => {
             if (greska || !odgovor || !odgovor.uspeh) {
-                UIManager.prikaziObavestenje('Globalni chat', odgovor?.poruka || 'Sačekaj da se tvoj profil prijavi, pa pokušaj ponovo.', null, 'U redu');
+                UIManager.prikaziObavestenje('Globalni čet', odgovor?.poruka || 'Sačekaj da se tvoj profil prijavi, pa pokušaj ponovo.', null, 'U redu');
                 return;
             }
 
             this.status = odgovor.status || null;
             this.azurirajStanjePisanja();
             if (this.status?.banovan || this.status?.umutan) {
-                UIManager.prikaziObavestenje('Globalni chat', this.status.poruka || 'Slanje poruka je trenutno onemogućeno.', null, 'U redu');
+                UIManager.prikaziObavestenje('Globalni čet', this.status.poruka || 'Slanje poruka je trenutno onemogućeno.', null, 'U redu');
                 return;
             }
             if (this.status?.pravilaPrihvacena) {
@@ -87,7 +87,7 @@ const GlobalChatManager = {
         if (!Game.socket || !Game.socket.connected) return;
         Game.socket.timeout(8000).emit('prihvatiChatPravila', (greska, odgovor) => {
             if (greska || !odgovor || !odgovor.uspeh) {
-                UIManager.prikaziObavestenje('Pravila chata', odgovor?.poruka || 'Pravila trenutno nije moguće sačuvati.', null, 'U redu');
+                UIManager.prikaziObavestenje('Pravila četa', odgovor?.poruka || 'Pravila trenutno nije moguće sačuvati.', null, 'U redu');
                 return;
             }
             this.status = odgovor.status || null;
@@ -111,7 +111,7 @@ const GlobalChatManager = {
             }
             if (greska || !odgovor?.uspeh) {
                 this.otvaranjeUToku = false;
-                UIManager.prikaziObavestenje('Globalni chat', odgovor?.poruka || 'Istoriju poruka trenutno nije moguće učitati.', null, 'U redu');
+                UIManager.prikaziObavestenje('Globalni čet', odgovor?.poruka || 'Istoriju poruka trenutno nije moguće učitati.', null, 'U redu');
                 return;
             }
             this.prikaziIntro(() => {
@@ -223,6 +223,7 @@ const GlobalChatManager = {
         zaglavlje.className = 'chat-msg-header';
         const ime = document.createElement('span');
         ime.className = 'chat-ime';
+        ime.setAttribute('data-zadrzi-izvorno-pismo', 'true');
         ime.textContent = poruka.ime || 'Igrač';
         zaglavlje.appendChild(ime);
         if (jeMoja) {
@@ -235,6 +236,7 @@ const GlobalChatManager = {
 
         const tekst = document.createElement('span');
         tekst.className = 'chat-tekst';
+        tekst.setAttribute('data-zadrzi-izvorno-pismo', 'true');
         tekst.textContent = poruka.tekst || '';
         porukaEl.appendChild(tekst);
 
@@ -278,7 +280,7 @@ const GlobalChatManager = {
         Game.socket.timeout(8000).emit('prijaviChatPoruku', { porukaId: poruka.id, razlog: 'drugo' }, (greska, odgovor) => {
             UIManager.prikaziObavestenje(
                 odgovor?.uspeh ? 'Prijava je poslata' : 'Prijava nije poslata',
-                odgovor?.uspeh ? 'Hvala što pomažeš da chat ostane bezbedan.' : (odgovor?.poruka || 'Pokušaj ponovo malo kasnije.'),
+                odgovor?.uspeh ? 'Hvala što pomažeš da čet ostane bezbedan.' : (odgovor?.poruka || 'Pokušaj ponovo malo kasnije.'),
                 null,
                 'U redu'
             );

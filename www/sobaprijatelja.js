@@ -142,7 +142,7 @@ const SobaPrijateljaManager = {
                             <div class="prijatelj-header">
                                 <div class="prijatelj-avatar">${this.napraviAvatar(p.avatar)}</div>
                                 <div style="flex:1;">
-                                     <div class="prijatelj-ime">${p.ime}</div>
+                                     <div class="prijatelj-ime" data-zadrzi-izvorno-pismo="true">${p.ime}</div>
                                      ${isOnline}
                                  </div>
                                 <button
@@ -174,7 +174,7 @@ const SobaPrijateljaManager = {
                         <div class="online-igrac-red soba-prijatelja-zahtev-kartica">
                             <div class="online-igrac-info">
                                 <img class="soba-prijatelja-zahtev-ikona" src="assets/soba-prijatelja-zahtevi-clay-soft-3d.png" alt="" aria-hidden="true">
-                                <span>${zahtev.ime}</span>
+                                <span data-zadrzi-izvorno-pismo="true">${zahtev.ime}</span>
                             </div>
                             <div style="display:flex; gap:0.5rem;">
                                 <button class="btn-prijatelj btn-odbij-zahtev" onclick="SobaPrijateljaManager.odgovoriNaZahtev(${indeks}, false)"><i class="fa-solid fa-xmark"></i></button>
@@ -250,7 +250,7 @@ const SobaPrijateljaManager = {
                 Game.socket.emit('traziOsvezenjePrijatelja');
 
                 if (prihvaceno) {
-                    UIManager.prikaziObavestenje("Uspešno", `Prihvatio si zahtev od <b>${zahtev.ime}</b>! On je sada na tvojoj listi.`, null, "U redu");
+                    UIManager.prikaziObavestenje("Uspešno", `Prihvatio si zahtev od <b data-zadrzi-izvorno-pismo="true">${zahtev.ime}</b>! On je sada na tvojoj listi.`, null, "U redu");
                 }
             }
         );
@@ -262,7 +262,7 @@ const SobaPrijateljaManager = {
 
         UIManager.prikaziPotvrdu(
             "IZBRIŠI PRIJATELJA?",
-            `Da li si siguran da želiš da izbrišeš igrača <b>${prijatelj.ime}</b> iz liste prijatelja?<br><br>Bićete uklonjeni sa liste prijatelja jedno drugom.`,
+            `Da li si siguran da želiš da izbrišeš igrača <b data-zadrzi-izvorno-pismo="true">${prijatelj.ime}</b> iz liste prijatelja?<br><br>Bićete uklonjeni sa liste prijatelja jedno drugom.`,
             () => this.obrisiPrijatelja(playerIdPrijatelja),
             "Izbriši",
             "Odustani"
@@ -277,7 +277,7 @@ const SobaPrijateljaManager = {
         this.osveziPrikaz();
         UIManager.prikaziObavestenje(
             "Brisanje...",
-            `Uklanjam igrača <b>${prijatelj.ime}</b> iz tvoje liste prijatelja.`,
+            `Uklanjam igrača <b data-zadrzi-izvorno-pismo="true">${prijatelj.ime}</b> iz tvoje liste prijatelja.`,
             null,
             "..."
         );
@@ -312,7 +312,7 @@ const SobaPrijateljaManager = {
 
                 UIManager.prikaziObavestenje(
                     "Prijatelj je izbrisan",
-                    `<b>${odgovor.imePrijatelja || prijatelj.ime}</b> više nije na tvojoj listi prijatelja.`,
+                    `<b data-zadrzi-izvorno-pismo="true">${odgovor.imePrijatelja || prijatelj.ime}</b> više nije na tvojoj listi prijatelja.`,
                     null,
                     "U redu"
                 );

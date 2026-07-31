@@ -114,7 +114,7 @@ const OnlineIgraciManager = {
                 <div class="online-igrac-red">
                     <div class="online-igrac-info">
                         <div class="online-igrac-avatar">${avatarHtml}</div>
-                        <span>${igrac.ime}</span>
+                        <span data-zadrzi-izvorno-pismo="true">${igrac.ime}</span>
                     </div>
                     ${actionHtml}
                 </div>
@@ -147,7 +147,7 @@ const OnlineIgraciManager = {
                 return;
             }
 
-            UIManager.prikaziObavestenje("Zahtev poslat", `Uspešno si poslao zahtev igraču: <b style="color:#38bdf8;">${ime}</b>.`, null, "U redu");
+            UIManager.prikaziObavestenje("Zahtev poslat", `Uspešno si poslao zahtev igraču: <b data-zadrzi-izvorno-pismo="true" style="color:#38bdf8;">${ime}</b>.`, null, "U redu");
         });
     },
 
@@ -193,7 +193,7 @@ const OnlineIgraciManager = {
                 }
 
                 if (prihvaceno) {
-                    UIManager.prikaziObavestenje("Novi prijatelj!", `Ti i <b style="color:#38ef7d;">${imePosiljaoca}</b> ste sada prijatelji!`, null, "Super");
+                    UIManager.prikaziObavestenje("Novi prijatelj!", `Ti i <b data-zadrzi-izvorno-pismo="true" style="color:#38ef7d;">${imePosiljaoca}</b> ste sada prijatelji!`, null, "Super");
                     Game.socket.emit('traziOsvezenjePrijatelja');
 
                     if (document.getElementById('online-igraci-screen').classList.contains('active')) {
@@ -206,7 +206,7 @@ const OnlineIgraciManager = {
 
     uspesnoDodatPrijatelj: function(podaci) {
         // Poziva se kada neko PRIHVATI naš zahtev
-        UIManager.prikaziObavestenje("Zahtev prihvaćen", `<b style="color:#38ef7d;">${podaci.imePrijatelja}</b> je prihvatio/la tvoj zahtev za prijateljstvo!`, null, "Odlično");
+        UIManager.prikaziObavestenje("Zahtev prihvaćen", `<b data-zadrzi-izvorno-pismo="true" style="color:#38ef7d;">${podaci.imePrijatelja}</b> je prihvatio/la tvoj zahtev za prijateljstvo!`, null, "Odlično");
         
         // ODMAH TRAŽIMO OSVEŽENJE GLAVNE SOBE PRIJATELJA
         Game.socket.emit('traziOsvezenjePrijatelja');

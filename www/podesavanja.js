@@ -790,7 +790,7 @@ const PodesavanjaManager = {
             this.azurirajProfilOpcije();
             UIManager.prikaziObavestenje(
                 "Google nalog je aktivan",
-                "Ovaj profil je već povezan sa Google nalogom, pa se napredak čuva u cloudu.",
+                "Ovaj profil je već povezan sa Google nalogom, pa se napredak čuva u oblaku.",
                 null,
                 "U redu"
             );
@@ -1003,7 +1003,14 @@ const PodesavanjaManager = {
             if (googlePovezan) {
                 profilInfoOpis.innerText = "Google profil čuva napredak preko naloga.";
             } else if (profilSpreman) {
-                profilInfoOpis.innerText = `${this.postavke.nadimak} igra kao gost. Ime, avatar i napredak ostaju vezani za ovaj gost profil; odjava ih ne briše.`;
+                profilInfoOpis.replaceChildren();
+                const nadimak = document.createElement('span');
+                nadimak.setAttribute('data-zadrzi-izvorno-pismo', 'true');
+                nadimak.textContent = this.postavke.nadimak;
+                profilInfoOpis.append(
+                    nadimak,
+                    document.createTextNode(' igra kao gost. Ime, avatar i napredak ostaju vezani za ovaj gost profil; odjava ih ne briše.')
+                );
             } else {
                 profilInfoOpis.innerText = "Za ulazak kao gost izaberi ime i avatar na uvodnom ekranu.";
             }
@@ -1418,6 +1425,7 @@ const PodesavanjaManager = {
         let vrednost = tekst === null || typeof tekst === 'undefined' ? "" : String(tekst);
         vrednost = vrednost.replace(/MULTIPLAYER/g, "МУЛТИПЛЕЈЕР");
         vrednost = vrednost.replace(/Multiplayer/g, "Мултиплејер");
+        vrednost = vrednost.replace(/multiplayer/g, "мултиплејер");
         return vrednost.replace(this.cirilicniRegex, m => this.cirilicnaMapa[m] || m);
     },
 
@@ -1438,7 +1446,7 @@ const PodesavanjaManager = {
 
         const obradi = (cvor) => {
             if (cvor.nodeType === 3) {
-                if (cvor.parentElement && cvor.parentElement.closest('[data-zadrzi-latinicu="true"]')) return;
+                if (cvor.parentElement && cvor.parentElement.closest('[data-zadrzi-latinicu="true"], [data-zadrzi-izvorno-pismo="true"]')) return;
                 const prevedeno = this.presloviUCirilicu(cvor.nodeValue);
                 if (cvor.nodeValue !== prevedeno) {
                     cvor.nodeValue = prevedeno;
@@ -1449,6 +1457,7 @@ const PodesavanjaManager = {
                     || cvor.tagName === "STYLE"
                     || cvor.id === "room-code-input"
                     || cvor.getAttribute('data-zadrzi-latinicu') === 'true'
+                    || cvor.getAttribute('data-zadrzi-izvorno-pismo') === 'true'
                 ) return;
 
                 ["placeholder", "title", "aria-label"].forEach(atribut => {
@@ -1465,6 +1474,22 @@ const PodesavanjaManager = {
         };
 
         obradi(element);
+    },
+
+    osveziTekstovePisma: function() {
+        const pismo = this.postavke.pismo === "cirilica" ? "cirilica" : "latinica";
+
+        document.querySelectorAll('[data-pismo-tekst-latinica][data-pismo-tekst-cirilica]').forEach(element => {
+            const tekst = element.getAttribute(`data-pismo-tekst-${pismo}`);
+            if (tekst !== null) element.textContent = tekst;
+        });
+
+        document.querySelectorAll('[data-pismo-naziv-latinica][data-pismo-naziv-cirilica]').forEach(element => {
+            const naziv = element.getAttribute(`data-pismo-naziv-${pismo}`);
+            if (naziv === null) return;
+            element.setAttribute('title', naziv);
+            element.setAttribute('aria-label', naziv);
+        });
     },
 
     pokreniCirilicaPosmatraca: function() {
@@ -1566,7 +1591,9 @@ const PodesavanjaManager = {
     },
 
     primeniPostavkeGlobalno: function() {
+        document.body.setAttribute('data-pismo', this.postavke.pismo === "cirilica" ? "cirilica" : "latinica");
         this.azurirajSplashLogoPismo();
+        this.osveziTekstovePisma();
 
         const myPlayerName = document.getElementById('my-player-name');
         if (myPlayerName) {
@@ -1575,7 +1602,10 @@ const PodesavanjaManager = {
             avatarMini.className = 'player-avatar-mini';
             avatarMini.innerHTML = this.napraviAvatarSvg(this.getAvatarPodaci());
             myPlayerName.appendChild(avatarMini);
-            myPlayerName.appendChild(document.createTextNode(` ${this.postavke.nadimak}`));
+            const nadimak = document.createElement('span');
+            nadimak.setAttribute('data-zadrzi-izvorno-pismo', 'true');
+            nadimak.textContent = ` ${this.postavke.nadimak}`;
+            myPlayerName.appendChild(nadimak);
         }
     },
 
@@ -1604,9 +1634,9 @@ const PodesavanjaManager = {
                 <b style="color:#38ef7d;">1. CILJ IGRE:</b> Upiši po jedan tačan pojam za svaku kategoriju koji počinje zadatim slovom.<br><br>
                 <b style="color:#38ef7d;">2. SOLO MOD:</b> U solo treningu skupljaš samo tačne odgovore. Poeni se ne računaju.<br><br>
                 <b style="color:#38ef7d;">3. BODOVANJE (Multiplayer):</b><br>
-                <span style="color:#38ef7d; font-weight:800;">20 pts</span> - Tvoj pojam je jedinstven i tačan.<br>
-                <span style="color:#f5af19; font-weight:800;">10 pts</span> - Tvoj pojam je tačan, ali su i drugi upisali tačne (ali različite) pojmove.<br>
-                <span style="color:#a0aec0; font-weight:800;">5 pts</span> - Upišeš potpuno isti pojam kao i tvoj protivnik.<br><br>
+                <span style="color:#38ef7d; font-weight:800;">20 poena</span> - Tvoj pojam je jedinstven i tačan.<br>
+                <span style="color:#f5af19; font-weight:800;">10 poena</span> - Tvoj pojam je tačan, ali su i drugi upisali tačne (ali različite) pojmove.<br>
+                <span style="color:#a0aec0; font-weight:800;">5 poena</span> - Upišeš potpuno isti pojam kao i tvoj protivnik.<br><br>
                 <b style="color:#38ef7d;">4. RUNDA:</b> Traje tačno 2 minuta (120 sekundi).
             </div>
         `;

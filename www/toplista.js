@@ -175,10 +175,10 @@ const TopListaManager = {
                 <div class="toplista-red${isMe ? ' ja' : ''}">
                     <div class="toplista-red-levo">
                         <span class="toplista-medalja-slot">${medalja}</span>
-                        <span class="toplista-igrac">${escapeHtml(igrac.ime)}</span>
+                        <span class="toplista-igrac" data-zadrzi-izvorno-pismo="true">${escapeHtml(igrac.ime)}</span>
                     </div>
                     <span class="toplista-poeni">
-                        ${igrac.poeni} <span class="toplista-poeni-oznaka">pts</span>
+                        ${igrac.poeni} <span class="toplista-poeni-oznaka">poena</span>
                     </span>
                 </div>
             `;

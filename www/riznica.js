@@ -51,10 +51,13 @@ const RiznicaManager = {
                 ['teme', 'efekti', 'tastature'].forEach(kat => {
                     if (parsirano.podaci[kat]) {
                         parsirano.podaci[kat].forEach(sacuvanaStavka => {
-                            let orgStavka = this.podaci[kat].find(s => s.id === sacuvanaStavka.id);
-                            if (orgStavka) {
-                                Object.assign(orgStavka, sacuvanaStavka);
-                            }
+                            const orgStavka = this.podaci[kat].find(s => s.id === sacuvanaStavka.id);
+                            if (!orgStavka) return;
+
+                            // Trajno čuvamo samo vlasništvo i opremljenost; nazivi, cene i vizuelni podaci
+                            // moraju ostati iz trenutne verzije aplikacije.
+                            if (typeof sacuvanaStavka.kupljeno === 'boolean') orgStavka.kupljeno = sacuvanaStavka.kupljeno;
+                            if (typeof sacuvanaStavka.opremljeno === 'boolean') orgStavka.opremljeno = sacuvanaStavka.opremljeno;
                         });
                     }
                 });
@@ -265,6 +268,14 @@ const RiznicaManager = {
 
     generisiHTMLTastatura: function() {
         let html = '<div class="tastature-grid">';
+        const jeCirilica = document.body.dataset.pismo === 'cirilica';
+        const gornjiRed = jeCirilica
+            ? ['Љ', 'Њ', 'Е', 'Р', 'Т', 'Ш']
+            : ['LJ', 'NJ', 'E', 'R', 'T', 'Š'];
+        const srednjiRed = jeCirilica
+            ? ['А', 'С', 'Д', 'Ф', 'Г']
+            : ['A', 'S', 'D', 'F', 'G'];
+        const prikaziRed = (slova) => slova.map(slovo => `<span>${slovo}</span>`).join('');
 
         this.podaci.tastature.forEach(artikal => {
             const otkljucano = this.jeOtkljucano(artikal);
@@ -282,8 +293,8 @@ const RiznicaManager = {
             html += `
                 <div class="tastatura-kartica${artikal.opremljeno ? ' opremljena' : ''}">
                     <div class="tastatura-preview" style="--kb-preview-bg:${boje[0]}; --kb-preview-key:${boje[1]}; --kb-preview-enter:${boje[2]};">
-                        <div class="tastatura-preview-red"><span>Q</span><span>W</span><span>E</span><span>R</span><span>T</span><span>Š</span></div>
-                        <div class="tastatura-preview-red uvucen"><span>A</span><span>S</span><span>D</span><span>F</span><span>G</span></div>
+                        <div class="tastatura-preview-red">${prikaziRed(gornjiRed)}</div>
+                        <div class="tastatura-preview-red uvucen">${prikaziRed(srednjiRed)}</div>
                         <div class="tastatura-preview-red donji"><span></span><span></span><span class="enter">OK</span></div>
                     </div>
                     <div class="tastatura-kartica-dno">

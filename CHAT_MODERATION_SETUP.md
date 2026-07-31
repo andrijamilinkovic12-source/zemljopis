@@ -15,6 +15,10 @@ CHAT_MODERATOR_PLAYER_IDS=player-id-prvog-moderatora,player-id-drugog-moderatora
 
 # Dodatni izrazi koje server maskira sa ***, odvojeni zarezom.
 CHAT_BLOKIRANI_IZRAZI=izraz1,izraz2
+
+# Samo za interno testiranje: traži prihvatanje pri svakom novom otvaranju četa.
+# Ne postavljati na produkcionom serveru.
+CHAT_TEST_UVEK_TRAZI_PRAVILA=true
 ```
 
 Podrazumevano su dozvoljeni lokalni razvoj, `https://zemljopis.onrender.com` i Capacitor/Ionic origin-i. Za sopstveni domen obavezno navedi `SOCKET_CORS_ORIGINS`.
@@ -27,6 +31,7 @@ Podrazumevano su dozvoljeni lokalni razvoj, `https://zemljopis.onrender.com` i C
 - Moderator dobija kontrole za utišavanje na 24 sata i trajnu blokadu. Njegov `playerId` mora biti naveden u `CHAT_MODERATOR_PLAYER_IDS`.
 - Ugrađeni filter maskira česte srpske i engleske vulgarizme, uključujući latinicu, ćirilicu i jednostavno zaobilaženje razmacima, brojevima ili simbolima. Samo se maskirana verzija šalje u čet.
 - Linkovi su blokirani uvek, a dodatni izrazi se unose preko `CHAT_BLOKIRANI_IZRAZI` i takođe se maskiraju.
+- Za pregled kartice pravila tokom razvoja postavi `CHAT_TEST_UVEK_TRAZI_PRAVILA=true`. Isključi je ili ukloni pre produkcije; trajno prihvatanje iz baze tada ponovo važi.
 
 Pokreni proveru pre objave:
 

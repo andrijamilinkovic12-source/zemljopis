@@ -25,14 +25,15 @@ function sacekaj(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function pokreniServer(moderatorPlayerId = '') {
+function pokreniServer(moderatorPlayerId = '', testPravila = false) {
     return spawn(process.execPath, ['server.js'], {
         cwd: rootDir,
         env: {
             ...process.env,
             PORT: port,
             CHAT_BLOKIRANI_IZRAZI: 'zabranjenatest',
-            CHAT_MODERATOR_PLAYER_IDS: moderatorPlayerId
+            CHAT_MODERATOR_PLAYER_IDS: moderatorPlayerId,
+            CHAT_TEST_UVEK_TRAZI_PRAVILA: testPravila ? 'true' : 'false'
         },
         stdio: 'inherit'
     });
@@ -325,6 +326,43 @@ try {
     const porukaBanovanogIgraca = await emitAck(banovaniIgracSocket, 'posaljiGlobalnuPoruku', { tekst: 'Ovo ne sme da prođe posle bana' });
     assert.equal(porukaBanovanogIgraca.uspeh, false);
     assert.equal(porukaBanovanogIgraca.kod, 'CHAT_BANOVAN');
+
+    socketi.forEach(socket => socket.disconnect());
+    socketi = [];
+    serverProces.kill();
+    await sacekaj(700);
+
+    serverProces = pokreniServer('', true);
+    await sacekaj(3500);
+
+    const testPravilaSocket = await povezi(io);
+    socketi.push(testPravilaSocket);
+    const prijavaTestProfila = await emitAck(testPravilaSocket, 'registrujProfil', {
+        nadimak: profili[3].nadimak,
+        avatar: 'atlas',
+        profilKljuc: profili[3].profilKljuc
+    });
+    assert.equal(prijavaTestProfila.uspeh, true);
+    assert.equal(prijavaTestProfila.profil.playerId, playerIds[3]);
+
+    const statusPreTestPravila = await emitAck(testPravilaSocket, 'traziChatStatus');
+    assert.equal(statusPreTestPravila.uspeh, true);
+    assert.equal(statusPreTestPravila.status.pravilaPrihvacena, false);
+
+    const prihvatanjeTestPravila = await emitAck(testPravilaSocket, 'prihvatiChatPravila');
+    assert.equal(prihvatanjeTestPravila.uspeh, true);
+    assert.equal(prihvatanjeTestPravila.status.pravilaPrihvacena, true);
+
+    const porukaPosleTestPravila = await emitAck(testPravilaSocket, 'posaljiGlobalnuPoruku', { tekst: 'Poruka posle test pravila' });
+    assert.equal(porukaPosleTestPravila.uspeh, true);
+
+    const sledeceOtvaranjeChata = await emitAck(testPravilaSocket, 'traziChatStatus');
+    assert.equal(sledeceOtvaranjeChata.uspeh, true);
+    assert.equal(sledeceOtvaranjeChata.status.pravilaPrihvacena, false);
+
+    const porukaBezNovogPrihvatanja = await emitAck(testPravilaSocket, 'posaljiGlobalnuPoruku', { tekst: 'Ovo čeka pravila' });
+    assert.equal(porukaBezNovogPrihvatanja.uspeh, false);
+    assert.equal(porukaBezNovogPrihvatanja.kod, 'CHAT_PRAVILA_NISU_PRIHVACENA');
 
     console.log('Globalni chat: kompletna bezbednosna, moderatorska i funkcionalna provera je prošla.');
 } finally {

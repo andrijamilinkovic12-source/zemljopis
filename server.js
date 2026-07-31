@@ -263,7 +263,10 @@ const CHAT_BLOKIRANI_IZRAZI = String(process.env.CHAT_BLOKIRANI_IZRAZI || "")
     .split(",")
     .map(izraz => izraz.normalize("NFKC").trim().toLocaleLowerCase("sr"))
     .filter(izraz => izraz.length >= 2 && izraz.length <= 80);
+// Isključivo za interno testiranje prikaza pristanka. Ne uključivati u produkciji.
+const CHAT_TEST_UVEK_TRAZI_PRAVILA = process.env.CHAT_TEST_UVEK_TRAZI_PRAVILA === "true";
 const chatOgranicenjaPoIgracu = new Map();
+const chatPravilaPrihvacenaUTestSesiji = new Map();
 
 // ==========================================
 // ZEMLJOPIS KVIZ — server je jedini izvor tačnih odgovora i poena.
@@ -4258,7 +4261,13 @@ function normalizujChatTekst(vrednost) {
         .trim();
 }
 
-function chatStatusZaIgraca(igrac, sada = Date.now()) {
+function chatPravilaSuPrihvacenaZaSocket(igrac, socketId = null) {
+    const trajnoPrihvacena = Boolean(igrac && igrac.chatPravilaPrihvacenaAt);
+    if (!CHAT_TEST_UVEK_TRAZI_PRAVILA) return trajnoPrihvacena;
+    return Boolean(socketId && igrac && chatPravilaPrihvacenaUTestSesiji.get(socketId) === igrac.playerId);
+}
+
+function chatStatusZaIgraca(igrac, sada = Date.now(), socketId = null) {
     const umutanDo = igrac && igrac.chatUmutkanDo
         ? new Date(igrac.chatUmutkanDo).getTime()
         : 0;
@@ -4266,7 +4275,7 @@ function chatStatusZaIgraca(igrac, sada = Date.now()) {
     const umutan = !banovan && Number.isFinite(umutanDo) && umutanDo > sada;
 
     return {
-        pravilaPrihvacena: Boolean(igrac && igrac.chatPravilaPrihvacenaAt),
+        pravilaPrihvacena: chatPravilaSuPrihvacenaZaSocket(igrac, socketId),
         banovan,
         umutan,
         umutanDo: umutan ? new Date(umutanDo).toISOString() : null,
@@ -4277,10 +4286,11 @@ function chatStatusZaIgraca(igrac, sada = Date.now()) {
     };
 }
 
-function posaljiChatStatusIgracu(playerId, status) {
+function posaljiChatStatusIgracu(igrac) {
+    if (!igrac || !igrac.playerId) return;
     Object.values(onlineIgraci).forEach(onlineIgrac => {
-        if (onlineIgrac.playerId === playerId) {
-            io.to(onlineIgrac.id).emit('chatStatusAzuriran', status);
+        if (onlineIgrac.playerId === igrac.playerId) {
+            io.to(onlineIgrac.id).emit('chatStatusAzuriran', chatStatusZaIgraca(igrac, Date.now(), onlineIgrac.id));
         }
     });
 }
@@ -6787,6 +6797,7 @@ io.on('connection', (socket) => {
         ukloniIgracaIzSoba(socket, 'diskonekt');
         ukloniIgracaIzKvizSoba(socket, 'diskonekt');
         ukloniPozivIzSoba(socket, 'diskonekt');
+        chatPravilaPrihvacenaUTestSesiji.delete(socket.id);
         delete onlineIgraci[socket.id]; 
         io.emit('azurirajBrojOnline', brojJedinstvenihOnlineIgraca());
     });
@@ -6929,7 +6940,9 @@ io.on('connection', (socket) => {
         const callback = vratiSocketCallback(...args);
         const igrac = await ucitajChatIgracaIliOdgovori(socket, callback);
         if (!igrac) return;
-        callback({ uspeh: true, status: chatStatusZaIgraca(igrac) });
+        // U internom režimu svako novo otvaranje četa ponovo prikazuje pravila.
+        if (CHAT_TEST_UVEK_TRAZI_PRAVILA) chatPravilaPrihvacenaUTestSesiji.delete(socket.id);
+        callback({ uspeh: true, status: chatStatusZaIgraca(igrac, Date.now(), socket.id) });
     });
 
     socket.on('prihvatiChatPravila', async (...args) => {
@@ -6942,8 +6955,9 @@ io.on('connection', (socket) => {
                 igrac.chatPravilaPrihvacenaAt = new Date();
                 await igrac.save();
             }
-            const status = chatStatusZaIgraca(igrac);
-            posaljiChatStatusIgracu(igrac.playerId, status);
+            if (CHAT_TEST_UVEK_TRAZI_PRAVILA) chatPravilaPrihvacenaUTestSesiji.set(socket.id, igrac.playerId);
+            const status = chatStatusZaIgraca(igrac, Date.now(), socket.id);
+            posaljiChatStatusIgracu(igrac);
             callback({ uspeh: true, status });
         } catch (error) {
             console.error("Greška pri prihvatanju pravila četa:", error);
@@ -6956,7 +6970,7 @@ io.on('connection', (socket) => {
         const igrac = await ucitajChatIgracaIliOdgovori(socket, callback);
         if (!igrac) return;
 
-        const status = chatStatusZaIgraca(igrac);
+        const status = chatStatusZaIgraca(igrac, Date.now(), socket.id);
         const greska = chatGreskaZaStatus(status);
         if (greska) return callback({ uspeh: false, ...greska, status });
 
@@ -6968,7 +6982,7 @@ io.on('connection', (socket) => {
         const igrac = await ucitajChatIgracaIliOdgovori(socket, callback);
         if (!igrac) return;
 
-        const status = chatStatusZaIgraca(igrac);
+        const status = chatStatusZaIgraca(igrac, Date.now(), socket.id);
         const greskaStatusa = chatGreskaZaStatus(status);
         if (greskaStatusa) return callback({ uspeh: false, ...greskaStatusa, status });
 
@@ -7038,10 +7052,7 @@ io.on('connection', (socket) => {
                     if (!Number.isFinite(stariMuteDo) || stariMuteDo < noviMuteDo.getTime()) {
                         prijavljeniIgrac.chatUmutkanDo = noviMuteDo;
                         await prijavljeniIgrac.save();
-                        posaljiChatStatusIgracu(
-                            prijavljeniIgrac.playerId,
-                            chatStatusZaIgraca(prijavljeniIgrac)
-                        );
+                        posaljiChatStatusIgracu(prijavljeniIgrac);
                         automatskaMera = true;
                     }
                 }
@@ -7081,7 +7092,7 @@ io.on('connection', (socket) => {
             }
             await cilj.save();
             const status = chatStatusZaIgraca(cilj);
-            posaljiChatStatusIgracu(cilj.playerId, status);
+            posaljiChatStatusIgracu(cilj);
             callback({ uspeh: true, status });
         } catch (error) {
             console.error("Greška pri moderaciji četa:", error);

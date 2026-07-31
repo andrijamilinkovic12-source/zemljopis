@@ -4,7 +4,7 @@
     width: min(640px, calc(100vw - 24px));
     max-width: 640px;
     /* Iskoristi sav slobodan prostor modala, uz siguran razmak od obe ivice ekrana. */
-    max-height: calc(100% - 8px);
+    max-height: calc(100% - 12px);
     overflow-y: auto;
 }
 
@@ -15,11 +15,11 @@
 
 /* Dodatni prostor pri dnu ostaje dostupan, dok kartica ide blago ka gornjoj bezbednoj zoni. */
 #chat-rules-modal .chat-rules-content {
-    transform: translateY(-4px) scale(0.8);
+    transform: translateY(-6px) scale(0.8);
 }
 
 #chat-rules-modal.active .chat-rules-content {
-    transform: translateY(-4px) scale(1);
+    transform: translateY(-6px) scale(1);
 }
 
 #chat-rules-modal .chat-rules-content h2 {

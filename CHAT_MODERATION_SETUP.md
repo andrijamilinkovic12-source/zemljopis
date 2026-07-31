@@ -25,7 +25,9 @@ Podrazumevano su dozvoljeni lokalni razvoj, `https://zemljopis.onrender.com` i C
 
 ## Moderacija
 
+- Istorija četa prikazuje najviše 75 poruka. Svaka poruka se uklanja najkasnije 24 sata posle slanja (a istorija se svakako prazni pri restartu servera).
 - Igrač može prijaviti poruku samo jednom; prijava se čuva na serveru.
+- Prijave se čuvaju 90 dana, pa se potom automatski brišu.
 - Tri prijave različitih igrača u roku od 24 sata automatski utišavaju autora na 24 sata.
 - Svaki igrač može lokalno utišati drugi `playerId`; promena nadimka ne utiče na utišavanje.
 - Moderator dobija kontrole za utišavanje na 24 sata i trajnu blokadu. Njegov `playerId` mora biti naveden u `CHAT_MODERATOR_PLAYER_IDS`.

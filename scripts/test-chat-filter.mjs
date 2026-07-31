@@ -23,4 +23,16 @@ assert.equal(filtriraj('J 3 B 0 T E nije dozvoljeno').tekst, '*** nije dozvoljen
 assert.equal(filtriraj('Ovo je zabranjenatest izraz.', ['zabranjenatest']).tekst, 'Ovo je *** izraz.');
 assert.equal(filtriraj('Razred ima class zadatak.').tekst, 'Razred ima class zadatak.');
 
+assert.equal(filtriraj('IDIOT nije dozvoljen.').tekst, '*** nije dozvoljen.');
+assert.equal(filtriraj('Ti si majmun.').tekst, 'Ti si ***.');
+assert.equal(filtriraj('Ти си МАЈМУН.').tekst, 'Ти си ***.');
+assert.equal(filtriraj('Nemoj biti peder.').tekst, 'Nemoj biti ***.');
+assert.equal(filtriraj('Немој бити ПЕДЕР.').tekst, 'Немој бити ***.');
+assert.equal(filtriraj('Jebi se, smrade!').tekst, '***, ***!');
+assert.equal(filtriraj('Ти си КУРВИН СИН.').tekst, 'Ти си ***.');
+assert.equal(filtriraj('Nemoj biti seronja.').tekst, 'Nemoj biti ***.');
+assert.equal(filtriraj('You are an idiot and a dumbass.').tekst, 'You are an *** and a ***.');
+assert.equal(filtriraj('You are a moron.').tekst, 'You are a ***.');
+assert.equal(filtriraj('You are a scumbag and a wanker.').tekst, 'You are a *** and a ***.');
+
 console.log('Chat filter test je uspešno prošao.');

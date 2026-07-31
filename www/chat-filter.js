@@ -3,15 +3,25 @@
 
 const OSNOVNI_IZRAZI = [
     // Srpski: bez dijakritika da bi se pokrile latinica, ćirilica i pojednostavljeni unos.
-    'jebem', 'jebes', 'jebeš', 'jebi', 'jebite', 'jebao', 'jebala', 'jebali', 'jebote', 'jebiga', 'jebanje', 'jebac', 'jebač',
-    'kurac', 'kurca', 'kurcem', 'kuracina', 'kurčina', 'kurva', 'kurve', 'kurvetina',
-    'picka', 'pička', 'picke', 'pičke', 'pizda', 'pizde', 'pizdurina',
-    'govno', 'govna', 'sranje', 'sranja', 'serem', 'seres', 'sereš', 'usrao', 'usrala', 'usrati',
+    'jebem', 'jebes', 'jebeš', 'jebi', 'jebite', 'jebao', 'jebala', 'jebali', 'jebo', 'jebe se', 'jebi se', 'odjebi', 'odjebite',
+    'jebote', 'jebiga', 'jebanje', 'jebac', 'jebač', 'jebem ti', 'mamu ti jebem',
+    'kurac', 'kurca', 'kurcem', 'kuracina', 'kurčina', 'kurvo', 'kurva', 'kurve', 'kurvetina', 'kurvin sin', 'kurvin sine',
+    'picka', 'pička', 'picke', 'pičke', 'picko', 'pičko', 'pizda', 'pizde', 'pizdo', 'pizdurina', 'pizdurino',
+    'govno', 'govna', 'govnar', 'govnaru', 'sranje', 'sranja', 'serem', 'seres', 'sereš', 'seronja', 'seronjo', 'usrao', 'usrala', 'usrati',
+    'drkati', 'drkac', 'drkač', 'drkadžija', 'drkadzija', 'drkas', 'drkaš', 'puši kurac', 'pusi kurac', 'sisaj kurac',
     'pusim', 'pušim', 'pusis', 'pušiš', 'dupe', 'mamu ti', 'mrs', 'mrš',
+    // Uvrede i omalovažavanje: česti padežni oblici su navedeni da granice reči ne propuste poruku.
+    'idiot', 'idiote', 'idioti', 'idiotkinja', 'kreten', 'kretencina', 'kretenu', 'debil', 'debilu', 'debili',
+    'imbecil', 'imbecile', 'moron', 'moronu', 'budala', 'budalo', 'glupan', 'glupane', 'smrad', 'smrade', 'stoka', 'stoko',
+    'majmun', 'majmune', 'majmuni',
+    'peder', 'pederu', 'pederi', 'pederčina', 'pederčino',
     // Engleski: samostalne reči i njihove česte izvedenice.
     'fuck', 'fck', 'fucking', 'fucker', 'motherfucker', 'shit', 'bullshit', 'bitch', 'btch', 'bitches',
     'asshole', 'dick', 'cock', 'cunt', 'pussy', 'bastard', 'whore', 'slut',
-    'fag', 'faggot', 'nigger', 'nigga', 'retard'
+    'fag', 'faggot', 'nigger', 'nigga', 'retard',
+    'idiot', 'idiots', 'moron', 'morons', 'imbecile', 'imbeciles', 'dumbass', 'dumbasses',
+    'jackass', 'jackasses', 'loser', 'losers', 'monkey', 'monkeys',
+    'arsehole', 'dickhead', 'dipshit', 'douche', 'douchebag', 'prick', 'scumbag', 'shithead', 'twat', 'wanker'
 ];
 
 const ZAMENE_SLOVA = {

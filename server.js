@@ -117,7 +117,10 @@ if (!MONGO_URI) {
 
 if (process.env.ZEMLJOPIS_TEST_MODE !== "true") {
     mongoose.connect(MONGO_URI)
-        .then(() => console.log('✅ Uspesno povezan na MongoDB bazu: zemljopis_db!'))
+        .then(() => {
+            console.log('✅ Uspesno povezan na MongoDB bazu: zemljopis_db!');
+            void obrisiIstekleChatPrijave();
+        })
         .catch((err) => console.error('❌ Greska pri povezivanju na MongoDB:', err));
 }
 
@@ -244,7 +247,9 @@ const DNEVNI_DOSTUPNA_SLOVA = Object.fromEntries(DNEVNI_KATEGORIJE.map(kategorij
     ];
 }));
 
-const MAX_PORUKA_ISTORIJA = 50;
+const MAX_PORUKA_ISTORIJA = 75;
+const CHAT_ISTORIJA_ZADRZAVANJE_MS = 24 * 60 * 60 * 1000;
+const CHAT_PRIJAVA_ZADRZAVANJE_MS = 90 * 24 * 60 * 60 * 1000;
 let istorijaChata = [];
 const originalniTekstoviChatPoruka = new Map();
 const onlineIgraci = {}; 
@@ -267,6 +272,35 @@ const CHAT_BLOKIRANI_IZRAZI = String(process.env.CHAT_BLOKIRANI_IZRAZI || "")
 const CHAT_TEST_UVEK_TRAZI_PRAVILA = process.env.CHAT_TEST_UVEK_TRAZI_PRAVILA === "true";
 const chatOgranicenjaPoIgracu = new Map();
 const chatPravilaPrihvacenaUTestSesiji = new Map();
+
+function ocistiIstekleChatPoruke(sada = Date.now()) {
+    const granica = sada - CHAT_ISTORIJA_ZADRZAVANJE_MS;
+    while (istorijaChata.length > 0) {
+        const prvaPoruka = istorijaChata[0];
+        const poslatoAt = Date.parse(prvaPoruka && prvaPoruka.poslatoAt);
+        if (Number.isFinite(poslatoAt) && poslatoAt > granica) break;
+
+        const uklonjenaPoruka = istorijaChata.shift();
+        if (uklonjenaPoruka) originalniTekstoviChatPoruka.delete(uklonjenaPoruka.id);
+    }
+}
+
+async function obrisiIstekleChatPrijave(sada = Date.now()) {
+    if (mongoose.connection.readyState !== 1) return;
+
+    try {
+        await ChatPrijava.deleteMany({
+            prijavljenoAt: { $lt: new Date(sada - CHAT_PRIJAVA_ZADRZAVANJE_MS) }
+        });
+    } catch (error) {
+        console.error('Greška pri brisanju isteklih prijava četa:', error);
+    }
+}
+
+const ciscenjeChatPrijava = setInterval(() => {
+    void obrisiIstekleChatPrijave();
+}, 6 * 60 * 60 * 1000);
+ciscenjeChatPrijava.unref();
 
 // ==========================================
 // ZEMLJOPIS KVIZ — server je jedini izvor tačnih odgovora i poena.
@@ -6974,6 +7008,7 @@ io.on('connection', (socket) => {
         const greska = chatGreskaZaStatus(status);
         if (greska) return callback({ uspeh: false, ...greska, status });
 
+        ocistiIstekleChatPoruke();
         socket.emit('istorijaChata', istorijaChata);
         callback({ uspeh: true, status });
     });
@@ -7004,6 +7039,7 @@ io.on('connection', (socket) => {
             poslatoAt: new Date().toISOString()
         };
         if (proveraSadrzaja.maskirano) originalniTekstoviChatPoruka.set(poruka.id, tekst);
+        ocistiIstekleChatPoruke();
         istorijaChata.push(poruka);
         if (istorijaChata.length > MAX_PORUKA_ISTORIJA) {
             const uklonjenaPoruka = istorijaChata.shift();
@@ -7017,6 +7053,7 @@ io.on('connection', (socket) => {
         const prijavitelj = await ucitajChatIgracaIliOdgovori(socket, callback);
         if (!prijavitelj) return;
 
+        ocistiIstekleChatPoruke();
         const porukaId = typeof podaci.porukaId === "string" ? podaci.porukaId.trim() : "";
         const poruka = istorijaChata.find(stavka => stavka.id === porukaId);
         if (!poruka) return callback({ uspeh: false, kod: "CHAT_PORUKA_NIJE_PRONADJENA", poruka: "Poruka više nije dostupna za prijavu." });
@@ -7025,6 +7062,7 @@ io.on('connection', (socket) => {
         }
 
         try {
+            await obrisiIstekleChatPrijave();
             await ChatPrijava.create({
                 porukaId: poruka.id,
                 prijavljeniPlayerId: poruka.playerId,

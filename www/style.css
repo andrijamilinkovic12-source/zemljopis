@@ -14297,7 +14297,7 @@ body[data-tema] #riznica-screen .riznica-avatari h3 {
 
 body[data-tema] #riznica-screen .riznica-avatari p {
     margin: 0.22rem 0 0;
-    font-size: 0.72rem;
+    font-size: clamp(0.76rem, 1.9vh, 0.88rem);
     font-weight: 700;
     line-height: 1.35;
 }

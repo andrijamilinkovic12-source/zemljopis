@@ -13699,6 +13699,11 @@ body[data-tema] :is(
     -webkit-text-stroke: var(--obrub-teksta-na-pozadini);
 }
 
+/* U splash-u tekst ulazi pomeranjem, bez providnosti koja bi posvetlela plavu. */
+body[data-tema] #splash-screen :is(.splash-quote, .splash-legal-links) {
+    opacity: 1 !important;
+}
+
 body[data-tema] :is(.btn-primary, .btn-finish, .dnevni-result-x2-btn,
     .profile-setup-submit, .invite-btn.filled, .final-bonus-btn, .kb-enter) {
     background: var(--theme-primary-gradient) !important;
@@ -14259,9 +14264,12 @@ body[data-tema] #riznica-screen .riznica-avatar-zaglavlje {
 body[data-tema] #riznica-screen .riznica-avatari h3,
 body[data-tema] #riznica-screen .riznica-avatari p {
     margin: 0;
-    color: var(--tekst-na-pozadini);
+    color: var(--tekst-na-pozadini) !important;
+    -webkit-text-fill-color: var(--tekst-na-pozadini) !important;
     text-align: center;
-    text-shadow: var(--senka-teksta-na-pozadini);
+    text-shadow: var(--senka-teksta-na-pozadini) !important;
+    -webkit-text-stroke: var(--obrub-teksta-na-pozadini);
+    opacity: 1 !important;
 }
 
 body[data-tema] #riznica-screen .riznica-avatari h3 {
@@ -14270,8 +14278,8 @@ body[data-tema] #riznica-screen .riznica-avatari h3 {
 
 body[data-tema] #riznica-screen .riznica-avatari p {
     margin: 0.22rem 0 0;
-    color: var(--tekst-na-pozadini-prigusen);
     font-size: 0.72rem;
+    font-weight: 700;
     line-height: 1.35;
 }
 

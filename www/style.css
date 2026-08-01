@@ -117,6 +117,10 @@ body {
     /* Početni kadar prati native splash; aktivna tema kasnije preuzima svoju pozadinu. */
     background: linear-gradient(135deg, #dff4ff, #f7ead3, #dbeed2);
     color: #ffffff;
+    --tekst-na-pozadini: #0b355f;
+    --tekst-na-pozadini-prigusen: #285478;
+    --tekst-na-pozadini-akcenat: #0a609e;
+    --senka-teksta-na-pozadini: 0 1px 0 rgba(255, 255, 255, 0.88), 0 2px 9px rgba(255, 255, 255, 0.52);
     width: 100%;
     max-width: none; 
     height: 100vh;
@@ -13159,25 +13163,26 @@ body[data-tema] .modal-overlay {
     backdrop-filter: blur(10px);
 }
 
+/* Tekst direktno preko ilustracije je taman; belo ostaje rezervisano za kartice i kontrole. */
 body[data-tema] .splash-quote,
 body[data-tema] .splash-quote p {
-    color: var(--theme-text) !important;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.62), 0 7px 18px rgba(72, 96, 118, 0.18);
+    color: var(--tekst-na-pozadini) !important;
+    text-shadow: var(--senka-teksta-na-pozadini);
 }
 
 body[data-tema] .splash-quote span {
-    color: var(--theme-primary) !important;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.58);
+    color: var(--tekst-na-pozadini-akcenat) !important;
+    text-shadow: var(--senka-teksta-na-pozadini);
 }
 
-body[data-tema] .splash-legal-links .login-legal-copy,
-body[data-tema] .splash-legal-links a {
-    color: var(--theme-muted) !important;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.58);
+body[data-tema] .login-legal-copy,
+body[data-tema] .login-legal-links a {
+    color: var(--tekst-na-pozadini-prigusen) !important;
+    text-shadow: var(--senka-teksta-na-pozadini);
 }
 
-body[data-tema] .splash-legal-links a:active {
-    color: var(--theme-secondary) !important;
+body[data-tema] .login-legal-links a:active {
+    color: var(--tekst-na-pozadini-akcenat) !important;
 }
 
 body[data-tema] .profile-info-panel,
@@ -13668,6 +13673,19 @@ body[data-tema] :is(h1, h2, h3, h4, p, label, small, .sub-mode-label, .stat-valu
     .final-ranking-effect-name, #final-bonus-status, .ad-preview-panel p) {
     color: var(--theme-text) !important;
     text-shadow: 0 2px 8px rgba(0, 13, 35, 0.72);
+}
+
+/* Tekst neposredno na svetloj ilustraciji ne sme naslediti belo iz pravila iznad. */
+body[data-tema] #splash-screen :is(.login-heading h1, .splash-quote, .splash-quote p),
+body[data-tema] #profil-setup-screen .profile-setup-heading :is(h1, p),
+body[data-tema] #riznica-screen .riznica-avatar-zaglavlje :is(h3, p) {
+    color: var(--tekst-na-pozadini) !important;
+    text-shadow: var(--senka-teksta-na-pozadini) !important;
+}
+
+body[data-tema] #riznica-screen .riznica-avatar-zaglavlje p,
+body[data-tema] #profil-setup-screen .profile-setup-heading p {
+    color: var(--tekst-na-pozadini-prigusen) !important;
 }
 
 body[data-tema] :is(.btn-primary, .btn-finish, .dnevni-result-x2-btn,
@@ -14230,9 +14248,9 @@ body[data-tema] #riznica-screen .riznica-avatar-zaglavlje {
 body[data-tema] #riznica-screen .riznica-avatari h3,
 body[data-tema] #riznica-screen .riznica-avatari p {
     margin: 0;
-    color: #fff;
+    color: var(--tekst-na-pozadini);
     text-align: center;
-    text-shadow: none;
+    text-shadow: var(--senka-teksta-na-pozadini);
 }
 
 body[data-tema] #riznica-screen .riznica-avatari h3 {
@@ -14241,7 +14259,7 @@ body[data-tema] #riznica-screen .riznica-avatari h3 {
 
 body[data-tema] #riznica-screen .riznica-avatari p {
     margin: 0.22rem 0 0;
-    color: rgba(220, 244, 255, 0.74);
+    color: var(--tekst-na-pozadini-prigusen);
     font-size: 0.72rem;
     line-height: 1.35;
 }

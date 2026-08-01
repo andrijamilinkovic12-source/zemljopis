@@ -13704,6 +13704,15 @@ body[data-tema] #splash-screen :is(.splash-quote, .splash-legal-links) {
     opacity: 1 !important;
 }
 
+/* Isti vizuelni intenzitet kao naslov „Izaberi avatar”. */
+body[data-tema] :is(
+    #splash-screen .splash-quote p,
+    #splash-screen .login-legal-copy,
+    #riznica-screen .riznica-avatari p
+) {
+    font-weight: 700 !important;
+}
+
 body[data-tema] :is(.btn-primary, .btn-finish, .dnevni-result-x2-btn,
     .profile-setup-submit, .invite-btn.filled, .final-bonus-btn, .kb-enter) {
     background: var(--theme-primary-gradient) !important;

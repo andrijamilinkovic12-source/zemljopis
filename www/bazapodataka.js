@@ -9564,6 +9564,13 @@ const BazaPodataka = {
         return tekst.split('').map(char => mapa[char] || char).join('');
     },
 
+    // U ćirilici su Љ, Њ i Џ zasebna slova. Ne prihvatamo nizove ЛЈ, НЈ i
+    // ДЖ kao njihovu zamenu, jer bi to izjednačilo dva različita načina
+    // pisanja koje ćirilica jasno razlikuje.
+    imaRastavljeniCirilicniDigraf: function(tekst) {
+        return /(?:ДЖ|ЛЈ|НЈ)/.test(String(tekst || '').toUpperCase());
+    },
+
     /**
      * Oblik za poređenje bez dijakritika. Tako unos bez kvačica može proći za
      * odgovarajuće slovo (npr. C za Č, S za Š, Dz za Dž), ali se pri bodovanju
@@ -9590,6 +9597,21 @@ const BazaPodataka = {
             .replace(/Ü/g, "U")
             .replace(/Ş/g, "S")
             .replace(/ß/g, "SS");
+    },
+
+    /**
+     * Normalizuje samo prvo slovo za proveru zadatog slova. DŽ, LJ i NJ
+     * ostaju posebni početni znaci, pa se DŽIBUTI ne računa pod D, niti
+     * LJUBLJANA pod L. Ostala tolerancija bez dijakritika (npr. C za Č)
+     * ostaje ista kao ranije.
+     */
+    normalizujPocetnoSlovo: function(tekst) {
+        const normalizovano = this.normalizujBezDijakritika(String(tekst || ''));
+        if (normalizovano.startsWith("DZ")) return "DZ";
+        if (normalizovano.startsWith("LJ")) return "LJ";
+        if (normalizovano.startsWith("NJ")) return "NJ";
+        if (normalizovano.startsWith("DJ")) return "DJ";
+        return normalizovano.charAt(0);
     },
 
     /**
@@ -9692,14 +9714,16 @@ const BazaPodataka = {
      * Traži reč u bazi uz toleranciju na greške u kucanju
      */
     pronadjiPojamUBazi: function(kategorija, unetaRec, zadatoSlovo) {
+        if (this.imaRastavljeniCirilicniDigraf(unetaRec)) return null;
         let rec = this.presloviULatinicu(unetaRec.trim().toUpperCase());
         let slovo = this.presloviULatinicu(zadatoSlovo.toUpperCase());
         let normalizovanaRec = this.normalizujBezDijakritika(rec);
-        let normalizovanoSlovo = this.normalizujBezDijakritika(slovo);
+        let pocetnoSlovoReci = this.normalizujPocetnoSlovo(rec);
+        let pocetnoZadatoSlovo = this.normalizujPocetnoSlovo(slovo);
 
         // Početno slovo mora biti tačno, uz toleranciju na izostavljene dijakritike
-        // (npr. Cacak je prihvatljiv odgovor za zadato slovo Č, ali AEOGRAD nije za B).
-        if (!normalizovanaRec.startsWith(normalizovanoSlovo)) {
+        // (npr. Cacak je prihvatljiv odgovor za zadato slovo Č, ali Džibuti nije za D).
+        if (pocetnoSlovoReci !== pocetnoZadatoSlovo) {
             return null;
         }
 

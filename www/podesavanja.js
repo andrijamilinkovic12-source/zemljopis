@@ -763,7 +763,7 @@ const PodesavanjaManager = {
             </button>
         `).join('');
 
-        ['postavke-avatar-lista', 'profil-setup-avatar-lista'].forEach(id => {
+        ['postavke-avatar-lista', 'profil-setup-avatar-lista', 'riznica-avatar-lista'].forEach(id => {
             const kontejner = document.getElementById(id);
             if (kontejner) kontejner.innerHTML = html;
         });

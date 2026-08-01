@@ -18,7 +18,8 @@
     "test:gradovi-crne-gore": "node scripts/test-gradovi-crne-gore.mjs",
     "test:gradovi-slovenije": "node scripts/test-gradovi-slovenije.mjs",
     "test:gradovi-ex-yu-alijasi": "node scripts/test-gradovi-ex-yu-alijasi.mjs",
-    "test:kosovo-poruka": "node scripts/test-kosovo-poruka.mjs"
+    "test:kosovo-poruka": "node scripts/test-kosovo-poruka.mjs",
+    "test:srpska-slova": "node scripts/test-srpska-slova.mjs"
   },
   "repository": {
     "type": "git",

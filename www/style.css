@@ -6524,6 +6524,7 @@ body.keyboard-open .dnevni-input-group input {
 
 .riznica-intro-category:nth-child(2) { animation-delay: 110ms; }
 .riznica-intro-category:nth-child(3) { animation-delay: 220ms; }
+.riznica-intro-category:nth-child(4) { animation-delay: 330ms; }
 
 .riznica-intro-category img {
     width: 1.58rem;
@@ -14171,7 +14172,7 @@ body[data-tema] #riznica-screen .riznica-content {
 
 body[data-tema] #riznica-screen .riznica-tabs {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0.3rem;
     flex-shrink: 0;
     margin-bottom: 1rem;
@@ -14189,10 +14190,59 @@ body[data-tema] #toplista-screen .toplista-period-tab {
 }
 
 body[data-tema] #riznica-screen .riznica-tab {
-    min-height: 4.55rem;
+    min-height: 4.4rem;
     padding: 0.42rem 0.18rem;
     border-radius: 10px !important;
-    font-size: 0.75rem;
+    font-size: 0.68rem;
+}
+
+body[data-tema] #riznica-screen .riznica-avatari {
+    padding: 0.9rem;
+    border: 1px solid rgba(220, 244, 255, 0.4);
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7));
+    box-shadow: 0 8px 20px rgba(1, 12, 31, 0.32), inset 0 1px 0 rgba(127, 198, 255, 0.12);
+}
+
+body[data-tema] #riznica-screen .riznica-avatari h3,
+body[data-tema] #riznica-screen .riznica-avatari p {
+    margin: 0;
+    color: #fff;
+    text-align: center;
+    text-shadow: none;
+}
+
+body[data-tema] #riznica-screen .riznica-avatari h3 {
+    font-size: 0.96rem;
+}
+
+body[data-tema] #riznica-screen .riznica-avatari p {
+    margin-top: 0.22rem;
+    color: rgba(220, 244, 255, 0.74);
+    font-size: 0.72rem;
+    line-height: 1.35;
+}
+
+body[data-tema] #riznica-screen .riznica-avatar-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.48rem;
+    margin-top: 0.8rem;
+}
+
+body[data-tema] #riznica-screen .riznica-avatar-grid .avatar-option {
+    border-radius: 10px;
+    background: rgba(2, 15, 42, 0.68);
+    border-color: rgba(220, 244, 255, 0.32);
+}
+
+body[data-tema] #riznica-screen .riznica-avatar-grid .avatar-option.active {
+    border-color: rgba(116, 232, 172, 0.9);
+    background: rgba(116, 232, 172, 0.12);
+    box-shadow: 0 0 14px rgba(116, 232, 172, 0.2);
+}
+
+body[data-tema] #riznica-screen .riznica-avatar-grid .avatar-clay-portrait {
+    transform: scale(1.1);
 }
 
 body[data-tema] #riznica-screen .riznica-tab.active,

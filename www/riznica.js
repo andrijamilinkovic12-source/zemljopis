@@ -210,7 +210,7 @@ const RiznicaManager = {
     promeniKategoriju: function(novaKategorija) {
         this.aktivnaKategorija = novaKategorija;
 
-        const tabovi = ['teme', 'efekti', 'tastature'];
+        const tabovi = ['teme', 'efekti', 'tastature', 'avatari'];
         tabovi.forEach(tab => {
             const btn = document.getElementById('tab-' + tab);
             if (btn) btn.classList.toggle('active', tab === novaKategorija);
@@ -228,8 +228,14 @@ const RiznicaManager = {
             html = this.generisiHTMLTrgovine(this.aktivnaKategorija);
         } else if (this.aktivnaKategorija === 'tastature') {
             html = this.generisiHTMLTastatura();
+        } else if (this.aktivnaKategorija === 'avatari') {
+            html = this.generisiHTMLAvatara();
         }
         kontejner.innerHTML = html;
+
+        if (this.aktivnaKategorija === 'avatari' && typeof PodesavanjaManager !== 'undefined') {
+            PodesavanjaManager.renderujAvatare();
+        }
     },
 
     generisiHTMLTrgovine: function(kategorija) {
@@ -306,6 +312,16 @@ const RiznicaManager = {
 
         html += '</div>';
         return html;
+    },
+
+    generisiHTMLAvatara: function() {
+        return `
+            <section class="riznica-avatari" aria-labelledby="riznica-avatari-naslov">
+                <h3 id="riznica-avatari-naslov">Izaberi avatar</h3>
+                <p>Tvoj avatar se prikazuje u profilu i tokom svake igre.</p>
+                <div class="avatar-grid riznica-avatar-grid" id="riznica-avatar-lista" aria-label="Izbor avatara"></div>
+            </section>
+        `;
     },
 
     kupiPredmet: function(kategorija, predmetId) {

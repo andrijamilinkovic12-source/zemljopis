@@ -2634,8 +2634,14 @@ function klonirajKvizPodatke(vrednost) {
 }
 
 function normalizujKvizTekst(vrednost) {
-    return String(vrednost || '')
-        .trim()
+    const tekst = String(vrednost || '').trim().toUpperCase();
+
+    // U latinici su DŽ, LJ i NJ višeslovna slova, pa kombinovani taster i
+    // zasebni tasteri daju isti validan unos. U ćirilici su Џ, Љ i Њ pojedinačna
+    // slova, zato nizovi ДЖ, ЛЈ i НЈ nisu validne zamene u kvizu.
+    if (BazaPodataka.imaRastavljeniCirilicniDigraf(tekst)) return '';
+
+    return BazaPodataka.presloviULatinicu(tekst)
         .toLocaleLowerCase('sr-Latn-RS')
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
@@ -7388,5 +7394,7 @@ module.exports.kvizTestApi = {
     KVIZ_TEST_BOT_OMOGUCEN,
     KVIZ_TEST_BOT,
     KVIZ_TIPOVI_SA_BONUSOM_BRZINE,
-    dodeliKvizBonusBrzine
+    dodeliKvizBonusBrzine,
+    normalizujKvizTekst,
+    proceniKvizOdgovor
 };

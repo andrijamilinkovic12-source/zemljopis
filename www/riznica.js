@@ -222,6 +222,9 @@ const RiznicaManager = {
         const kontejner = document.getElementById('riznica-sadrzaj');
         if (!kontejner) return;
 
+        const prikazujuSeAvatari = this.aktivnaKategorija === 'avatari';
+        kontejner.classList.toggle('riznica-sadrzaj--avatari', prikazujuSeAvatari);
+
         let html = '';
 
         if (this.aktivnaKategorija === 'teme' || this.aktivnaKategorija === 'efekti') {
@@ -317,9 +320,13 @@ const RiznicaManager = {
     generisiHTMLAvatara: function() {
         return `
             <section class="riznica-avatari" aria-labelledby="riznica-avatari-naslov">
-                <h3 id="riznica-avatari-naslov">Izaberi avatar</h3>
-                <p>Tvoj avatar se prikazuje u profilu i tokom svake igre.</p>
-                <div class="avatar-grid riznica-avatar-grid" id="riznica-avatar-lista" aria-label="Izbor avatara"></div>
+                <header class="riznica-avatar-zaglavlje">
+                    <h3 id="riznica-avatari-naslov">Izaberi avatar</h3>
+                    <p>Tvoj avatar se prikazuje u profilu i tokom svake igre.</p>
+                </header>
+                <div class="riznica-avatar-kolekcija">
+                    <div class="avatar-grid riznica-avatar-grid" id="riznica-avatar-lista" aria-label="Izbor avatara"></div>
+                </div>
             </section>
         `;
     },

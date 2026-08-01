@@ -8658,6 +8658,12 @@ body[data-tema="aurora"] .btn-close { background: rgba(143, 255, 226, 0.14); col
     transform-origin: 50% 78%;
 }
 
+/* U ćirilici je Ј već sastavni deo slova Љ, pa odvojeno J iz latiničnog znaka
+   ne sme da zauzima mesto niti da se prikaže tokom prelaza kroz vrata. */
+#door-transition [data-door-hide-cirilica][hidden] {
+    display: none !important;
+}
+
 .door-logo-letter:not(.door-logo-icon) {
     color: transparent;
     background: linear-gradient(148deg, var(--door-clay-highlight) 0%, var(--door-clay-face) 31%, var(--door-clay-accent) 61%, var(--door-clay-side) 84%, var(--door-clay-base) 100%);

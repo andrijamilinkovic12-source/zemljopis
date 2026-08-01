@@ -13723,6 +13723,27 @@ body[data-tema] #splash-screen .login-legal-links a {
     font-size: clamp(0.76rem, 1.9vh, 0.88rem);
 }
 
+/* Dnevni izazov: samo naslov i opis stoje neposredno na temi. */
+body[data-tema] #dnevni-izazov-screen :is(.dnevni-title, .dnevni-opis, .dnevni-opis *) {
+    color: var(--tekst-na-pozadini) !important;
+    -webkit-text-fill-color: var(--tekst-na-pozadini) !important;
+    -webkit-text-stroke: var(--obrub-teksta-na-pozadini);
+    text-shadow: var(--senka-teksta-na-pozadini) !important;
+}
+
+body[data-tema] #dnevni-izazov-screen .dnevni-opis {
+    font-weight: 700;
+}
+
+/* Neutralna pomoć pri izboru profila je direktno na temi; statusne boje ostaju semantičke. */
+body[data-tema] :is(#splash-screen, #profil-setup-screen) .profile-setup-hint:not(.error):not(.success) {
+    color: var(--tekst-na-pozadini) !important;
+    -webkit-text-fill-color: var(--tekst-na-pozadini) !important;
+    -webkit-text-stroke: var(--obrub-teksta-na-pozadini);
+    text-shadow: var(--senka-teksta-na-pozadini) !important;
+    font-weight: 700;
+}
+
 body[data-tema] :is(.btn-primary, .btn-finish, .dnevni-result-x2-btn,
     .profile-setup-submit, .invite-btn.filled, .final-bonus-btn, .kb-enter) {
     background: var(--theme-primary-gradient) !important;
@@ -13852,7 +13873,7 @@ body[data-tema] :is(
 }
 
 body[data-tema] .page-title {
-    color: #102f59 !important;
+    color: var(--tekst-na-pozadini) !important;
     font-family: 'Poppins', sans-serif;
     font-size: clamp(1.5rem, 6.7vw, 1.7rem) !important;
     font-weight: 900;
@@ -13861,9 +13882,9 @@ body[data-tema] .page-title {
     text-align: center !important;
     text-transform: uppercase;
     background: none;
-    -webkit-text-fill-color: #102f59;
-    -webkit-text-stroke: 0;
-    text-shadow: none !important;
+    -webkit-text-fill-color: var(--tekst-na-pozadini) !important;
+    -webkit-text-stroke: var(--obrub-teksta-na-pozadini);
+    text-shadow: var(--senka-teksta-na-pozadini) !important;
     filter: none;
     z-index: 10;
 }
@@ -14853,13 +14874,15 @@ body[data-tema] #podesavanja-screen .avatar-option .avatar-clay-portrait {
 }
 
 body[data-tema] #podesavanja-screen .settings-swipe-hint {
-    color: #102f59 !important;
+    color: var(--tekst-na-pozadini) !important;
+    -webkit-text-fill-color: var(--tekst-na-pozadini) !important;
+    -webkit-text-stroke: var(--obrub-teksta-na-pozadini);
     font-weight: 700;
-    text-shadow: none !important;
+    text-shadow: var(--senka-teksta-na-pozadini) !important;
 }
 
 body[data-tema] #podesavanja-screen .settings-swipe-hint i {
-    color: #102f59 !important;
+    color: var(--tekst-na-pozadini) !important;
 }
 
 /* ========================================================
@@ -15677,24 +15700,28 @@ body[data-tema] #kvartalni-nivo-screen .kvartal-all-time-icon {
 
 body[data-tema] #kvartalni-nivo-screen .kvartal-heading h3 {
     margin: 0;
-    color: #86d7ff !important;
+    color: var(--tekst-na-pozadini) !important;
+    -webkit-text-fill-color: var(--tekst-na-pozadini) !important;
+    -webkit-text-stroke: var(--obrub-teksta-na-pozadini);
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     font-weight: 800;
     letter-spacing: 0.04em;
-    text-shadow: none !important;
+    text-shadow: var(--senka-teksta-na-pozadini) !important;
     text-transform: uppercase;
 }
 
 body[data-tema] #kvartalni-nivo-screen :is(.kvartal-heading p, .kvartal-info-copy) {
     margin: 0.26rem 0 0;
-    color: #d5f1ff !important;
+    color: var(--tekst-na-pozadini) !important;
+    -webkit-text-fill-color: var(--tekst-na-pozadini) !important;
+    -webkit-text-stroke: var(--obrub-teksta-na-pozadini);
     font-family: 'Poppins', sans-serif;
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.32;
     text-align: center;
-    text-shadow: 0 2px 8px rgba(0, 23, 57, 0.62) !important;
+    text-shadow: var(--senka-teksta-na-pozadini) !important;
 }
 
 body[data-tema] #kvartalni-nivo-screen .kvartal-info-copy {

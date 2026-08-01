@@ -860,7 +860,10 @@ const KvizManager = {
     },
 
     izvorAvatara: function(avatar) {
-        const dozvoljeni = new Set(['atlas', 'luna', 'orion', 'tara', 'niko', 'mila', 'sava', 'zara', 'vuk', 'iris', 'leo', 'nova']);
+        const dozvoljeni = new Set([
+            'atlas', 'luna', 'orion', 'tara', 'niko', 'mila', 'sava', 'zara', 'vuk', 'iris', 'leo', 'nova',
+            'ada', 'hana', 'mina', 'ema', 'sofija', 'nina', 'luka', 'viktor', 'andrej', 'marko', 'filip', 'stefan'
+        ]);
         const identifikator = dozvoljeni.has(avatar) ? avatar : 'atlas';
         return `assets/avatars/${identifikator}-clay-soft-matte-3d.png`;
     },

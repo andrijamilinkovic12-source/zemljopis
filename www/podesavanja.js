@@ -62,7 +62,19 @@ const PodesavanjaManager = {
         vuk: 'assets/avatars/vuk-clay-soft-matte-3d.png',
         iris: 'assets/avatars/iris-clay-soft-matte-3d.png',
         leo: 'assets/avatars/leo-clay-soft-matte-3d.png',
-        nova: 'assets/avatars/nova-clay-soft-matte-3d.png'
+        nova: 'assets/avatars/nova-clay-soft-matte-3d.png',
+        ada: 'assets/avatars/ada-clay-soft-matte-3d.png',
+        hana: 'assets/avatars/hana-clay-soft-matte-3d.png',
+        mina: 'assets/avatars/mina-clay-soft-matte-3d.png',
+        ema: 'assets/avatars/ema-clay-soft-matte-3d.png',
+        sofija: 'assets/avatars/sofija-clay-soft-matte-3d.png',
+        nina: 'assets/avatars/nina-clay-soft-matte-3d.png',
+        luka: 'assets/avatars/luka-clay-soft-matte-3d.png',
+        viktor: 'assets/avatars/viktor-clay-soft-matte-3d.png',
+        andrej: 'assets/avatars/andrej-clay-soft-matte-3d.png',
+        marko: 'assets/avatars/marko-clay-soft-matte-3d.png',
+        filip: 'assets/avatars/filip-clay-soft-matte-3d.png',
+        stefan: 'assets/avatars/stefan-clay-soft-matte-3d.png'
     },
 
     // NAŠI NOVI VIRTUALNI DJ PLEJERI ZA CROSSFADE (NEPRIMETAN PRELAZ)
@@ -76,17 +88,29 @@ const PodesavanjaManager = {
     cirilicaObserver: null,
     avatari: [
         { id: "atlas", naziv: "Atlas", tip: "kartograf", kosa: "#273244", koza: "#ffd1a6", kozaSenka: "#d88b61", odelo: "#1fbf75", detalj: "#f6c453", pozadina: "#0d3b32", pozadina2: "#38ef7d" },
-        { id: "luna", naziv: "Luna", tip: "zvezdana", kosa: "#5630a4", koza: "#f4c6a4", kozaSenka: "#c9816a", odelo: "#4f8cff", detalj: "#ffd166", pozadina: "#18214d", pozadina2: "#8b5cf6" },
-        { id: "orion", naziv: "Orion", tip: "pilot", kosa: "#1b2333", koza: "#d99b73", kozaSenka: "#9f5c3f", odelo: "#ff8a2a", detalj: "#38d9ff", pozadina: "#162133", pozadina2: "#f59e0b" },
-        { id: "tara", naziv: "Tara", tip: "planinarka", kosa: "#184f3b", koza: "#f3c39b", kozaSenka: "#c47e59", odelo: "#b53cf5", detalj: "#7ee787", pozadina: "#123f2d", pozadina2: "#22c55e" },
-        { id: "niko", naziv: "Niko", tip: "cyber", kosa: "#101827", koza: "#e8b891", kozaSenka: "#ac704f", odelo: "#22c55e", detalj: "#00e5ff", pozadina: "#07111f", pozadina2: "#16a34a" },
         { id: "mila", naziv: "Mila", tip: "mornarka", kosa: "#87391f", koza: "#ffcf99", kozaSenka: "#c87948", odelo: "#06b6d4", detalj: "#f9fafb", pozadina: "#083c5f", pozadina2: "#38bdf8" },
-        { id: "sava", naziv: "Sava", tip: "ucenjak", kosa: "#6b3f21", koza: "#f1bd8f", kozaSenka: "#af724e", odelo: "#8b5cf6", detalj: "#f5d061", pozadina: "#2f225c", pozadina2: "#c084fc" },
-        { id: "zara", naziv: "Zara", tip: "pustinjska", kosa: "#3a2318", koza: "#c8895d", kozaSenka: "#7d4f35", odelo: "#eab308", detalj: "#ef4444", pozadina: "#5b3414", pozadina2: "#f59e0b" },
         { id: "vuk", naziv: "Vuk", tip: "polarni", kosa: "#2f3a4a", koza: "#efc6a6", kozaSenka: "#b87b5f", odelo: "#60a5fa", detalj: "#e5f7ff", pozadina: "#102a43", pozadina2: "#7dd3fc" },
-        { id: "iris", naziv: "Iris", tip: "carobnica", kosa: "#d946ef", koza: "#f7c9b0", kozaSenka: "#bd7a65", odelo: "#7c3aed", detalj: "#34d399", pozadina: "#2a174f", pozadina2: "#ec4899" },
+        { id: "luna", naziv: "Luna", tip: "zvezdana", kosa: "#5630a4", koza: "#f4c6a4", kozaSenka: "#c9816a", odelo: "#4f8cff", detalj: "#ffd166", pozadina: "#18214d", pozadina2: "#8b5cf6" },
+        { id: "tara", naziv: "Tara", tip: "planinarka", kosa: "#184f3b", koza: "#f3c39b", kozaSenka: "#c47e59", odelo: "#b53cf5", detalj: "#7ee787", pozadina: "#123f2d", pozadina2: "#22c55e" },
         { id: "leo", naziv: "Leo", tip: "sportista", kosa: "#f59e0b", koza: "#f2b47d", kozaSenka: "#ba7445", odelo: "#ef4444", detalj: "#facc15", pozadina: "#4a1722", pozadina2: "#fb7185" },
-        { id: "nova", naziv: "Nova", tip: "astro", kosa: "#18b7c8", koza: "#d9f7ff", kozaSenka: "#7aa8b6", odelo: "#111827", detalj: "#a78bfa", pozadina: "#07101d", pozadina2: "#22d3ee" }
+        { id: "niko", naziv: "Niko", tip: "cyber", kosa: "#101827", koza: "#e8b891", kozaSenka: "#ac704f", odelo: "#22c55e", detalj: "#00e5ff", pozadina: "#07111f", pozadina2: "#16a34a" },
+        { id: "zara", naziv: "Zara", tip: "pustinjska", kosa: "#3a2318", koza: "#c8895d", kozaSenka: "#7d4f35", odelo: "#eab308", detalj: "#ef4444", pozadina: "#5b3414", pozadina2: "#f59e0b" },
+        { id: "orion", naziv: "Orion", tip: "pilot", kosa: "#1b2333", koza: "#d99b73", kozaSenka: "#9f5c3f", odelo: "#ff8a2a", detalj: "#38d9ff", pozadina: "#162133", pozadina2: "#f59e0b" },
+        { id: "sava", naziv: "Sava", tip: "ucenjak", kosa: "#6b3f21", koza: "#f1bd8f", kozaSenka: "#af724e", odelo: "#8b5cf6", detalj: "#f5d061", pozadina: "#2f225c", pozadina2: "#c084fc" },
+        { id: "iris", naziv: "Iris", tip: "carobnica", kosa: "#d946ef", koza: "#f7c9b0", kozaSenka: "#bd7a65", odelo: "#7c3aed", detalj: "#34d399", pozadina: "#2a174f", pozadina2: "#ec4899" },
+        { id: "nova", naziv: "Nova", tip: "astro", kosa: "#18b7c8", koza: "#d9f7ff", kozaSenka: "#7aa8b6", odelo: "#111827", detalj: "#a78bfa", pozadina: "#07101d", pozadina2: "#22d3ee" },
+        { id: "ada", naziv: "Ada", tip: "matematičarka", kosa: "#4b3026", koza: "#c78352", kozaSenka: "#9d5f37", odelo: "#a884c3", detalj: "#f4cb54", pozadina: "#3a254e", pozadina2: "#d7b5ff" },
+        { id: "hana", naziv: "Hana", tip: "geografkinja", kosa: "#20222d", koza: "#d5a782", kozaSenka: "#a66d4e", odelo: "#2f67bd", detalj: "#36c9cf", pozadina: "#133458", pozadina2: "#69dbe5" },
+        { id: "mina", naziv: "Mina", tip: "zvezdana", kosa: "#9a4e36", koza: "#f0c6aa", kozaSenka: "#c48166", odelo: "#24336f", detalj: "#e6bd4e", pozadina: "#141a45", pozadina2: "#8e9eff" },
+        { id: "ema", naziv: "Ema", tip: "istraživačica", kosa: "#59382e", koza: "#e5b38f", kozaSenka: "#b87c5b", odelo: "#e2765a", detalj: "#c79b47", pozadina: "#5d2631", pozadina2: "#ffad8f" },
+        { id: "sofija", naziv: "Sofija", tip: "knjigoljupka", kosa: "#201b22", koza: "#9c603d", kozaSenka: "#6f3e2a", odelo: "#70294e", detalj: "#c69242", pozadina: "#35152f", pozadina2: "#d77fa7" },
+        { id: "nina", naziv: "Nina", tip: "kvizarka", kosa: "#24212a", koza: "#7f452e", kozaSenka: "#573021", odelo: "#c39225", detalj: "#3852a8", pozadina: "#3e2b11", pozadina2: "#f1c653" },
+        { id: "luka", naziv: "Luka", tip: "kartograf", kosa: "#26232a", koza: "#b7794c", kozaSenka: "#80472e", odelo: "#2757b8", detalj: "#bd913f", pozadina: "#152a61", pozadina2: "#77a9f5" },
+        { id: "viktor", naziv: "Viktor", tip: "hemijski genije", kosa: "#bc603b", koza: "#f0c5a5", kozaSenka: "#bd8063", odelo: "#d76935", detalj: "#66c2e0", pozadina: "#59243e", pozadina2: "#f3a970" },
+        { id: "filip", naziv: "Filip", tip: "kviz majstor", kosa: "#211e24", koza: "#713b28", kozaSenka: "#4a261d", odelo: "#6c43b7", detalj: "#e7dfc8", pozadina: "#2b174e", pozadina2: "#ad83f2" },
+        { id: "marko", naziv: "Marko", tip: "geolog", kosa: "#bc8745", koza: "#edc29e", kozaSenka: "#bd8062", odelo: "#187c8c", detalj: "#c5943d", pozadina: "#123f52", pozadina2: "#5ac6dc" },
+        { id: "stefan", naziv: "Stefan", tip: "atlaski znalac", kosa: "#704128", koza: "#e5b18c", kozaSenka: "#b97555", odelo: "#d69b1d", detalj: "#c39242", pozadina: "#594018", pozadina2: "#f2ca64" },
+        { id: "andrej", naziv: "Andrej", tip: "šampion", kosa: "#272126", koza: "#af6338", kozaSenka: "#783d26", odelo: "#a62f32", detalj: "#d7a73f", pozadina: "#481522", pozadina2: "#e67878" }
     ],
 
     init: function() {

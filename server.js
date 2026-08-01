@@ -3316,7 +3316,9 @@ function brojJedinstvenihOnlineIgraca() {
 
 const DOZVOLJENI_AVATARI = new Set([
     "atlas", "luna", "orion", "tara", "niko", "mila",
-    "sava", "zara", "vuk", "iris", "leo", "nova"
+    "sava", "zara", "vuk", "iris", "leo", "nova",
+    "ada", "hana", "mina", "ema", "sofija", "nina",
+    "luka", "viktor", "andrej", "marko", "filip", "stefan"
 ]);
 
 function ocistiNadimak(vrednost) {

@@ -77,7 +77,19 @@
             'assets/avatars/vuk-clay-soft-matte-3d.png',
             'assets/avatars/iris-clay-soft-matte-3d.png',
             'assets/avatars/leo-clay-soft-matte-3d.png',
-            'assets/avatars/nova-clay-soft-matte-3d.png'
+            'assets/avatars/nova-clay-soft-matte-3d.png',
+            'assets/avatars/ada-clay-soft-matte-3d.png',
+            'assets/avatars/hana-clay-soft-matte-3d.png',
+            'assets/avatars/mina-clay-soft-matte-3d.png',
+            'assets/avatars/ema-clay-soft-matte-3d.png',
+            'assets/avatars/sofija-clay-soft-matte-3d.png',
+            'assets/avatars/nina-clay-soft-matte-3d.png',
+            'assets/avatars/luka-clay-soft-matte-3d.png',
+            'assets/avatars/viktor-clay-soft-matte-3d.png',
+            'assets/avatars/andrej-clay-soft-matte-3d.png',
+            'assets/avatars/marko-clay-soft-matte-3d.png',
+            'assets/avatars/filip-clay-soft-matte-3d.png',
+            'assets/avatars/stefan-clay-soft-matte-3d.png'
         ],
         'kvartalni-nivo-screen': [
             'assets/kvartalni-nivo-istrazivac-clay-soft-3d-v1.png',

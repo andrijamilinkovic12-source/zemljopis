@@ -15808,7 +15808,7 @@ body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-viewport {
     position: relative;
     height: 15rem;
     overflow: hidden;
-    background-color: #061e3c;
+    background-color: #0b5d8d;
     background-image: linear-gradient(rgba(142, 218, 255, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(142, 218, 255, 0.08) 1px, transparent 1px);
     background-size: 1.8rem 1.8rem;
     cursor: grab;
@@ -15821,12 +15821,13 @@ body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-viewport:active {
 }
 
 body[data-tema] #kvartalni-nivo-screen .put-svetska-mapa {
-    filter: grayscale(1) sepia(0.7) hue-rotate(155deg) saturate(1.9) brightness(0.55) contrast(1.22);
+    mix-blend-mode: multiply;
+    filter: grayscale(0.58) sepia(0.72) hue-rotate(155deg) saturate(2.05) brightness(0.88) contrast(1.26);
 }
 
 body[data-tema] #kvartalni-nivo-screen .put-svetska-mapa-izmaglica {
     fill: #082c55;
-    opacity: 0.3;
+    opacity: 0.16;
     pointer-events: none;
 }
 
@@ -15852,13 +15853,13 @@ body[data-tema] #kvartalni-nivo-screen .put-linija {
 }
 
 body[data-tema] #kvartalni-nivo-screen .put-linija-pozadina {
-    stroke: rgba(210, 238, 255, 0.23);
-    stroke-width: 10;
+    stroke: rgba(210, 238, 255, 0.32);
+    stroke-width: 5;
 }
 
 body[data-tema] #kvartalni-nivo-screen .put-linija-napredak {
     stroke: var(--put-boja);
-    stroke-width: 7;
+    stroke-width: 3.5;
     stroke-dasharray: 100;
     stroke-dashoffset: calc(100 - var(--put-napredak));
     transition: stroke-dashoffset 0.55s ease;

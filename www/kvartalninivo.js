@@ -12,7 +12,7 @@ const KvartalniNivoManager = {
             id: 0, ime: "Evropa", min: 0, max: 999, boja: "#74b9ff",
             fokus: [1100, 360, 1.95],
             gradovi: [
-                [1010, 446, "Sevilja"], [1012, 416, "Madrid"], [1018, 383, "Bilbao"], [1043, 354, "Pariz"], [1001, 315, "London"], [1059, 331, "Amsterdam"], [1100, 333, "Berlin"], [1107, 354, "Prag"], [1120, 365, "Beč"], [1140, 370, "Budimpešta"], [1154, 384, "Beograd"], [1180, 397, "Sofija"], [1204, 408, "Istanbul"]
+                [990, 446, "Sevilja"], [1003, 416, "Madrid"], [1007, 383, "Bilbao"], [1037, 354, "Pariz"], [1023, 315, "London"], [1052, 331, "Amsterdam"], [1100, 333, "Berlin"], [1106, 354, "Prag"], [1117, 365, "Beč"], [1132, 370, "Budimpešta"], [1140, 384, "Beograd"], [1156, 397, "Sofija"], [1189, 408, "Istanbul"]
             ],
             gradoviDetalj: [
                 [300, 760, "Sevilja"], [312, 706, "Madrid"], [310, 662, "Bilbao"], [435, 558, "Pariz"], [355, 415, "London"], [480, 478, "Amsterdam"], [665, 474, "Berlin"], [690, 535, "Prag"], [733, 562, "Beč"], [780, 572, "Budimpešta"], [805, 612, "Beograd"], [850, 633, "Sofija"], [910, 657, "Istanbul"]
@@ -430,13 +430,13 @@ const KvartalniNivoManager = {
                             <stop offset="1" stop-color="#13334d" />
                         </linearGradient>
                         <filter id="sjaj-${nivo.id}" x="-30%" y="-30%" width="160%" height="160%">
-                            <feGaussianBlur stdDeviation="5" result="zamagljenje" />
+                            <feGaussianBlur stdDeviation="2" result="zamagljenje" />
                             <feMerge><feMergeNode in="zamagljenje" /><feMergeNode in="SourceGraphic" /></feMerge>
                         </filter>
                     </defs>
                     <image class="put-svetska-mapa" href="assets/put-oko-sveta-svetska-mapa-bez-teksta-v1.png" width="2048" height="1024" />
                     <rect class="put-svetska-mapa-izmaglica" width="2048" height="1024" />
-                    <image class="put-antarktik-na-mapi" href="assets/antarktik-realisticni-led-v1.png" x="982" y="900" width="300" height="300" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
+                    <image class="put-antarktik-na-mapi" href="assets/antarktik-realisticni-led-v1.png" x="274" y="875" width="1500" height="330" preserveAspectRatio="none" aria-hidden="true" />
                     ${evropskaRuta ? `
                         <polyline class="put-linija put-linija-pozadina" points="${tackeEvrope}" pathLength="100" />
                         <polyline class="put-linija put-linija-napredak" points="${tackeEvrope}" pathLength="100" filter="url(#sjaj-${nivo.id})" />
@@ -535,7 +535,7 @@ const KvartalniNivoManager = {
                 const novoSrediste = sredisteDodira();
                 if (prethodniRazmak && prethodnoSrediste && novoSrediste) {
                     const staraSkala = this.mapaTransform.skala;
-                    const novaSkala = Math.max(1, Math.min(4, staraSkala * (noviRazmak / prethodniRazmak)));
+                    const novaSkala = Math.max(1, Math.min(5, staraSkala * (noviRazmak / prethodniRazmak)));
                     const lokalnoX = (prethodnoSrediste.x - this.mapaTransform.x) / staraSkala;
                     const lokalnoY = (prethodnoSrediste.y - this.mapaTransform.y) / staraSkala;
                     this.mapaTransform.skala = novaSkala;
@@ -564,7 +564,7 @@ const KvartalniNivoManager = {
             const fokusX = dogadjaj.clientX - okvir.left;
             const fokusY = dogadjaj.clientY - okvir.top;
             const staraSkala = this.mapaTransform.skala;
-            const novaSkala = Math.max(1, Math.min(4, staraSkala * (dogadjaj.deltaY < 0 ? 1.12 : 0.88)));
+            const novaSkala = Math.max(1, Math.min(5, staraSkala * (dogadjaj.deltaY < 0 ? 1.12 : 0.88)));
             const lokalnoX = (fokusX - this.mapaTransform.x) / staraSkala;
             const lokalnoY = (fokusY - this.mapaTransform.y) / staraSkala;
             this.mapaTransform.skala = novaSkala;

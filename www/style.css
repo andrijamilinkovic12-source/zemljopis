@@ -8034,9 +8034,18 @@ body.keyboard-open .dnevni-input-group input {
     opacity: 0;
 }
 
-#splash-screen > .splash-content,
-#splash-screen > .splash-legal-links {
+#splash-screen > .splash-content {
     position: relative;
+    z-index: 5;
+}
+
+/* Pravni linkovi nisu deo centralnog flex sadržaja: ostaju precizno na sredini dna ekrana. */
+#splash-screen > .splash-legal-links {
+    position: absolute;
+    inset-inline: 0;
+    bottom: max(0.65rem, env(safe-area-inset-bottom));
+    width: min(100% - 1.6rem, 30rem);
+    margin-inline: auto;
     z-index: 5;
 }
 

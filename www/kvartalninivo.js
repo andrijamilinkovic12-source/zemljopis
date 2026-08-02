@@ -565,7 +565,7 @@ const KvartalniNivoManager = {
     },
 
     skratiRutu: function(tacke, procenat) {
-        if (procenat <= 0) return [tacke[0]];
+        if (procenat <= 0) return [tacke[0], tacke[0]];
         if (procenat >= 100) return tacke;
         const duzine = [];
         let ukupno = 0;
@@ -662,11 +662,23 @@ const KvartalniNivoManager = {
                 });
                 mapa.addLayer({
                     id: 'ruta-evrope-pozadina', type: 'line', source: 'ruta-evrope', filter: ['==', ['get', 'vrsta'], 'cela'],
-                    paint: { 'line-color': 'rgba(229, 247, 255, 0.52)', 'line-width': 2.2, 'line-blur': 0.35 }
+                    layout: { 'line-cap': 'round', 'line-join': 'round' },
+                    paint: {
+                        'line-color': 'rgba(194, 230, 250, 0.72)',
+                        'line-width': 3.2,
+                        'line-dasharray': [0.25, 1.35],
+                        'line-blur': 0.15
+                    }
                 });
                 mapa.addLayer({
                     id: 'ruta-evrope-napredak', type: 'line', source: 'ruta-evrope', filter: ['==', ['get', 'vrsta'], 'napredak'],
-                    paint: { 'line-color': nivo.boja, 'line-width': 3.4, 'line-blur': 0.5 }
+                    layout: { 'line-cap': 'round', 'line-join': 'round' },
+                    paint: {
+                        'line-color': '#f5d061',
+                        'line-width': 4.3,
+                        'line-dasharray': [0.32, 1.05],
+                        'line-blur': 0.65
+                    }
                 });
             }
         });

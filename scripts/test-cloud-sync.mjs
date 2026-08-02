@@ -194,7 +194,11 @@ try {
     proveri(prijava.profil.sinhronizacija.napredak.podesavanja.tema === "zlatna", "Cloud napredak nije učitan.");
     proveri(prijava.profil.sinhronizacija.napredak.riznica.dukati === 1200, "Cloud riznica nije vratila tačno stanje dukata.");
     proveri(prijava.profil.dukati === 1200, "Profil nije uskladio dukate sa cloud riznicom.");
-    proveri(prijava.profil.tokeni === 2, "Profil nije uskladio tokene sa cloud stanjem.");
+    proveri(prijava.profil.tokeni === 3, "Tokeni moraju ostati serverski autoritativni, nezavisno od cloud paketa.");
+    proveri(
+        prijava.profil.sinhronizacija.napredak.tokeni?.stanje === 3,
+        "Cloud odgovor nije vratio kanonsko serversko stanje tokena."
+    );
 
     // Drugi gost profil na istom Google nalogu ne sme obrisati prva ostvarenja.
     treciSocket = await povezi(io);

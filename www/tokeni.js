@@ -11,7 +11,7 @@ const TokeniManager = {
     otvaranjeUToku: false,
     
     init: function() {
-        this.proveriDnevniReset();
+        this.ucitajLokalniPrikaz();
     },
 
     normalizujTokeni: function(vrednost) {
@@ -24,22 +24,20 @@ const TokeniManager = {
         this.tokeni = this.normalizujTokeni(vrednost);
         this.snimiStanje();
     },
+
+    postaviServerskoStanje: function(vrednost, datum = null) {
+        this.tokeni = this.normalizujTokeni(vrednost);
+        localStorage.setItem('zemljopis_tokeni_stanje', String(this.tokeni));
+        if (datum) localStorage.setItem('zemljopis_datum_tokena', String(datum));
+        this.azurirajPrikaz();
+    },
     
-    proveriDnevniReset: function() {
-        const danas = new Date().toLocaleDateString();
-        const sacuvanDatum = localStorage.getItem('zemljopis_datum_tokena');
-        
-        if (sacuvanDatum !== danas) {
-            // Novi dan - dodeli 3 besplatna tokena!
-            this.tokeni = this.maxTokena;
-            localStorage.setItem('zemljopis_datum_tokena', danas);
-            this.snimiStanje();
-        } else {
-            // Isti dan - samo pročitaj stanje iz memorije
-            const sacuvaniTokeni = localStorage.getItem('zemljopis_tokeni_stanje');
-            if (sacuvaniTokeni !== null) {
-                this.tokeni = this.normalizujTokeni(sacuvaniTokeni);
-            }
+    ucitajLokalniPrikaz: function() {
+        // Lokalna memorija je samo poslednji prikaz dok se ne javi server.
+        // Reset i stvarno stanje određuje server u zoni igre.
+        const sacuvaniTokeni = localStorage.getItem('zemljopis_tokeni_stanje');
+        if (sacuvaniTokeni !== null) {
+            this.tokeni = this.normalizujTokeni(sacuvaniTokeni);
         }
         this.azurirajPrikaz();
     },
@@ -48,9 +46,6 @@ const TokeniManager = {
         this.tokeni = this.normalizujTokeni(this.tokeni);
         localStorage.setItem('zemljopis_tokeni_stanje', this.tokeni);
         this.azurirajPrikaz();
-        if (typeof SinhronizacijaManager !== "undefined") {
-            SinhronizacijaManager.zakaziSlanje();
-        }
     },
     
     azurirajPrikaz: function() {
@@ -85,23 +80,6 @@ const TokeniManager = {
         return this.tokeni > 0;
     },
     
-    potrosiToken: function() {
-        if (!this.imaTokena()) {
-            this.azurirajPrikaz();
-            return false;
-        }
-
-        this.tokeni--;
-        this.snimiStanje();
-        return true;
-    },
-
-    dodajToken: function(kolicina = 1) {
-        const prethodno = this.tokeni;
-        this.tokeni = this.normalizujTokeni(this.tokeni + kolicina);
-        this.snimiStanje();
-        return this.tokeni > prethodno;
-    },
 
     postaviAdapterReklama: function(adapter) {
         this.adapterReklama = adapter || null;
@@ -204,7 +182,7 @@ const TokeniManager = {
 
         this.otvaranjeUToku = true;
         if (typeof KeyboardManager !== 'undefined') KeyboardManager.hideKeyboard();
-        this.proveriDnevniReset();
+        this.ucitajLokalniPrikaz();
         this.azurirajPrikaz();
 
         this.prikaziIntro(() => {
@@ -265,14 +243,23 @@ const TokeniManager = {
             naslov: 'TOKEN REKLAMA',
             opis: 'Odgledaj reklamu do kraja da dobiješ +1 token za igru.',
             onUspeh: () => {
-                this.dodajToken(1);
-
-                UIManager.prikaziObavestenje(
-                    "Čestitamo!",
-                    "Uspešno si odgledao reklamu i dobio <b style='color:#38ef7d; font-size:1.2rem;'>+1 token</b>!",
-                    null,
-                    "Zatvori"
-                );
+                if (typeof Game === 'undefined' || !Game.socket || !Game.socket.connected) {
+                    UIManager.prikaziObavestenje("Nagrada nije sačuvana", "Poveži se sa serverom pa pokušaj ponovo.", null, "U redu");
+                    return;
+                }
+                Game.socket.timeout(12000).emit('preuzmiTokenNagradu', (greska, odgovor) => {
+                    if (greska || !odgovor || !odgovor.uspeh) {
+                        UIManager.prikaziObavestenje("Nagrada nije sačuvana", "Token trenutno nije moguće dodati. Pokušaj ponovo kasnije.", null, "U redu");
+                        return;
+                    }
+                    this.postaviServerskoStanje(odgovor.tokeni, odgovor.datum);
+                    UIManager.prikaziObavestenje(
+                        "Čestitamo!",
+                        "Uspešno si odgledao reklamu i dobio <b style='color:#38ef7d; font-size:1.2rem;'>+1 token</b>!",
+                        null,
+                        "Zatvori"
+                    );
+                });
             },
             onNeuspeh: poruka => {
                 UIManager.prikaziObavestenje(

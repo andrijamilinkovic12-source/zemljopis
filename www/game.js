@@ -186,7 +186,10 @@ const Game = {
                     dukatiEl.innerText = podaci.dukati;
                 }
                 if (typeof TokeniManager !== 'undefined') {
-                    TokeniManager.azurirajPrikaz();
+                    TokeniManager.postaviServerskoStanje(
+                        podaci.tokeni,
+                        podaci.sinhronizacija?.napredak?.tokeni?.datum
+                    );
                 } else {
                     if (tokeniEl) tokeniEl.innerText = `${podaci.tokeni}/3`;
                     if (tokeniVelikoEl) tokeniVelikoEl.innerText = podaci.tokeni;
@@ -329,6 +332,21 @@ const Game = {
             this.socket.on('igraPocela', (podaci) => {
                 UIManager.zatvoriObavestenje();
                 this.pokreniIgru('multi', podaci.slovo, podaci);
+            });
+
+            this.socket.on('tokeniAzurirani', (podaci = {}) => {
+                if (typeof TokeniManager !== 'undefined') {
+                    TokeniManager.postaviServerskoStanje(podaci.stanje, podaci.datum);
+                }
+            });
+
+            this.socket.on('pocetakMecaOdbijen', (podaci = {}) => {
+                UIManager.prikaziObavestenje(
+                    'Meč nije počeo',
+                    podaci.poruka || 'Jedan od igrača nema token za ovaj meč.',
+                    null,
+                    'U redu'
+                );
             });
 
             this.socket.on('sviOdgovoriPrikupjeni', (odgovoriSobe, vremenskiPlan = {}) => {
@@ -1189,19 +1207,8 @@ const Game = {
 
     pokreniIgru: function(mod, zadatoSlovoSaServera = null, podaciRunde = {}) {
         if (!this.profilSpremanZaIgru()) return;
-        if (typeof TokeniManager !== 'undefined') {
-            if (!TokeniManager.imaTokena()) {
-                if (mod === 'multi' && this.socket) {
-                    this.socket.emit('napustiSobu', 'bez_tokena');
-                    this.trenutnaSoba = null;
-                    this.jeHost = false;
-                }
-                UIManager.prikaziObavestenje("Nemaš više tokena!", "Potrošio si sve tokene za danas. Poseti sekciju za tokene da nabaviš nove preko reklame.", () => { TokeniManager.otvoriEkran(); }, "Nabavi tokene");
-                return;
-            }
-
-            if (!TokeniManager.potrosiToken()) return;
-        }
+        // Server je već atomski proverio i naplatio token pre 'igraPocela'.
+        // Ovde samo otvaramo potvrđeni meč; ne skidamo token drugi put.
 
         this.trenutniMod = mod;
         this.postaviTipOnlineModa(podaciRunde);

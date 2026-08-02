@@ -51,10 +51,6 @@ const SinhronizacijaManager = {
             riznica: this.procitajJSON("zemljopis_riznica", null),
             trofeji: this.procitajJSON("zemljopis_trofeji", []),
             dnevniIzazov: this.procitajJSON("zemljopis_dnevni_izazov", null),
-            tokeni: {
-                stanje: Number(localStorage.getItem("zemljopis_tokeni_stanje") || 3),
-                datum: localStorage.getItem("zemljopis_datum_tokena")
-            },
             kvartal: this.procitajJSON("zemljopis_kvartal", {
                 sezonskiPojmovi: 0,
                 svaVremenaPojmovi: 0
@@ -277,8 +273,10 @@ const SinhronizacijaManager = {
             if (typeof napredak.tokeni.stanje !== "undefined") {
                 localStorage.setItem("zemljopis_tokeni_stanje", String(napredak.tokeni.stanje));
                 if (typeof TokeniManager !== "undefined") {
-                    TokeniManager.tokeni = TokeniManager.normalizujTokeni(napredak.tokeni.stanje);
-                    TokeniManager.proveriDnevniReset();
+                    TokeniManager.postaviServerskoStanje(
+                        napredak.tokeni.stanje,
+                        napredak.tokeni.datum
+                    );
                 }
             }
         }

@@ -160,6 +160,9 @@ const IgracSchema = new mongoose.Schema({
     },
     dukati: { type: Number, default: 500 },
     tokeni: { type: Number, default: 3 },
+    // Tokeni su potrošna, serverska valuta. Datum je u vremenskoj zoni igre,
+    // nikada datum koji šalje uređaj.
+    tokeniDatum: { type: String, default: () => datumIdBeograd() },
     sezonskiPojmovi: { type: Number, default: 0 },
     sezonskiCiklus: { type: String, default: () => oznakaKvartala() },
     svaVremenaPojmovi: { type: Number, default: 0 },
@@ -3568,7 +3571,6 @@ function sanitizujCloudNapredak(napredak) {
         "riznica",
         "trofeji",
         "dnevniIzazov",
-        "tokeni",
         "kvartal",
         "prijatelji"
     ];
@@ -3593,7 +3595,7 @@ function podaciSinhronizacijeZaKlijenta(igrac) {
         revizija: igrac.cloudRevizija || 0,
         imaPodatke: Boolean(igrac.lokalnaMigracijaZavrsena),
         azurirano: igrac.cloudAzuriranAt,
-        napredak: igrac.cloudNapredak || {}
+        napredak: napredakSaServerskimTokenima(igrac)
     };
 }
 
@@ -3627,6 +3629,111 @@ function deloviDatumaBeograd(datum = new Date()) {
 function datumIdBeograd(datum = new Date()) {
     const delovi = deloviDatumaBeograd(datum);
     return `${delovi.year}-${delovi.month}-${delovi.day}`;
+}
+
+function stanjeTokenaZaDanas(igrac, danas = datumIdBeograd()) {
+    if (!igrac || igrac.tokeniDatum !== danas) {
+        return { stanje: 3, datum: danas };
+    }
+    return { stanje: normalizujTokeni(igrac.tokeni), datum: danas };
+}
+
+function napredakSaServerskimTokenima(igrac) {
+    const napredak = objektIliPrazan(igrac && igrac.cloudNapredak);
+    return {
+        ...napredak,
+        tokeni: stanjeTokenaZaDanas(igrac)
+    };
+}
+
+// Jedan atomski upis proverava dnevni reset i troši token. Klijent nikada ne
+// može da nametne stanje tokena promenom localStorage-a ili cloud paketa.
+async function potrosiServerskiToken(bazaId) {
+    const danas = datumIdBeograd();
+    const igrac = await Igrac.findOneAndUpdate(
+        {
+            _id: bazaId,
+            $or: [
+                { tokeniDatum: { $ne: danas } },
+                { tokeniDatum: danas, tokeni: { $gt: 0 } }
+            ]
+        },
+        [
+            {
+                $set: {
+                    tokeni: {
+                        $cond: [
+                            { $eq: ["$tokeniDatum", danas] },
+                            { $ifNull: ["$tokeni", 3] },
+                            3
+                        ]
+                    },
+                    tokeniDatum: danas
+                }
+            },
+            { $set: { tokeni: { $subtract: ["$tokeni", 1] } } }
+        ],
+        { new: true }
+    );
+    return igrac;
+}
+
+async function vratiServerskiToken(bazaId) {
+    const danas = datumIdBeograd();
+    return Igrac.findOneAndUpdate(
+        { _id: bazaId },
+        [
+            {
+                $set: {
+                    tokeni: {
+                        $min: [3, {
+                            $add: [{
+                                $cond: [
+                                    { $eq: ["$tokeniDatum", danas] },
+                                    { $ifNull: ["$tokeni", 3] },
+                                    3
+                                ]
+                            }, 1]
+                        }]
+                    },
+                    tokeniDatum: danas
+                }
+            }
+        ],
+        { new: true }
+    );
+}
+
+async function dodajServerskiToken(bazaId) {
+    const danas = datumIdBeograd();
+    return Igrac.findOneAndUpdate(
+        { _id: bazaId },
+        [
+            {
+                $set: {
+                    tokeni: {
+                        $min: [3, {
+                            $add: [{
+                                $cond: [
+                                    { $eq: ["$tokeniDatum", danas] },
+                                    { $ifNull: ["$tokeni", 3] },
+                                    3
+                                ]
+                            }, 1]
+                        }]
+                    },
+                    tokeniDatum: danas
+                }
+            }
+        ],
+        { new: true }
+    );
+}
+
+function posaljiStanjeTokena(socketId, igrac) {
+    if (!igrac) return;
+    const stanje = stanjeTokenaZaDanas(igrac);
+    io.to(socketId).emit("tokeniAzurirani", stanje);
 }
 
 function datumLabelaBeograd(datum = new Date()) {
@@ -4058,23 +4165,6 @@ function spojiTrofeje(postojeci = [], dolazni = []) {
     return Array.from(mapa.values());
 }
 
-function spojiTokeni(postojeci, dolazni) {
-    const stari = objektIliPrazan(postojeci);
-    const novi = objektIliPrazan(dolazni);
-    if (!Object.keys(stari).length) return novi;
-    if (!Object.keys(novi).length) return stari;
-
-    return {
-        ...stari,
-        ...novi,
-        stanje: Math.max(
-            normalizujTokeni(stari.stanje, 0),
-            normalizujTokeni(novi.stanje, 0)
-        ),
-        datum: novi.datum || stari.datum || null
-    };
-}
-
 function spojiKvartal(postojeci, dolazni) {
     const stari = objektIliPrazan(postojeci);
     const novi = objektIliPrazan(dolazni);
@@ -4210,7 +4300,6 @@ function spojiCloudNapredak(postojeci, dolazni) {
     };
     spojeno.riznica = spojiRiznicu(stari.riznica, novi.riznica);
     spojeno.trofeji = spojiTrofeje(stari.trofeji, novi.trofeji);
-    spojeno.tokeni = spojiTokeni(stari.tokeni, novi.tokeni);
     spojeno.kvartal = spojiKvartal(stari.kvartal, novi.kvartal);
     spojeno.prijatelji = spojiPrijatelje(stari.prijatelji, novi.prijatelji);
 
@@ -4227,12 +4316,6 @@ function primeniNapredakNaBrojkeProfila(igrac, napredak) {
         && typeof napredak.riznica.dukati !== "undefined"
     ) {
         igrac.dukati = normalizujDukate(napredak.riznica.dukati, igrac.dukati || 500);
-    }
-    if (
-        napredak.tokeni
-        && typeof napredak.tokeni.stanje !== "undefined"
-    ) {
-        igrac.tokeni = normalizujTokeni(napredak.tokeni.stanje, igrac.tokeni || 3);
     }
     if (napredak.kvartal) {
         if (typeof napredak.kvartal.sezonskiPojmovi !== "undefined") {
@@ -4260,7 +4343,7 @@ function podaciProfilaZaKlijenta(igrac) {
         googlePovezan: Boolean(igrac.googleUid),
         googleUid: igrac.googleUid || null,
         dukati: normalizujDukate(igrac.dukati),
-        tokeni: normalizujTokeni(igrac.tokeni),
+        tokeni: stanjeTokenaZaDanas(igrac).stanje,
         sezonskiPojmovi: igrac.sezonskiPojmovi,
         svaVremenaPojmovi: igrac.svaVremenaPojmovi,
         sinhronizacija: podaciSinhronizacijeZaKlijenta(igrac)
@@ -5322,7 +5405,35 @@ function zavrsiRunduUSobi(soba, razlog = "svi_odgovorili") {
     console.log(`Runda ${soba.trenutnaRunda} u sobi ${soba.id} zaključena (${razlog}).`);
 }
 
-function zapocniRunduUSobi(soba, io, planiraniPocetakAt = null) {
+async function naplatiTokeneZaPocetakMeca(soba) {
+    const ucesnici = [...soba.igraci];
+    const naplaceni = [];
+    let bezTokena = null;
+
+    for (const igracUSobi of ucesnici) {
+        const igrac = await potrosiServerskiToken(igracUSobi.bazaId);
+        if (!igrac) {
+            bezTokena = igracUSobi;
+            break;
+        }
+        naplaceni.push({ igracUSobi, igrac });
+    }
+
+    const sastavSobeSePromenio = (
+        sobe[soba.id] !== soba
+        || soba.igraci.length !== ucesnici.length
+        || ucesnici.some(igracUSobi => !soba.igraci.some(igrac => igrac.id === igracUSobi.id))
+    );
+    if (bezTokena || sastavSobeSePromenio) {
+        await Promise.all(naplaceni.map(({ igracUSobi }) => vratiServerskiToken(igracUSobi.bazaId)));
+        return { uspeh: false, bezTokena, sastavSobeSePromenio };
+    }
+
+    naplaceni.forEach(({ igracUSobi, igrac }) => posaljiStanjeTokena(igracUSobi.id, igrac));
+    return { uspeh: true };
+}
+
+async function zapocniRunduUSobi(soba, io, planiraniPocetakAt = null) {
     if (!soba || sobe[soba.id] !== soba || soba.igraci.length === 0) return;
 
     if (soba.timeoutCekanjaSledeceRunde) {
@@ -5332,6 +5443,28 @@ function zapocniRunduUSobi(soba, io, planiraniPocetakAt = null) {
 
     if (soba.trenutnaRunda === 0) {
         if (soba.igraci.length < 2) return;
+        if (soba.naplataTokenaUToku) return;
+        soba.naplataTokenaUToku = true;
+        let naplata;
+        try {
+            naplata = await naplatiTokeneZaPocetakMeca(soba);
+        } catch (error) {
+            console.error(`Greška pri naplati tokena za sobu ${soba.id}:`, error);
+            soba.naplataTokenaUToku = false;
+            io.to(soba.id).emit('pocetakMecaOdbijen', {
+                poruka: 'Tokeni trenutno nisu dostupni. Pokušajte ponovo.'
+            });
+            return;
+        }
+        soba.naplataTokenaUToku = false;
+        if (!naplata.uspeh) {
+            io.to(soba.id).emit('pocetakMecaOdbijen', {
+                poruka: naplata.sastavSobeSePromenio
+                    ? 'Sastav sobe se promenio. Sačekajte sve igrače pa pokušajte ponovo.'
+                    : `${naplata.bezTokena.ime} nema dovoljan broj tokena za početak meča.`
+            });
+            return;
+        }
         pripremiIdentitetOnlineMeca(soba);
     }
 
@@ -6183,6 +6316,23 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Nagrada se čuva na serveru da se ne izgubi pri sinhronizaciji ili promeni uređaja.
+    // Produkcijski AdMob adapter treba da poziva ovaj događaj tek po potvrđenoj rewarded reklami.
+    socket.on('preuzmiTokenNagradu', async (callback = () => {}) => {
+        const onlineIgrac = onlineIgraci[socket.id];
+        if (!onlineIgrac) return callback({ uspeh: false, kod: 'PROFIL_NIJE_PRIJAVLJEN' });
+        try {
+            const igrac = await dodajServerskiToken(onlineIgrac.bazaId);
+            if (!igrac) return callback({ uspeh: false, kod: 'PROFIL_NIJE_PRONADJEN' });
+            const stanje = stanjeTokenaZaDanas(igrac);
+            posaljiStanjeTokena(socket.id, igrac);
+            callback({ uspeh: true, tokeni: stanje.stanje, datum: stanje.datum });
+        } catch (error) {
+            console.error('Greška pri dodeli tokena za reklamu:', error);
+            callback({ uspeh: false, kod: 'GRESKA_SERVERA' });
+        }
+    });
+
     // --- POVEZIVANJE GOST PROFILA SA GOOGLE UID NALOGOM ---
     socket.on('poveziGoogleNalog', async (podaci = {}, callback = () => {}) => {
         const profilKljuc = podaci && podaci.profilKljuc;
@@ -6247,10 +6397,6 @@ io.on('connection', (socket) => {
                 googleIgrac.dukati = Math.max(
                     normalizujDukate(googleIgrac.dukati, 500),
                     normalizujDukate(lokalniIgrac.dukati, 500)
-                );
-                googleIgrac.tokeni = Math.max(
-                    normalizujTokeni(googleIgrac.tokeni, 3),
-                    normalizujTokeni(lokalniIgrac.tokeni, 3)
                 );
                 googleIgrac.sezonskiPojmovi = Math.max(
                     Number(googleIgrac.sezonskiPojmovi) || 0,

@@ -1005,16 +1005,16 @@ body[data-tema="svetla"] #profil-setup-nadimak {
     gap: 0.46rem;
     padding: 0.48rem 0.62rem 0.48rem 0.42rem;
     overflow: hidden;
-    border: 1px solid rgba(234, 230, 255, 0.19);
+    border: 1px solid rgba(205, 239, 255, 0.46);
     border-radius: 19px 24px 18px 25px / 22px 18px 24px 20px;
     background:
-        radial-gradient(circle at 11% 2%, rgba(112, 219, 255, 0.2), transparent 34%),
-        linear-gradient(145deg, rgba(73, 58, 126, 0.96), rgba(31, 29, 70, 0.98));
+        radial-gradient(circle at 11% 2%, rgba(183, 237, 255, 0.3), transparent 34%),
+        linear-gradient(145deg, rgba(42, 128, 181, 0.7), rgba(12, 61, 116, 0.62));
     box-shadow:
-        5px 7px 13px rgba(6, 6, 28, 0.32),
-        -2px -2px 8px rgba(137, 109, 197, 0.1),
+        5px 7px 13px rgba(1, 22, 54, 0.27),
+        -2px -2px 8px rgba(157, 223, 255, 0.13),
         inset 1px 1px 0 rgba(255, 255, 255, 0.17),
-        inset -5px -6px 10px rgba(17, 14, 46, 0.22);
+        inset -5px -6px 10px rgba(3, 39, 84, 0.18);
     animation: toplistaKarticaUlazak 420ms var(--toplista-red-delay, 0ms) cubic-bezier(.18, .82, .28, 1) both;
 }
 
@@ -1032,15 +1032,15 @@ body[data-tema="svetla"] #profil-setup-nadimak {
 }
 
 .toplista-red.ja {
-    border-color: rgba(137, 243, 190, 0.76);
+    border-color: rgba(151, 229, 255, 0.82);
     background:
-        radial-gradient(circle at 10% 4%, rgba(151, 255, 207, 0.27), transparent 35%),
-        linear-gradient(145deg, rgba(37, 118, 106, 0.98), rgba(20, 61, 76, 0.99));
+        radial-gradient(circle at 10% 4%, rgba(198, 244, 255, 0.34), transparent 35%),
+        linear-gradient(145deg, rgba(48, 153, 196, 0.76), rgba(11, 77, 132, 0.68));
     box-shadow:
-        0 0 0 1px rgba(56, 239, 125, 0.12),
-        5px 8px 16px rgba(5, 29, 36, 0.38),
-        inset 1px 1px 0 rgba(234, 255, 245, 0.2),
-        inset -5px -6px 10px rgba(5, 43, 53, 0.22);
+        0 0 0 1px rgba(107, 211, 255, 0.17),
+        5px 8px 16px rgba(3, 32, 71, 0.31),
+        inset 1px 1px 0 rgba(238, 252, 255, 0.24),
+        inset -5px -6px 10px rgba(4, 51, 96, 0.2);
 }
 
 .toplista-medalja-slot {
@@ -1082,8 +1082,8 @@ body[data-tema="svetla"] #profil-setup-nadimak {
     overflow: hidden;
     border: 1px solid rgba(238, 247, 255, 0.59);
     border-radius: 15px 17px 14px 18px / 16px 14px 18px 15px;
-    background: linear-gradient(145deg, rgba(148, 222, 255, 0.42), rgba(67, 52, 135, 0.78));
-    box-shadow: 3px 4px 8px rgba(4, 4, 25, 0.37), inset 1px 1px 0 rgba(255, 255, 255, 0.28);
+    background: linear-gradient(145deg, rgba(167, 226, 255, 0.46), rgba(20, 86, 150, 0.68));
+    box-shadow: 3px 4px 8px rgba(2, 24, 56, 0.31), inset 1px 1px 0 rgba(255, 255, 255, 0.28);
 }
 
 .toplista-avatar .avatar-svg {
@@ -1116,7 +1116,7 @@ body[data-tema="svetla"] #profil-setup-nadimak {
 }
 
 .toplista-red.ja .toplista-pozicija {
-    color: rgba(192, 255, 218, 0.84);
+    color: rgba(211, 247, 255, 0.88);
 }
 
 .toplista-igrac {
@@ -1158,10 +1158,10 @@ body[data-tema="svetla"] #profil-setup-nadimak {
 .toplista-empty {
     margin: auto 0;
     padding: 1.25rem 1rem;
-    border: 1px solid rgba(234, 230, 255, 0.19);
+    border: 1px solid rgba(205, 239, 255, 0.46);
     border-radius: 19px 24px 18px 25px / 22px 18px 24px 20px;
-    background: linear-gradient(145deg, rgba(73, 58, 126, 0.94), rgba(31, 29, 70, 0.97));
-    box-shadow: 5px 7px 13px rgba(6, 6, 28, 0.32), inset 1px 1px 0 rgba(255, 255, 255, 0.15);
+    background: linear-gradient(145deg, rgba(42, 128, 181, 0.7), rgba(12, 61, 116, 0.62));
+    box-shadow: 5px 7px 13px rgba(1, 22, 54, 0.27), inset 1px 1px 0 rgba(255, 255, 255, 0.15);
     color: rgba(240, 245, 255, 0.85);
     font-size: 0.78rem;
     font-weight: 700;
@@ -13393,7 +13393,6 @@ body[data-tema] .login-legal-links a:active {
 }
 
 body[data-tema] .profile-info-panel,
-body[data-tema] .toplista-shell,
 body[data-tema] #toplista-sadrzaj > div,
 body[data-tema] #kvartalni-nivo-sadrzaj > div,
 body[data-tema] .summary-card,
@@ -13829,7 +13828,6 @@ body[data-tema] .online-igrac-red,
 body[data-tema] .prijatelj-kartica,
 body[data-tema] .dnevni-aktivni-zadatak,
 body[data-tema] .profile-info-panel,
-body[data-tema] .toplista-shell,
 body[data-tema] #toplista-sadrzaj > div,
 body[data-tema] #kvartalni-nivo-sadrzaj > div,
 body[data-tema] .summary-card,
@@ -14122,14 +14120,6 @@ body[data-tema] .toplista-shell {
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-}
-
-body[data-tema] #toplista-sadrzaj {
-    background: var(--theme-panel) !important;
-    border-color: var(--theme-border) !important;
-    box-shadow: var(--theme-shadow) !important;
-    backdrop-filter: blur(16px) saturate(1.16);
-    -webkit-backdrop-filter: blur(16px) saturate(1.16);
 }
 
 /* Pravila i Novosti su dve zasebne kartice; njihov red i footer nisu kartice. */
@@ -14631,87 +14621,6 @@ body[data-tema] #toplista-screen .toplista-period-tab {
     font-size: 0.72rem;
 }
 
-body[data-tema] #toplista-screen #toplista-sadrzaj {
-    background: linear-gradient(145deg, rgba(7, 29, 67, 0.97), rgba(10, 48, 91, 0.95)) !important;
-    border-color: rgba(255, 255, 255, 0.22) !important;
-    box-shadow: 0 10px 22px rgba(0, 15, 44, 0.28) !important;
-}
-
-body[data-tema] #toplista-screen .toplista-empty {
-    margin: 2rem auto 0;
-    padding: 0 0.5rem;
-    color: #fff !important;
-    font-size: 1rem;
-    font-weight: 500;
-    line-height: 1.35;
-    text-align: center;
-    text-shadow: none !important;
-}
-
-body[data-tema] #toplista-screen .toplista-red {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.65rem;
-    padding: 0.8rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.13);
-    border-radius: 8px;
-    color: #fff;
-}
-
-body[data-tema] #toplista-screen .toplista-red.ja {
-    background: rgba(116, 232, 172, 0.1);
-}
-
-body[data-tema] #toplista-screen .toplista-red-levo {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    min-width: 0;
-}
-
-body[data-tema] #toplista-screen .toplista-red:last-child {
-    border-bottom: 0;
-}
-
-body[data-tema] #toplista-screen .toplista-redni-broj {
-    display: inline-block;
-    width: 1.5rem;
-    color: rgba(255, 255, 255, 0.72);
-    font-size: 0.9rem;
-    text-align: center;
-}
-
-body[data-tema] #toplista-screen .toplista-igrac,
-body[data-tema] #toplista-screen .toplista-poeni {
-    color: #fff !important;
-    font-size: 0.95rem;
-    text-shadow: none !important;
-}
-
-body[data-tema] #toplista-screen .toplista-igrac {
-    overflow: hidden;
-    font-weight: 600;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-body[data-tema] #toplista-screen .toplista-red.ja .toplista-igrac {
-    color: #74e8ac !important;
-    font-weight: 800;
-}
-
-body[data-tema] #toplista-screen .toplista-poeni {
-    flex-shrink: 0;
-    font-weight: 800;
-}
-
-body[data-tema] #toplista-screen .toplista-poeni-oznaka {
-    color: rgba(255, 255, 255, 0.66) !important;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
-
 /* Teget kartice koriste istu providnost kao podrazumevane splash kartice.
    Boja je namerno fiksna: tema ne sme da ih pretvori u bele površine. */
 body[data-tema] :is(
@@ -14720,8 +14629,7 @@ body[data-tema] :is(
     #soba-prijatelja-screen .online-igrac-red,
     #soba-prijatelja-screen .soba-prijatelja-empty,
     #riznica-screen .riznica-kartica,
-    #riznica-screen .tastatura-kartica,
-    #toplista-screen #toplista-sadrzaj
+    #riznica-screen .tastatura-kartica
 ) {
     background: linear-gradient(145deg, rgba(4, 18, 44, 0.82), rgba(8, 35, 70, 0.7)) !important;
     border-color: rgba(220, 244, 255, 0.4) !important;

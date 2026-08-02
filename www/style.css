@@ -15874,6 +15874,80 @@ body[data-tema] #kvartalni-nivo-screen .put-stajaliste.pocetak circle {
     fill: var(--put-boja);
 }
 
+body[data-tema] #kvartalni-nivo-screen .put-stajaliste.zavrsna-tacka circle {
+    fill: #f5d061;
+    stroke: #fff4c2;
+    stroke-width: 5;
+    filter: drop-shadow(0 0 7px rgba(245, 208, 97, 0.92));
+}
+
+.antarktik-dolazak-overlay {
+    position: fixed;
+    z-index: 10050;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    padding: 1.4rem;
+    background: radial-gradient(circle at 50% 42%, rgba(143, 230, 255, 0.28), transparent 32%), linear-gradient(160deg, rgba(4, 19, 48, 0.98), rgba(8, 68, 112, 0.96));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.42s ease;
+}
+
+.antarktik-dolazak-overlay.active { opacity: 1; }
+
+.antarktik-ledeni-sjaj {
+    position: absolute;
+    width: 16rem;
+    height: 16rem;
+    border: 1px solid rgba(202, 248, 255, 0.6);
+    border-radius: 50%;
+    box-shadow: 0 0 2.5rem rgba(117, 229, 255, 0.8), inset 0 0 2rem rgba(199, 249, 255, 0.42);
+    animation: antarktikSjaj 2.5s ease-in-out infinite;
+}
+
+.antarktik-pahulje {
+    position: absolute;
+    inset: 0;
+    color: rgba(228, 252, 255, 0.92);
+    font-size: 1.6rem;
+    letter-spacing: 1.1rem;
+    text-align: center;
+    transform: translateY(-15%);
+    animation: antarktikSneg 4.6s linear infinite;
+}
+
+.antarktik-dolazak-sadrzaj {
+    position: relative;
+    display: grid;
+    max-width: 20rem;
+    justify-items: center;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+}
+
+.antarktik-kruna {
+    display: grid;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-bottom: 1rem;
+    place-items: center;
+    border: 1px solid rgba(255, 241, 172, 0.8);
+    border-radius: 50%;
+    color: #ffe27a;
+    font-size: 1.8rem;
+    box-shadow: 0 0 1.6rem rgba(255, 223, 119, 0.68);
+}
+
+.antarktik-dolazak-sadrzaj span { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.16em; color: #b6edff; }
+.antarktik-dolazak-sadrzaj strong { margin-top: 0.45rem; font-size: 1.12rem; line-height: 1.2; }
+.antarktik-dolazak-sadrzaj p { margin: 0.6rem 0 0; color: rgba(230, 249, 255, 0.78); font-size: 0.72rem; }
+
+@keyframes antarktikSjaj { 50% { transform: scale(1.12); opacity: 0.6; } }
+@keyframes antarktikSneg { to { transform: translateY(110%); } }
+
 body[data-tema] #kvartalni-nivo-screen .put-stajaliste text {
     fill: rgba(241, 250, 255, 0.92);
     font-family: 'Poppins', sans-serif;

@@ -39,14 +39,9 @@ const KvartalniNivoManager = {
             gradovi: [[620, 585, "Bogota"], [630, 640, "Kito"], [625, 700, "Lima"], [690, 720, "La Paz"], [680, 850, "Santijago"], [752, 820, "Buenos Ajres"], [790, 740, "Rio de Žaneiro"]]
         },
         {
-            id: 5, ime: "Afrika", min: 14000, max: 19999, boja: "#f4c36a",
+            id: 5, ime: "Afrika", min: 14000, max: Infinity, cilj: 20000, boja: "#f4c36a",
             fokus: [1100, 620, 1.8],
-            gradovi: [[974, 458, "Kazablanka"], [1015, 472, "Alžir"], [1174, 506, "Kairo"], [1175, 645, "Najrobi"], [1186, 682, "Dar es Salam"], [1128, 860, "Kejptaun"]]
-        },
-        {
-            id: 6, ime: "Antarktik", min: 20000, max: Infinity, boja: "#b9e7ff",
-            fokus: [1060, 915, 1.65],
-            gradovi: [[900, 930, "Poluostrvo"], [1120, 900, "Stanica Vostok"], [1050, 965, "Južni pol"], [1290, 930, "Roso more"]]
+            gradovi: [[974, 458, "Kazablanka"], [1015, 472, "Alžir"], [1174, 506, "Kairo"], [1175, 645, "Najrobi"], [1186, 682, "Dar es Salam"], [1128, 860, "Kejptaun"], [1132, 978, "Antarktik"]]
         }
     ],
 
@@ -62,10 +57,11 @@ const KvartalniNivoManager = {
     ulazakTajmer: null,
     otvaranjeUToku: false,
     mapaTransform: { nivoId: null, skala: 1, x: 0, y: 0, postavljena: false, detaljEvropa: false },
+    antarktikPrag: 20000,
 
     // Ovde se smeštaju podaci koji stignu iz MongoDB/Servera
     serverPodaci: {
-        sezona: [[], [], [], [], [], [], []],
+        sezona: [[], [], [], [], [], []],
         svaVremena: [],
         medalje: [],
         sampioni: []
@@ -210,6 +206,7 @@ const KvartalniNivoManager = {
     // --- PRIJEM PODATAKA SA SERVERA ---
     primiMojePodatke: function(podaci) {
         if (!podaci) return;
+        const prethodniBroj = this.statistika.sezonskiPojmovi || 0;
         this.statistika.sezonskiPojmovi = podaci.sezonskiPojmovi || 0;
         this.statistika.svaVremenaPojmovi = podaci.svaVremenaPojmovi || 0;
         localStorage.setItem('zemljopis_kvartal', JSON.stringify(this.statistika));
@@ -217,13 +214,41 @@ const KvartalniNivoManager = {
             SinhronizacijaManager.zakaziSlanje();
         }
         this.azurirajBedzUMeniju();
+        if (prethodniBroj < this.antarktikPrag && this.statistika.sezonskiPojmovi >= this.antarktikPrag) {
+            this.prikaziDolazakNaAntarktik();
+        }
         this.posaljiDogadjajeNaCekanju();
+    },
+
+    prikaziDolazakNaAntarktik: function() {
+        document.getElementById('antarktik-dolazak-overlay')?.remove();
+        const overlay = document.createElement('div');
+        overlay.id = 'antarktik-dolazak-overlay';
+        overlay.className = 'antarktik-dolazak-overlay';
+        overlay.setAttribute('role', 'status');
+        overlay.setAttribute('aria-live', 'assertive');
+        overlay.innerHTML = `
+            <div class="antarktik-ledeni-sjaj"></div>
+            <div class="antarktik-pahulje" aria-hidden="true">✦ ❄ ✧ ❅ ✦ ❄ ✧</div>
+            <div class="antarktik-dolazak-sadrzaj">
+                <div class="antarktik-kruna" aria-hidden="true"><i class="fa-solid fa-crown"></i></div>
+                <span>ZAVRŠNA TAČKA</span>
+                <strong>STIGLI STE NA ANTARKTIK</strong>
+                <p>Od Rta dobre nade do ledene krune sveta.</p>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => overlay.classList.add('active'));
+        setTimeout(() => {
+            overlay.classList.remove('active');
+            setTimeout(() => overlay.remove(), 500);
+        }, 5200);
     },
 
     primiTopListe: function(podaci) {
         this.ucitavanje = false;
         this.serverPodaci = {
-            sezona: Array.isArray(podaci && podaci.sezona) ? podaci.sezona : [[], [], [], [], [], [], []],
+            sezona: Array.isArray(podaci && podaci.sezona) ? podaci.sezona : [[], [], [], [], [], []],
             svaVremena: Array.isArray(podaci && podaci.svaVremena) ? podaci.svaVremena : [],
             medalje: Array.isArray(podaci && podaci.medalje) ? podaci.medalje : [],
             sampioni: Array.isArray(podaci && podaci.sampioni) ? podaci.sampioni : []
@@ -355,8 +380,9 @@ const KvartalniNivoManager = {
     },
 
     procenatEtape: function(nivo) {
-        if (nivo.max === Infinity) return 100;
-        const raspon = nivo.max - nivo.min;
+        const krajEtape = nivo.cilj || nivo.max;
+        if (krajEtape === Infinity) return 100;
+        const raspon = krajEtape - nivo.min;
         if (raspon <= 0) return 100;
         return Math.max(0, Math.min(100, ((this.statistika.sezonskiPojmovi - nivo.min) / raspon) * 100));
     },
@@ -366,10 +392,19 @@ const KvartalniNivoManager = {
         const procenat = this.procenatEtape(nivo);
         const tacke = nivo.gradovi.map(([x, y]) => `${x},${y}`).join(' ');
         const detaljneTacke = (nivo.gradoviDetalj || []).map(([x, y]) => `${x},${y}`).join(' ');
-        const sledecaEtapa = info.sledeci
+        const antarktikDostignut = nivo.ime === 'Afrika' && this.statistika.sezonskiPojmovi >= (nivo.cilj || Infinity);
+        const sledecaEtapa = antarktikDostignut
+            ? 'Kruna Antarktika je osvojena'
+            : nivo.cilj
+            ? 'Sledeće odredište: Antarktik'
+            : info.sledeci
             ? `Sledeća etapa: ${info.sledeci.ime}`
             : 'Završio si put oko sveta!';
-        const doCilja = nivo.max === Infinity
+        const doCilja = antarktikDostignut
+            ? 'Pojmovi se sada skupljaju na završnoj tački'
+            : nivo.cilj
+            ? `${Math.max(0, nivo.cilj - this.statistika.sezonskiPojmovi)} pojmova do Antarktika`
+            : nivo.max === Infinity
             ? 'Završna etapa'
             : `${Math.max(0, nivo.max - this.statistika.sezonskiPojmovi)} pojmova do sledećeg kontinenta`;
 
@@ -399,9 +434,9 @@ const KvartalniNivoManager = {
                     <polyline class="put-linija put-linija-pozadina" points="${tacke}" pathLength="100" />
                     <polyline class="put-linija put-linija-napredak" points="${tacke}" pathLength="100" filter="url(#sjaj-${nivo.id})" />
                     ${nivo.gradovi.map(([x, y, grad], indeks) => `
-                        <g class="put-stajaliste ${indeks === 0 ? 'pocetak' : ''}">
+                        <g class="put-stajaliste ${indeks === 0 ? 'pocetak' : ''} ${grad === 'Antarktik' ? 'zavrsna-tacka' : ''}">
                             <title>${grad}</title>
-                            <circle cx="${x}" cy="${y}" r="${indeks === 0 ? 7 : 5}" />
+                            <circle cx="${x}" cy="${y}" r="${grad === 'Antarktik' ? 11 : (indeks === 0 ? 7 : 5)}" />
                         </g>
                     `).join('')}
                 </svg>
@@ -432,6 +467,18 @@ const KvartalniNivoManager = {
         mapa.style.transform = `translate(${stanje.x}px, ${stanje.y}px) scale(${stanje.skala})`;
         if (detaljEvrope) detaljEvrope.style.transform = `translate(${stanje.x}px, ${stanje.y}px) scale(${stanje.skala})`;
         if (viewport) viewport.classList.toggle('evropa-detalj-active', Boolean(stanje.detaljEvropa));
+    },
+
+    ogranicIMapuTransform: function(viewport) {
+        const sirina = viewport.clientWidth;
+        const visina = viewport.clientHeight;
+        const osnovnaVisina = this.mapaTransform.detaljEvropa ? sirina * (2 / 3) : sirina / 2;
+        const prikazanaSirina = sirina * this.mapaTransform.skala;
+        const prikazanaVisina = osnovnaVisina * this.mapaTransform.skala;
+        const minX = Math.min(0, sirina - prikazanaSirina);
+        const minY = Math.min(0, visina - prikazanaVisina);
+        this.mapaTransform.x = Math.min(0, Math.max(minX, this.mapaTransform.x));
+        this.mapaTransform.y = Math.min(0, Math.max(minY, this.mapaTransform.y));
     },
 
     prebaciNaDetaljEvrope: function(nivo, viewport) {
@@ -474,6 +521,7 @@ const KvartalniNivoManager = {
                 detaljEvropa: false
             };
         }
+        this.ogranicIMapuTransform(viewport);
         this.primeniMapuTransform();
 
         const dodiri = new Map();
@@ -492,6 +540,7 @@ const KvartalniNivoManager = {
         });
         viewport.addEventListener('pointermove', dogadjaj => {
             if (!dodiri.has(dogadjaj.pointerId)) return;
+            dogadjaj.preventDefault();
             const prethodna = dodiri.get(dogadjaj.pointerId);
             dodiri.set(dogadjaj.pointerId, { x: dogadjaj.clientX, y: dogadjaj.clientY });
             if (dodiri.size === 2) {
@@ -504,6 +553,7 @@ const KvartalniNivoManager = {
             }
             prethodnaTacka = { x: dogadjaj.clientX, y: dogadjaj.clientY };
             this.prebaciNaDetaljEvrope(nivo, viewport);
+            this.ogranicIMapuTransform(viewport);
             this.primeniMapuTransform();
         });
         const zavrsiDodir = dogadjaj => {
@@ -516,6 +566,7 @@ const KvartalniNivoManager = {
             dogadjaj.preventDefault();
             this.mapaTransform.skala = Math.max(1, Math.min(4, this.mapaTransform.skala * (dogadjaj.deltaY < 0 ? 1.12 : 0.88)));
             this.prebaciNaDetaljEvrope(nivo, viewport);
+            this.ogranicIMapuTransform(viewport);
             this.primeniMapuTransform();
         }, { passive: false });
     },

@@ -10,9 +10,10 @@ const KvartalniNivoManager = {
     nivoi: [
         {
             id: 0, ime: "Evropa", min: 0, max: 999, boja: "#74b9ff",
-            obris: "M92 264 L106 202 150 170 196 142 248 132 285 96 326 110 344 77 382 92 398 121 440 115 479 142 525 136 555 160 609 171 635 208 602 238 570 243 546 274 502 268 469 293 421 279 390 311 342 298 316 328 274 306 237 323 204 297 164 304 131 282 Z",
+            stvarnaMapa: "assets/kviz-pikado-europa.svg",
+            mapaViewBox: "0 0 1000 620",
             gradovi: [
-                [123, 261, "Madrid"], [239, 183, "Pariz"], [224, 105, "London"], [281, 157, "Amsterdam"], [385, 169, "Berlin"], [437, 221, "Prag"], [488, 243, "Beč"], [535, 255, "Budimpešta"], [574, 279, "Beograd"], [628, 290, "Istanbul"]
+                [315, 454, "Madrid"], [415, 348, "Pariz"], [404, 270, "London"], [468, 307, "Amsterdam"], [560, 329, "Berlin"], [583, 373, "Prag"], [642, 397, "Beč"], [691, 404, "Budimpešta"], [738, 436, "Beograd"], [842, 462, "Istanbul"]
             ]
         },
         {
@@ -377,7 +378,7 @@ const KvartalniNivoManager = {
                     </div>
                     <b>${Math.round(procenat)}%</b>
                 </div>
-                <svg class="put-oko-sveta-map" viewBox="0 0 760 390" role="img" aria-label="Put kroz ${nivo.ime}">
+                <svg class="put-oko-sveta-map" viewBox="${nivo.mapaViewBox || '0 0 760 390'}" role="img" aria-label="Put kroz ${nivo.ime}">
                     <defs>
                         <linearGradient id="kopno-${nivo.id}" x1="0" y1="0" x2="1" y2="1">
                             <stop offset="0" stop-color="#2c6888" />
@@ -388,7 +389,10 @@ const KvartalniNivoManager = {
                             <feMerge><feMergeNode in="zamagljenje" /><feMergeNode in="SourceGraphic" /></feMerge>
                         </filter>
                     </defs>
-                    <path class="put-kontinent" d="${nivo.obris}" fill="url(#kopno-${nivo.id})" />
+                    ${nivo.stvarnaMapa
+                        ? `<image class="put-stvarna-mapa" href="${nivo.stvarnaMapa}" width="1000" height="620" />
+                           <rect class="put-stvarna-mapa-izmaglica" width="1000" height="620" />`
+                        : `<path class="put-kontinent" d="${nivo.obris}" fill="url(#kopno-${nivo.id})" />`}
                     <polyline class="put-linija put-linija-pozadina" points="${tacke}" pathLength="100" />
                     <polyline class="put-linija put-linija-napredak" points="${tacke}" pathLength="100" filter="url(#sjaj-${nivo.id})" />
                     ${nivo.gradovi.map(([x, y, grad], indeks) => `

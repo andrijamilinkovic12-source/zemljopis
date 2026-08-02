@@ -15795,6 +15795,16 @@ body[data-tema] #kvartalni-nivo-screen .put-kontinent {
     stroke-width: 3;
 }
 
+body[data-tema] #kvartalni-nivo-screen .put-stvarna-mapa {
+    opacity: 0.88;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-stvarna-mapa-izmaglica {
+    fill: #06264b;
+    opacity: 0.22;
+    pointer-events: none;
+}
+
 body[data-tema] #kvartalni-nivo-screen .put-linija {
     fill: none;
     stroke-linecap: round;

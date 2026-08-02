@@ -10,41 +10,40 @@ const KvartalniNivoManager = {
     nivoi: [
         {
             id: 0, ime: "Evropa", min: 0, max: 999, boja: "#74b9ff",
-            stvarnaMapa: "assets/kviz-pikado-europa.svg",
-            mapaViewBox: "120 20 800 570",
+            fokus: [1100, 360, 1.95],
             gradovi: [
-                [413, 461, "Madrid"], [473, 373, "Pariz"], [449, 345, "London"], [499, 336, "Amsterdam"], [584, 334, "Berlin"], [594, 359, "Prag"], [614, 379, "Beč"], [640, 386, "Budimpešta"], [654, 414, "Beograd"], [740, 454, "Istanbul"]
+                [1012, 416, "Madrid"], [1043, 354, "Pariz"], [1001, 315, "London"], [1059, 331, "Amsterdam"], [1100, 333, "Berlin"], [1105, 354, "Prag"], [1120, 365, "Beč"], [1140, 370, "Budimpešta"], [1154, 384, "Beograd"], [1204, 408, "Istanbul"]
             ]
         },
         {
             id: 1, ime: "Azija", min: 1000, max: 2499, boja: "#f5af19",
-            obris: "M86 214 L125 145 197 116 256 131 315 95 382 113 427 84 501 108 568 96 646 133 703 185 679 245 627 269 587 304 511 287 457 309 400 281 342 302 284 271 221 282 161 253 Z",
-            gradovi: [[104, 230, "Istanbul"], [185, 185, "Teheran"], [281, 232, "Delhi"], [392, 259, "Bangkok"], [471, 292, "Singapur"], [592, 210, "Peking"], [672, 180, "Tokio"]]
+            fokus: [1510, 450, 1.7],
+            gradovi: [[1204, 408, "Istanbul"], [1280, 430, "Teheran"], [1380, 490, "Delhi"], [1532, 530, "Bangkok"], [1538, 580, "Singapur"], [1650, 375, "Peking"], [1805, 360, "Tokio"]]
         },
         {
             id: 2, ime: "Australija i Okeanija", min: 2500, max: 4999, boja: "#38d9a9",
-            obris: "M203 229 L243 166 342 151 414 185 469 242 443 299 370 323 304 306 251 281 Z M552 125 L587 108 611 130 597 158 565 158 Z M628 242 L664 224 697 252 673 286 638 277 Z",
-            gradovi: [[231, 227, "Pert"], [331, 283, "Melburn"], [405, 251, "Sidnej"], [587, 145, "Port Morsbi"], [663, 259, "Okland"]]
+            fokus: [1800, 730, 1.75],
+            gradovi: [[1685, 695, "Pert"], [1782, 790, "Melburn"], [1837, 750, "Sidnej"], [1844, 660, "Port Morsbi"], [1980, 820, "Okland"]]
         },
         {
             id: 3, ime: "Severna Amerika", min: 5000, max: 8999, boja: "#ff8a65",
-            obris: "M105 90 L175 71 229 97 286 113 343 165 390 218 359 266 301 269 260 303 207 278 183 228 129 205 89 151 Z M393 288 L424 274 443 302 420 330 394 318 Z",
-            gradovi: [[126, 115, "Vankuver"], [174, 147, "Sijetl"], [207, 211, "San Francisko"], [252, 249, "Los Anđeles"], [322, 274, "Meksiko Siti"], [412, 290, "Havana"]]
+            fokus: [380, 400, 1.8],
+            gradovi: [[312, 286, "Vankuver"], [338, 314, "Sijetl"], [348, 402, "San Francisko"], [366, 440, "Los Anđeles"], [444, 518, "Meksiko Siti"], [579, 539, "Havana"]]
         },
         {
             id: 4, ime: "Južna Amerika", min: 9000, max: 13999, boja: "#9ccc65",
-            obris: "M321 74 L390 91 430 146 421 197 457 247 430 312 387 355 347 322 338 260 298 204 285 139 Z",
-            gradovi: [[328, 103, "Bogota"], [314, 152, "Kito"], [322, 208, "Lima"], [370, 244, "La Paz"], [393, 310, "Santijago"], [428, 271, "Buenos Ajres"], [425, 206, "Rio de Žaneiro"]]
+            fokus: [680, 700, 1.8],
+            gradovi: [[620, 585, "Bogota"], [630, 640, "Kito"], [625, 700, "Lima"], [690, 720, "La Paz"], [680, 850, "Santijago"], [752, 820, "Buenos Ajres"], [790, 740, "Rio de Žaneiro"]]
         },
         {
             id: 5, ime: "Afrika", min: 14000, max: 19999, boja: "#f4c36a",
-            obris: "M263 78 L342 69 414 102 443 169 425 226 390 278 360 348 314 318 286 250 235 198 227 130 Z",
-            gradovi: [[251, 111, "Kazablanka"], [298, 100, "Alžir"], [402, 132, "Kairo"], [387, 211, "Najrobi"], [374, 247, "Dar es Salam"], [354, 323, "Kejptaun"]]
+            fokus: [1100, 620, 1.8],
+            gradovi: [[974, 458, "Kazablanka"], [1015, 472, "Alžir"], [1174, 506, "Kairo"], [1175, 645, "Najrobi"], [1186, 682, "Dar es Salam"], [1128, 860, "Kejptaun"]]
         },
         {
             id: 6, ime: "Antarktik", min: 20000, max: Infinity, boja: "#b9e7ff",
-            obris: "M116 223 L165 178 248 183 303 143 386 170 455 147 522 181 611 171 681 207 647 256 572 272 513 308 428 284 349 314 278 287 194 296 138 266 Z",
-            gradovi: [[153, 236, "Poluostrvo"], [292, 206, "Stanica Vostok"], [432, 224, "Južni pol"], [591, 230, "Roso more"]]
+            fokus: [1060, 915, 1.65],
+            gradovi: [[900, 930, "Poluostrvo"], [1120, 900, "Stanica Vostok"], [1050, 965, "Južni pol"], [1290, 930, "Roso more"]]
         }
     ],
 
@@ -59,6 +58,7 @@ const KvartalniNivoManager = {
     introTajmer: null,
     ulazakTajmer: null,
     otvaranjeUToku: false,
+    mapaTransform: { nivoId: null, skala: 1, x: 0, y: 0, postavljena: false },
 
     // Ovde se smeštaju podaci koji stignu iz MongoDB/Servera
     serverPodaci: {
@@ -378,7 +378,8 @@ const KvartalniNivoManager = {
                     </div>
                     <b>${Math.round(procenat)}%</b>
                 </div>
-                <svg class="put-oko-sveta-map ${nivo.stvarnaMapa ? 'put-evropa-map' : ''}" viewBox="${nivo.mapaViewBox || '0 0 760 390'}" role="img" aria-label="Put kroz ${nivo.ime}">
+                <div id="put-oko-sveta-viewport" class="put-oko-sveta-viewport" aria-label="Interaktivna mapa sveta. Uvećaj ili pomeraj prstima.">
+                <svg id="put-oko-sveta-mapa" class="put-oko-sveta-map" viewBox="0 0 2048 1024" role="img" aria-label="Put kroz ${nivo.ime}">
                     <defs>
                         <linearGradient id="kopno-${nivo.id}" x1="0" y1="0" x2="1" y2="1">
                             <stop offset="0" stop-color="#2c6888" />
@@ -389,10 +390,8 @@ const KvartalniNivoManager = {
                             <feMerge><feMergeNode in="zamagljenje" /><feMergeNode in="SourceGraphic" /></feMerge>
                         </filter>
                     </defs>
-                    ${nivo.stvarnaMapa
-                        ? `<image class="put-stvarna-mapa" href="${nivo.stvarnaMapa}" width="1000" height="620" />
-                           <rect class="put-stvarna-mapa-izmaglica" width="1000" height="620" />`
-                        : `<path class="put-kontinent" d="${nivo.obris}" fill="url(#kopno-${nivo.id})" />`}
+                    <image class="put-svetska-mapa" href="assets/put-oko-sveta-svetska-mapa.jpg" width="2048" height="1024" />
+                    <rect class="put-svetska-mapa-izmaglica" width="2048" height="1024" />
                     <polyline class="put-linija put-linija-pozadina" points="${tacke}" pathLength="100" />
                     <polyline class="put-linija put-linija-napredak" points="${tacke}" pathLength="100" filter="url(#sjaj-${nivo.id})" />
                     ${nivo.gradovi.map(([x, y, grad], indeks) => `
@@ -402,12 +401,88 @@ const KvartalniNivoManager = {
                         </g>
                     `).join('')}
                 </svg>
+                </div>
                 <div class="put-oko-sveta-route-footer">
                     <span>${doCilja}</span>
                     <b>${sledecaEtapa}</b>
                 </div>
             </section>
         `;
+    },
+
+    primeniMapuTransform: function() {
+        const mapa = document.getElementById('put-oko-sveta-mapa');
+        if (!mapa) return;
+        const stanje = this.mapaTransform;
+        mapa.style.transform = `translate(${stanje.x}px, ${stanje.y}px) scale(${stanje.skala})`;
+    },
+
+    pripremiInteraktivnuMapu: function(info) {
+        const viewport = document.getElementById('put-oko-sveta-viewport');
+        const mapa = document.getElementById('put-oko-sveta-mapa');
+        if (!viewport || !mapa) return;
+
+        if (viewport.clientWidth === 0 || viewport.clientHeight === 0) {
+            requestAnimationFrame(() => this.pripremiInteraktivnuMapu(info));
+            return;
+        }
+
+        const nivo = info.trenutni;
+        if (this.mapaTransform.nivoId !== nivo.id || !this.mapaTransform.postavljena) {
+            const [fokusX, fokusY, skala] = nivo.fokus || [1024, 512, 1];
+            const sirina = viewport.clientWidth;
+            const visina = viewport.clientHeight;
+            const osnovnaVisina = sirina / 2;
+            this.mapaTransform = {
+                nivoId: nivo.id,
+                skala,
+                x: (sirina / 2) - ((fokusX / 2048) * sirina * skala),
+                y: (visina / 2) - ((fokusY / 1024) * osnovnaVisina * skala),
+                postavljena: true
+            };
+        }
+        this.primeniMapuTransform();
+
+        const dodiri = new Map();
+        let prethodniRazmak = 0;
+        let prethodnaTacka = null;
+        const razmak = () => {
+            const tacke = [...dodiri.values()];
+            return tacke.length < 2 ? 0 : Math.hypot(tacke[0].x - tacke[1].x, tacke[0].y - tacke[1].y);
+        };
+
+        viewport.addEventListener('pointerdown', dogadjaj => {
+            viewport.setPointerCapture(dogadjaj.pointerId);
+            dodiri.set(dogadjaj.pointerId, { x: dogadjaj.clientX, y: dogadjaj.clientY });
+            prethodniRazmak = razmak();
+            prethodnaTacka = { x: dogadjaj.clientX, y: dogadjaj.clientY };
+        });
+        viewport.addEventListener('pointermove', dogadjaj => {
+            if (!dodiri.has(dogadjaj.pointerId)) return;
+            const prethodna = dodiri.get(dogadjaj.pointerId);
+            dodiri.set(dogadjaj.pointerId, { x: dogadjaj.clientX, y: dogadjaj.clientY });
+            if (dodiri.size === 2) {
+                const noviRazmak = razmak();
+                if (prethodniRazmak) this.mapaTransform.skala = Math.max(1, Math.min(4, this.mapaTransform.skala * (noviRazmak / prethodniRazmak)));
+                prethodniRazmak = noviRazmak;
+            } else if (prethodna && prethodnaTacka) {
+                this.mapaTransform.x += dogadjaj.clientX - prethodnaTacka.x;
+                this.mapaTransform.y += dogadjaj.clientY - prethodnaTacka.y;
+            }
+            prethodnaTacka = { x: dogadjaj.clientX, y: dogadjaj.clientY };
+            this.primeniMapuTransform();
+        });
+        const zavrsiDodir = dogadjaj => {
+            dodiri.delete(dogadjaj.pointerId);
+            prethodniRazmak = razmak();
+        };
+        viewport.addEventListener('pointerup', zavrsiDodir);
+        viewport.addEventListener('pointercancel', zavrsiDodir);
+        viewport.addEventListener('wheel', dogadjaj => {
+            dogadjaj.preventDefault();
+            this.mapaTransform.skala = Math.max(1, Math.min(4, this.mapaTransform.skala * (dogadjaj.deltaY < 0 ? 1.12 : 0.88)));
+            this.primeniMapuTransform();
+        }, { passive: false });
     },
 
     renderEkran: function() {
@@ -470,6 +545,8 @@ const KvartalniNivoManager = {
             });
         }
         html += `</section>`;
+
+        requestAnimationFrame(() => this.pripremiInteraktivnuMapu(info));
 
         return html;
     },

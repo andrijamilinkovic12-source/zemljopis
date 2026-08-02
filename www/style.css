@@ -15784,15 +15784,35 @@ body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-route-heading > b {
 body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-map {
     display: block;
     width: 100%;
-    min-height: 12rem;
-    background-color: #08254a;
-    background-image: linear-gradient(rgba(150, 220, 255, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(150, 220, 255, 0.07) 1px, transparent 1px);
-    background-size: 1.8rem 1.8rem;
+    height: auto;
+    transform-origin: 0 0;
+    will-change: transform;
 }
 
-body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-map.put-evropa-map {
-    aspect-ratio: 800 / 570;
-    min-height: 0;
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-viewport {
+    position: relative;
+    height: 15rem;
+    overflow: hidden;
+    background-color: #061e3c;
+    background-image: linear-gradient(rgba(142, 218, 255, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(142, 218, 255, 0.08) 1px, transparent 1px);
+    background-size: 1.8rem 1.8rem;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-viewport:active {
+    cursor: grabbing;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-svetska-mapa {
+    filter: grayscale(1) sepia(0.7) hue-rotate(155deg) saturate(1.9) brightness(0.55) contrast(1.22);
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-svetska-mapa-izmaglica {
+    fill: #082c55;
+    opacity: 0.3;
+    pointer-events: none;
 }
 
 body[data-tema] #kvartalni-nivo-screen .put-kontinent {

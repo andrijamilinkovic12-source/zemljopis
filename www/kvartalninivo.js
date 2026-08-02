@@ -423,7 +423,7 @@ const KvartalniNivoManager = {
                     <b>${Math.round(procenat)}%</b>
                 </div>
                 <div id="put-oko-sveta-viewport" class="put-oko-sveta-viewport" aria-label="Interaktivna mapa sveta. Uvećaj ili pomeraj prstima.">
-                <svg id="put-oko-sveta-mapa" class="put-oko-sveta-map" viewBox="0 0 2048 1024" role="img" aria-label="Put kroz ${nivo.ime}">
+                <svg id="put-oko-sveta-mapa" class="put-oko-sveta-map" viewBox="0 -230 2048 1490" role="img" aria-label="Put kroz ${nivo.ime}">
                     <defs>
                         <linearGradient id="kopno-${nivo.id}" x1="0" y1="0" x2="1" y2="1">
                             <stop offset="0" stop-color="#2c6888" />
@@ -434,9 +434,10 @@ const KvartalniNivoManager = {
                             <feMerge><feMergeNode in="zamagljenje" /><feMergeNode in="SourceGraphic" /></feMerge>
                         </filter>
                     </defs>
+                    <rect class="put-svetska-voda" x="0" y="-230" width="2048" height="1490" />
                     <image class="put-svetska-mapa" href="assets/put-oko-sveta-svetska-mapa-bez-teksta-v1.png" width="2048" height="1024" />
                     <rect class="put-svetska-mapa-izmaglica" width="2048" height="1024" />
-                    <image class="put-antarktik-na-mapi" href="assets/antarktik-realisticni-led-v1.png" x="274" y="875" width="1500" height="330" preserveAspectRatio="none" aria-hidden="true" />
+                    <image class="put-antarktik-na-mapi" href="assets/antarktik-realisticni-led-v1.png" x="620" y="990" width="700" height="700" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
                     ${evropskaRuta ? `
                         <polyline class="put-linija put-linija-pozadina" points="${tackeEvrope}" pathLength="100" />
                         <polyline class="put-linija put-linija-napredak" points="${tackeEvrope}" pathLength="100" filter="url(#sjaj-${nivo.id})" />
@@ -461,7 +462,7 @@ const KvartalniNivoManager = {
     ogranicIMapuTransform: function(viewport) {
         const sirina = viewport.clientWidth;
         const visina = viewport.clientHeight;
-        const osnovnaVisina = sirina / 2;
+        const osnovnaVisina = sirina * (1490 / 2048);
         const prikazanaSirina = sirina * this.mapaTransform.skala;
         const prikazanaVisina = osnovnaVisina * this.mapaTransform.skala;
         const centarX = (sirina - prikazanaSirina) / 2;
@@ -489,12 +490,12 @@ const KvartalniNivoManager = {
             const [fokusX, fokusY, skala] = nivo.fokus || [1024, 512, 1];
             const sirina = viewport.clientWidth;
             const visina = viewport.clientHeight;
-            const osnovnaVisina = sirina / 2;
+            const osnovnaVisina = sirina * (1490 / 2048);
             this.mapaTransform = {
                 nivoId: nivo.id,
                 skala,
                 x: (sirina / 2) - ((fokusX / 2048) * sirina * skala),
-                y: (visina / 2) - ((fokusY / 1024) * osnovnaVisina * skala),
+                y: (visina / 2) - (((fokusY + 230) / 1490) * osnovnaVisina * skala),
                 postavljena: true,
                 detaljEvropa: false
             };

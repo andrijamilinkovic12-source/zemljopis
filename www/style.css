@@ -15825,6 +15825,10 @@ body[data-tema] #kvartalni-nivo-screen .put-svetska-mapa {
     filter: grayscale(0.58) sepia(0.72) hue-rotate(155deg) saturate(2.05) brightness(0.88) contrast(1.26);
 }
 
+body[data-tema] #kvartalni-nivo-screen .put-svetska-voda {
+    fill: #0b5d8d;
+}
+
 body[data-tema] #kvartalni-nivo-screen .put-svetska-mapa-izmaglica {
     fill: #082c55;
     opacity: 0.16;

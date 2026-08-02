@@ -15808,7 +15808,7 @@ body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-viewport {
     position: relative;
     height: 15rem;
     overflow: hidden;
-    background-color: #0b5d8d;
+    background-color: #042465;
     background-image: linear-gradient(rgba(142, 218, 255, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(142, 218, 255, 0.08) 1px, transparent 1px);
     background-size: 1.8rem 1.8rem;
     cursor: grab;
@@ -15821,17 +15821,16 @@ body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-viewport:active {
 }
 
 body[data-tema] #kvartalni-nivo-screen .put-svetska-mapa {
-    mix-blend-mode: multiply;
-    filter: grayscale(0.58) sepia(0.72) hue-rotate(155deg) saturate(2.05) brightness(0.88) contrast(1.26);
+    filter: none;
 }
 
 body[data-tema] #kvartalni-nivo-screen .put-svetska-voda {
-    fill: #0b5d8d;
+    fill: #042465;
 }
 
 body[data-tema] #kvartalni-nivo-screen .put-svetska-mapa-izmaglica {
     fill: #082c55;
-    opacity: 0.16;
+    opacity: 0.06;
     pointer-events: none;
 }
 

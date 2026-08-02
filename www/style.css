@@ -19576,3 +19576,65 @@ body[data-pismo="cirilica"] .kviz-round-break.kviz-podpitanje-pauza .kviz-break-
     .kviz-round-break.kviz-score-animate *,
     .kviz-result.kviz-match-result-enter * { animation: none !important; }
 }
+
+/* Svi uvodi soba dele isti ritam: logo je uvek odvojen od sadržaja ispod. */
+:root {
+    --soba-intro-razmak-do-sadrzaja: clamp(0.62rem, 1.45vh, 0.76rem);
+    --soba-intro-sekundarni-razmak: 0.5rem;
+}
+
+:is(
+    .global-chat-intro-hero,
+    .kvartalni-nivo-intro-hero,
+    .trofeji-intro-hero,
+    .tokeni-intro-hero,
+    .online-igraci-intro-hero,
+    .riznica-intro-vault,
+    .toplista-intro-podium,
+    #soba-prijatelja-intro-overlay .soba-prijatelja-intro-hero,
+    .podesavanja-intro-hero
+) {
+    margin-bottom: 0 !important;
+}
+
+:is(
+    .global-chat-intro-actions,
+    .kvartalni-nivo-intro-actions,
+    .trofeji-intro-medals,
+    .tokeni-intro-actions,
+    .online-igraci-intro-actions,
+    .riznica-intro-categories,
+    .toplista-intro-scopes,
+    #soba-prijatelja-intro-overlay .soba-prijatelja-intro-actions,
+    .podesavanja-intro-sections
+) {
+    margin-top: var(--soba-intro-razmak-do-sadrzaja) !important;
+}
+
+:is(
+    .global-chat-intro-copy,
+    .kvartalni-nivo-intro-copy,
+    .trofeji-intro-copy,
+    .tokeni-intro-copy,
+    .online-igraci-intro-copy,
+    .riznica-intro-copy,
+    #soba-prijatelja-intro-overlay .soba-prijatelja-intro-copy,
+    .podesavanja-intro-copy,
+    .toplista-intro-medals
+) {
+    margin-top: var(--soba-intro-sekundarni-razmak) !important;
+}
+
+:is(
+    .global-chat-intro-line,
+    .kvartalni-nivo-intro-line,
+    .trofeji-intro-line,
+    .tokeni-intro-line,
+    .online-igraci-intro-line,
+    .riznica-intro-line,
+    .toplista-intro-line,
+    #soba-prijatelja-intro-overlay .soba-prijatelja-intro-line,
+    .podesavanja-intro-line
+) {
+    margin-top: var(--soba-intro-sekundarni-razmak) !important;
+}

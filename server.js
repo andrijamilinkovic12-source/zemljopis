@@ -3673,7 +3673,7 @@ async function potrosiServerskiToken(bazaId) {
             },
             { $set: { tokeni: { $subtract: ["$tokeni", 1] } } }
         ],
-        { new: true }
+        { returnDocument: 'after', updatePipeline: true }
     );
     return igrac;
 }
@@ -3700,7 +3700,7 @@ async function vratiServerskiToken(bazaId) {
                 }
             }
         ],
-        { new: true }
+        { returnDocument: 'after', updatePipeline: true }
     );
 }
 
@@ -3726,7 +3726,7 @@ async function dodajServerskiToken(bazaId) {
                 }
             }
         ],
-        { new: true }
+        { returnDocument: 'after', updatePipeline: true }
     );
 }
 

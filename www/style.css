@@ -15739,6 +15739,114 @@ body[data-tema] #kvartalni-nivo-screen .kvartal-route-copy {
     text-align: left;
 }
 
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-route-card {
+    margin: 0 0 0.7rem;
+    overflow: hidden;
+    border: 1px solid rgba(150, 220, 255, 0.24);
+    border-radius: 14px;
+    background: linear-gradient(155deg, rgba(7, 38, 70, 0.96), rgba(4, 18, 43, 0.94));
+    box-shadow: 0 10px 24px rgba(1, 12, 31, 0.24), inset 0 1px rgba(218, 246, 255, 0.08);
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-route-heading,
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-route-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.62rem 0.75rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-route-heading span,
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-route-footer span {
+    color: rgba(223, 244, 255, 0.65) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.52rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-route-heading h3 {
+    margin: 0.05rem 0 0;
+    color: var(--put-boja) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.02rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-route-heading > b {
+    color: #fff !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-map {
+    display: block;
+    width: 100%;
+    min-height: 12rem;
+    background-color: #08254a;
+    background-image: linear-gradient(rgba(150, 220, 255, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(150, 220, 255, 0.07) 1px, transparent 1px);
+    background-size: 1.8rem 1.8rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-kontinent {
+    stroke: rgba(175, 232, 255, 0.45);
+    stroke-width: 3;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-linija {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-linija-pozadina {
+    stroke: rgba(210, 238, 255, 0.23);
+    stroke-width: 10;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-linija-napredak {
+    stroke: var(--put-boja);
+    stroke-width: 7;
+    stroke-dasharray: 100;
+    stroke-dashoffset: calc(100 - var(--put-napredak));
+    transition: stroke-dashoffset 0.55s ease;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-stajaliste circle {
+    fill: #eaf9ff;
+    stroke: var(--put-boja);
+    stroke-width: 3;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-stajaliste.pocetak circle {
+    fill: var(--put-boja);
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-stajaliste text {
+    fill: rgba(241, 250, 255, 0.92);
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    paint-order: stroke;
+    stroke: #08254a;
+    stroke-linejoin: round;
+    stroke-width: 5px;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-route-footer {
+    min-height: 2.55rem;
+    border-top: 1px solid rgba(167, 221, 255, 0.12);
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-route-footer b {
+    color: var(--put-boja) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.56rem;
+    text-align: right;
+}
+
 body[data-tema] #kvartalni-nivo-screen .kvartal-ranking-card,
 body[data-tema] #kvartalni-nivo-screen .kvartal-empty-card {
     margin: 0 0 0.62rem;

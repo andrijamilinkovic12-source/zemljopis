@@ -8,13 +8,43 @@ const KvartalniNivoManager = {
     },
 
     nivoi: [
-        { id: 0, ime: "Evropa", min: 0, max: 999, ikona: "assets/kvartalni-nivo-istrazivac-clay-soft-3d-v1.png", boja: "#74b9ff" },
-        { id: 1, ime: "Azija", min: 1000, max: 2499, ikona: "assets/kvartalni-nivo-bronza-clay-soft-3d-v1.png", boja: "#f5af19" },
-        { id: 2, ime: "Australija i Okeanija", min: 2500, max: 4999, ikona: "assets/kvartalni-nivo-srebro-clay-soft-3d-v1.png", boja: "#38d9a9" },
-        { id: 3, ime: "Severna Amerika", min: 5000, max: 8999, ikona: "assets/kvartalni-nivo-zlato-clay-soft-3d-v1.png", boja: "#ff8a65" },
-        { id: 4, ime: "Južna Amerika", min: 9000, max: 13999, ikona: "assets/kvartalni-nivo-legenda-clay-soft-3d-v1.png", boja: "#9ccc65" },
-        { id: 5, ime: "Afrika", min: 14000, max: 19999, ikona: "assets/kvartalni-nivo-zlato-clay-soft-3d-v1.png", boja: "#f4c36a" },
-        { id: 6, ime: "Antarktik", min: 20000, max: Infinity, ikona: "assets/kvartalni-nivo-legenda-clay-soft-3d-v1.png", boja: "#b9e7ff" }
+        {
+            id: 0, ime: "Evropa", min: 0, max: 999, boja: "#74b9ff",
+            obris: "M92 264 L106 202 150 170 196 142 248 132 285 96 326 110 344 77 382 92 398 121 440 115 479 142 525 136 555 160 609 171 635 208 602 238 570 243 546 274 502 268 469 293 421 279 390 311 342 298 316 328 274 306 237 323 204 297 164 304 131 282 Z",
+            gradovi: [
+                [123, 261, "Madrid"], [239, 183, "Pariz"], [224, 105, "London"], [281, 157, "Amsterdam"], [385, 169, "Berlin"], [437, 221, "Prag"], [488, 243, "Beč"], [535, 255, "Budimpešta"], [574, 279, "Beograd"], [628, 290, "Istanbul"]
+            ]
+        },
+        {
+            id: 1, ime: "Azija", min: 1000, max: 2499, boja: "#f5af19",
+            obris: "M86 214 L125 145 197 116 256 131 315 95 382 113 427 84 501 108 568 96 646 133 703 185 679 245 627 269 587 304 511 287 457 309 400 281 342 302 284 271 221 282 161 253 Z",
+            gradovi: [[104, 230, "Istanbul"], [185, 185, "Teheran"], [281, 232, "Delhi"], [392, 259, "Bangkok"], [471, 292, "Singapur"], [592, 210, "Peking"], [672, 180, "Tokio"]]
+        },
+        {
+            id: 2, ime: "Australija i Okeanija", min: 2500, max: 4999, boja: "#38d9a9",
+            obris: "M203 229 L243 166 342 151 414 185 469 242 443 299 370 323 304 306 251 281 Z M552 125 L587 108 611 130 597 158 565 158 Z M628 242 L664 224 697 252 673 286 638 277 Z",
+            gradovi: [[231, 227, "Pert"], [331, 283, "Melburn"], [405, 251, "Sidnej"], [587, 145, "Port Morsbi"], [663, 259, "Okland"]]
+        },
+        {
+            id: 3, ime: "Severna Amerika", min: 5000, max: 8999, boja: "#ff8a65",
+            obris: "M105 90 L175 71 229 97 286 113 343 165 390 218 359 266 301 269 260 303 207 278 183 228 129 205 89 151 Z M393 288 L424 274 443 302 420 330 394 318 Z",
+            gradovi: [[126, 115, "Vankuver"], [174, 147, "Sijetl"], [207, 211, "San Francisko"], [252, 249, "Los Anđeles"], [322, 274, "Meksiko Siti"], [412, 290, "Havana"]]
+        },
+        {
+            id: 4, ime: "Južna Amerika", min: 9000, max: 13999, boja: "#9ccc65",
+            obris: "M321 74 L390 91 430 146 421 197 457 247 430 312 387 355 347 322 338 260 298 204 285 139 Z",
+            gradovi: [[328, 103, "Bogota"], [314, 152, "Kito"], [322, 208, "Lima"], [370, 244, "La Paz"], [393, 310, "Santijago"], [428, 271, "Buenos Ajres"], [425, 206, "Rio de Žaneiro"]]
+        },
+        {
+            id: 5, ime: "Afrika", min: 14000, max: 19999, boja: "#f4c36a",
+            obris: "M263 78 L342 69 414 102 443 169 425 226 390 278 360 348 314 318 286 250 235 198 227 130 Z",
+            gradovi: [[251, 111, "Kazablanka"], [298, 100, "Alžir"], [402, 132, "Kairo"], [387, 211, "Najrobi"], [374, 247, "Dar es Salam"], [354, 323, "Kejptaun"]]
+        },
+        {
+            id: 6, ime: "Antarktik", min: 20000, max: Infinity, boja: "#b9e7ff",
+            obris: "M116 223 L165 178 248 183 303 143 386 170 455 147 522 181 611 171 681 207 647 256 572 272 513 308 428 284 349 314 278 287 194 296 138 266 Z",
+            gradovi: [[153, 236, "Poluostrvo"], [292, 206, "Stanica Vostok"], [432, 224, "Južni pol"], [591, 230, "Roso more"]]
+        }
     ],
 
     aktivniTab: 'sezona',
@@ -320,6 +350,62 @@ const KvartalniNivoManager = {
         this.renderEkran();
     },
 
+    procenatEtape: function(nivo) {
+        if (nivo.max === Infinity) return 100;
+        const raspon = nivo.max - nivo.min;
+        if (raspon <= 0) return 100;
+        return Math.max(0, Math.min(100, ((this.statistika.sezonskiPojmovi - nivo.min) / raspon) * 100));
+    },
+
+    renderMapaPutaHTML: function(info) {
+        const nivo = info.trenutni;
+        const procenat = this.procenatEtape(nivo);
+        const tacke = nivo.gradovi.map(([x, y]) => `${x},${y}`).join(' ');
+        const sledecaEtapa = info.sledeci
+            ? `Sledeća etapa: ${info.sledeci.ime}`
+            : 'Završio si put oko sveta!';
+        const doCilja = nivo.max === Infinity
+            ? 'Završna etapa'
+            : `${Math.max(0, nivo.max - this.statistika.sezonskiPojmovi)} pojmova do sledećeg kontinenta`;
+
+        return `
+            <section class="put-oko-sveta-route-card" style="--put-boja: ${nivo.boja}; --put-napredak: ${procenat};">
+                <div class="put-oko-sveta-route-heading">
+                    <div>
+                        <span>AKTUELNA ETAPA</span>
+                        <h3>${nivo.ime}</h3>
+                    </div>
+                    <b>${Math.round(procenat)}%</b>
+                </div>
+                <svg class="put-oko-sveta-map" viewBox="0 0 760 390" role="img" aria-label="Put kroz ${nivo.ime}">
+                    <defs>
+                        <linearGradient id="kopno-${nivo.id}" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="#2c6888" />
+                            <stop offset="1" stop-color="#13334d" />
+                        </linearGradient>
+                        <filter id="sjaj-${nivo.id}" x="-30%" y="-30%" width="160%" height="160%">
+                            <feGaussianBlur stdDeviation="5" result="zamagljenje" />
+                            <feMerge><feMergeNode in="zamagljenje" /><feMergeNode in="SourceGraphic" /></feMerge>
+                        </filter>
+                    </defs>
+                    <path class="put-kontinent" d="${nivo.obris}" fill="url(#kopno-${nivo.id})" />
+                    <polyline class="put-linija put-linija-pozadina" points="${tacke}" pathLength="100" />
+                    <polyline class="put-linija put-linija-napredak" points="${tacke}" pathLength="100" filter="url(#sjaj-${nivo.id})" />
+                    ${nivo.gradovi.map(([x, y, grad], indeks) => `
+                        <g class="put-stajaliste ${indeks === 0 ? 'pocetak' : ''}">
+                            <circle cx="${x}" cy="${y}" r="${indeks === 0 ? 7 : 5}" />
+                            <text x="${x}" y="${y - 13}">${grad}</text>
+                        </g>
+                    `).join('')}
+                </svg>
+                <div class="put-oko-sveta-route-footer">
+                    <span>${doCilja}</span>
+                    <b>${sledecaEtapa}</b>
+                </div>
+            </section>
+        `;
+    },
+
     renderEkran: function() {
         const sadrzaj = document.getElementById('kvartalni-nivo-sadrzaj');
         
@@ -355,20 +441,10 @@ const KvartalniNivoManager = {
             </section>
         `;
 
-        html += `<div class="kvartal-level-tabs" role="tablist" aria-label="Istraživački rangovi">`;
-        this.nivoi.forEach(nivo => {
-            const aktivan = this.aktivniNivoTab === nivo.id;
-            html += `
-                <button type="button" class="kvartal-level-tab ${aktivan ? 'active' : ''}" style="--kvartal-nivo-boja: ${nivo.boja};" onclick="KvartalniNivoManager.promeniNivoTab(${nivo.id})" aria-label="${nivo.ime}" title="${nivo.ime}">
-                    <img class="kvartal-level-icon" src="${nivo.ikona}" alt="" aria-hidden="true" decoding="async">
-                    <span class="kvartal-level-name">${nivo.ime}</span>
-                </button>
-            `;
-        });
-        html += `</div>`;
+        html += this.renderMapaPutaHTML(info);
 
-        const izabraniNivo = this.nivoi[this.aktivniNivoTab];
-        const listaIgraca = this.serverPodaci.sezona[this.aktivniNivoTab] || [];
+        const izabraniNivo = info.trenutni;
+        const listaIgraca = this.serverPodaci.sezona[izabraniNivo.id] || [];
 
         html += `<section class="kvartal-ranking-card" style="--kvartal-nivo-boja: ${izabraniNivo.boja};">`;
         html += `<h4 class="kvartal-ranking-title">Istraživači: <span>${izabraniNivo.ime}</span></h4>`;

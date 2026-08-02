@@ -435,7 +435,7 @@ const KvartalniNivoManager = {
                         </filter>
                     </defs>
                     <rect class="put-svetska-voda" x="0" y="-230" width="2048" height="1490" />
-                    <image class="put-svetska-mapa" href="assets/put-oko-sveta-un-bez-teksta-v2.png" x="0" y="-86" width="2048" height="1195" preserveAspectRatio="xMidYMid meet" />
+                    <image class="put-svetska-mapa" href="assets/put-oko-sveta-un-bez-teksta-v3.png" x="0" y="-86" width="2048" height="1195" preserveAspectRatio="xMidYMid meet" />
                     <rect class="put-svetska-mapa-izmaglica" x="0" y="-86" width="2048" height="1195" />
                     <image class="put-antarktik-na-mapi" href="assets/antarktik-realisticni-led-v1.png" x="620" y="990" width="700" height="700" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
                     ${evropskaRuta ? `

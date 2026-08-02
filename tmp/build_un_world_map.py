@@ -3,9 +3,9 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-source = Image.open("tmp/un-no-text-1.png").convert("RGB")
+source = Image.open("tmp/un-no-text-hi-1.png").convert("RGB")
 # Exact geographic frame inside the UN sheet: excludes header, legend, and footer.
-geographic = source.crop((208, 238, 2510, 1581)).resize((2048, 1195), Image.Resampling.LANCZOS)
+geographic = source.crop((416, 476, 5020, 3162)).resize((4096, 2390), Image.Resampling.LANCZOS)
 pixels = np.asarray(geographic).copy()
 r, g, b = pixels[..., 0], pixels[..., 1], pixels[..., 2]
 
@@ -21,4 +21,4 @@ pixels[coast] = (126, 201, 239)
 pixels[border] = (127, 178, 217)
 
 # Full-opacity raster, designed for smooth pinch-zoom in the existing SVG viewport.
-Image.fromarray(pixels, "RGB").save("www/assets/put-oko-sveta-un-bez-teksta-v2.png", optimize=True)
+Image.fromarray(pixels, "RGB").save("www/assets/put-oko-sveta-un-bez-teksta-v3.png", optimize=True)

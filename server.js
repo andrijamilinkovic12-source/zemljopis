@@ -6471,7 +6471,7 @@ io.on('connection', (socket) => {
             })
                 .sort({ [polje]: -1, nadimak: 1 })
                 .limit(50)
-                .select(`playerId nadimak ${polje}`)
+                .select(`playerId nadimak avatar ${polje}`)
                 .lean();
 
             const ucitajGrupu = async filterIgraca => {

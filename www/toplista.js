@@ -46,7 +46,9 @@ const TopListaManager = {
                     
                     const formatiraj = (niz = [], polje) => niz.map((igrac, index) => ({
                         mesto: index + 1,
+                        playerId: igrac.playerId,
                         ime: igrac.nadimak,
+                        avatar: igrac.avatar || 'atlas',
                         poeni: igrac[polje]
                     }));
 
@@ -139,8 +141,12 @@ const TopListaManager = {
         const kontejner = document.getElementById('toplista-sadrzaj');
         const lista = this.podaci[this.aktivnaGrupa][this.aktivnaKategorija];
 
-        // Čitamo koji je igračev pravi nadimak
-        let mojNadimak = typeof PodesavanjaManager !== 'undefined' ? PodesavanjaManager.postavke.nadimak : "Igrač";
+        // Čitamo identitet lokalnog igrača da bi njegova kartica bila jasno označena.
+        const mojePostavke = typeof PodesavanjaManager !== 'undefined'
+            ? PodesavanjaManager.postavke
+            : {};
+        const mojPlayerId = mojePostavke.playerId;
+        const mojNadimak = mojePostavke.nadimak || "Igrač";
 
         if (!lista || lista.length === 0) {
             kontejner.innerHTML = '<div class="toplista-empty">Još uvek nema podataka. Odigraj partiju i upiši se prvi na listu!</div>';
@@ -160,6 +166,17 @@ const TopListaManager = {
             { src: 'assets/toplista-medalja-bronzana-clay-soft-3d.png', alt: 'Treće mesto' }
         ];
 
+        const avatarHtml = (avatarId) => {
+            if (typeof PodesavanjaManager === 'undefined') {
+                return '<i class="fa-solid fa-user" aria-hidden="true"></i>';
+            }
+
+            const avatar = PodesavanjaManager.avatari.find(a => a.id === avatarId)
+                || PodesavanjaManager.avatari.find(a => a.id === 'atlas')
+                || PodesavanjaManager.avatari[0];
+            return PodesavanjaManager.napraviAvatarSvg(avatar);
+        };
+
         let html = '';
         lista.forEach((igrac, index) => {
             let medalja = "";
@@ -169,18 +186,23 @@ const TopListaManager = {
             }
             else medalja = `<span class="toplista-redni-broj">${index + 1}.</span>`;
 
-            // Ako si to ti, sistem prepoznaje tvoj nadimak i boji te u zeleno!
-            let isMe = (igrac.ime === mojNadimak);
+            // Za stare zapise bez playerId-a zadržavamo prepoznavanje po nadimku.
+            const isMe = (mojPlayerId && igrac.playerId === mojPlayerId)
+                || (!igrac.playerId && igrac.ime === mojNadimak);
+            const poeni = Number.isFinite(Number(igrac.poeni)) ? Number(igrac.poeni) : 0;
             html += `
-                <div class="toplista-red${isMe ? ' ja' : ''}">
-                    <div class="toplista-red-levo">
-                        <span class="toplista-medalja-slot">${medalja}</span>
+                <article class="toplista-red${isMe ? ' ja' : ''}" style="--toplista-red-delay: ${Math.min(index, 10) * 55}ms;">
+                    <span class="toplista-medalja-slot">${medalja}</span>
+                    <span class="toplista-avatar" aria-hidden="true">${avatarHtml(igrac.avatar)}</span>
+                    <div class="toplista-igrac-podaci">
+                        <span class="toplista-pozicija">${index + 1}. mesto${isMe ? ' · Ti' : ''}</span>
                         <span class="toplista-igrac" data-zadrzi-izvorno-pismo="true">${escapeHtml(igrac.ime)}</span>
                     </div>
-                    <span class="toplista-poeni">
-                        ${igrac.poeni} <span class="toplista-poeni-oznaka">poena</span>
+                    <span class="toplista-poeni" aria-label="${poeni} poena">
+                        <b>${poeni}</b>
+                        <span class="toplista-poeni-oznaka">poena</span>
                     </span>
-                </div>
+                </article>
             `;
         });
 

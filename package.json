@@ -4,6 +4,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "build:world-boundaries": "node scripts/build-world-boundaries.mjs",
     "test": "node scripts/test-dnevni-local.mjs",
     "test:dnevni": "node scripts/test-dnevni-local.mjs",
     "test:cloud": "node scripts/test-cloud-sync.mjs",
@@ -39,9 +40,11 @@
   "dependencies": {
     "@capacitor/cli": "^8.1.0",
     "@capacitor/core": "^8.1.0",
+    "@turf/union": "^7.2.0",
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
     "gsap": "3.15.0",
+    "maplibre-gl": "^4.7.1",
     "mongoose": "^9.4.1",
     "socket.io": "^4.8.3"
   }

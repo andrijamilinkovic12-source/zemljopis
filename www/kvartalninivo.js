@@ -57,6 +57,7 @@ const KvartalniNivoManager = {
     ulazakTajmer: null,
     otvaranjeUToku: false,
     mapaTransform: { nivoId: null, skala: 1, x: 0, y: 0, postavljena: false, detaljEvropa: false },
+    mapLibreInstanca: null,
     antarktikPrag: 12000,
 
     // Ovde se smeštaju podaci koji stignu iz MongoDB/Servera
@@ -395,8 +396,6 @@ const KvartalniNivoManager = {
     renderMapaPutaHTML: function(info) {
         const nivo = info.trenutni;
         const procenat = this.procenatEtape(nivo);
-        const evropskaRuta = nivo.id === 0;
-        const tackeEvrope = nivo.gradovi.map(([x, y]) => `${x},${y}`).join(' ');
         const antarktikDostignut = nivo.ime === 'Afrika' && this.statistika.sezonskiPojmovi >= (nivo.cilj || Infinity);
         const sledecaEtapa = antarktikDostignut
             ? 'Kruna Antarktika je osvojena'
@@ -423,26 +422,7 @@ const KvartalniNivoManager = {
                     <b>${Math.round(procenat)}%</b>
                 </div>
                 <div id="put-oko-sveta-viewport" class="put-oko-sveta-viewport" aria-label="Interaktivna mapa sveta. Uvećaj ili pomeraj prstima.">
-                <svg id="put-oko-sveta-mapa" class="put-oko-sveta-map" viewBox="0 -230 2048 1490" role="img" aria-label="Put kroz ${nivo.ime}">
-                    <defs>
-                        <linearGradient id="kopno-${nivo.id}" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0" stop-color="#2c6888" />
-                            <stop offset="1" stop-color="#13334d" />
-                        </linearGradient>
-                        <filter id="sjaj-${nivo.id}" x="-30%" y="-30%" width="160%" height="160%">
-                            <feGaussianBlur stdDeviation="2" result="zamagljenje" />
-                            <feMerge><feMergeNode in="zamagljenje" /><feMergeNode in="SourceGraphic" /></feMerge>
-                        </filter>
-                    </defs>
-                    <rect class="put-svetska-voda" x="0" y="-230" width="2048" height="1490" />
-                    <image class="put-svetska-mapa" href="assets/put-oko-sveta-un-bez-teksta-v3.png" x="0" y="-86" width="2048" height="1195" preserveAspectRatio="xMidYMid meet" />
-                    <rect class="put-svetska-mapa-izmaglica" x="0" y="-86" width="2048" height="1195" />
-                    <image class="put-antarktik-na-mapi" href="assets/antarktik-realisticni-led-v1.png" x="620" y="990" width="700" height="700" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
-                    ${evropskaRuta ? `
-                        <polyline class="put-linija put-linija-pozadina" points="${tackeEvrope}" pathLength="100" />
-                        <polyline class="put-linija put-linija-napredak" points="${tackeEvrope}" pathLength="100" filter="url(#sjaj-${nivo.id})" />
-                    ` : ''}
-                </svg>
+                    <div id="put-oko-sveta-vektorska-mapa" class="put-oko-sveta-vektorska-mapa" role="img" aria-label="Vektorska mapa sveta: ${nivo.ime}"></div>
                 </div>
                 <div class="put-oko-sveta-route-footer">
                     <span>${doCilja}</span>
@@ -576,8 +556,128 @@ const KvartalniNivoManager = {
         }, { passive: false });
     },
 
+    evropskaRutaKoordinate: function() {
+        return [
+            [-5.99, 37.39], [-3.70, 40.42], [-2.93, 43.26], [2.35, 48.86],
+            [-0.13, 51.51], [4.90, 52.37], [13.40, 52.52], [14.44, 50.08],
+            [16.37, 48.21], [19.04, 47.50], [20.45, 44.79], [23.32, 42.70], [28.98, 41.01]
+        ];
+    },
+
+    skratiRutu: function(tacke, procenat) {
+        if (procenat <= 0) return [tacke[0]];
+        if (procenat >= 100) return tacke;
+        const duzine = [];
+        let ukupno = 0;
+        for (let i = 1; i < tacke.length; i++) {
+            const dx = (tacke[i][0] - tacke[i - 1][0]) * Math.cos(((tacke[i][1] + tacke[i - 1][1]) / 2) * Math.PI / 180);
+            const dy = tacke[i][1] - tacke[i - 1][1];
+            const duzina = Math.hypot(dx, dy);
+            duzine.push(duzina);
+            ukupno += duzina;
+        }
+        let preostalo = ukupno * (procenat / 100);
+        const rezultat = [tacke[0]];
+        for (let i = 1; i < tacke.length; i++) {
+            if (preostalo >= duzine[i - 1]) {
+                rezultat.push(tacke[i]);
+                preostalo -= duzine[i - 1];
+                continue;
+            }
+            const odnos = preostalo / duzine[i - 1];
+            rezultat.push([
+                tacke[i - 1][0] + ((tacke[i][0] - tacke[i - 1][0]) * odnos),
+                tacke[i - 1][1] + ((tacke[i][1] - tacke[i - 1][1]) * odnos)
+            ]);
+            break;
+        }
+        return rezultat;
+    },
+
+    pocetniPogledMape: function(nivo) {
+        const pogledi = [
+            { center: [15, 48], zoom: 2.15 },
+            { center: [86, 35], zoom: 1.45 },
+            { center: [154, -23], zoom: 1.65 },
+            { center: [-103, 39], zoom: 1.55 },
+            { center: [-60, -17], zoom: 1.55 },
+            { center: [22, 2], zoom: 1.35 }
+        ];
+        return pogledi[nivo.id] || { center: [0, 18], zoom: 1.1 };
+    },
+
+    pripremiVektorskuMapu: function(info) {
+        const kontejner = document.getElementById('put-oko-sveta-vektorska-mapa');
+        if (!kontejner || !window.maplibregl) return;
+        if (this.mapLibreInstanca) {
+            this.mapLibreInstanca.remove();
+            this.mapLibreInstanca = null;
+        }
+
+        const nivo = info.trenutni;
+        const pogled = this.pocetniPogledMape(nivo);
+        const mapa = new maplibregl.Map({
+            container: kontejner,
+            style: {
+                version: 8,
+                sources: {},
+                layers: [{ id: 'okean', type: 'background', paint: { 'background-color': '#042465' } }]
+            },
+            center: pogled.center,
+            zoom: pogled.zoom,
+            minZoom: 0.45,
+            maxZoom: 6,
+            attributionControl: false,
+            renderWorldCopies: false,
+            pitchWithRotate: false,
+            dragRotate: false
+        });
+        mapa.touchZoomRotate.disableRotation();
+        this.mapLibreInstanca = mapa;
+
+        mapa.once('load', () => {
+            if (this.mapLibreInstanca !== mapa) return;
+            mapa.addSource('granice-sveta', { type: 'geojson', data: 'assets/world-boundaries.geojson' });
+            mapa.addLayer({
+                id: 'kopno-sveta', type: 'fill', source: 'granice-sveta',
+                paint: { 'fill-color': '#4f9ed1', 'fill-opacity': 0.96 }
+            });
+            mapa.addLayer({
+                id: 'granice-drzava', type: 'line', source: 'granice-sveta',
+                paint: { 'line-color': 'rgba(194, 230, 250, 0.78)', 'line-width': 0.85 }
+            });
+
+            if (nivo.id === 0) {
+                const celaRuta = this.evropskaRutaKoordinate();
+                const napredak = this.skratiRutu(celaRuta, this.procenatEtape(nivo));
+                mapa.addSource('ruta-evrope', {
+                    type: 'geojson',
+                    data: {
+                        type: 'FeatureCollection',
+                        features: [
+                            { type: 'Feature', properties: { vrsta: 'cela' }, geometry: { type: 'LineString', coordinates: celaRuta } },
+                            { type: 'Feature', properties: { vrsta: 'napredak' }, geometry: { type: 'LineString', coordinates: napredak } }
+                        ]
+                    }
+                });
+                mapa.addLayer({
+                    id: 'ruta-evrope-pozadina', type: 'line', source: 'ruta-evrope', filter: ['==', ['get', 'vrsta'], 'cela'],
+                    paint: { 'line-color': 'rgba(229, 247, 255, 0.52)', 'line-width': 2.2, 'line-blur': 0.35 }
+                });
+                mapa.addLayer({
+                    id: 'ruta-evrope-napredak', type: 'line', source: 'ruta-evrope', filter: ['==', ['get', 'vrsta'], 'napredak'],
+                    paint: { 'line-color': nivo.boja, 'line-width': 3.4, 'line-blur': 0.5 }
+                });
+            }
+        });
+    },
+
     renderEkran: function() {
         const sadrzaj = document.getElementById('kvartalni-nivo-sadrzaj');
+        if (this.mapLibreInstanca) {
+            this.mapLibreInstanca.remove();
+            this.mapLibreInstanca = null;
+        }
         
         let html = `
             <div class="kvartal-main-tabs" role="tablist" aria-label="Put oko sveta">
@@ -637,7 +737,7 @@ const KvartalniNivoManager = {
         }
         html += `</section>`;
 
-        requestAnimationFrame(() => this.pripremiInteraktivnuMapu(info));
+        requestAnimationFrame(() => this.pripremiVektorskuMapu(info));
 
         return html;
     },

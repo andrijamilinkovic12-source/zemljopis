@@ -11,9 +11,9 @@ const KvartalniNivoManager = {
         {
             id: 0, ime: "Evropa", min: 0, max: 999, boja: "#74b9ff",
             stvarnaMapa: "assets/kviz-pikado-europa.svg",
-            mapaViewBox: "0 0 1000 620",
+            mapaViewBox: "120 20 800 570",
             gradovi: [
-                [315, 454, "Madrid"], [415, 348, "Pariz"], [404, 270, "London"], [468, 307, "Amsterdam"], [560, 329, "Berlin"], [583, 373, "Prag"], [642, 397, "Beč"], [691, 404, "Budimpešta"], [738, 436, "Beograd"], [842, 462, "Istanbul"]
+                [413, 461, "Madrid"], [473, 373, "Pariz"], [449, 345, "London"], [499, 336, "Amsterdam"], [584, 334, "Berlin"], [594, 359, "Prag"], [614, 379, "Beč"], [640, 386, "Budimpešta"], [654, 414, "Beograd"], [740, 454, "Istanbul"]
             ]
         },
         {
@@ -378,7 +378,7 @@ const KvartalniNivoManager = {
                     </div>
                     <b>${Math.round(procenat)}%</b>
                 </div>
-                <svg class="put-oko-sveta-map" viewBox="${nivo.mapaViewBox || '0 0 760 390'}" role="img" aria-label="Put kroz ${nivo.ime}">
+                <svg class="put-oko-sveta-map ${nivo.stvarnaMapa ? 'put-evropa-map' : ''}" viewBox="${nivo.mapaViewBox || '0 0 760 390'}" role="img" aria-label="Put kroz ${nivo.ime}">
                     <defs>
                         <linearGradient id="kopno-${nivo.id}" x1="0" y1="0" x2="1" y2="1">
                             <stop offset="0" stop-color="#2c6888" />

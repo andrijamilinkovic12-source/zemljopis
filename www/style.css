@@ -15790,6 +15790,11 @@ body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-map {
     background-size: 1.8rem 1.8rem;
 }
 
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-map.put-evropa-map {
+    aspect-ratio: 800 / 570;
+    min-height: 0;
+}
+
 body[data-tema] #kvartalni-nivo-screen .put-kontinent {
     stroke: rgba(175, 232, 255, 0.45);
     stroke-width: 3;

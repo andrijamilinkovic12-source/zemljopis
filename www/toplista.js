@@ -137,6 +137,44 @@ const TopListaManager = {
         this.osveziPrikaz();
     },
 
+    prikaziMojPlasman: function(lista, mojPlayerId, mojNadimak) {
+        const plasman = document.getElementById('toplista-moj-plasman');
+        if (!plasman) return;
+
+        const mojIndex = lista.findIndex(igrac => (
+            (mojPlayerId && igrac.playerId === mojPlayerId)
+            || (!igrac.playerId && igrac.ime === mojNadimak)
+        ));
+        const formatirajBroj = vrednost => new Intl.NumberFormat('sr-RS').format(vrednost);
+
+        plasman.replaceChildren();
+        plasman.hidden = false;
+        plasman.classList.toggle('nije-na-listi', mojIndex === -1);
+
+        const ikona = document.createElement('i');
+        ikona.className = mojIndex === -1 ? 'fa-solid fa-chart-line' : 'fa-solid fa-ranking-star';
+        ikona.setAttribute('aria-hidden', 'true');
+
+        const sadrzaj = document.createElement('span');
+        sadrzaj.className = 'toplista-moj-plasman-sadrzaj';
+        const naslov = document.createElement('small');
+        naslov.textContent = 'Tvoj plasman';
+        sadrzaj.append(naslov);
+
+        if (mojIndex === -1) {
+            const poruka = document.createElement('strong');
+            poruka.textContent = 'Još nemaš bodove na ovoj listi';
+            sadrzaj.append(poruka);
+        } else {
+            const opis = document.createElement('strong');
+            const mojiPoeni = Number.isFinite(Number(lista[mojIndex].poeni)) ? Number(lista[mojIndex].poeni) : 0;
+            opis.textContent = `#${mojIndex + 1} od ${formatirajBroj(lista.length)} · ${formatirajBroj(mojiPoeni)} poena`;
+            sadrzaj.append(opis);
+        }
+
+        plasman.append(ikona, sadrzaj);
+    },
+
     osveziPrikaz: function() {
         const kontejner = document.getElementById('toplista-sadrzaj');
         const lista = this.podaci[this.aktivnaGrupa][this.aktivnaKategorija];
@@ -147,6 +185,8 @@ const TopListaManager = {
             : {};
         const mojPlayerId = mojePostavke.playerId;
         const mojNadimak = mojePostavke.nadimak || "Igrač";
+
+        this.prikaziMojPlasman(lista || [], mojPlayerId, mojNadimak);
 
         if (!lista || lista.length === 0) {
             kontejner.innerHTML = '<div class="toplista-empty">Još uvek nema podataka. Odigraj partiju i upiši se prvi na listu!</div>';

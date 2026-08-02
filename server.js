@@ -6470,7 +6470,6 @@ io.on('connection', (socket) => {
                 [polje]: { $gt: 0 }
             })
                 .sort({ [polje]: -1, nadimak: 1 })
-                .limit(50)
                 .select(`playerId nadimak avatar ${polje}`)
                 .lean();
 

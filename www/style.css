@@ -976,6 +976,66 @@ body[data-tema="svetla"] #profil-setup-nadimak {
     font-size: 0.72rem;
 }
 
+.toplista-moj-plasman {
+    width: 100%;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: 1.85rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.42rem;
+    margin: -0.1rem 0 0.68rem;
+    padding: 0.42rem 0.62rem;
+    border: 1px solid rgba(140, 211, 255, 0.54);
+    border-radius: 14px 17px 13px 18px / 16px 13px 17px 14px;
+    background: linear-gradient(145deg, rgba(8, 39, 83, 0.72), rgba(10, 51, 101, 0.62));
+    box-shadow: 0 5px 12px rgba(1, 18, 48, 0.22), inset 1px 1px 0 rgba(224, 247, 255, 0.12);
+    color: #ecf8ff;
+}
+
+.toplista-moj-plasman[hidden] { display: none; }
+
+.toplista-moj-plasman > i {
+    width: 1.85rem;
+    height: 1.85rem;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(196, 238, 255, 0.42);
+    border-radius: 10px 12px 9px 13px;
+    background: rgba(127, 206, 255, 0.16);
+    color: #bceaff;
+    font-size: 0.78rem;
+}
+
+.toplista-moj-plasman.nije-na-listi > i {
+    color: rgba(209, 234, 255, 0.78);
+}
+
+.toplista-moj-plasman-sadrzaj {
+    min-width: 0;
+    display: grid;
+    gap: 0.08rem;
+}
+
+.toplista-moj-plasman-sadrzaj small {
+    color: rgba(190, 228, 255, 0.72);
+    font-size: 0.46rem;
+    font-weight: 900;
+    letter-spacing: 0.11em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.toplista-moj-plasman-sadrzaj strong {
+    overflow: hidden;
+    color: #f1f9ff;
+    font-size: 0.72rem;
+    font-weight: 900;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 #toplista-sadrzaj {
     box-sizing: border-box;
     min-height: 0;

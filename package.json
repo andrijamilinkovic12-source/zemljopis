@@ -19,7 +19,10 @@
     "test:gradovi-slovenije": "node scripts/test-gradovi-slovenije.mjs",
     "test:gradovi-ex-yu-alijasi": "node scripts/test-gradovi-ex-yu-alijasi.mjs",
     "test:kosovo-poruka": "node scripts/test-kosovo-poruka.mjs",
-    "test:srpska-slova": "node scripts/test-srpska-slova.mjs"
+    "test:srpska-slova": "node scripts/test-srpska-slova.mjs",
+    "test:biljke": "node scripts/test-biljke-sveta.mjs",
+    "test:zivotinje": "node scripts/test-zivotinje-sveta.mjs",
+    "test:kategorije": "node scripts/test-kategorije-integritet.mjs"
   },
   "repository": {
     "type": "git",

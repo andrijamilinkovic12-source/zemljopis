@@ -1,4 +1,4 @@
-// kvartalninivo.js - Liga takmičenje i Dvorana Slavnih povezana sa Serverom
+// kvartalninivo.js - Put oko sveta i Dvorana slavnih povezani sa serverom
 
 const KvartalniNivoManager = {
     // Tvoja lična statistika
@@ -8,11 +8,13 @@ const KvartalniNivoManager = {
     },
 
     nivoi: [
-        { id: 0, ime: "Istraživač", min: 0, max: 999, ikona: "assets/kvartalni-nivo-istrazivac-clay-soft-3d-v1.png", boja: "#a0aec0" },
-        { id: 1, ime: "Bronza", min: 1000, max: 2499, ikona: "assets/kvartalni-nivo-bronza-clay-soft-3d-v1.png", boja: "#cd7f32" },
-        { id: 2, ime: "Srebro", min: 2500, max: 4999, ikona: "assets/kvartalni-nivo-srebro-clay-soft-3d-v1.png", boja: "#c0c0c0" },
-        { id: 3, ime: "Zlato", min: 5000, max: 8999, ikona: "assets/kvartalni-nivo-zlato-clay-soft-3d-v1.png", boja: "#f5af19" },
-        { id: 4, ime: "Legenda", min: 9000, max: Infinity, ikona: "assets/kvartalni-nivo-legenda-clay-soft-3d-v1.png", boja: "#38bdf8" }
+        { id: 0, ime: "Evropa", min: 0, max: 999, ikona: "assets/kvartalni-nivo-istrazivac-clay-soft-3d-v1.png", boja: "#74b9ff" },
+        { id: 1, ime: "Azija", min: 1000, max: 2499, ikona: "assets/kvartalni-nivo-bronza-clay-soft-3d-v1.png", boja: "#f5af19" },
+        { id: 2, ime: "Australija i Okeanija", min: 2500, max: 4999, ikona: "assets/kvartalni-nivo-srebro-clay-soft-3d-v1.png", boja: "#38d9a9" },
+        { id: 3, ime: "Severna Amerika", min: 5000, max: 8999, ikona: "assets/kvartalni-nivo-zlato-clay-soft-3d-v1.png", boja: "#ff8a65" },
+        { id: 4, ime: "Južna Amerika", min: 9000, max: 13999, ikona: "assets/kvartalni-nivo-legenda-clay-soft-3d-v1.png", boja: "#9ccc65" },
+        { id: 5, ime: "Afrika", min: 14000, max: 19999, ikona: "assets/kvartalni-nivo-zlato-clay-soft-3d-v1.png", boja: "#f4c36a" },
+        { id: 6, ime: "Antarktik", min: 20000, max: Infinity, ikona: "assets/kvartalni-nivo-legenda-clay-soft-3d-v1.png", boja: "#b9e7ff" }
     ],
 
     aktivniTab: 'sezona',
@@ -29,7 +31,7 @@ const KvartalniNivoManager = {
 
     // Ovde se smeštaju podaci koji stignu iz MongoDB/Servera
     serverPodaci: {
-        sezona: [[], [], [], [], []], 
+        sezona: [[], [], [], [], [], [], []],
         svaVremena: [],
         medalje: [],
         sampioni: []
@@ -187,7 +189,7 @@ const KvartalniNivoManager = {
     primiTopListe: function(podaci) {
         this.ucitavanje = false;
         this.serverPodaci = {
-            sezona: Array.isArray(podaci && podaci.sezona) ? podaci.sezona : [[], [], [], [], []],
+            sezona: Array.isArray(podaci && podaci.sezona) ? podaci.sezona : [[], [], [], [], [], [], []],
             svaVremena: Array.isArray(podaci && podaci.svaVremena) ? podaci.svaVremena : [],
             medalje: Array.isArray(podaci && podaci.medalje) ? podaci.medalje : [],
             sampioni: Array.isArray(podaci && podaci.sampioni) ? podaci.sampioni : []
@@ -322,10 +324,10 @@ const KvartalniNivoManager = {
         const sadrzaj = document.getElementById('kvartalni-nivo-sadrzaj');
         
         let html = `
-            <div class="kvartal-main-tabs" role="tablist" aria-label="Kvartalni nivo">
-                <button type="button" class="menu-btn kvartal-tab ${this.aktivniTab === 'sezona' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniTab('sezona')">Liga</button>
-                <button type="button" class="menu-btn kvartal-tab ${this.aktivniTab === 'svaVremena' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniTab('svaVremena')">Sva Vremena</button>
-                <button type="button" class="menu-btn kvartal-tab ${this.aktivniTab === 'slavni' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniTab('slavni')">Slavni</button>
+            <div class="kvartal-main-tabs" role="tablist" aria-label="Put oko sveta">
+                <button type="button" class="menu-btn kvartal-tab ${this.aktivniTab === 'sezona' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniTab('sezona')">Moj put</button>
+                <button type="button" class="menu-btn kvartal-tab ${this.aktivniTab === 'svaVremena' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniTab('svaVremena')">Rekordi</button>
+                <button type="button" class="menu-btn kvartal-tab ${this.aktivniTab === 'slavni' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniTab('slavni')">Dvorana slavnih</button>
             </div>
         `;
 
@@ -342,8 +344,9 @@ const KvartalniNivoManager = {
         let html = `
             <section class="kvartal-summary-card" style="--kvartal-nivo-boja: ${info.trenutni.boja};">
                 <div class="kvartal-summary-copy">
-                    <span class="kvartal-eyebrow">Tvoj trenutni nivo</span>
+                    <span class="kvartal-eyebrow">Tvoj istraživački rang</span>
                     <strong class="kvartal-current-level">${info.trenutni.ime}</strong>
+                    <span class="kvartal-route-copy">Etapa ${info.nivoIndex} od ${this.nivoi.length} na putu oko sveta</span>
                 </div>
                 <div class="kvartal-summary-score">
                     <strong>${this.statistika.sezonskiPojmovi}</strong>
@@ -352,12 +355,13 @@ const KvartalniNivoManager = {
             </section>
         `;
 
-        html += `<div class="kvartal-level-tabs" role="tablist" aria-label="Nivoi lige">`;
+        html += `<div class="kvartal-level-tabs" role="tablist" aria-label="Istraživački rangovi">`;
         this.nivoi.forEach(nivo => {
             const aktivan = this.aktivniNivoTab === nivo.id;
             html += `
                 <button type="button" class="kvartal-level-tab ${aktivan ? 'active' : ''}" style="--kvartal-nivo-boja: ${nivo.boja};" onclick="KvartalniNivoManager.promeniNivoTab(${nivo.id})" aria-label="${nivo.ime}" title="${nivo.ime}">
                     <img class="kvartal-level-icon" src="${nivo.ikona}" alt="" aria-hidden="true" decoding="async">
+                    <span class="kvartal-level-name">${nivo.ime}</span>
                 </button>
             `;
         });
@@ -367,10 +371,10 @@ const KvartalniNivoManager = {
         const listaIgraca = this.serverPodaci.sezona[this.aktivniNivoTab] || [];
 
         html += `<section class="kvartal-ranking-card" style="--kvartal-nivo-boja: ${izabraniNivo.boja};">`;
-        html += `<h4 class="kvartal-ranking-title">Top lista: <span>${izabraniNivo.ime}</span></h4>`;
+        html += `<h4 class="kvartal-ranking-title">Istraživači: <span>${izabraniNivo.ime}</span></h4>`;
 
         if (listaIgraca.length === 0) {
-            html += `<div class="kvartal-empty-state">${this.ucitavanje ? 'Učitavanje igrača...' : 'Još nema igrača na ovom nivou.'}</div>`;
+            html += `<div class="kvartal-empty-state">${this.ucitavanje ? 'Učitavanje istraživača...' : 'Još nema istraživača u ovom rangu.'}</div>`;
         } else {
             listaIgraca.forEach((igrac, index) => {
                 html += `
@@ -394,7 +398,7 @@ const KvartalniNivoManager = {
         let html = `
             <div class="kvartal-heading">
                 <img class="kvartal-all-time-icon" src="assets/kvartalni-nivo-apsolutni-vladari-clay-soft-3d-v1.png" alt="" aria-hidden="true" decoding="async">
-                <h3>Apsolutni Vladari</h3>
+                <h3>Svetski rekorderi</h3>
                 <p>Najviše pogođenih pojmova u istoriji igre.</p>
             </div>
             <section class="kvartal-ranking-card kvartal-all-time-card">
@@ -438,12 +442,12 @@ const KvartalniNivoManager = {
         let html = `
             <div class="kvartal-legend-tabs" role="tablist" aria-label="Slavni igrači">
                 <button type="button" class="menu-btn kvartal-tab ${this.aktivniSlavniTab === 'medalje' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniSlavniTab('medalje')"><img class="kvartal-legend-tab-icon" src="assets/kvartalni-nivo-slavni-medalje-clay-soft-3d-v1.png" alt="" aria-hidden="true" decoding="async"> Medalje</button>
-                <button type="button" class="menu-btn kvartal-tab ${this.aktivniSlavniTab === 'sampioni' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniSlavniTab('sampioni')"><img class="kvartal-legend-tab-icon" src="assets/kvartalni-nivo-slavni-sampioni-clay-soft-3d-v1.png" alt="" aria-hidden="true" decoding="async"> Šampioni</button>
+                <button type="button" class="menu-btn kvartal-tab ${this.aktivniSlavniTab === 'sampioni' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniSlavniTab('sampioni')"><img class="kvartal-legend-tab-icon" src="assets/kvartalni-nivo-slavni-sampioni-clay-soft-3d-v1.png" alt="" aria-hidden="true" decoding="async"> Pobednici</button>
             </div>
         `;
 
         if (this.aktivniSlavniTab === 'medalje') {
-            html += `<p class="kvartal-info-copy">Igrači koji su završili u TOP 3 u bilo kom kvartalnom ciklusu.</p>`;
+            html += `<p class="kvartal-info-copy">Igrači koji su završili u TOP 3 tokom bilo koje ekspedicije.</p>`;
             
             if (!this.serverPodaci.medalje || this.serverPodaci.medalje.length === 0) {
                 html += `<div class="kvartal-empty-card"><div class="kvartal-empty-state">Čekamo prve osvajače medalja...</div></div>`;
@@ -466,10 +470,10 @@ const KvartalniNivoManager = {
                 });
             }
         } else {
-            html += `<p class="kvartal-info-copy">Osvajači prvog mesta na kraju svakog ciklusa lige.</p>`;
+            html += `<p class="kvartal-info-copy">Osvajači prvog mesta na kraju svake tromesečne ekspedicije.</p>`;
             
             if (!this.serverPodaci.sampioni || this.serverPodaci.sampioni.length === 0) {
-                html += `<div class="kvartal-empty-card"><div class="kvartal-empty-state">Čekamo prve šampione...</div></div>`;
+                html += `<div class="kvartal-empty-card"><div class="kvartal-empty-state">Čekamo prve pobednike ekspedicije...</div></div>`;
             } else {
                 this.serverPodaci.sampioni.forEach(igrac => {
                     html += `

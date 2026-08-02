@@ -132,8 +132,8 @@ function oznakaKvartala(datum = new Date()) {
 
 function nazivKvartala(oznaka) {
     const poklapanje = /^(\d{4})-Q([1-4])$/.exec(String(oznaka || ""));
-    if (!poklapanje) return String(oznaka || "Kvartalni ciklus");
-    return `${poklapanje[2]}. kvartal ${poklapanje[1]}`;
+    if (!poklapanje) return String(oznaka || "Ekspedicija");
+    return `Ekspedicija ${poklapanje[2]} · ${poklapanje[1]}`;
 }
 
 // ==========================================
@@ -4731,7 +4731,9 @@ const KVARTALNI_NIVOI = [
     { min: 1000, max: 2499 },
     { min: 2500, max: 4999 },
     { min: 5000, max: 8999 },
-    { min: 9000, max: Number.MAX_SAFE_INTEGER }
+    { min: 9000, max: 13999 },
+    { min: 14000, max: 19999 },
+    { min: 20000, max: Number.MAX_SAFE_INTEGER }
 ];
 
 function kvartalniOpsegIgraca() {

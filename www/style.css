@@ -15682,7 +15682,7 @@ body[data-tema] #kvartalni-nivo-screen .kvartal-summary-score i {
 
 body[data-tema] #kvartalni-nivo-screen .kvartal-level-tabs {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0.35rem;
     margin: 0 0 0.7rem;
 }
@@ -15690,7 +15690,7 @@ body[data-tema] #kvartalni-nivo-screen .kvartal-level-tabs {
 body[data-tema] #kvartalni-nivo-screen .kvartal-level-tab {
     display: grid;
     min-width: 0;
-    min-height: 2.55rem;
+    min-height: 3.45rem;
     place-items: center;
     padding: 0.35rem;
     border: 1px solid rgba(220, 244, 255, 0.28);
@@ -15702,8 +15702,8 @@ body[data-tema] #kvartalni-nivo-screen .kvartal-level-tab {
 
 body[data-tema] #kvartalni-nivo-screen .kvartal-level-icon {
     display: block;
-    width: 82%;
-    height: 82%;
+    width: 1.85rem;
+    height: 1.85rem;
     object-fit: contain;
     pointer-events: none;
     transition: transform 0.2s ease;
@@ -15717,6 +15717,26 @@ body[data-tema] #kvartalni-nivo-screen .kvartal-level-tab.active {
 
 body[data-tema] #kvartalni-nivo-screen .kvartal-level-tab.active .kvartal-level-icon {
     transform: scale(1.08);
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-level-name,
+body[data-tema] #kvartalni-nivo-screen .kvartal-route-copy {
+    color: rgba(255, 255, 255, 0.76) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.48rem;
+    font-weight: 800;
+    line-height: 1.05;
+    text-align: center;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-level-tab.active .kvartal-level-name {
+    color: #fff !important;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-route-copy {
+    display: block;
+    margin-top: 0.18rem;
+    text-align: left;
 }
 
 body[data-tema] #kvartalni-nivo-screen .kvartal-ranking-card,

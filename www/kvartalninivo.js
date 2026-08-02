@@ -10,9 +10,9 @@ const KvartalniNivoManager = {
     nivoi: [
         {
             id: 0, ime: "Evropa", min: 0, max: 999, boja: "#74b9ff",
-            fokus: [1100, 360, 1.95],
+            fokus: [1045, 130, 3.25],
             gradovi: [
-                [990, 446, "Sevilja"], [1003, 416, "Madrid"], [1007, 383, "Bilbao"], [1037, 354, "Pariz"], [1023, 315, "London"], [1052, 331, "Amsterdam"], [1100, 333, "Berlin"], [1106, 354, "Prag"], [1117, 365, "Beč"], [1132, 370, "Budimpešta"], [1140, 384, "Beograd"], [1156, 397, "Sofija"], [1189, 408, "Istanbul"]
+                [946, 207, "Sevilja"], [958, 195, "Madrid"], [963, 176, "Bilbao"], [1007, 160, "Pariz"], [990, 140, "London"], [1024, 145, "Amsterdam"], [1054, 145, "Berlin"], [1063, 165, "Prag"], [1075, 172, "Beč"], [1090, 176, "Budimpešta"], [1106, 187, "Beograd"], [1123, 195, "Sofija"], [1150, 207, "Istanbul"]
             ],
             gradoviDetalj: [
                 [300, 760, "Sevilja"], [312, 706, "Madrid"], [310, 662, "Bilbao"], [435, 558, "Pariz"], [355, 415, "London"], [480, 478, "Amsterdam"], [665, 474, "Berlin"], [690, 535, "Prag"], [733, 562, "Beč"], [780, 572, "Budimpešta"], [805, 612, "Beograd"], [850, 633, "Sofija"], [910, 657, "Istanbul"]
@@ -435,8 +435,8 @@ const KvartalniNivoManager = {
                         </filter>
                     </defs>
                     <rect class="put-svetska-voda" x="0" y="-230" width="2048" height="1490" />
-                    <image class="put-svetska-mapa" href="assets/put-oko-sveta-svetska-mapa-plava-kontrast-v1.png" width="2048" height="1024" />
-                    <rect class="put-svetska-mapa-izmaglica" width="2048" height="1024" />
+                    <image class="put-svetska-mapa" href="assets/put-oko-sveta-un-bez-teksta-v2.png" x="0" y="-86" width="2048" height="1195" preserveAspectRatio="xMidYMid meet" />
+                    <rect class="put-svetska-mapa-izmaglica" x="0" y="-86" width="2048" height="1195" />
                     <image class="put-antarktik-na-mapi" href="assets/antarktik-realisticni-led-v1.png" x="620" y="990" width="700" height="700" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
                     ${evropskaRuta ? `
                         <polyline class="put-linija put-linija-pozadina" points="${tackeEvrope}" pathLength="100" />
@@ -536,7 +536,7 @@ const KvartalniNivoManager = {
                 const novoSrediste = sredisteDodira();
                 if (prethodniRazmak && prethodnoSrediste && novoSrediste) {
                     const staraSkala = this.mapaTransform.skala;
-                    const novaSkala = Math.max(1, Math.min(5, staraSkala * (noviRazmak / prethodniRazmak)));
+                    const novaSkala = Math.max(1, Math.min(6, staraSkala * (noviRazmak / prethodniRazmak)));
                     const lokalnoX = (prethodnoSrediste.x - this.mapaTransform.x) / staraSkala;
                     const lokalnoY = (prethodnoSrediste.y - this.mapaTransform.y) / staraSkala;
                     this.mapaTransform.skala = novaSkala;
@@ -565,7 +565,7 @@ const KvartalniNivoManager = {
             const fokusX = dogadjaj.clientX - okvir.left;
             const fokusY = dogadjaj.clientY - okvir.top;
             const staraSkala = this.mapaTransform.skala;
-            const novaSkala = Math.max(1, Math.min(5, staraSkala * (dogadjaj.deltaY < 0 ? 1.12 : 0.88)));
+            const novaSkala = Math.max(1, Math.min(6, staraSkala * (dogadjaj.deltaY < 0 ? 1.12 : 0.88)));
             const lokalnoX = (fokusX - this.mapaTransform.x) / staraSkala;
             const lokalnoY = (fokusY - this.mapaTransform.y) / staraSkala;
             this.mapaTransform.skala = novaSkala;

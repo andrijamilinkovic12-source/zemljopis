@@ -12,10 +12,10 @@ const KvartalniNivoManager = {
             id: 0, ime: "Evropa", min: 0, max: 999, boja: "#74b9ff",
             fokus: [1100, 360, 1.95],
             gradovi: [
-                [1012, 416, "Madrid"], [1043, 354, "Pariz"], [1001, 315, "London"], [1059, 331, "Amsterdam"], [1100, 333, "Berlin"], [1105, 354, "Prag"], [1120, 365, "Beč"], [1140, 370, "Budimpešta"], [1154, 384, "Beograd"], [1204, 408, "Istanbul"]
+                [1010, 446, "Sevilja"], [1012, 416, "Madrid"], [1018, 383, "Bilbao"], [1043, 354, "Pariz"], [1001, 315, "London"], [1059, 331, "Amsterdam"], [1100, 333, "Berlin"], [1107, 354, "Prag"], [1120, 365, "Beč"], [1140, 370, "Budimpešta"], [1154, 384, "Beograd"], [1180, 397, "Sofija"], [1204, 408, "Istanbul"]
             ],
             gradoviDetalj: [
-                [320, 600, "Madrid"], [450, 510, "Pariz"], [345, 390, "London"], [474, 455, "Amsterdam"], [620, 450, "Berlin"], [640, 500, "Prag"], [690, 530, "Beč"], [740, 540, "Budimpešta"], [760, 585, "Beograd"], [890, 610, "Istanbul"]
+                [300, 760, "Sevilja"], [312, 706, "Madrid"], [310, 662, "Bilbao"], [435, 558, "Pariz"], [355, 415, "London"], [480, 478, "Amsterdam"], [665, 474, "Berlin"], [690, 535, "Prag"], [733, 562, "Beč"], [780, 572, "Budimpešta"], [805, 612, "Beograd"], [850, 633, "Sofija"], [910, 657, "Istanbul"]
             ]
         },
         {
@@ -395,6 +395,8 @@ const KvartalniNivoManager = {
     renderMapaPutaHTML: function(info) {
         const nivo = info.trenutni;
         const procenat = this.procenatEtape(nivo);
+        const evropskaRuta = nivo.id === 0;
+        const tackeEvrope = nivo.gradovi.map(([x, y]) => `${x},${y}`).join(' ');
         const antarktikDostignut = nivo.ime === 'Afrika' && this.statistika.sezonskiPojmovi >= (nivo.cilj || Infinity);
         const sledecaEtapa = antarktikDostignut
             ? 'Kruna Antarktika je osvojena'
@@ -434,14 +436,12 @@ const KvartalniNivoManager = {
                     </defs>
                     <image class="put-svetska-mapa" href="assets/put-oko-sveta-svetska-mapa-bez-teksta-v1.png" width="2048" height="1024" />
                     <rect class="put-svetska-mapa-izmaglica" width="2048" height="1024" />
-                    <image class="put-antarktik-na-mapi" href="assets/antarktik-realisticni-led-v1.png" x="982" y="730" width="300" height="300" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
+                    <image class="put-antarktik-na-mapi" href="assets/antarktik-realisticni-led-v1.png" x="982" y="900" width="300" height="300" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
+                    ${evropskaRuta ? `
+                        <polyline class="put-linija put-linija-pozadina" points="${tackeEvrope}" pathLength="100" />
+                        <polyline class="put-linija put-linija-napredak" points="${tackeEvrope}" pathLength="100" filter="url(#sjaj-${nivo.id})" />
+                    ` : ''}
                 </svg>
-                ${nivo.id === 0 ? `
-                    <svg id="put-oko-sveta-mapa-evropa-detalj" class="put-oko-sveta-mapa put-evropa-detalj" viewBox="0 0 1536 1024" role="img" aria-label="Detaljna mapa Evrope">
-                        <image class="put-svetska-mapa" href="assets/put-oko-sveta-evropa-detalj-v1.png" width="1536" height="1024" />
-                        <rect class="put-svetska-mapa-izmaglica" width="1536" height="1024" />
-                    </svg>
-                ` : ''}
                 </div>
                 <div class="put-oko-sveta-route-footer">
                     <span>${doCilja}</span>
@@ -453,19 +453,15 @@ const KvartalniNivoManager = {
 
     primeniMapuTransform: function() {
         const mapa = document.getElementById('put-oko-sveta-mapa');
-        const detaljEvrope = document.getElementById('put-oko-sveta-mapa-evropa-detalj');
-        const viewport = document.getElementById('put-oko-sveta-viewport');
         if (!mapa) return;
         const stanje = this.mapaTransform;
         mapa.style.transform = `translate(${stanje.x}px, ${stanje.y}px) scale(${stanje.skala})`;
-        if (detaljEvrope) detaljEvrope.style.transform = `translate(${stanje.x}px, ${stanje.y}px) scale(${stanje.skala})`;
-        if (viewport) viewport.classList.toggle('evropa-detalj-active', Boolean(stanje.detaljEvropa));
     },
 
     ogranicIMapuTransform: function(viewport) {
         const sirina = viewport.clientWidth;
         const visina = viewport.clientHeight;
-        const osnovnaVisina = this.mapaTransform.detaljEvropa ? sirina * (2 / 3) : sirina / 2;
+        const osnovnaVisina = sirina / 2;
         const prikazanaSirina = sirina * this.mapaTransform.skala;
         const prikazanaVisina = osnovnaVisina * this.mapaTransform.skala;
         const centarX = (sirina - prikazanaSirina) / 2;
@@ -476,32 +472,6 @@ const KvartalniNivoManager = {
         this.mapaTransform.y = prikazanaVisina <= visina
             ? centarY
             : Math.min(0, Math.max(visina - prikazanaVisina, this.mapaTransform.y));
-    },
-
-    prebaciNaDetaljEvrope: function(nivo, viewport) {
-        if (nivo.id !== 0 || this.mapaTransform.detaljEvropa || this.mapaTransform.skala < 2.25) return;
-        const sirina = viewport.clientWidth;
-        const visina = viewport.clientHeight;
-        const osnovnaVisina = sirina * (2 / 3);
-        const skala = 1.16;
-        this.mapaTransform = {
-            ...this.mapaTransform,
-            detaljEvropa: true,
-            skala,
-            x: (sirina / 2) - ((690 / 1536) * sirina * skala),
-            y: (visina / 2) - ((530 / 1024) * osnovnaVisina * skala)
-        };
-    },
-
-    vratiNaCeluSvetskuMapu: function(nivo) {
-        if (nivo.id !== 0 || !this.mapaTransform.detaljEvropa || this.mapaTransform.skala > 1.05) return;
-        this.mapaTransform = {
-            ...this.mapaTransform,
-            detaljEvropa: false,
-            skala: 1,
-            x: 0,
-            y: 0
-        };
     },
 
     pripremiInteraktivnuMapu: function(info) {
@@ -534,17 +504,26 @@ const KvartalniNivoManager = {
 
         const dodiri = new Map();
         let prethodniRazmak = 0;
-        let prethodnaTacka = null;
         const razmak = () => {
             const tacke = [...dodiri.values()];
             return tacke.length < 2 ? 0 : Math.hypot(tacke[0].x - tacke[1].x, tacke[0].y - tacke[1].y);
         };
+        const sredisteDodira = () => {
+            const tacke = [...dodiri.values()];
+            if (tacke.length < 2) return null;
+            const okvir = viewport.getBoundingClientRect();
+            return {
+                x: ((tacke[0].x + tacke[1].x) / 2) - okvir.left,
+                y: ((tacke[0].y + tacke[1].y) / 2) - okvir.top
+            };
+        };
+        let prethodnoSrediste = null;
 
         viewport.addEventListener('pointerdown', dogadjaj => {
             viewport.setPointerCapture(dogadjaj.pointerId);
             dodiri.set(dogadjaj.pointerId, { x: dogadjaj.clientX, y: dogadjaj.clientY });
             prethodniRazmak = razmak();
-            prethodnaTacka = { x: dogadjaj.clientX, y: dogadjaj.clientY };
+            prethodnoSrediste = sredisteDodira();
         });
         viewport.addEventListener('pointermove', dogadjaj => {
             if (!dodiri.has(dogadjaj.pointerId)) return;
@@ -553,29 +532,44 @@ const KvartalniNivoManager = {
             dodiri.set(dogadjaj.pointerId, { x: dogadjaj.clientX, y: dogadjaj.clientY });
             if (dodiri.size === 2) {
                 const noviRazmak = razmak();
-                if (prethodniRazmak) this.mapaTransform.skala = Math.max(1, Math.min(4, this.mapaTransform.skala * (noviRazmak / prethodniRazmak)));
+                const novoSrediste = sredisteDodira();
+                if (prethodniRazmak && prethodnoSrediste && novoSrediste) {
+                    const staraSkala = this.mapaTransform.skala;
+                    const novaSkala = Math.max(1, Math.min(4, staraSkala * (noviRazmak / prethodniRazmak)));
+                    const lokalnoX = (prethodnoSrediste.x - this.mapaTransform.x) / staraSkala;
+                    const lokalnoY = (prethodnoSrediste.y - this.mapaTransform.y) / staraSkala;
+                    this.mapaTransform.skala = novaSkala;
+                    this.mapaTransform.x = novoSrediste.x - (lokalnoX * novaSkala);
+                    this.mapaTransform.y = novoSrediste.y - (lokalnoY * novaSkala);
+                }
                 prethodniRazmak = noviRazmak;
-            } else if (prethodna && prethodnaTacka) {
-                this.mapaTransform.x += dogadjaj.clientX - prethodnaTacka.x;
-                this.mapaTransform.y += dogadjaj.clientY - prethodnaTacka.y;
+                prethodnoSrediste = novoSrediste;
+            } else if (prethodna) {
+                this.mapaTransform.x += dogadjaj.clientX - prethodna.x;
+                this.mapaTransform.y += dogadjaj.clientY - prethodna.y;
             }
-            prethodnaTacka = { x: dogadjaj.clientX, y: dogadjaj.clientY };
-            this.vratiNaCeluSvetskuMapu(nivo);
-            this.prebaciNaDetaljEvrope(nivo, viewport);
             this.ogranicIMapuTransform(viewport);
             this.primeniMapuTransform();
         });
         const zavrsiDodir = dogadjaj => {
             dodiri.delete(dogadjaj.pointerId);
             prethodniRazmak = razmak();
+            prethodnoSrediste = sredisteDodira();
         };
         viewport.addEventListener('pointerup', zavrsiDodir);
         viewport.addEventListener('pointercancel', zavrsiDodir);
         viewport.addEventListener('wheel', dogadjaj => {
             dogadjaj.preventDefault();
-            this.mapaTransform.skala = Math.max(1, Math.min(4, this.mapaTransform.skala * (dogadjaj.deltaY < 0 ? 1.12 : 0.88)));
-            this.vratiNaCeluSvetskuMapu(nivo);
-            this.prebaciNaDetaljEvrope(nivo, viewport);
+            const okvir = viewport.getBoundingClientRect();
+            const fokusX = dogadjaj.clientX - okvir.left;
+            const fokusY = dogadjaj.clientY - okvir.top;
+            const staraSkala = this.mapaTransform.skala;
+            const novaSkala = Math.max(1, Math.min(4, staraSkala * (dogadjaj.deltaY < 0 ? 1.12 : 0.88)));
+            const lokalnoX = (fokusX - this.mapaTransform.x) / staraSkala;
+            const lokalnoY = (fokusY - this.mapaTransform.y) / staraSkala;
+            this.mapaTransform.skala = novaSkala;
+            this.mapaTransform.x = fokusX - (lokalnoX * novaSkala);
+            this.mapaTransform.y = fokusY - (lokalnoY * novaSkala);
             this.ogranicIMapuTransform(viewport);
             this.primeniMapuTransform();
         }, { passive: false });

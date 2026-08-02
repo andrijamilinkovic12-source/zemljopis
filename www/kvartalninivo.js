@@ -13,6 +13,9 @@ const KvartalniNivoManager = {
             fokus: [1100, 360, 1.95],
             gradovi: [
                 [1012, 416, "Madrid"], [1043, 354, "Pariz"], [1001, 315, "London"], [1059, 331, "Amsterdam"], [1100, 333, "Berlin"], [1105, 354, "Prag"], [1120, 365, "Beč"], [1140, 370, "Budimpešta"], [1154, 384, "Beograd"], [1204, 408, "Istanbul"]
+            ],
+            gradoviDetalj: [
+                [320, 600, "Madrid"], [450, 510, "Pariz"], [345, 390, "London"], [474, 455, "Amsterdam"], [620, 450, "Berlin"], [640, 500, "Prag"], [690, 530, "Beč"], [740, 540, "Budimpešta"], [760, 585, "Beograd"], [890, 610, "Istanbul"]
             ]
         },
         {
@@ -58,7 +61,7 @@ const KvartalniNivoManager = {
     introTajmer: null,
     ulazakTajmer: null,
     otvaranjeUToku: false,
-    mapaTransform: { nivoId: null, skala: 1, x: 0, y: 0, postavljena: false },
+    mapaTransform: { nivoId: null, skala: 1, x: 0, y: 0, postavljena: false, detaljEvropa: false },
 
     // Ovde se smeštaju podaci koji stignu iz MongoDB/Servera
     serverPodaci: {
@@ -362,6 +365,7 @@ const KvartalniNivoManager = {
         const nivo = info.trenutni;
         const procenat = this.procenatEtape(nivo);
         const tacke = nivo.gradovi.map(([x, y]) => `${x},${y}`).join(' ');
+        const detaljneTacke = (nivo.gradoviDetalj || []).map(([x, y]) => `${x},${y}`).join(' ');
         const sledecaEtapa = info.sledeci
             ? `Sledeća etapa: ${info.sledeci.ime}`
             : 'Završio si put oko sveta!';
@@ -390,17 +394,26 @@ const KvartalniNivoManager = {
                             <feMerge><feMergeNode in="zamagljenje" /><feMergeNode in="SourceGraphic" /></feMerge>
                         </filter>
                     </defs>
-                    <image class="put-svetska-mapa" href="assets/put-oko-sveta-svetska-mapa.jpg" width="2048" height="1024" />
+                    <image class="put-svetska-mapa" href="assets/put-oko-sveta-svetska-mapa-bez-teksta-v1.png" width="2048" height="1024" />
                     <rect class="put-svetska-mapa-izmaglica" width="2048" height="1024" />
                     <polyline class="put-linija put-linija-pozadina" points="${tacke}" pathLength="100" />
                     <polyline class="put-linija put-linija-napredak" points="${tacke}" pathLength="100" filter="url(#sjaj-${nivo.id})" />
                     ${nivo.gradovi.map(([x, y, grad], indeks) => `
                         <g class="put-stajaliste ${indeks === 0 ? 'pocetak' : ''}">
+                            <title>${grad}</title>
                             <circle cx="${x}" cy="${y}" r="${indeks === 0 ? 7 : 5}" />
-                            <text x="${x}" y="${y - 13}">${grad}</text>
                         </g>
                     `).join('')}
                 </svg>
+                ${nivo.id === 0 ? `
+                    <svg id="put-oko-sveta-mapa-evropa-detalj" class="put-oko-sveta-mapa put-evropa-detalj" viewBox="0 0 1536 1024" role="img" aria-label="Detaljna mapa Evrope">
+                        <image class="put-svetska-mapa" href="assets/put-oko-sveta-evropa-detalj-v1.png" width="1536" height="1024" />
+                        <rect class="put-svetska-mapa-izmaglica" width="1536" height="1024" />
+                        <polyline class="put-linija put-linija-pozadina" points="${detaljneTacke}" pathLength="100" />
+                        <polyline class="put-linija put-linija-napredak" points="${detaljneTacke}" pathLength="100" filter="url(#sjaj-${nivo.id})" />
+                        ${nivo.gradoviDetalj.map(([x, y, grad], indeks) => `<g class="put-stajaliste ${indeks === 0 ? 'pocetak' : ''}"><title>${grad}</title><circle cx="${x}" cy="${y}" r="${indeks === 0 ? 7 : 5}" /></g>`).join('')}
+                    </svg>
+                ` : ''}
                 </div>
                 <div class="put-oko-sveta-route-footer">
                     <span>${doCilja}</span>
@@ -412,9 +425,28 @@ const KvartalniNivoManager = {
 
     primeniMapuTransform: function() {
         const mapa = document.getElementById('put-oko-sveta-mapa');
+        const detaljEvrope = document.getElementById('put-oko-sveta-mapa-evropa-detalj');
+        const viewport = document.getElementById('put-oko-sveta-viewport');
         if (!mapa) return;
         const stanje = this.mapaTransform;
         mapa.style.transform = `translate(${stanje.x}px, ${stanje.y}px) scale(${stanje.skala})`;
+        if (detaljEvrope) detaljEvrope.style.transform = `translate(${stanje.x}px, ${stanje.y}px) scale(${stanje.skala})`;
+        if (viewport) viewport.classList.toggle('evropa-detalj-active', Boolean(stanje.detaljEvropa));
+    },
+
+    prebaciNaDetaljEvrope: function(nivo, viewport) {
+        if (nivo.id !== 0 || this.mapaTransform.detaljEvropa || this.mapaTransform.skala < 2.25) return;
+        const sirina = viewport.clientWidth;
+        const visina = viewport.clientHeight;
+        const osnovnaVisina = sirina * (2 / 3);
+        const skala = 1.16;
+        this.mapaTransform = {
+            ...this.mapaTransform,
+            detaljEvropa: true,
+            skala,
+            x: (sirina / 2) - ((690 / 1536) * sirina * skala),
+            y: (visina / 2) - ((530 / 1024) * osnovnaVisina * skala)
+        };
     },
 
     pripremiInteraktivnuMapu: function(info) {
@@ -438,7 +470,8 @@ const KvartalniNivoManager = {
                 skala,
                 x: (sirina / 2) - ((fokusX / 2048) * sirina * skala),
                 y: (visina / 2) - ((fokusY / 1024) * osnovnaVisina * skala),
-                postavljena: true
+                postavljena: true,
+                detaljEvropa: false
             };
         }
         this.primeniMapuTransform();
@@ -470,6 +503,7 @@ const KvartalniNivoManager = {
                 this.mapaTransform.y += dogadjaj.clientY - prethodnaTacka.y;
             }
             prethodnaTacka = { x: dogadjaj.clientX, y: dogadjaj.clientY };
+            this.prebaciNaDetaljEvrope(nivo, viewport);
             this.primeniMapuTransform();
         });
         const zavrsiDodir = dogadjaj => {
@@ -481,6 +515,7 @@ const KvartalniNivoManager = {
         viewport.addEventListener('wheel', dogadjaj => {
             dogadjaj.preventDefault();
             this.mapaTransform.skala = Math.max(1, Math.min(4, this.mapaTransform.skala * (dogadjaj.deltaY < 0 ? 1.12 : 0.88)));
+            this.prebaciNaDetaljEvrope(nivo, viewport);
             this.primeniMapuTransform();
         }, { passive: false });
     },

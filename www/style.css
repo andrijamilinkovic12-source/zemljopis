@@ -15789,6 +15789,21 @@ body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-map {
     will-change: transform;
 }
 
+body[data-tema] #kvartalni-nivo-screen .put-evropa-detalj {
+    position: absolute;
+    inset: 0 auto auto 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-viewport.evropa-detalj-active #put-oko-sveta-mapa {
+    opacity: 0;
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-viewport.evropa-detalj-active .put-evropa-detalj {
+    opacity: 1;
+}
+
 body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-viewport {
     position: relative;
     height: 15rem;

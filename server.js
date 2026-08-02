@@ -4730,9 +4730,9 @@ const KVARTALNI_NIVOI = [
     { min: 0, max: 999 },
     { min: 1000, max: 2499 },
     { min: 2500, max: 4999 },
-    { min: 5000, max: 8999 },
-    { min: 9000, max: 13999 },
-    { min: 14000, max: Number.MAX_SAFE_INTEGER }
+    { min: 5000, max: 7499 },
+    { min: 7500, max: 9499 },
+    { min: 9500, max: Number.MAX_SAFE_INTEGER }
 ];
 
 function kvartalniOpsegIgraca() {

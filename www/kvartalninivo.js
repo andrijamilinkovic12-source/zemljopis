@@ -29,17 +29,17 @@ const KvartalniNivoManager = {
             gradovi: [[1685, 695, "Pert"], [1782, 790, "Melburn"], [1837, 750, "Sidnej"], [1844, 660, "Port Morsbi"], [1980, 820, "Okland"]]
         },
         {
-            id: 3, ime: "Severna Amerika", min: 5000, max: 8999, boja: "#ff8a65",
+            id: 3, ime: "Severna Amerika", min: 5000, max: 7499, boja: "#ff8a65",
             fokus: [380, 400, 1.8],
             gradovi: [[312, 286, "Vankuver"], [338, 314, "Sijetl"], [348, 402, "San Francisko"], [366, 440, "Los Anđeles"], [444, 518, "Meksiko Siti"], [579, 539, "Havana"]]
         },
         {
-            id: 4, ime: "Južna Amerika", min: 9000, max: 13999, boja: "#9ccc65",
+            id: 4, ime: "Južna Amerika", min: 7500, max: 9499, boja: "#9ccc65",
             fokus: [680, 700, 1.8],
             gradovi: [[620, 585, "Bogota"], [630, 640, "Kito"], [625, 700, "Lima"], [690, 720, "La Paz"], [680, 850, "Santijago"], [752, 820, "Buenos Ajres"], [790, 740, "Rio de Žaneiro"]]
         },
         {
-            id: 5, ime: "Afrika", min: 14000, max: Infinity, cilj: 20000, boja: "#f4c36a",
+            id: 5, ime: "Afrika", min: 9500, max: Infinity, cilj: 12000, boja: "#f4c36a",
             fokus: [1100, 620, 1.8],
             gradovi: [[974, 458, "Kazablanka"], [1015, 472, "Alžir"], [1174, 506, "Kairo"], [1175, 645, "Najrobi"], [1186, 682, "Dar es Salam"], [1128, 860, "Kejptaun"], [1132, 978, "Antarktik"]]
         }
@@ -57,7 +57,7 @@ const KvartalniNivoManager = {
     ulazakTajmer: null,
     otvaranjeUToku: false,
     mapaTransform: { nivoId: null, skala: 1, x: 0, y: 0, postavljena: false, detaljEvropa: false },
-    antarktikPrag: 20000,
+    antarktikPrag: 12000,
 
     // Ovde se smeštaju podaci koji stignu iz MongoDB/Servera
     serverPodaci: {
@@ -229,6 +229,7 @@ const KvartalniNivoManager = {
         overlay.setAttribute('aria-live', 'assertive');
         overlay.innerHTML = `
             <div class="antarktik-ledeni-sjaj"></div>
+            <img class="antarktik-realisticni-led" src="assets/antarktik-realisticni-led-v1.png" alt="" aria-hidden="true">
             <div class="antarktik-pahulje" aria-hidden="true">✦ ❄ ✧ ❅ ✦ ❄ ✧</div>
             <div class="antarktik-dolazak-sadrzaj">
                 <div class="antarktik-kruna" aria-hidden="true"><i class="fa-solid fa-crown"></i></div>
@@ -241,7 +242,11 @@ const KvartalniNivoManager = {
         requestAnimationFrame(() => overlay.classList.add('active'));
         setTimeout(() => {
             overlay.classList.remove('active');
-            setTimeout(() => overlay.remove(), 500);
+            setTimeout(() => {
+                overlay.remove();
+                const ekran = document.getElementById('kvartalni-nivo-screen');
+                if (ekran?.classList.contains('active')) this.renderEkran();
+            }, 500);
         }, 5200);
     },
 
@@ -390,8 +395,6 @@ const KvartalniNivoManager = {
     renderMapaPutaHTML: function(info) {
         const nivo = info.trenutni;
         const procenat = this.procenatEtape(nivo);
-        const tacke = nivo.gradovi.map(([x, y]) => `${x},${y}`).join(' ');
-        const detaljneTacke = (nivo.gradoviDetalj || []).map(([x, y]) => `${x},${y}`).join(' ');
         const antarktikDostignut = nivo.ime === 'Afrika' && this.statistika.sezonskiPojmovi >= (nivo.cilj || Infinity);
         const sledecaEtapa = antarktikDostignut
             ? 'Kruna Antarktika je osvojena'
@@ -431,22 +434,12 @@ const KvartalniNivoManager = {
                     </defs>
                     <image class="put-svetska-mapa" href="assets/put-oko-sveta-svetska-mapa-bez-teksta-v1.png" width="2048" height="1024" />
                     <rect class="put-svetska-mapa-izmaglica" width="2048" height="1024" />
-                    <polyline class="put-linija put-linija-pozadina" points="${tacke}" pathLength="100" />
-                    <polyline class="put-linija put-linija-napredak" points="${tacke}" pathLength="100" filter="url(#sjaj-${nivo.id})" />
-                    ${nivo.gradovi.map(([x, y, grad], indeks) => `
-                        <g class="put-stajaliste ${indeks === 0 ? 'pocetak' : ''} ${grad === 'Antarktik' ? 'zavrsna-tacka' : ''}">
-                            <title>${grad}</title>
-                            <circle cx="${x}" cy="${y}" r="${grad === 'Antarktik' ? 11 : (indeks === 0 ? 7 : 5)}" />
-                        </g>
-                    `).join('')}
+                    <image class="put-antarktik-na-mapi" href="assets/antarktik-realisticni-led-v1.png" x="982" y="730" width="300" height="300" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
                 </svg>
                 ${nivo.id === 0 ? `
                     <svg id="put-oko-sveta-mapa-evropa-detalj" class="put-oko-sveta-mapa put-evropa-detalj" viewBox="0 0 1536 1024" role="img" aria-label="Detaljna mapa Evrope">
                         <image class="put-svetska-mapa" href="assets/put-oko-sveta-evropa-detalj-v1.png" width="1536" height="1024" />
                         <rect class="put-svetska-mapa-izmaglica" width="1536" height="1024" />
-                        <polyline class="put-linija put-linija-pozadina" points="${detaljneTacke}" pathLength="100" />
-                        <polyline class="put-linija put-linija-napredak" points="${detaljneTacke}" pathLength="100" filter="url(#sjaj-${nivo.id})" />
-                        ${nivo.gradoviDetalj.map(([x, y, grad], indeks) => `<g class="put-stajaliste ${indeks === 0 ? 'pocetak' : ''}"><title>${grad}</title><circle cx="${x}" cy="${y}" r="${indeks === 0 ? 7 : 5}" /></g>`).join('')}
                     </svg>
                 ` : ''}
                 </div>
@@ -475,10 +468,14 @@ const KvartalniNivoManager = {
         const osnovnaVisina = this.mapaTransform.detaljEvropa ? sirina * (2 / 3) : sirina / 2;
         const prikazanaSirina = sirina * this.mapaTransform.skala;
         const prikazanaVisina = osnovnaVisina * this.mapaTransform.skala;
-        const minX = Math.min(0, sirina - prikazanaSirina);
-        const minY = Math.min(0, visina - prikazanaVisina);
-        this.mapaTransform.x = Math.min(0, Math.max(minX, this.mapaTransform.x));
-        this.mapaTransform.y = Math.min(0, Math.max(minY, this.mapaTransform.y));
+        const centarX = (sirina - prikazanaSirina) / 2;
+        const centarY = (visina - prikazanaVisina) / 2;
+        this.mapaTransform.x = prikazanaSirina <= sirina
+            ? centarX
+            : Math.min(0, Math.max(sirina - prikazanaSirina, this.mapaTransform.x));
+        this.mapaTransform.y = prikazanaVisina <= visina
+            ? centarY
+            : Math.min(0, Math.max(visina - prikazanaVisina, this.mapaTransform.y));
     },
 
     prebaciNaDetaljEvrope: function(nivo, viewport) {
@@ -493,6 +490,17 @@ const KvartalniNivoManager = {
             skala,
             x: (sirina / 2) - ((690 / 1536) * sirina * skala),
             y: (visina / 2) - ((530 / 1024) * osnovnaVisina * skala)
+        };
+    },
+
+    vratiNaCeluSvetskuMapu: function(nivo) {
+        if (nivo.id !== 0 || !this.mapaTransform.detaljEvropa || this.mapaTransform.skala > 1.05) return;
+        this.mapaTransform = {
+            ...this.mapaTransform,
+            detaljEvropa: false,
+            skala: 1,
+            x: 0,
+            y: 0
         };
     },
 
@@ -552,6 +560,7 @@ const KvartalniNivoManager = {
                 this.mapaTransform.y += dogadjaj.clientY - prethodnaTacka.y;
             }
             prethodnaTacka = { x: dogadjaj.clientX, y: dogadjaj.clientY };
+            this.vratiNaCeluSvetskuMapu(nivo);
             this.prebaciNaDetaljEvrope(nivo, viewport);
             this.ogranicIMapuTransform(viewport);
             this.primeniMapuTransform();
@@ -565,6 +574,7 @@ const KvartalniNivoManager = {
         viewport.addEventListener('wheel', dogadjaj => {
             dogadjaj.preventDefault();
             this.mapaTransform.skala = Math.max(1, Math.min(4, this.mapaTransform.skala * (dogadjaj.deltaY < 0 ? 1.12 : 0.88)));
+            this.vratiNaCeluSvetskuMapu(nivo);
             this.prebaciNaDetaljEvrope(nivo, viewport);
             this.ogranicIMapuTransform(viewport);
             this.primeniMapuTransform();

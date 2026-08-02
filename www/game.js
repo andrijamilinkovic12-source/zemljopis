@@ -2081,7 +2081,6 @@ const Game = {
             !dozvoljeno
             || osnovica <= 0
             || typeof TokeniManager === 'undefined'
-            || typeof KvartalniNivoManager === 'undefined'
         ) {
             return;
         }
@@ -2112,11 +2111,6 @@ const Game = {
         const reklamaPokrenuta = TokeniManager.prikaziReklamu(tipReklame, {
             onUspeh: () => {
                 const bonusPojmovi = osnovica * (mnozilac - 1);
-
-                KvartalniNivoManager.dodajPojmoveUSerijama(
-                    bonusPojmovi,
-                    `${kljucPartije}:bonus${mnozilac}x`
-                );
 
                 preuzetiBonusi[kljucPartije] = mnozilac;
                 const sacuvaniKljucevi = Object.keys(preuzetiBonusi).slice(-100);

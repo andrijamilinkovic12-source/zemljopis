@@ -15881,6 +15881,19 @@ body[data-tema] #kvartalni-nivo-screen .put-stajaliste.zavrsna-tacka circle {
     filter: drop-shadow(0 0 7px rgba(245, 208, 97, 0.92));
 }
 
+body[data-tema] #kvartalni-nivo-screen .put-antarktik-na-mapi {
+    opacity: 0.92;
+    filter: drop-shadow(0 0.35rem 0.5rem rgba(2, 23, 53, 0.46));
+}
+
+body[data-tema] #kvartalni-nivo-screen .put-linija-prethodna {
+    fill: none;
+    stroke: rgba(224, 246, 255, 0.52);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 4;
+}
+
 .antarktik-dolazak-overlay {
     position: fixed;
     z-index: 10050;
@@ -15907,6 +15920,16 @@ body[data-tema] #kvartalni-nivo-screen .put-stajaliste.zavrsna-tacka circle {
     animation: antarktikSjaj 2.5s ease-in-out infinite;
 }
 
+.antarktik-realisticni-led {
+    position: absolute;
+    z-index: 1;
+    bottom: -7%;
+    width: min(90vw, 32rem);
+    filter: drop-shadow(0 1rem 1.4rem rgba(1, 17, 47, 0.64)) drop-shadow(0 0 1rem rgba(148, 239, 255, 0.4));
+    opacity: 1;
+    animation: antarktikKontinent 1.3s cubic-bezier(0.18, 0.8, 0.24, 1) both;
+}
+
 .antarktik-pahulje {
     position: absolute;
     inset: 0;
@@ -15920,12 +15943,15 @@ body[data-tema] #kvartalni-nivo-screen .put-stajaliste.zavrsna-tacka circle {
 
 .antarktik-dolazak-sadrzaj {
     position: relative;
+    z-index: 2;
     display: grid;
     max-width: 20rem;
     justify-items: center;
     color: #fff;
     font-family: 'Poppins', sans-serif;
     text-align: center;
+    transform: translateY(-10.5rem);
+    text-shadow: 0 0.18rem 0.65rem rgba(2, 22, 58, 0.85);
 }
 
 .antarktik-kruna {
@@ -15947,6 +15973,7 @@ body[data-tema] #kvartalni-nivo-screen .put-stajaliste.zavrsna-tacka circle {
 
 @keyframes antarktikSjaj { 50% { transform: scale(1.12); opacity: 0.6; } }
 @keyframes antarktikSneg { to { transform: translateY(110%); } }
+@keyframes antarktikKontinent { from { opacity: 0; transform: translateY(4rem) scale(0.86); } to { opacity: 0.94; transform: translateY(0) scale(1); } }
 
 body[data-tema] #kvartalni-nivo-screen .put-stajaliste text {
     fill: rgba(241, 250, 255, 0.92);

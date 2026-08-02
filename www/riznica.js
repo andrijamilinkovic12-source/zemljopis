@@ -341,6 +341,9 @@ const RiznicaManager = {
                 
                 // Automatski opremi nakon kupovine
                 this.opremiPredmet(kategorija, predmetId, true);
+                if (typeof TrofejiManager !== 'undefined') {
+                    TrofejiManager.proveriRiznicu();
+                }
                 
                 UIManager.prikaziObavestenje("Uspešna kupovina!", `Uspešno si kupio: <b>${artikal.naziv}</b>`, null, "Odlično");
             } else {

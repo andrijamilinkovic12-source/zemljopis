@@ -8,6 +8,8 @@ const SinhronizacijaManager = {
     obradaUToku: false,
     primenaUToku: false,
     slanjeNakonPrimene: false,
+    slanjeUToku: false,
+    slanjeNaCekanju: false,
     tajmerSlanja: null,
     profilNaCekanju: null,
     generacijaProfila: 0,
@@ -68,6 +70,8 @@ const SinhronizacijaManager = {
         clearTimeout(this.tajmerSlanja);
         this.tajmerSlanja = null;
         this.slanjeNakonPrimene = false;
+        this.slanjeUToku = false;
+        this.slanjeNaCekanju = false;
         this.spreman = false;
         this.generacijaProfila += 1;
     },
@@ -161,6 +165,19 @@ const SinhronizacijaManager = {
         this.tajmerSlanja = setTimeout(() => this.posaljiOdmah(), 700);
     },
 
+    // Koristi se za važne, nepovratne promene kao što je preuzimanje nagrade trofeja.
+    // Sačuvaj odmah, ali nikada ne šalji dve iste revizije paralelno.
+    sinhronizujOdmah: function() {
+        if (this.primenaUToku) {
+            this.slanjeNakonPrimene = true;
+            return;
+        }
+        if (!this.spreman) return;
+        clearTimeout(this.tajmerSlanja);
+        this.tajmerSlanja = null;
+        this.posaljiOdmah();
+    },
+
     posaljiOdmah: function(zavrseno) {
         if (
             typeof Game === "undefined"
@@ -172,8 +189,14 @@ const SinhronizacijaManager = {
             return;
         }
 
+        if (this.slanjeUToku) {
+            this.slanjeNaCekanju = true;
+            return;
+        }
+
         const generacija = this.generacijaProfila;
         const playerId = this.playerId;
+        this.slanjeUToku = true;
         Game.socket.timeout(12000).emit(
             "sacuvajCloudNapredak",
             {
@@ -185,25 +208,27 @@ const SinhronizacijaManager = {
                     if (typeof zavrseno === "function") zavrseno(false);
                     return;
                 }
+
+                this.slanjeUToku = false;
                 if (greska || !odgovor) {
                     console.warn("Sinhronizacija napretka nije uspela.", greska);
                     if (typeof zavrseno === "function") zavrseno(false);
-                    return;
-                }
-
-                if (odgovor.kod === "SUKOB_REVIZIJE" && odgovor.sinhronizacija) {
+                } else if (odgovor.kod === "SUKOB_REVIZIJE" && odgovor.sinhronizacija) {
                     this.revizija = odgovor.sinhronizacija.revizija || 0;
                     this.primeniNapredak(odgovor.sinhronizacija.napredak || {});
                     if (typeof zavrseno === "function") zavrseno(false);
-                    return;
+                } else {
+                    if (odgovor.uspeh && odgovor.sinhronizacija) {
+                        this.revizija = odgovor.sinhronizacija.revizija || this.revizija;
+                        if (odgovor.playerId) this.playerId = odgovor.playerId;
+                    }
+                    if (typeof zavrseno === "function") zavrseno(Boolean(odgovor.uspeh));
                 }
 
-                if (odgovor.uspeh && odgovor.sinhronizacija) {
-                    this.revizija = odgovor.sinhronizacija.revizija || this.revizija;
-                    if (odgovor.playerId) this.playerId = odgovor.playerId;
+                if (this.slanjeNaCekanju) {
+                    this.slanjeNaCekanju = false;
+                    this.posaljiOdmah();
                 }
-
-                if (typeof zavrseno === "function") zavrseno(Boolean(odgovor.uspeh));
             }
         );
     },

@@ -567,11 +567,14 @@ const KvartalniNivoManager = {
     skratiRutu: function(tacke, procenat) {
         if (procenat <= 0) return [tacke[0], tacke[0]];
         if (procenat >= 100) return tacke;
+        const uMerkator = sirina => Math.log(Math.tan((Math.PI / 4) + ((sirina * Math.PI / 180) / 2)));
+        const izMerkatora = y => ((2 * Math.atan(Math.exp(y))) - (Math.PI / 2)) * 180 / Math.PI;
+        const uRadijane = duzina => duzina * Math.PI / 180;
         const duzine = [];
         let ukupno = 0;
         for (let i = 1; i < tacke.length; i++) {
-            const dx = (tacke[i][0] - tacke[i - 1][0]) * Math.cos(((tacke[i][1] + tacke[i - 1][1]) / 2) * Math.PI / 180);
-            const dy = tacke[i][1] - tacke[i - 1][1];
+            const dx = uRadijane(tacke[i][0]) - uRadijane(tacke[i - 1][0]);
+            const dy = uMerkator(tacke[i][1]) - uMerkator(tacke[i - 1][1]);
             const duzina = Math.hypot(dx, dy);
             duzine.push(duzina);
             ukupno += duzina;
@@ -585,9 +588,13 @@ const KvartalniNivoManager = {
                 continue;
             }
             const odnos = preostalo / duzine[i - 1];
+            const xOd = uRadijane(tacke[i - 1][0]);
+            const yOd = uMerkator(tacke[i - 1][1]);
+            const xDo = uRadijane(tacke[i][0]);
+            const yDo = uMerkator(tacke[i][1]);
             rezultat.push([
-                tacke[i - 1][0] + ((tacke[i][0] - tacke[i - 1][0]) * odnos),
-                tacke[i - 1][1] + ((tacke[i][1] - tacke[i - 1][1]) * odnos)
+                (xOd + ((xDo - xOd) * odnos)) * 180 / Math.PI,
+                izMerkatora(yOd + ((yDo - yOd) * odnos))
             ]);
             break;
         }
@@ -597,11 +604,12 @@ const KvartalniNivoManager = {
     stajalistaEvrope: function(procenat) {
         const tacke = this.evropskaRutaKoordinate();
         const nazivi = this.naziviGradovaEvrope();
+        const uMerkator = sirina => Math.log(Math.tan((Math.PI / 4) + ((sirina * Math.PI / 180) / 2)));
         const kumulativno = [0];
         let ukupno = 0;
         for (let i = 1; i < tacke.length; i++) {
-            const dx = (tacke[i][0] - tacke[i - 1][0]) * Math.cos(((tacke[i][1] + tacke[i - 1][1]) / 2) * Math.PI / 180);
-            const dy = tacke[i][1] - tacke[i - 1][1];
+            const dx = (tacke[i][0] - tacke[i - 1][0]) * Math.PI / 180;
+            const dy = uMerkator(tacke[i][1]) - uMerkator(tacke[i - 1][1]);
             ukupno += Math.hypot(dx, dy);
             kumulativno.push(ukupno);
         }

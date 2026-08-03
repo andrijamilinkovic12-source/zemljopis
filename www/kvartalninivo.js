@@ -764,9 +764,9 @@ const KvartalniNivoManager = {
                     layout: { 'line-cap': 'round', 'line-join': 'round' },
                     paint: {
                         'line-color': '#45d6a0',
-                        'line-width': 4.3,
-                        'line-blur': 0.65,
-                        'line-dasharray': [0.32, 1.05]
+                        'line-width': 3.2,
+                        'line-blur': 0.15,
+                        'line-dasharray': [0.25, 1.35]
                     }
                 });
                 mapa.addSource('stajalista-evrope', { type: 'geojson', data: this.stajalistaEvrope(procenatRute) });

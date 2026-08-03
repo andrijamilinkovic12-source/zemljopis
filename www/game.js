@@ -46,6 +46,7 @@ const Game = {
     akcijaNakonTokena: null,
     aktivniPozivSobe: null,
     proveraTokenaInterval: null,
+    naplataSoloUToku: false,
 
     escapeHtml: function(tekst) {
         if (typeof CategoryIcons !== 'undefined' && typeof CategoryIcons.escapeHtml === 'function') {
@@ -1207,6 +1208,29 @@ const Game = {
 
     pokreniIgru: function(mod, zadatoSlovoSaServera = null, podaciRunde = {}) {
         if (!this.profilSpremanZaIgru()) return;
+        if (mod === 'solo' && !podaciRunde.tokenNaplacen) {
+            if (this.naplataSoloUToku || !this.socket?.connected) return;
+            this.naplataSoloUToku = true;
+            this.socket.timeout(12000).emit('potrosiTokenZaSolo', (greska, odgovor) => {
+                this.naplataSoloUToku = false;
+                if (greska || !odgovor?.uspeh) {
+                    UIManager.prikaziObavestenje(
+                        'Solo partija nije pokrenuta',
+                        odgovor?.poruka || 'Nemaš token za novu partiju.',
+                        () => {
+                            if (typeof TokeniManager !== 'undefined') TokeniManager.otvoriEkran();
+                        },
+                        'Tokeni'
+                    );
+                    return;
+                }
+                if (typeof TokeniManager !== 'undefined') {
+                    TokeniManager.postaviServerskoStanje(odgovor.tokeni, odgovor.datum);
+                }
+                this.pokreniIgru('solo', zadatoSlovoSaServera, { ...podaciRunde, tokenNaplacen: true });
+            });
+            return;
+        }
         // Server je već atomski proverio i naplatio token pre 'igraPocela'.
         // Ovde samo otvaramo potvrđeni meč; ne skidamo token drugi put.
 

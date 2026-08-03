@@ -19894,7 +19894,8 @@ body[data-pismo="cirilica"] .kviz-round-break.kviz-podpitanje-pauza .kviz-break-
     .riznica-intro-vault,
     .toplista-intro-podium,
     #soba-prijatelja-intro-overlay .soba-prijatelja-intro-hero,
-    .podesavanja-intro-hero
+    .podesavanja-intro-hero,
+    .dnevni-intro-hero
 ) {
     margin-bottom: 0 !important;
 }
@@ -19908,7 +19909,8 @@ body[data-pismo="cirilica"] .kviz-round-break.kviz-podpitanje-pauza .kviz-break-
     .riznica-intro-categories,
     .toplista-intro-scopes,
     #soba-prijatelja-intro-overlay .soba-prijatelja-intro-actions,
-    .podesavanja-intro-sections
+    .podesavanja-intro-sections,
+    .dnevni-intro-stats
 ) {
     margin-top: var(--soba-intro-razmak-do-sadrzaja) !important;
 }
@@ -19922,7 +19924,8 @@ body[data-pismo="cirilica"] .kviz-round-break.kviz-podpitanje-pauza .kviz-break-
     .riznica-intro-copy,
     #soba-prijatelja-intro-overlay .soba-prijatelja-intro-copy,
     .podesavanja-intro-copy,
-    .toplista-intro-medals
+    .toplista-intro-medals,
+    .dnevni-intro-copy
 ) {
     margin-top: var(--soba-intro-sekundarni-razmak) !important;
 }
@@ -19936,7 +19939,8 @@ body[data-pismo="cirilica"] .kviz-round-break.kviz-podpitanje-pauza .kviz-break-
     .riznica-intro-line,
     .toplista-intro-line,
     #soba-prijatelja-intro-overlay .soba-prijatelja-intro-line,
-    .podesavanja-intro-line
+    .podesavanja-intro-line,
+    .dnevni-intro-line
 ) {
     margin-top: var(--soba-intro-sekundarni-razmak) !important;
 }

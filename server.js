@@ -5685,7 +5685,7 @@ io.on('connection', (socket) => {
     });
 
     // --- ZEMLJOPIS KVIZ: javno uparivanje 1 na 1 ---
-    socket.on('kviz:traziMec', (callback = () => {}) => {
+    socket.on('kviz:traziMec', async (callback = () => {}) => {
         if (typeof callback !== 'function') callback = () => {};
         const igracNaMrezi = onlineIgraci[socket.id];
         if (!igracNaMrezi) {
@@ -5701,6 +5701,11 @@ io.on('connection', (socket) => {
 
         ukloniIzKvizReda(socket.id);
         if (KVIZ_TEST_BOT_OMOGUCEN) {
+            const naplaceniToken = await potrosiServerskiToken(igracNaMrezi.bazaId);
+            if (!naplaceniToken) {
+                return callback({ uspeh: false, kod: 'NEMA_TOKENA', poruka: 'Nemaš token za Zemljopis kviz.' });
+            }
+            posaljiStanjeTokena(socket.id, naplaceniToken);
             const soba = napraviTestKvizMec(socket, igracNaMrezi);
             return callback({ uspeh: true, sobaId: soba.id, pronadjenProtivnik: true, testBot: true });
         }
@@ -5745,6 +5750,18 @@ io.on('connection', (socket) => {
                 avatar: igracNaMrezi.avatar || "atlas"
             }
         ];
+        const naplaceni = [];
+        for (const igrac of igraci) {
+            const stanje = await potrosiServerskiToken(igrac.bazaId);
+            if (!stanje) {
+                await Promise.all(naplaceni.map(naplacen => vratiServerskiToken(naplacen.igrac.bazaId)));
+                if (igrac.id === protivnikSocketId) kvizRedCekanja.push(socket.id);
+                else kvizRedCekanja.push(protivnikSocketId);
+                return callback({ uspeh: false, kod: 'NEMA_TOKENA', poruka: 'Jedan od igrača nema token za Zemljopis kviz.' });
+            }
+            naplaceni.push({ igrac, stanje });
+        }
+        naplaceni.forEach(({ igrac, stanje }) => posaljiStanjeTokena(igrac.id, stanje));
         const soba = napraviKvizSobu(igraci);
         const sobaId = soba.id;
         kvizSobe[sobaId] = soba;
@@ -6330,6 +6347,23 @@ io.on('connection', (socket) => {
             callback({ uspeh: true, tokeni: stanje.stanje, datum: stanje.datum });
         } catch (error) {
             console.error('Greška pri dodeli tokena za reklamu:', error);
+            callback({ uspeh: false, kod: 'GRESKA_SERVERA' });
+        }
+    });
+
+    socket.on('potrosiTokenZaSolo', async (prviArgument, callback = () => {}) => {
+        if (typeof prviArgument === 'function') callback = prviArgument;
+        if (typeof callback !== 'function') callback = () => {};
+        const onlineIgrac = onlineIgraci[socket.id];
+        if (!onlineIgrac) return callback({ uspeh: false, kod: 'PROFIL_NIJE_PRIJAVLJEN' });
+        try {
+            const igrac = await potrosiServerskiToken(onlineIgrac.bazaId);
+            if (!igrac) return callback({ uspeh: false, kod: 'NEMA_TOKENA', poruka: 'Nemaš token za novu solo partiju.' });
+            const stanje = stanjeTokenaZaDanas(igrac);
+            posaljiStanjeTokena(socket.id, igrac);
+            callback({ uspeh: true, tokeni: stanje.stanje, datum: stanje.datum });
+        } catch (error) {
+            console.error('Greška pri naplati solo tokena:', error);
             callback({ uspeh: false, kod: 'GRESKA_SERVERA' });
         }
     });

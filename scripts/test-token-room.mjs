@@ -43,7 +43,9 @@ function povezi(io) {
 
 function ack(socket, dogadjaj, podaci) {
     return new Promise((resolve, reject) => {
-        socket.timeout(12000).emit(dogadjaj, podaci, (greska, odgovor) => greska ? reject(greska) : resolve(odgovor));
+        const zavrsi = (greska, odgovor) => greska ? reject(greska) : resolve(odgovor);
+        if (typeof podaci === 'undefined') socket.timeout(12000).emit(dogadjaj, zavrsi);
+        else socket.timeout(12000).emit(dogadjaj, podaci, zavrsi);
     });
 }
 
@@ -88,7 +90,13 @@ try {
     proveri((await tokenB).stanje === 2, "Drugom igraču nije server skinuo tačno jedan token.");
     proveri(Boolean((await pocetakA).partijaId), "Prvi igrač nije dobio potvrđen početak meča.");
     proveri(Boolean((await pocetakB).partijaId), "Drugi igrač nije dobio potvrđen početak meča.");
-    console.log("OK: javna soba se pokreće tek posle serverske naplate jednog tokena po igraču.");
+    const soloToken = cekajDogadjaj(a, "tokeniAzurirani");
+    proveri((await ack(a, "potrosiTokenZaSolo")).uspeh, "Server nije naplatio token za solo partiju.");
+    proveri((await soloToken).stanje === 1, "Solo partija nije skinula tačno jedan serverski token.");
+    const kvizToken = cekajDogadjaj(a, "tokeniAzurirani");
+    proveri((await ack(a, "kviz:traziMec")).uspeh, "Server nije naplatio token za kviz.");
+    proveri((await kvizToken).stanje === 0, "Kviz nije skinuo tačno jedan serverski token.");
+    console.log("OK: javna soba, solo partija i kviz koriste serversku naplatu jednog tokena.");
 } finally {
     if (a) a.disconnect();
     if (b) b.disconnect();

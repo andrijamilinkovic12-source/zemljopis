@@ -4188,7 +4188,7 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
 .input-group input:focus { border-color: #38ef7d; background: rgba(0, 0, 0, 0.4); transform: translateY(-1px); } 
 
 #dnevni-izazov-screen {
-    padding: clamp(0.75rem, 3vh, 1.75rem) 0 0;
+    padding: clamp(0.45rem, 1.6vh, 0.85rem) 0 0;
     overflow: hidden;
     align-items: stretch;
 }
@@ -4201,7 +4201,7 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
 .dnevni-title {
     z-index: 5;
     color: #f5af19;
-    margin-bottom: clamp(0.25rem, 0.8vh, 0.5rem);
+    margin-bottom: clamp(0.15rem, 0.45vh, 0.3rem);
     font-size: min(1.55rem, 3.2vh);
     text-transform: uppercase;
     text-shadow: 0 0 15px rgba(245, 175, 25, 0.3);
@@ -4212,7 +4212,7 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
 .dnevni-timer-wrap {
     text-align: center;
     z-index: 5;
-    margin-bottom: clamp(0.55rem, 1.5vh, 1rem);
+    margin-bottom: clamp(0.3rem, 0.8vh, 0.5rem);
 }
 
 #dnevni-tajmer {
@@ -4234,7 +4234,7 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     color: #a0aec0;
     font-size: min(0.82rem, 1.75vh);
     line-height: 1.35;
-    margin: 0 auto clamp(0.55rem, 1.5vh, 1rem);
+    margin: 0 auto clamp(0.3rem, 0.8vh, 0.5rem);
     padding: 0 1rem;
     max-width: 380px;
 }
@@ -4243,8 +4243,8 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     z-index: 5;
     width: calc(100% - 2rem);
     max-width: 340px;
-    margin: 0 auto clamp(0.5rem, 1.2vh, 0.8rem) auto;
-    padding: clamp(0.48rem, 1.2vh, 0.65rem) 0.8rem;
+    margin: 0 auto clamp(0.25rem, 0.6vh, 0.4rem) auto;
+    padding: clamp(0.35rem, 0.8vh, 0.48rem) 0.8rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -4294,14 +4294,9 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    flex: 1 1 auto;
-    min-height: 0;
-    padding: 0 1rem clamp(1rem, 3vh, 1.5rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
-    scroll-padding: 0.75rem 0 calc(var(--keyboard-visible-height, 0px) + 1rem);
-    overscroll-behavior: contain;
+    flex: 0 0 auto;
+    padding: 0 1rem clamp(0.6rem, 1.2vh, 0.85rem);
+    overflow: visible;
 }
 
 .dnevni-izazov-inputs::-webkit-scrollbar {
@@ -4312,7 +4307,7 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     margin-bottom: 0;
     display: flex;
     flex-direction: column;
-    gap: clamp(0.55rem, 1.35vh, 0.85rem);
+    gap: clamp(0.35rem, 0.8vh, 0.5rem);
 }
 
 .btn-finish.dnevni-potvrdi-unos {
@@ -4333,7 +4328,7 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
 .dnevni-input-group {
     margin-bottom: 0 !important;
     background: rgba(0,0,0,0.3);
-    padding: clamp(0.55rem, 1.25vh, 0.8rem);
+    padding: clamp(0.42rem, 0.85vh, 0.55rem);
     border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.08);
     transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
@@ -4344,7 +4339,7 @@ body[data-tema="planina"] #main-menu .menu-pattern::after {
     justify-content: space-between;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: clamp(0.3rem, 0.8vh, 0.5rem);
+    margin-bottom: clamp(0.2rem, 0.45vh, 0.3rem);
     min-width: 0;
 }
 
@@ -4422,6 +4417,7 @@ body.keyboard-open .dnevni-izazov-inputs {
     padding-top: 0 !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
+    overflow-y: auto;
     scroll-padding-top: 0.5rem;
     scroll-padding-bottom: calc(var(--keyboard-visible-height, 260px) + 1rem);
 }

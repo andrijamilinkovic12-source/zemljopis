@@ -594,6 +594,48 @@ const KvartalniNivoManager = {
         return rezultat;
     },
 
+    stajalistaEvrope: function(procenat) {
+        const tacke = this.evropskaRutaKoordinate();
+        const kumulativno = [0];
+        let ukupno = 0;
+        for (let i = 1; i < tacke.length; i++) {
+            const dx = (tacke[i][0] - tacke[i - 1][0]) * Math.cos(((tacke[i][1] + tacke[i - 1][1]) / 2) * Math.PI / 180);
+            const dy = tacke[i][1] - tacke[i - 1][1];
+            ukupno += Math.hypot(dx, dy);
+            kumulativno.push(ukupno);
+        }
+        let aktuelniIndeks = tacke.length - 1;
+        for (let i = 0; i < tacke.length; i++) {
+            if (procenat < ((kumulativno[i] / ukupno) * 100)) {
+                aktuelniIndeks = i;
+                break;
+            }
+        }
+        return {
+            type: 'FeatureCollection',
+            features: tacke.map((koordinate, indeks) => ({
+                type: 'Feature',
+                properties: {
+                    stanje: indeks < aktuelniIndeks ? 'zavrsen' : indeks === aktuelniIndeks ? 'aktuelan' : 'buduci'
+                },
+                geometry: { type: 'Point', coordinates: koordinate }
+            }))
+        };
+    },
+
+    dodajIkonuStajalista: function(mapa, id, fill, stroke) {
+        return new Promise(resolve => {
+            if (mapa.hasImage(id)) return resolve();
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><rect x="4" y="4" width="20" height="20" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="3"/><rect x="8" y="8" width="12" height="12" rx="2.5" fill="rgba(255,255,255,.18)"/></svg>`;
+            const slika = new Image(28, 28);
+            slika.onload = () => {
+                mapa.addImage(id, slika, { pixelRatio: 2 });
+                resolve();
+            };
+            slika.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+        });
+    },
+
     pocetniPogledMape: function(nivo) {
         const pogledi = [
             { center: [15, 48], zoom: 2.15 },
@@ -649,7 +691,8 @@ const KvartalniNivoManager = {
 
             if (nivo.id === 0) {
                 const celaRuta = this.evropskaRutaKoordinate();
-                const napredak = this.skratiRutu(celaRuta, this.procenatEtape(nivo));
+                const procenatRute = this.procenatEtape(nivo);
+                const napredak = this.skratiRutu(celaRuta, procenatRute);
                 mapa.addSource('ruta-evrope', {
                     type: 'geojson',
                     data: {
@@ -666,19 +709,41 @@ const KvartalniNivoManager = {
                     paint: {
                         'line-color': 'rgba(194, 230, 250, 0.72)',
                         'line-width': 3.2,
-                        'line-dasharray': [0.25, 1.35],
-                        'line-blur': 0.15
+                        'line-blur': 0.15,
+                        'line-dasharray': [0.25, 1.35]
                     }
                 });
                 mapa.addLayer({
                     id: 'ruta-evrope-napredak', type: 'line', source: 'ruta-evrope', filter: ['==', ['get', 'vrsta'], 'napredak'],
                     layout: { 'line-cap': 'round', 'line-join': 'round' },
                     paint: {
-                        'line-color': '#f5d061',
+                        'line-color': '#45d6a0',
                         'line-width': 4.3,
-                        'line-dasharray': [0.32, 1.05],
-                        'line-blur': 0.65
+                        'line-blur': 0.65,
+                        'line-dasharray': [0.32, 1.05]
                     }
+                });
+                mapa.addSource('stajalista-evrope', { type: 'geojson', data: this.stajalistaEvrope(procenatRute) });
+                Promise.all([
+                    this.dodajIkonuStajalista(mapa, 'stajaliste-buduci', '#173a63', '#b8ddf2'),
+                    this.dodajIkonuStajalista(mapa, 'stajaliste-zavrsen', '#45d6a0', '#d9fff0'),
+                    this.dodajIkonuStajalista(mapa, 'stajaliste-aktuelan', '#f5d061', '#fff4c2')
+                ]).then(() => {
+                    if (this.mapLibreInstanca !== mapa) return;
+                    mapa.addLayer({
+                        id: 'stajalista-evrope-prsten', type: 'circle', source: 'stajalista-evrope',
+                        filter: ['==', ['get', 'stanje'], 'aktuelan'],
+                        paint: { 'circle-radius': 10, 'circle-color': 'rgba(245, 208, 97, 0.34)', 'circle-blur': 0.6 }
+                    });
+                    mapa.addLayer({
+                        id: 'stajalista-evrope-ikone', type: 'symbol', source: 'stajalista-evrope',
+                        layout: {
+                            'icon-image': ['concat', 'stajaliste-', ['get', 'stanje']],
+                            'icon-size': 0.72,
+                            'icon-allow-overlap': true,
+                            'icon-ignore-placement': true
+                        }
+                    });
                 });
             }
         });

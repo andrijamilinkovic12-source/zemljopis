@@ -4844,10 +4844,9 @@ async function napraviKvartalneListe() {
         const igraci = await Igrac.find({
             ...kvartalniOpsegIgraca(),
             sezonskiCiklus: ciklus,
-            sezonskiPojmovi: { $gte: Math.max(1, nivo.min), $lte: nivo.max }
+            sezonskiPojmovi: { $gte: Math.max(0, nivo.min), $lte: nivo.max }
         })
             .sort({ sezonskiPojmovi: -1, nadimakNormalizovan: 1 })
-            .limit(100)
             .select('playerId nadimak avatar sezonskiPojmovi')
             .lean();
         return igraci.map(igrac => igracZaKvartalnuListu(igrac, 'sezonskiPojmovi'));

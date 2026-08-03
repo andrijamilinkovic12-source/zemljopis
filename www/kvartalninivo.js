@@ -652,6 +652,46 @@ const KvartalniNivoManager = {
         return document.body.dataset.pismo === 'cirilica' ? cirilica : latinica;
     },
 
+    rastojanjeIzmedjuTacakaKm: function(prva, druga) {
+        const uRadijane = vrednost => vrednost * Math.PI / 180;
+        const [duzina1, sirina1] = prva;
+        const [duzina2, sirina2] = druga;
+        const deltaSirina = uRadijane(sirina2 - sirina1);
+        const deltaDuzina = uRadijane(duzina2 - duzina1);
+        const a = Math.sin(deltaSirina / 2) ** 2
+            + Math.cos(uRadijane(sirina1)) * Math.cos(uRadijane(sirina2)) * Math.sin(deltaDuzina / 2) ** 2;
+        return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    },
+
+    duzinaEvropskeRuteKm: function() {
+        const tacke = this.evropskaRutaKoordinate();
+        return tacke.slice(1).reduce((ukupno, tacka, indeks) => (
+            ukupno + this.rastojanjeIzmedjuTacakaKm(tacke[indeks], tacka)
+        ), 0);
+    },
+
+    formatirajKilometre: function(kilometri) {
+        return new Intl.NumberFormat('sr-RS').format(Math.round(kilometri));
+    },
+
+    polozajIgracaNaEtapi: function(pojmovi, nivo) {
+        const raspon = Math.max(1, (nivo.cilj || nivo.max) - nivo.min);
+        const procenat = Math.max(0, Math.min(1, ((Number(pojmovi) || 0) - nivo.min) / raspon));
+        if (nivo.id !== 0) {
+            return { kilometri: 0, lokacija: nivo.ime };
+        }
+        const tacke = this.evropskaRutaKoordinate();
+        const nazivi = this.naziviGradovaEvrope();
+        const ukupno = this.duzinaEvropskeRuteKm();
+        const kilometri = ukupno * procenat;
+        let predjeno = 0;
+        for (let indeks = 1; indeks < tacke.length; indeks++) {
+            predjeno += this.rastojanjeIzmedjuTacakaKm(tacke[indeks - 1], tacke[indeks]);
+            if (kilometri < predjeno) return { kilometri, lokacija: `ka ${nazivi[indeks]}` };
+        }
+        return { kilometri: ukupno, lokacija: nazivi[nazivi.length - 1] };
+    },
+
     dodajNaziveStajalista: function(mapa) {
         if (!window.maplibregl) return;
         const tacke = this.evropskaRutaKoordinate();
@@ -813,18 +853,27 @@ const KvartalniNivoManager = {
         
         let html = `
             <div class="kvartal-main-tabs" role="tablist" aria-label="Put oko sveta">
-                <button type="button" class="menu-btn kvartal-tab ${this.aktivniTab === 'sezona' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniTab('sezona')">Moj put</button>
+                <button type="button" class="menu-btn kvartal-tab ${this.aktivniTab === 'sezona' || this.aktivniTab === 'istrazivaci' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniTab('sezona')">Moj put</button>
                 <button type="button" class="menu-btn kvartal-tab ${this.aktivniTab === 'svaVremena' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniTab('svaVremena')">Rekordi</button>
                 <button type="button" class="menu-btn kvartal-tab ${this.aktivniTab === 'slavni' ? 'active' : ''}" onclick="KvartalniNivoManager.promeniTab('slavni')">Dvorana slavnih</button>
             </div>
         `;
 
         if (this.aktivniTab === 'sezona') html += this.renderSezonaHTML();
+        else if (this.aktivniTab === 'istrazivaci') html += this.renderIstraživaceHTML();
         else if (this.aktivniTab === 'svaVremena') html += this.renderSvaVremenaHTML();
         else if (this.aktivniTab === 'slavni') html += this.renderSlavniHTML();
 
         sadrzaj.className = `kvartalni-nivo-lista kvartalni-nivo-${this.aktivniTab}`;
         sadrzaj.innerHTML = html;
+        sadrzaj.scrollTop = 0;
+        const ekran = document.getElementById('kvartalni-nivo-screen');
+        if (ekran) ekran.scrollTop = 0;
+        requestAnimationFrame(() => {
+            sadrzaj.scrollTop = 0;
+            if (ekran) ekran.scrollTop = 0;
+            window.scrollTo(0, 0);
+        });
     },
 
     renderSezonaHTML: function() {
@@ -846,32 +895,71 @@ const KvartalniNivoManager = {
         html += this.renderMapaPutaHTML(info);
 
         const izabraniNivo = info.trenutni;
-        const listaIgraca = this.serverPodaci.sezona[izabraniNivo.id] || [];
-
-        html += `<section class="kvartal-ranking-card" style="--kvartal-nivo-boja: ${izabraniNivo.boja};">`;
-        html += `<h4 class="kvartal-ranking-title">Istraživači: <span>${izabraniNivo.ime}</span></h4>`;
-
-        if (listaIgraca.length === 0) {
-            html += `<div class="kvartal-empty-state">${this.ucitavanje ? 'Učitavanje istraživača...' : 'Još nema istraživača u ovom rangu.'}</div>`;
-        } else {
-            listaIgraca.forEach((igrac, index) => {
-                html += `
-                    <article class="kvartal-ranking-row">
-                        <div class="kvartal-ranking-player">
-                            <b class="kvartal-ranking-position">${index + 1}.</b>
-                            <div class="kvartal-avatar kvartal-avatar-level">${this.napraviAvatarHTML(igrac.avatar)}</div>
-                            <span class="kvartal-player-name">${igrac.ime}</span>
-                        </div>
-                        <strong class="kvartal-row-score">${igrac.pojmovi}</strong>
-                    </article>
-                `;
-            });
-        }
-        html += `</section>`;
+        html += `
+            <button type="button" class="menu-btn kvartal-explorers-button" style="--kvartal-nivo-boja: ${izabraniNivo.boja};" onclick="KvartalniNivoManager.otvoriIstraživace()">
+                <span class="kvartal-explorers-button-copy">
+                    <i class="fa-solid fa-users" aria-hidden="true"></i>
+                    <span>
+                        <b>Istraživači: ${izabraniNivo.ime}</b>
+                        <small>Rang-lista po pređenom putu</small>
+                    </span>
+                </span>
+                <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </button>
+        `;
 
         requestAnimationFrame(() => this.pripremiVektorskuMapu(info));
 
         return html;
+    },
+
+    otvoriIstraživace: function() {
+        this.aktivniTab = 'istrazivaci';
+        this.renderEkran();
+    },
+
+    renderIstraživaceHTML: function() {
+        const info = this.odrediTrenutniNivo();
+        const nivo = info.trenutni;
+        const listaIgraca = [...(this.serverPodaci.sezona[nivo.id] || [])]
+            .sort((prvi, drugi) => (Number(drugi.pojmovi) || 0) - (Number(prvi.pojmovi) || 0)
+                || String(prvi.ime || '').localeCompare(String(drugi.ime || ''), 'sr'));
+        let html = `
+            <section class="kvartal-explorer-list-card" style="--kvartal-nivo-boja: ${nivo.boja};">
+                <header class="kvartal-explorer-list-heading">
+                    <div>
+                        <span>RANG-LISTA RUTE</span>
+                        <h3>Istraživači: ${nivo.ime}</h3>
+                        <p>Najviše pređenih kilometara je na vrhu liste.</p>
+                    </div>
+                    <button type="button" class="menu-btn kvartal-explorer-back" onclick="KvartalniNivoManager.promeniTab('sezona')">
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Nazad
+                    </button>
+                </header>
+        `;
+
+        if (listaIgraca.length === 0) {
+            html += `<div class="kvartal-empty-state">${this.ucitavanje ? 'Učitavanje istraživača...' : 'Još nema istraživača na ovoj ruti.'}</div>`;
+        } else {
+            html += `<div class="kvartal-explorer-list-labels"><span>ISTRAŽIVAČ</span><span>PREĐENO / LOKACIJA</span></div>`;
+            listaIgraca.forEach((igrac, indeks) => {
+                const put = this.polozajIgracaNaEtapi(igrac.pojmovi, nivo);
+                html += `
+                    <article class="kvartal-ranking-row kvartal-explorer-list-row">
+                        <div class="kvartal-ranking-player">
+                            <b class="kvartal-ranking-position ${indeks < 3 ? 'top-three' : ''}">${indeks + 1}.</b>
+                            <div class="kvartal-avatar kvartal-avatar-level">${this.napraviAvatarHTML(igrac.avatar)}</div>
+                            <span class="kvartal-player-name">${igrac.ime}</span>
+                        </div>
+                        <div class="kvartal-explorer-distance">
+                            <strong>${this.formatirajKilometre(put.kilometri)} km</strong>
+                            <span>${put.lokacija}</span>
+                        </div>
+                    </article>
+                `;
+            });
+        }
+        return `${html}</section>`;
     },
 
     renderSvaVremenaHTML: function() {

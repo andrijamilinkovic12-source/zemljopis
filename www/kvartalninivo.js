@@ -869,9 +869,13 @@ const KvartalniNivoManager = {
         sadrzaj.scrollTop = 0;
         const ekran = document.getElementById('kvartalni-nivo-screen');
         if (ekran) ekran.scrollTop = 0;
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
         requestAnimationFrame(() => {
             sadrzaj.scrollTop = 0;
             if (ekran) ekran.scrollTop = 0;
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
             window.scrollTo(0, 0);
         });
     },
@@ -938,6 +942,7 @@ const KvartalniNivoManager = {
                 </header>
         `;
 
+        html += `<div class="kvartal-explorer-list-scroll">`;
         if (listaIgraca.length === 0) {
             html += `<div class="kvartal-empty-state">${this.ucitavanje ? 'Učitavanje istraživača...' : 'Još nema istraživača na ovoj ruti.'}</div>`;
         } else {
@@ -959,7 +964,7 @@ const KvartalniNivoManager = {
                 `;
             });
         }
-        return `${html}</section>`;
+        return `${html}</div></section>`;
     },
 
     renderSvaVremenaHTML: function() {

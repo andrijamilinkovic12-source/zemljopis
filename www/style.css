@@ -15541,6 +15541,80 @@ body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-svaVremena .kvartal-all-t
     display: none;
 }
 
+/* Put oko sveta: na glavnoj etapi sve ostaje u kadru, a mapa popunjava slobodan prostor. */
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-lista.kvartalni-nivo-sezona,
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-lista.kvartalni-nivo-istrazivaci {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    margin-bottom: 0.34rem;
+    padding-bottom: 0;
+    overflow: hidden;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-sezona > .kvartal-main-tabs,
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-sezona > .kvartal-summary-card,
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-istrazivaci > .kvartal-main-tabs {
+    flex: 0 0 auto;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-sezona .put-oko-sveta-route-card {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    margin-bottom: 0.34rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-sezona .put-oko-sveta-viewport {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-sezona .kvartal-explorers-button {
+    flex: 0 0 auto;
+    min-height: 2.42rem;
+    margin: 0;
+    padding: 0.34rem 0.6rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-sezona .kvartal-explorers-button-copy {
+    gap: 0.48rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-sezona .kvartal-explorers-button-copy > i {
+    font-size: 1rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-sezona .kvartal-explorers-button b {
+    font-size: 0.75rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-sezona .kvartal-explorers-button small {
+    font-size: 0.56rem;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartalni-nivo-istrazivaci .kvartal-explorer-list-card {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-explorer-list-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+body[data-tema] #kvartalni-nivo-screen .kvartal-explorer-list-scroll::-webkit-scrollbar {
+    display: none;
+}
+
 body[data-tema] #kvartalni-nivo-screen #kvartalni-nivo-sadrzaj > .kvartal-main-tabs,
 body[data-tema] #kvartalni-nivo-screen :is(.kvartal-level-tabs, .kvartal-legend-tabs, .kvartal-heading) {
     background: transparent !important;

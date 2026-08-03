@@ -596,6 +596,7 @@ const KvartalniNivoManager = {
 
     stajalistaEvrope: function(procenat) {
         const tacke = this.evropskaRutaKoordinate();
+        const nazivi = this.naziviGradovaEvrope();
         const kumulativno = [0];
         let ukupno = 0;
         for (let i = 1; i < tacke.length; i++) {
@@ -616,6 +617,7 @@ const KvartalniNivoManager = {
             features: tacke.map((koordinate, indeks) => ({
                 type: 'Feature',
                 properties: {
+                    naziv: nazivi[indeks],
                     stanje: indeks < aktuelniIndeks ? 'zavrsen' : indeks === aktuelniIndeks ? 'aktuelan' : 'buduci'
                 },
                 geometry: { type: 'Point', coordinates: koordinate }
@@ -634,6 +636,42 @@ const KvartalniNivoManager = {
             };
             slika.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
         });
+    },
+
+    naziviGradovaEvrope: function() {
+        const latinica = ['Sevilja', 'Madrid', 'Bilbao', 'Pariz', 'London', 'Amsterdam', 'Berlin', 'Prag', 'Beč', 'Budimpešta', 'Beograd', 'Sofija', 'Istanbul'];
+        const cirilica = ['Севиља', 'Мадрид', 'Билбао', 'Париз', 'Лондон', 'Амстердам', 'Берлин', 'Праг', 'Беч', 'Будимпешта', 'Београд', 'Софија', 'Истанбул'];
+        return document.body.dataset.pismo === 'cirilica' ? cirilica : latinica;
+    },
+
+    dodajNaziveStajalista: function(mapa) {
+        if (!window.maplibregl) return;
+        const tacke = this.evropskaRutaKoordinate();
+        const pomaci = [[9, -10], [9, 10], [9, -10], [9, -11], [9, 10], [9, -11], [9, -11], [9, 10], [9, -11], [9, 10], [9, -11], [9, 10], [9, -11]];
+        const oznake = tacke.map((koordinate, indeks) => {
+            const element = document.createElement('span');
+            element.className = 'put-oko-sveta-oznaka-grada';
+            new maplibregl.Marker({ element, anchor: 'left', offset: pomaci[indeks] })
+                .setLngLat(koordinate)
+                .addTo(mapa);
+            return element;
+        });
+        const osvezi = () => {
+            const zum = mapa.getZoom();
+            const velicina = Math.max(7.4, Math.min(12.4, 7.4 + ((zum - 1.7) * 1.7)));
+            const vidljivost = Math.max(0, Math.min(0.88, (zum - 1.35) * 1.4));
+            const nazivi = this.naziviGradovaEvrope();
+            oznake.forEach((element, indeks) => {
+                element.textContent = nazivi[indeks];
+                element.style.fontSize = `${velicina}px`;
+                element.style.opacity = vidljivost;
+            });
+        };
+        osvezi();
+        mapa.on('zoom', osvezi);
+        const posmatracPisma = new MutationObserver(osvezi);
+        posmatracPisma.observe(document.body, { attributes: true, attributeFilter: ['data-pismo'] });
+        mapa.once('remove', () => posmatracPisma.disconnect());
     },
 
     pocetniPogledMape: function(nivo) {

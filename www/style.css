@@ -15826,6 +15826,24 @@ body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-vektorska-mapa .maplibregl
     display: none;
 }
 
+body[data-tema] #kvartalni-nivo-screen .put-oko-sveta-oznaka-grada {
+    box-sizing: border-box;
+    display: block;
+    padding: 0.14em 0.36em;
+    border: 1px solid rgba(190, 226, 245, 0.17);
+    border-radius: 999px;
+    color: rgba(235, 248, 255, 0.92);
+    background: rgba(5, 33, 76, 0.56);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    pointer-events: none;
+    text-shadow: 0 1px 2px rgba(1, 16, 44, 0.88);
+    transition: font-size 120ms ease-out, opacity 120ms ease-out;
+}
+
 body[data-tema] #kvartalni-nivo-screen .put-svetska-mapa {
     filter: none;
 }

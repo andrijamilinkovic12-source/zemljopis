@@ -647,11 +647,19 @@ const KvartalniNivoManager = {
     dodajNaziveStajalista: function(mapa) {
         if (!window.maplibregl) return;
         const tacke = this.evropskaRutaKoordinate();
-        const pomaci = [[9, -10], [9, 10], [9, -10], [9, -11], [9, 10], [9, -11], [9, -11], [9, 10], [9, -11], [9, 10], [9, -11], [9, 10], [9, -11]];
+        const polozaji = [
+            { anchor: 'left', offset: [10, -12] }, { anchor: 'left', offset: [10, 12] },
+            { anchor: 'right', offset: [-10, -12] }, { anchor: 'right', offset: [-11, 12] },
+            { anchor: 'right', offset: [-11, -12] }, { anchor: 'left', offset: [11, -14] },
+            { anchor: 'left', offset: [11, 12] }, { anchor: 'right', offset: [-11, -13] },
+            { anchor: 'left', offset: [11, 12] }, { anchor: 'right', offset: [-11, 13] },
+            { anchor: 'left', offset: [11, -13] }, { anchor: 'right', offset: [-11, 13] },
+            { anchor: 'left', offset: [11, -13] }
+        ];
         const oznake = tacke.map((koordinate, indeks) => {
             const element = document.createElement('span');
             element.className = 'put-oko-sveta-oznaka-grada';
-            new maplibregl.Marker({ element, anchor: 'left', offset: pomaci[indeks] })
+            new maplibregl.Marker({ element, anchor: polozaji[indeks].anchor, offset: polozaji[indeks].offset })
                 .setLngLat(koordinate)
                 .addTo(mapa);
             return element;
@@ -782,6 +790,7 @@ const KvartalniNivoManager = {
                             'icon-ignore-placement': true
                         }
                     });
+                    this.dodajNaziveStajalista(mapa);
                 });
             }
         });

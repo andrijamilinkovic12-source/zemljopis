@@ -7,7 +7,7 @@
     <title>ZEMLJOPIS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="vendor/maplibre-gl.css">
-    <link rel="stylesheet" href="style.css?v=19">
+    <link rel="stylesheet" href="style.css?v=20">
     <link rel="preload" href="assets/splash-soft-matte-bg-reka-master-clean-v6.png" as="image" type="image/png" fetchpriority="high">
     <link rel="preload" href="assets/serbia-heart-clay-soft-matte-v1.png" as="image" type="image/png">
 </head>
@@ -194,6 +194,27 @@
             <div class="drzava-flag-gsap-sprite" style="--flag-left: 27.099%; --flag-top: 54.845%; --flag-width: 7.864%; --flag-height: 3.828%; --flag-sheet: url('assets/drzava-flags-gsap/wind-sheets-v1/flag-sa-wind-sheet-v1.png');"></div>
             <div class="drzava-flag-gsap-sprite" style="--flag-left: 63.549%; --flag-top: 60.766%; --flag-width: 8.395%; --flag-height: 3.947%; --flag-sheet: url('assets/drzava-flags-gsap/wind-sheets-v2/flag-africa-gold-wind-sheet-v4.png');"></div>
         </div>
+        <svg class="drzava-live-routes" viewBox="0 0 941 1672" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <defs>
+                <radialGradient id="drzava-route-bead" cx="32%" cy="28%" r="70%">
+                    <stop offset="0" stop-color="#fff8db"/>
+                    <stop offset="0.43" stop-color="#ffe3a2"/>
+                    <stop offset="1" stop-color="#c78f50"/>
+                </radialGradient>
+            </defs>
+            <path class="drzava-route-path" d="M 18 832 C 74 797 108 752 97 711 C 86 669 39 646 10 632"/>
+            <path class="drzava-route-path" d="M 365 939 C 380 963 435 964 458 1005 C 481 1048 450 1084 463 1115 C 479 1150 547 1141 546 1184 C 543 1222 465 1211 443 1270"/>
+            <path class="drzava-route-path" d="M 616 846 C 656 825 687 827 695 860 C 704 902 678 918 718 946 C 758 973 787 964 786 1004 C 781 1041 688 1038 632 1063"/>
+            <circle class="drzava-route-traveler" r="8"/>
+            <circle class="drzava-route-traveler" r="8"/>
+            <circle class="drzava-route-traveler" r="8"/>
+            <circle class="drzava-live-pin" cx="211" cy="627" r="19" style="--pin-delay: 0s"/>
+            <circle class="drzava-live-pin" cx="536" cy="546" r="18" style="--pin-delay: 1.3s"/>
+            <circle class="drzava-live-pin" cx="804" cy="809" r="19" style="--pin-delay: 2.6s"/>
+            <circle class="drzava-live-pin" cx="550" cy="807" r="17" style="--pin-delay: 0.8s"/>
+            <circle class="drzava-live-pin" cx="185" cy="912" r="18" style="--pin-delay: 2s"/>
+            <circle class="drzava-live-pin" cx="877" cy="1015" r="18" style="--pin-delay: 3.2s"/>
+        </svg>
         <div class="status-bar">
             <div class="status-pill ducats-pill" onclick="RiznicaManager.otvoriEkran()" title="Tvoja riznica">
                 <span class="status-icon-slot ducats-status-icon-slot">
@@ -1449,7 +1470,7 @@
     <script src="fox-tail-gsap.js"></script>
     <script src="owl-wings-gsap.js"></script>
     <script src="animal-eyes-gsap.js"></script>
-    <script src="drzava-flags-gsap.js?v=5"></script>
+    <script src="drzava-flags-gsap.js?v=6"></script>
     <script src="splash-atmosphere-gsap.js"></script>
     <script type="module" src="splash-logo-3d.js"></script>
     <script src="game.js"></script>

@@ -3267,9 +3267,59 @@ body[data-tema="drzava"] #main-menu > .drzava-flags-gsap {
     pointer-events: none;
 }
 
+#main-menu > .drzava-live-routes {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+    display: none;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+body[data-tema="drzava"] #main-menu > .drzava-live-routes {
+    display: block;
+}
+
+.drzava-route-path {
+    fill: none;
+    stroke: none;
+}
+
+.drzava-route-traveler {
+    fill: url(#drzava-route-bead);
+    stroke: rgba(255, 250, 224, 0.85);
+    stroke-width: 1.6;
+    filter: drop-shadow(0 3px 3px rgba(72, 73, 48, 0.34));
+    opacity: 0;
+}
+
+.drzava-live-pin {
+    fill: none;
+    stroke: rgba(255, 248, 207, 0.82);
+    stroke-width: 3;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: drzavaPinPulse 5.2s ease-out var(--pin-delay) infinite;
+}
+
+@keyframes drzavaPinPulse {
+    0%, 16% { opacity: 0; transform: scale(0.65); }
+    25% { opacity: 0.55; }
+    53% { opacity: 0; transform: scale(2.3); }
+    100% { opacity: 0; transform: scale(2.3); }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .drzava-flag-gsap-sprite {
         background-position: 0 0 !important;
+    }
+
+    .drzava-live-pin {
+        animation: none;
+        opacity: 0;
     }
 }
 

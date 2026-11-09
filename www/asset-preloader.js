@@ -107,33 +107,13 @@
     };
 
     const TEMATSKI_ASSETI = {
-        drzava: [
-            'assets/drzava-static-geo-flags-open-v20.png',
-            'assets/drzava-static-geo-africa-gold-clean-v3.png',
-            'assets/drzava-clouds-without-russia-v1.png'
-        ],
-        okean: [
-            'assets/reka-soft-matte-bg-v3.png',
-            'assets/reka-clouds-layer.png',
-            'assets/reka-water-flow-texture-v3.png',
-            'assets/reka-water-surface-clean-v2.png'
-        ],
-        grad: [
-            'assets/grad-soft-matte-bg-clean.png',
-            'assets/grad-clouds-layer-clean-v3.png'
-        ],
-        planina: [
-            'assets/planina-soft-matte-bg-v3.png',
-            'assets/planina-clouds-layer-clean-v3.png'
-        ],
-        biljka: ['assets/biljka-soft-matte-bg.png'],
-        zivotinja: [
-            'assets/zivotinja-bg-fox-tail-owl-complete-v2.png',
-            'assets/zivotinja-owl-gsap/owl-wing-left-isolated-v3.png',
-            'assets/zivotinja-owl-gsap/owl-wing-right-isolated-v3.png',
-            'assets/zivotinja-fox-gsap/fox-tail-clean-v2.png'
-        ],
-        predmet: ['assets/predmet-soft-matte-bg.png']
+        drzava: ['assets/theme-live-v2/drzava.png'],
+        okean: ['assets/theme-live-v2/okean.png'],
+        grad: ['assets/theme-live-v2/grad.png'],
+        planina: ['assets/theme-live-v2/planina.png'],
+        biljka: ['assets/theme-live-v2/biljka.png'],
+        zivotinja: ['assets/theme-live-v2/zivotinja.png'],
+        predmet: ['assets/theme-live-v2/predmet.png']
     };
 
     function normalizujUrl(url) {

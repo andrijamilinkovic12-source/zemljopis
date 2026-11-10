@@ -20248,7 +20248,7 @@ body[data-pismo="cirilica"] .kviz-round-break.kviz-podpitanje-pauza .kviz-break-
     margin-top: var(--soba-intro-sekundarni-razmak) !important;
 }
 
-/* Seven new clay scenes: the still image is also the exact live scene base. */
+/* Seven clay scenes: still PNG fallback and matching animated PNG frames. */
 body[data-tema="drzava"] { --theme-bg-image: url('assets/theme-live-v2/drzava.png'); }
 body[data-tema="okean"] { --theme-bg-image: url('assets/theme-live-v2/okean.png'); }
 body[data-tema="grad"] { --theme-bg-image: url('assets/theme-live-v2/grad.png'); }
@@ -20266,7 +20266,7 @@ body:is(
     background: var(--theme-bg-image) center / 100% 100% no-repeat !important;
 }
 
-body.theme-live-v2-enabled :is(
+body.theme-live-png-enabled :is(
     #main-menu, #kvartalni-nivo-screen, #online-igraci-screen,
     #soba-prijatelja-screen, #tokeni-screen, #trofeji-main-screen,
     #riznica-screen, #toplista-screen, #podesavanja-screen,
@@ -20277,11 +20277,18 @@ body.theme-live-v2-enabled :is(
     isolation: isolate;
 }
 
-body.theme-live-v2-enabled #main-menu .menu-pattern,
-body.theme-live-v2-enabled #main-menu > .clay-theme-three,
-body.theme-live-v2-enabled #main-menu::before,
-body.theme-live-v2-enabled #main-menu::after,
-body.theme-live-v2-enabled :is(
+body.theme-live-png-enabled #main-menu .menu-pattern,
+body.theme-live-png-enabled #main-menu > .clay-theme-three,
+body.theme-live-png-enabled #main-menu > .reka-live-layer,
+body.theme-live-png-enabled #main-menu > .zivotinja-live-layer,
+body.theme-live-png-enabled #main-menu > .zivotinja-owl-gsap,
+body.theme-live-png-enabled #main-menu > .zivotinja-fox-gsap,
+body.theme-live-png-enabled #main-menu > .zivotinja-eyes-gsap,
+body.theme-live-png-enabled #main-menu > .drzava-flags-gsap,
+body.theme-live-png-enabled #main-menu > .drzava-live-routes,
+body.theme-live-png-enabled #main-menu::before,
+body.theme-live-png-enabled #main-menu::after,
+body.theme-live-png-enabled :is(
     #kvartalni-nivo-screen, #online-igraci-screen, #soba-prijatelja-screen,
     #tokeni-screen, #trofeji-main-screen, #riznica-screen,
     #toplista-screen, #podesavanja-screen, #global-chat-screen
@@ -20289,131 +20296,19 @@ body.theme-live-v2-enabled :is(
     display: none !important;
 }
 
-body.theme-live-v2-enabled :is(
+body.theme-live-png-enabled :is(
     #main-menu, #kvartalni-nivo-screen, #online-igraci-screen,
     #soba-prijatelja-screen, #tokeni-screen, #trofeji-main-screen,
     #riznica-screen, #toplista-screen, #podesavanja-screen,
     #global-chat-screen
-) > .theme-live-v2 {
+) > .theme-live-png {
     position: absolute !important;
     inset: 0;
     width: 100%;
     height: 100%;
-    z-index: 0 !important;
-    overflow: hidden;
+    object-fit: fill;
+    z-index: -1 !important;
     pointer-events: none;
 }
 
-.theme-live-v2 svg { width: 100%; height: 100%; display: block; }
-.theme-live-v2 .live-scene { display: none; }
-body[data-tema="drzava"] .theme-live-v2 .live-drzava,
-body[data-tema="okean"] .theme-live-v2 .live-okean,
-body[data-tema="grad"] .theme-live-v2 .live-grad,
-body[data-tema="planina"] .theme-live-v2 .live-planina,
-body[data-tema="biljka"] .theme-live-v2 .live-biljka,
-body[data-tema="zivotinja"] .theme-live-v2 .live-zivotinja,
-body[data-tema="predmet"] .theme-live-v2 .live-predmet { display: inline; }
-
-.theme-live-v2 .live-route {
-    fill: none;
-    stroke: rgba(255, 240, 178, 0.58);
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-dasharray: 4 17;
-    animation: themeRouteTravel 14s linear infinite;
-}
-.theme-live-v2 .live-route-slow { animation-duration: 19s; }
-.theme-live-v2 .live-pulse {
-    fill: none;
-    stroke: rgba(255, 243, 184, 0.72);
-    stroke-width: 4;
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: themeLivePulse 5.5s ease-out infinite;
-}
-.theme-live-v2 .live-water {
-    fill: none;
-    stroke: rgba(255, 247, 219, 0.52);
-    stroke-width: 5;
-    stroke-linecap: round;
-    filter: blur(1.5px);
-    animation: themeWaterGlide 7s ease-in-out infinite;
-}
-.theme-live-v2 .live-window {
-    fill: rgba(255, 222, 130, 0.62);
-    filter: blur(10px);
-    animation: themeLiveGlow 5.5s ease-in-out infinite;
-}
-.theme-live-v2 .live-ripple {
-    fill: none;
-    stroke: rgba(207, 252, 255, 0.74);
-    stroke-width: 5;
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: themeLivePulse 4s ease-out infinite;
-}
-.theme-live-v2 .live-mist {
-    fill: rgba(255, 255, 247, 0.29);
-    filter: blur(25px);
-    animation: themeMistDrift 14s ease-in-out infinite alternate;
-}
-.theme-live-v2 .live-mote,
-.theme-live-v2 .live-firefly {
-    fill: #fff2bb;
-    filter: drop-shadow(0 0 7px #ffe9a8);
-    animation: themeMoteFloat 7s ease-in-out infinite;
-}
-.theme-live-v2 .live-firefly {
-    fill: #fff7b5;
-    filter: drop-shadow(0 0 11px #ffed94);
-    animation-duration: 8.5s;
-}
-.theme-live-v2 .live-lamp {
-    fill: rgba(255, 232, 154, 0.3);
-    filter: blur(36px);
-    animation: themeLiveGlow 5.5s ease-in-out infinite;
-}
-.theme-live-v2 .live-spark {
-    fill: rgba(255, 250, 216, 0.86);
-    filter: drop-shadow(0 0 6px #fff5ba);
-    animation: themeLiveGlow 4.8s ease-in-out infinite;
-}
-
-.theme-live-v2 .live-lag-1 { animation-delay: -1.4s; }
-.theme-live-v2 .live-lag-2 { animation-delay: -2.7s; }
-.theme-live-v2 .live-lag-3 { animation-delay: -4s; }
-.theme-live-v2 .live-lag-4 { animation-delay: -5.3s; }
-
-@keyframes themeRouteTravel { to { stroke-dashoffset: -252; } }
-@keyframes themeLivePulse {
-    0%, 14% { opacity: 0; transform: scale(0.65); }
-    28% { opacity: 0.78; }
-    65%, 100% { opacity: 0; transform: scale(2.4); }
-}
-@keyframes themeWaterGlide {
-    0%, 100% { opacity: 0.15; transform: translateX(-13px); }
-    50% { opacity: 0.68; transform: translateX(18px); }
-}
-@keyframes themeLiveGlow {
-    0%, 100% { opacity: 0.22; }
-    50% { opacity: 0.72; }
-}
-@keyframes themeMistDrift {
-    from { opacity: 0.12; transform: translateX(-25px); }
-    to { opacity: 0.42; transform: translateX(25px); }
-}
-@keyframes themeMoteFloat {
-    0%, 100% { opacity: 0.08; transform: translate(0, 8px); }
-    45% { opacity: 0.82; transform: translate(14px, -20px); }
-    75% { opacity: 0.4; transform: translate(-9px, -34px); }
-}
-
-body.theme-live-paused .theme-live-v2 *,
-body.theme-live-paused .theme-live-v2 *::before,
-body.theme-live-paused .theme-live-v2 *::after {
-    animation-play-state: paused !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .theme-live-v2 { display: none !important; }
-}
+.theme-live-png[hidden] { display: none !important; }

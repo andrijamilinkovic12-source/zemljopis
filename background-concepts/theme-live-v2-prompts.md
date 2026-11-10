@@ -1,6 +1,6 @@
 # ZEMLJOPIS: seven live backgrounds
 
-Generated with the built-in imagegen tool on 9 November 2026. Each PNG is a complete still scene. The `theme-live-v2.js` SVG layer supplies motion over that same image.
+Generated with the built-in imagegen tool on 9 November 2026. Each PNG is a complete still scene. On 10 November, matching animated PNG files (`*-live.png`, APNG format) replaced the SVG/CSS motion layer. The first frame is the complete still scene; later frames contain raster movement.
 
 ## Shared prompt for Reka, Grad, Planina, Biljka, Životinja and Predmet
 
@@ -18,4 +18,20 @@ The Reka, Grad and Planina prompts also specify a soft sky in the upper quarter.
 - **Životinja** (`zivotinja.png`): Friendly forest clearing with complete clay fox, hedgehog, deer, rabbit, owl and perched birds. Open meadow and winding path in the center.
 - **Predmet** (`predmet.png`): Cozy study with wooden shelves, books, desk lamp, magnifying glass, pencil cup, globe and geometric blocks at the edges. Uncluttered center.
 
-All seven prompts specify no text, logo, interface or watermark, and that animation will be added as a separate layer.
+All seven prompts specify no text, logo, interface or watermark.
+
+## Live PNG sprites and build
+
+The transparent sprite PNGs in `theme-live-v2-sprites/` were generated on 10 November 2026 with these prompts:
+
+- `plane.png`: A single tiny friendly hand-sculpted clay toy airplane in warm cream and coral, viewed from above at a three-quarter angle, soft matte texture, transparent background, no text or shadow rectangle.
+- `boat.png`: A single miniature hand-sculpted clay sailboat with coral hull and cream sail, soft matte finish, seen from a gentle elevated angle, transparent background, no text.
+- `butterfly.png`: A single delicate pastel clay butterfly with rounded lavender and peach wings, soft sculpted texture, transparent background, no text.
+- `cloud.png`: A single small fluffy pastel cream clay cloud, rounded studio-lit form, isolated on transparent background, no text.
+
+`scripts/build-theme-live-frames.ps1` rasterizes 24 transparent frames for each scene. It moves the plane across the atlas, boat along the river, clouds across the town and mountains, butterfly through the garden and forest, and lamp glow/plane around the study globe. `scripts/build-theme-live-apng.py` packages each still plus those frames into an animated PNG with a `.png` extension. Build with:
+
+```powershell
+./scripts/build-theme-live-frames.ps1 -FrameCount 24
+python scripts/build-theme-live-apng.py --frames 24 --duration-ms 125
+```

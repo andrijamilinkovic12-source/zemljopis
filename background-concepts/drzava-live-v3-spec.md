@@ -1,8 +1,10 @@
 # Država — 3D Soft Clay Mat live pozadina, nova osnova
 
-Statična osnova: `www/assets/theme-live-v3/drzava-base.png` (941 × 1672).
+Statična osnova u upotrebi: `www/assets/theme-live-v3/drzava-base-v4.png` (941 × 1672). Ovo je nova, jedinstvena imagegen PNG slika, napravljena prema prethodnom kadru, sa kompasom nacrtanim neposredno u prizoru.
 
-Osnova sadrži kartu, reljef, okean, nebo i statično kućište kompasa sa engleskim oznakama `N/E/S/W`. `N` stoji na gornjem vrhu brojčanika. Slova su projektovana u nagnutu ravan kompasa, unutar oboda, a crtice uz slova su izostavljene. Oznake i preostale crtice su zaseban statični `www/assets/theme-live-v3/compass-dial.png`, a `compass-background.png` je izvod kućišta sa brojčanikom bez igle. Na osnovi nema aviona, pinova, oblaka, linija između pinova ni pokretne igle. Čista osnova pre ucrtavanja oznaka sačuvana je kao `background-concepts/drzava-live-v3-base-blank-compass.png`.
+Osnova sadrži kartu, reljef, okean, nebo i statično kućište kompasa sa engleskim oznakama `N/E/S/W`. `N` stoji na gornjem vrhu brojčanika; crtice su odvojene od slova. Kućište i oznake su deo istog rastera, bez dodatnog sloja. Na osnovi nema aviona, pinova, oblaka, linija između pinova ni pokretne igle. Starija osnova i `compass-dial.png` ostaju kao istorija ranije verzije.
+
+Imagegen edit za novu osnovu: ponovo nacrtati istu kompoziciju sveta u 3D Soft Clay Mat stilu; uključiti zlatni kompas u donjem desnom uglu, sa krem brojčanikom i oznakama N na vrhu, E desno, S dole, W levo, u ravni nagnute površine; ostaviti prostor oko slova bez crtica; bez igle, aviona, pinova, ruta i oblaka. Referenca: prethodna statična PNG osnova.
 
 Pokretni detalji su izrađeni kao odvojeni providni PNG fajlovi u `background-concepts/drzava-live-v3-sprites/`:
 
@@ -20,7 +22,6 @@ Prompts: jedan isti krem i koralni avion iz osam uglova; zatim isti avion gledan
 
 ```powershell
 ./scripts/split-drzava-v3-sprites.ps1
-./scripts/build-drzava-v3-compass-dial.ps1
 ./scripts/build-drzava-live-v3-frames.ps1 -FrameCount 96
 python scripts/build-theme-live-apng.py --frame-root tmp/drzava-v3-frames --asset-root www/assets/theme-live-v3 --themes drzava --frames 96 --duration-ms 125 --base-duration-ms 1
 ```

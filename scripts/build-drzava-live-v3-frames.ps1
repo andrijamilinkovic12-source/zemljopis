@@ -90,7 +90,7 @@ foreach ($name in @('plane-top',
     $sprites[$name] = [System.Drawing.Image]::FromFile((Join-Path $spriteRoot "$name.png"))
 }
 
-$baseImage = [System.Drawing.Image]::FromFile((Join-Path $assetRoot 'drzava-base.png'))
+$baseImage = [System.Drawing.Image]::FromFile((Join-Path $assetRoot 'drzava-base-v4.png'))
 try {
     $width = $baseImage.Width
     $height = $baseImage.Height

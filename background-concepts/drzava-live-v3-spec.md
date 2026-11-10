@@ -6,15 +6,15 @@ Osnova sadrži kartu, reljef, okean, nebo i statično kućište kompasa sa engle
 
 Pokretni detalji su izrađeni kao odvojeni providni PNG fajlovi u `background-concepts/drzava-live-v3-sprites/`:
 
-- Avion: osam providnih PNG pogleda istog aviona, u osnovnim i dijagonalnim smerovima. Ista eliptična putanja sada traje dvanaest sekundi.
+- Avion: `plane-top.png` je zaseban providni PNG pogled odozgo, usklađen bojom i materijalom sa ranijim modelom. Skripta ga rotira po tangenti iste eliptične putanje i iscrtava svaki ugao u zaseban PNG kadar. Krug traje dvanaest sekundi, bez skokova između različitih modela aviona.
 - Pinovi: `pin-coral.png`, `pin-gold.png`, `pin-africa.png` i `pin-rose.png` na Severnoj Americi, Evropi, južnijem središnjem delu Afrike prema Madagaskaru i Južnoj Americi. Svi su prikazani u izvornom odnosu širine i visine.
 - Linija: posle udara jednog pina putuje ka sledećem. Kada stigne, taj pin se podiže i udara u mapu; tek njegov udar šalje novu liniju. Krug ide Severna Amerika → Evropa → Afrika → Južna Amerika → Severna Amerika. Linija je deo zasebnih raster kadrova i nije trajno nacrtana na osnovi.
 - Oblaci: `cloud-left.png`, `cloud-middle.png` i `cloud-right.png` blago klize u gornjem delu slike.
 - Kompas: `compass-needle.png` leži iznad statičnog brojčanika sa oznakama i blago menja pravac. Osnovni ugao igle je poravnat sa nagnutim ovalom kompasa.
 
-Osam uglova aviona, tri prvobitna pina i tri oblaka potiču iz transparentnih imagegen PNG listova `plane-sheet.png`, `plane-diagonals-sheet.png`, `pins-sheet.png` i `clouds-sheet.png`. Listovi su razdvojeni skriptom `scripts/split-drzava-v3-sprites.ps1`; `pin-africa.png` i `compass-needle.png` su zasebno generisani PNG fajlovi.
+Ranijih osam uglova aviona ostali su sačuvani kao izvori u `plane-sheet.png` i `plane-diagonals-sheet.png`; više se ne smenjuju u animaciji jer je ta promena pravila nagli zaokret iznad Evrope. Tri prvobitna pina i tri oblaka potiču iz transparentnih imagegen PNG listova `pins-sheet.png` i `clouds-sheet.png`. Listovi su razdvojeni skriptom `scripts/split-drzava-v3-sprites.ps1`; `plane-top.png`, `pin-africa.png` i `compass-needle.png` su zasebno generisani PNG fajlovi.
 
-Prompts: jedan isti krem i koralni avion iz osam uglova; četiri zaobljena glinena pina u koralnoj, zlatnoj, tirkiznoj i ružičastoj boji; tri različita mekana krem/lavanda oblaka; zlatno-lavanda četvorokraka igla kompasa. Svi imaju pravu providnu pozadinu, mat glineni materijal i osvetljenje sa gornje leve strane, bez teksta ili drugih elemenata. Afrički tirkizni pin i četiri dodatna dijagonalna ugla aviona napravljeni su prema referenci postojećih spriteova.
+Prompts: jedan isti krem i koralni avion iz osam uglova; zatim isti avion gledan ortografski pravo odozgo, nos prema gornjoj ivici, simetrična koralna krila, za glatko rasterizovano okretanje; četiri zaobljena glinena pina u koralnoj, zlatnoj, tirkiznoj i ružičastoj boji; tri različita mekana krem/lavanda oblaka; zlatno-lavanda četvorokraka igla kompasa. Svi imaju pravu providnu pozadinu, mat glineni materijal i osvetljenje sa gornje leve strane, bez teksta ili drugih elemenata. Afrički tirkizni pin i dodatni uglovi aviona napravljeni su prema referenci postojećih spriteova.
 
 `scripts/build-drzava-live-v3-frames.ps1` pravi 96 transparentnih PNG kadrova. `scripts/build-theme-live-apng.py` ih pakuje sa statičnom osnovom u `www/assets/theme-live-v3/drzava-live.png` (APNG, 97 kadrova, dvanaest sekundi po ciklusu). U aplikaciji se za Državu koristi statična osnova i ovaj live PNG, bez SVG/CSS animacije pozadine.
 

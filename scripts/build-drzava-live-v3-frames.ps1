@@ -84,8 +84,7 @@ function Draw-Pin($graphics, $sprite, [double]$x, [double]$groundY,
 }
 
 $sprites = @{}
-foreach ($name in @('plane-front', 'plane-front-left', 'plane-left', 'plane-away-left',
-                    'plane-away', 'plane-away-right', 'plane-right', 'plane-front-right',
+foreach ($name in @('plane-top',
                     'pin-coral', 'pin-gold', 'pin-africa', 'pin-rose',
                     'cloud-left', 'cloud-middle', 'cloud-right', 'compass-needle')) {
     $sprites[$name] = [System.Drawing.Image]::FromFile((Join-Path $spriteRoot "$name.png"))
@@ -110,8 +109,6 @@ try {
         [double[]]@(218, 1000, 88, 853, 83, 678, 153, 580)
     )
     $routeWindows = @(@(0, 18, 24), @(24, 42, 48), @(48, 66, 72), @(72, 90, 96))
-    $planeViews = @('plane-front', 'plane-front-left', 'plane-left', 'plane-away-left',
-                    'plane-away', 'plane-away-right', 'plane-right', 'plane-front-right')
     for ($frame = 0; $frame -lt $FrameCount; $frame++) {
         $theta = 2 * [Math]::PI * $frame / $FrameCount
         $bitmap = [System.Drawing.Bitmap]::new($width, $height, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
@@ -143,13 +140,12 @@ try {
                 Draw-Pin $g $sprites['pin-africa'] 770 1010 $frame 42 48
                 Draw-Pin $g $sprites['pin-rose'] 218 1000 $frame 66 72
 
-                $viewIndex = [int]([Math]::Floor((($theta + [Math]::PI / 8) % (2 * [Math]::PI)) / ([Math]::PI / 4)))
-                $planeView = $planeViews[$viewIndex]
-                $headingOffset = 360 * $frame / $FrameCount - 45 * $viewIndex
-                if ($headingOffset -gt 180) { $headingOffset -= 360 }
                 $planeX = 470 + 328 * [Math]::Cos($theta)
                 $planeY = 514 + 205 * [Math]::Sin($theta)
-                Draw-Sprite $g $sprites[$planeView] $planeX $planeY 138 96 (0.6 * $headingOffset)
+                $velocityX = -328 * [Math]::Sin($theta)
+                $velocityY = 205 * [Math]::Cos($theta)
+                $heading = 90 + [Math]::Atan2($velocityY, $velocityX) * 180 / [Math]::PI
+                Draw-Sprite $g $sprites['plane-top'] $planeX $planeY 112 122 $heading
 
                 $needleAngle = 45 + 6 * [Math]::Sin($theta) + 3 * [Math]::Sin(2 * $theta)
                 Draw-Sprite $g $sprites['compass-needle'] 742 1445 180 132 $needleAngle

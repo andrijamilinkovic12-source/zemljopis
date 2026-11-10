@@ -84,7 +84,8 @@ function Draw-Pin($graphics, $sprite, [double]$x, [double]$groundY,
 }
 
 $sprites = @{}
-foreach ($name in @('plane-top',
+foreach ($name in @('plane-front', 'plane-front-left', 'plane-left', 'plane-away-left',
+                    'plane-away', 'plane-away-right', 'plane-right', 'plane-front-right',
                     'pin-coral', 'pin-gold', 'pin-africa', 'pin-rose',
                     'cloud-left', 'cloud-middle', 'cloud-right', 'compass-needle')) {
     $sprites[$name] = [System.Drawing.Image]::FromFile((Join-Path $spriteRoot "$name.png"))
@@ -109,6 +110,8 @@ try {
         [double[]]@(218, 1000, 88, 853, 83, 678, 153, 580)
     )
     $routeWindows = @(@(0, 18, 24), @(24, 42, 48), @(48, 66, 72), @(72, 90, 96))
+    $planeViews = @('plane-front', 'plane-front-left', 'plane-left', 'plane-away-left',
+                    'plane-away', 'plane-away-right', 'plane-right', 'plane-front-right')
     for ($frame = 0; $frame -lt $FrameCount; $frame++) {
         $theta = 2 * [Math]::PI * $frame / $FrameCount
         $bitmap = [System.Drawing.Bitmap]::new($width, $height, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
@@ -144,8 +147,16 @@ try {
                 $planeY = 514 + 205 * [Math]::Sin($theta)
                 $velocityX = -328 * [Math]::Sin($theta)
                 $velocityY = 205 * [Math]::Cos($theta)
-                $heading = 90 + [Math]::Atan2($velocityY, $velocityX) * 180 / [Math]::PI
-                Draw-Sprite $g $sprites['plane-top'] $planeX $planeY 112 122 $heading
+                # The plane faces down in the front sprite, then turns left, away and right.
+                # Select the eight perspective PNG views from the path tangent, not the ellipse position.
+                $heading = [Math]::Atan2(-$velocityX, $velocityY) * 180 / [Math]::PI
+                if ($heading -lt 0) { $heading += 360 }
+                $viewIndex = [int][Math]::Floor(($heading + 22.5) / 45) % $planeViews.Count
+                $viewHeading = 45 * $viewIndex
+                $offset = $heading - $viewHeading
+                if ($offset -gt 180) { $offset -= 360 }
+                if ($offset -lt -180) { $offset += 360 }
+                Draw-Sprite $g $sprites[$planeViews[$viewIndex]] $planeX $planeY 138 96 (0.28 * $offset)
 
                 $needleAngle = 45 + 6 * [Math]::Sin($theta) + 3 * [Math]::Sin(2 * $theta)
                 Draw-Sprite $g $sprites['compass-needle'] 742 1445 180 132 $needleAngle

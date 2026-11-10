@@ -2,7 +2,7 @@
 
 Statična osnova: `www/assets/theme-live-v3/drzava-base.png` (941 × 1672).
 
-Osnova sadrži kartu, reljef, okean, nebo i statično kućište kompasa sa engleskim oznakama `N/E/S/W`. Slova su zakrenuta u ravan nagnutog brojčanika i stoje unutar njegovog oboda. Oznake i crtice su zaseban statični `www/assets/theme-live-v3/compass-dial.png`, a `compass-background.png` je izvod kućišta sa brojčanikom bez igle. Na osnovi nema aviona, pinova, oblaka, linija između pinova ni pokretne igle. Čista osnova pre ucrtavanja oznaka sačuvana je kao `background-concepts/drzava-live-v3-base-blank-compass.png`.
+Osnova sadrži kartu, reljef, okean, nebo i statično kućište kompasa sa engleskim oznakama `N/E/S/W`. `N` stoji na gornjem vrhu brojčanika. Slova su projektovana u nagnutu ravan kompasa, unutar oboda, a crtice uz slova su izostavljene. Oznake i preostale crtice su zaseban statični `www/assets/theme-live-v3/compass-dial.png`, a `compass-background.png` je izvod kućišta sa brojčanikom bez igle. Na osnovi nema aviona, pinova, oblaka, linija između pinova ni pokretne igle. Čista osnova pre ucrtavanja oznaka sačuvana je kao `background-concepts/drzava-live-v3-base-blank-compass.png`.
 
 Pokretni detalji su izrađeni kao odvojeni providni PNG fajlovi u `background-concepts/drzava-live-v3-sprites/`:
 

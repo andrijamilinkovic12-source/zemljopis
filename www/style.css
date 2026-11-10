@@ -20249,7 +20249,7 @@ body[data-pismo="cirilica"] .kviz-round-break.kviz-podpitanje-pauza .kviz-break-
 }
 
 /* Seven clay scenes: still PNG fallback and matching animated PNG frames. */
-body[data-tema="drzava"] { --theme-bg-image: url('assets/theme-live-v3/drzava-base.png?v=3'); }
+body[data-tema="drzava"] { --theme-bg-image: url('assets/theme-live-v3/drzava-base.png?v=4'); }
 body[data-tema="okean"] { --theme-bg-image: url('assets/theme-live-v2/okean.png'); }
 body[data-tema="grad"] { --theme-bg-image: url('assets/theme-live-v2/grad.png'); }
 body[data-tema="planina"] { --theme-bg-image: url('assets/theme-live-v2/planina.png'); }

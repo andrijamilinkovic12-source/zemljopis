@@ -23,6 +23,10 @@ try {
             $majorY = -0.707
             $minorX = 0.707
             $minorY = 0.707
+            $marks = @(
+                @('N', 745, 1377), @('E', 815, 1439),
+                @('S', 730, 1511), @('W', 665, 1450)
+            )
             $tickPen = [System.Drawing.Pen]::new(
                 [System.Drawing.Color]::FromArgb(125, 170, 123, 68), 3
             )
@@ -30,20 +34,32 @@ try {
                 $tickPen.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
                 $tickPen.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
                 for ($index = 0; $index -lt 16; $index++) {
+                    # Cardinal letters take the place of their tick marks.
+                    if ($index % 4 -eq 0) { continue }
                     $angle = 2 * [Math]::PI * $index / 16
                     $c = [Math]::Cos($angle)
                     $s = [Math]::Sin($angle)
-                    $inner = if ($index % 4 -eq 0) { 0.84 } else { 0.92 }
+                    $inner = 0.92
                     $outer = 1.0
                     $x1 = $centerX + $inner * (94 * $majorX * $c + 74 * $minorX * $s)
                     $y1 = $centerY + $inner * (94 * $majorY * $c + 74 * $minorY * $s)
                     $x2 = $centerX + $outer * (94 * $majorX * $c + 74 * $minorX * $s)
                     $y2 = $centerY + $outer * (94 * $majorY * $c + 74 * $minorY * $s)
-                    $g.DrawLine($tickPen, [single]$x1, [single]$y1, [single]$x2, [single]$y2)
+                    $nearLetter = $false
+                    foreach ($mark in $marks) {
+                        if ([Math]::Sqrt(($x1 - $mark[1]) * ($x1 - $mark[1]) +
+                                         ($y1 - $mark[2]) * ($y1 - $mark[2])) -lt 33) {
+                            $nearLetter = $true
+                            break
+                        }
+                    }
+                    if (-not $nearLetter) {
+                        $g.DrawLine($tickPen, [single]$x1, [single]$y1, [single]$x2, [single]$y2)
+                    }
                 }
             } finally { $tickPen.Dispose() }
 
-            $font = [System.Drawing.Font]::new('Georgia', 21,
+            $font = [System.Drawing.Font]::new('Georgia', 24,
                 [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
             $format = [System.Drawing.StringFormat]::new()
             $format.Alignment = [System.Drawing.StringAlignment]::Center
@@ -53,14 +69,16 @@ try {
             $engraving = [System.Drawing.SolidBrush]::new(
                 [System.Drawing.Color]::FromArgb(185, 135, 93, 51))
             try {
-                foreach ($mark in @(
-                    @('N', 796, 1388), @('E', 796, 1490),
-                    @('S', 688, 1502), @('W', 688, 1400)
-                )) {
+                foreach ($mark in $marks) {
                     $state = $g.Save()
                     try {
-                        $g.TranslateTransform([single]$mark[1], [single]$mark[2])
-                        $g.RotateTransform(-40)
+                        # Project text into the slanted compass face, including its vertical foreshortening.
+                        $surface = [System.Drawing.Drawing2D.Matrix]::new(
+                            [single]0.83, [single]-0.18, [single]0.27, [single]0.57,
+                            [single]$mark[1], [single]$mark[2]
+                        )
+                        $g.Transform = $surface
+                        $surface.Dispose()
                         $box = [System.Drawing.RectangleF]::new(-16, -16, 32, 32)
                         $lightBox = [System.Drawing.RectangleF]::new(-15, -14, 32, 32)
                         $g.DrawString([string]$mark[0], $font, $highlight, $lightBox, $format)

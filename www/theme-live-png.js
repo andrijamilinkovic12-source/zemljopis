@@ -28,7 +28,7 @@
         if (supported && active && !document.hidden && !reducedMotion.matches) {
             if (image.parentElement !== active) active.appendChild(image);
             const source = theme === 'drzava'
-                ? 'assets/theme-live-v3/drzava-live.png?v=4'
+                ? 'assets/theme-live-v3/drzava-live.png?v=5'
                 : `assets/theme-live-v2/${theme}-live.png`;
             if (image.getAttribute('src') !== source) {
                 image.hidden = true;

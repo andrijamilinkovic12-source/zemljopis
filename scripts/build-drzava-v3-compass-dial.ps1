@@ -43,7 +43,7 @@ try {
                 }
             } finally { $tickPen.Dispose() }
 
-            $font = [System.Drawing.Font]::new('Georgia', 24,
+            $font = [System.Drawing.Font]::new('Georgia', 21,
                 [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
             $format = [System.Drawing.StringFormat]::new()
             $format.Alignment = [System.Drawing.StringAlignment]::Center
@@ -54,14 +54,18 @@ try {
                 [System.Drawing.Color]::FromArgb(185, 135, 93, 51))
             try {
                 foreach ($mark in @(
-                    @('S', 808, 1378), @('I', 804, 1498),
-                    @('J', 677, 1512), @('Z', 679, 1392)
+                    @('N', 796, 1388), @('E', 796, 1490),
+                    @('S', 688, 1502), @('W', 688, 1400)
                 )) {
-                    $box = [System.Drawing.RectangleF]::new([single]($mark[1] - 16),
-                        [single]($mark[2] - 16), 32, 32)
-                    $lightBox = [System.Drawing.RectangleF]::new($box.X + 1, $box.Y + 2, 32, 32)
-                    $g.DrawString([string]$mark[0], $font, $highlight, $lightBox, $format)
-                    $g.DrawString([string]$mark[0], $font, $engraving, $box, $format)
+                    $state = $g.Save()
+                    try {
+                        $g.TranslateTransform([single]$mark[1], [single]$mark[2])
+                        $g.RotateTransform(-40)
+                        $box = [System.Drawing.RectangleF]::new(-16, -16, 32, 32)
+                        $lightBox = [System.Drawing.RectangleF]::new(-15, -14, 32, 32)
+                        $g.DrawString([string]$mark[0], $font, $highlight, $lightBox, $format)
+                        $g.DrawString([string]$mark[0], $font, $engraving, $box, $format)
+                    } finally { $g.Restore($state) }
                 }
             } finally {
                 $engraving.Dispose()

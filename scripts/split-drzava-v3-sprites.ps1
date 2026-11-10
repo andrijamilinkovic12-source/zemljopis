@@ -19,6 +19,10 @@ Save-Cell 'plane-sheet.png' 'plane-front.png' 0 0 768 512
 Save-Cell 'plane-sheet.png' 'plane-right.png' 768 0 768 512
 Save-Cell 'plane-sheet.png' 'plane-away.png' 0 512 768 512
 Save-Cell 'plane-sheet.png' 'plane-left.png' 768 512 768 512
+Save-Cell 'plane-diagonals-sheet.png' 'plane-front-left.png' 0 0 768 512
+Save-Cell 'plane-diagonals-sheet.png' 'plane-away-left.png' 768 0 768 512
+Save-Cell 'plane-diagonals-sheet.png' 'plane-away-right.png' 0 512 768 512
+Save-Cell 'plane-diagonals-sheet.png' 'plane-front-right.png' 768 512 768 512
 
 Save-Cell 'pins-sheet.png' 'pin-coral.png' 0 0 724 724
 Save-Cell 'pins-sheet.png' 'pin-gold.png' 724 0 724 724

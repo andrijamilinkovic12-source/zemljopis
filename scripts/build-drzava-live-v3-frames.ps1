@@ -1,10 +1,10 @@
 param(
     [string]$ProjectRoot = (Split-Path -Parent $PSScriptRoot),
-    [int]$FrameCount = 72
+    [int]$FrameCount = 96
 )
 
 $ErrorActionPreference = 'Stop'
-if ($FrameCount -ne 72) { throw 'The pin and route timeline requires exactly 72 frames.' }
+if ($FrameCount -ne 96) { throw 'The pin and route timeline requires exactly 96 frames.' }
 Add-Type -AssemblyName System.Drawing
 
 $assetRoot = Join-Path $ProjectRoot 'www/assets/theme-live-v3'
@@ -63,17 +63,19 @@ function Draw-Route($graphics, [double[]]$path, [double]$fraction, [int]$alpha) 
 
 function Draw-Pin($graphics, $sprite, [double]$x, [double]$groundY,
                   [int]$frame, [int]$start, [int]$land) {
+    $time = $frame
+    if ($land -eq 96 -and $frame -lt 6) { $time += 96 }
     $lift = 0.0
-    if ($frame -ge $start -and $frame -le $land) {
-        $phase = ($frame - $start) / [double]($land - $start)
+    if ($time -ge $start -and $time -le $land) {
+        $phase = ($time - $start) / [double]($land - $start)
         $lift = 58 * [Math]::Sin([Math]::PI * $phase)
     }
     Draw-Oval $graphics ($x - 25 + $lift * 0.08) ($groundY - 7) (50 - $lift * 0.16) 14 ([System.Drawing.Color]::FromArgb(255, 43, 78, 91)) ([int](66 - $lift * 0.42))
     Draw-Sprite $graphics $sprite $x ($groundY - 37 - $lift) 94 94
-    if ($frame -ge $land -and $frame -le $land + 3) {
-        $radius = 13 + 9 * ($frame - $land)
+    if ($time -ge $land -and $time -le $land + 3) {
+        $radius = 13 + 9 * ($time - $land)
         $pen = [System.Drawing.Pen]::new(
-            [System.Drawing.Color]::FromArgb([int](115 - 28 * ($frame - $land)), 255, 245, 197), 3
+            [System.Drawing.Color]::FromArgb([int](115 - 28 * ($time - $land)), 255, 245, 197), 3
         )
         try { $graphics.DrawEllipse($pen, [single]($x - $radius), [single]($groundY - $radius * 0.24),
             [single](2 * $radius), [single]($radius * 0.48)) }
@@ -82,7 +84,8 @@ function Draw-Pin($graphics, $sprite, [double]$x, [double]$groundY,
 }
 
 $sprites = @{}
-foreach ($name in @('plane-front', 'plane-right', 'plane-away', 'plane-left',
+foreach ($name in @('plane-front', 'plane-front-left', 'plane-left', 'plane-away-left',
+                    'plane-away', 'plane-away-right', 'plane-right', 'plane-front-right',
                     'pin-coral', 'pin-gold', 'pin-africa', 'pin-rose',
                     'cloud-left', 'cloud-middle', 'cloud-right', 'compass-needle')) {
     $sprites[$name] = [System.Drawing.Image]::FromFile((Join-Path $spriteRoot "$name.png"))
@@ -102,10 +105,13 @@ try {
 
     $routes = @(
         [double[]]@(153, 580, 278, 415, 582, 422, 740, 545),
-        [double[]]@(740, 545, 819, 682, 795, 824, 710, 960),
-        [double[]]@(710, 960, 585, 804, 358, 837, 218, 1000),
+        [double[]]@(740, 545, 819, 682, 834, 876, 770, 1010),
+        [double[]]@(770, 1010, 617, 818, 382, 850, 218, 1000),
         [double[]]@(218, 1000, 88, 853, 83, 678, 153, 580)
     )
+    $routeWindows = @(@(0, 18, 24), @(24, 42, 48), @(48, 66, 72), @(72, 90, 96))
+    $planeViews = @('plane-front', 'plane-front-left', 'plane-left', 'plane-away-left',
+                    'plane-away', 'plane-away-right', 'plane-right', 'plane-front-right')
     for ($frame = 0; $frame -lt $FrameCount; $frame++) {
         $theta = 2 * [Math]::PI * $frame / $FrameCount
         $bitmap = [System.Drawing.Bitmap]::new($width, $height, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
@@ -120,24 +126,33 @@ try {
                 Draw-Sprite $g $sprites['cloud-right'] (763 + 18 * [Math]::Sin($theta + 1.2)) 93 238 170
                 Draw-Sprite $g $sprites['cloud-middle'] (741 + 14 * [Math]::Sin($theta + 2.8)) 227 158 124
 
-                $routeAlpha = if ($frame -lt 70) { 255 } elseif ($frame -eq 70) { 190 } else { 0 }
-                Draw-Route $g $routes[0] ([Math]::Clamp(($frame - 14) / 12.0, 0, 1)) $routeAlpha
-                Draw-Route $g $routes[1] ([Math]::Clamp(($frame - 30) / 12.0, 0, 1)) $routeAlpha
-                Draw-Route $g $routes[2] ([Math]::Clamp(($frame - 46) / 12.0, 0, 1)) $routeAlpha
-                Draw-Route $g $routes[3] ([Math]::Clamp(($frame - 62) / 8.0, 0, 1)) $routeAlpha
+                for ($routeIndex = 0; $routeIndex -lt $routes.Count; $routeIndex++) {
+                    $window = $routeWindows[$routeIndex]
+                    $departure = $window[0]
+                    $arrival = $window[1]
+                    $impact = $window[2]
+                    if ($frame -ge $departure -and $frame -le $arrival) {
+                        Draw-Route $g $routes[$routeIndex] (($frame - $departure) / [double]($arrival - $departure)) 255
+                    } elseif ($frame -gt $arrival -and $frame -lt $impact) {
+                        Draw-Route $g $routes[$routeIndex] 1 ([int](255 * ($impact - $frame) / ($impact - $arrival)))
+                    }
+                }
 
-                Draw-Pin $g $sprites['pin-coral'] 153 580 $frame 6 14
-                Draw-Pin $g $sprites['pin-gold'] 740 545 $frame 22 30
-                Draw-Pin $g $sprites['pin-africa'] 710 960 $frame 38 46
-                Draw-Pin $g $sprites['pin-rose'] 218 1000 $frame 54 62
+                Draw-Pin $g $sprites['pin-coral'] 153 580 $frame 90 96
+                Draw-Pin $g $sprites['pin-gold'] 740 545 $frame 18 24
+                Draw-Pin $g $sprites['pin-africa'] 770 1010 $frame 42 48
+                Draw-Pin $g $sprites['pin-rose'] 218 1000 $frame 66 72
 
-                $planeView = @('plane-front', 'plane-left', 'plane-away', 'plane-right')[[int]([Math]::Floor((($theta + [Math]::PI / 4) % (2 * [Math]::PI)) / ([Math]::PI / 2)))]
+                $viewIndex = [int]([Math]::Floor((($theta + [Math]::PI / 8) % (2 * [Math]::PI)) / ([Math]::PI / 4)))
+                $planeView = $planeViews[$viewIndex]
+                $headingOffset = 360 * $frame / $FrameCount - 45 * $viewIndex
+                if ($headingOffset -gt 180) { $headingOffset -= 360 }
                 $planeX = 470 + 328 * [Math]::Cos($theta)
                 $planeY = 514 + 205 * [Math]::Sin($theta)
-                Draw-Sprite $g $sprites[$planeView] $planeX $planeY 138 96
+                Draw-Sprite $g $sprites[$planeView] $planeX $planeY 138 96 (0.6 * $headingOffset)
 
                 $needleAngle = 45 + 6 * [Math]::Sin($theta) + 3 * [Math]::Sin(2 * $theta)
-                Draw-Sprite $g $sprites['compass-needle'] 742 1445 200 150 $needleAngle
+                Draw-Sprite $g $sprites['compass-needle'] 742 1445 180 132 $needleAngle
             } finally { $g.Dispose() }
             $bitmap.Save((Join-Path $frameRoot ('frame-{0:D2}.png' -f $frame)),
                 [System.Drawing.Imaging.ImageFormat]::Png)

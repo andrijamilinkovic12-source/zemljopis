@@ -27,7 +27,9 @@
         const active = screens.find((screen) => screen.classList.contains('active'));
         if (supported && active && !document.hidden && !reducedMotion.matches) {
             if (image.parentElement !== active) active.appendChild(image);
-            const source = `assets/theme-live-v2/${theme}-live.png`;
+            const source = theme === 'drzava'
+                ? 'assets/theme-live-v3/drzava-live.png'
+                : `assets/theme-live-v2/${theme}-live.png`;
             if (image.getAttribute('src') !== source) {
                 image.hidden = true;
                 image.src = source;

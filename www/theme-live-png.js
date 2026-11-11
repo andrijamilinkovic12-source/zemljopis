@@ -18,14 +18,25 @@
     image.setAttribute('aria-hidden', 'true');
     image.decoding = 'async';
     image.hidden = true;
-    image.addEventListener('load', () => { image.hidden = false; });
+    image.addEventListener('load', () => { if (image.isConnected) image.hidden = false; });
+    let canvasFailed = false;
 
     const sync = () => {
         const theme = document.body.dataset.tema;
         const supported = themes.has(theme);
         document.body.classList.toggle('theme-live-png-enabled', supported);
+        if (theme === 'drzava' && !canvasFailed && !reducedMotion.matches) {
+            window.DrzavaLiveCanvas?.prefetch?.();
+        }
         const active = screens.find((screen) => screen.classList.contains('active'));
         if (supported && active && !document.hidden && !reducedMotion.matches) {
+            if (theme === 'drzava' && !canvasFailed && window.DrzavaLiveCanvas?.show(active)) {
+                image.hidden = true;
+                image.removeAttribute('src');
+                image.remove();
+                return;
+            }
+            window.DrzavaLiveCanvas?.hide();
             if (image.parentElement !== active) active.appendChild(image);
             const source = theme === 'drzava'
                 ? 'assets/theme-live-v3/drzava-live.png?v=8'
@@ -35,6 +46,7 @@
                 image.src = source;
             }
         } else {
+            window.DrzavaLiveCanvas?.hide();
             image.hidden = true;
             image.removeAttribute('src');
             image.remove();
@@ -42,6 +54,7 @@
     };
 
     const observer = new MutationObserver(sync);
+    window.addEventListener('drzava-live-failed', () => { canvasFailed = true; sync(); });
     screens.forEach((screen) => observer.observe(screen, { attributes: true, attributeFilter: ['class'] }));
     observer.observe(document.body, { attributes: true, attributeFilter: ['data-tema'] });
     document.addEventListener('visibilitychange', sync);

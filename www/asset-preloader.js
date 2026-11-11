@@ -192,10 +192,21 @@
         return posao;
     }
 
-    async function obradiURedovima(stavke, limit = 3) {
+    function sacekajSlobodanTrenutak() {
+        return new Promise(resolve => {
+            if (typeof window.requestIdleCallback === 'function') {
+                window.requestIdleCallback(resolve);
+            } else {
+                setTimeout(resolve, 250);
+            }
+        });
+    }
+
+    async function obradiURedovima(stavke, limit = 3, uPauzama = false) {
         let sledeci = 0;
         const radnik = async () => {
             while (sledeci < stavke.length) {
+                if (uPauzama) await sacekajSlobodanTrenutak();
                 const stavka = stavke[sledeci++];
                 await stavka();
             }
@@ -244,7 +255,7 @@
                 ...slikeZaSelektore(EKRAN_SELEKTORI[ekranId]).map(slika => () => dekodirajSliku(slika)),
                 ...(EKRAN_DODATNI_ASSETI[ekranId] || []).map(url => () => dekodirajUrl(url))
             ]);
-            await obradiURedovima(sledeciZadaci, 2);
+            await obradiURedovima(sledeciZadaci, 1, true);
         })();
 
         return STANJE.pokretanje;

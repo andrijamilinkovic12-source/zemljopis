@@ -18,10 +18,13 @@ Aktivan niz aviona je prikazan na `background-concepts/drzava-plane-16-views.png
 
 Imagegen prompt za avion: isti zaobljeni 3D Soft Clay Mat avion, krem trup, koralni nos i krila, tri tamna ovalna prozora sa zlatnim okvirima, tamna dvostruka stakla kabine, zlatna trokraka elisa, zlatna traka i izdignuta zvezda na repu; tačno jedan pogled pod zadatim uglom između susednih referenci, isti nivo kamere, meko osvetljenje odozgo sleva, ceo avion u kadru, providna pozadina, bez teksta, senke tla i drugih objekata. Posebni promptovi za `00` i `08` traže simetričan direktan pogled spreda i otpozadi. Ostali prompts: četiri zaobljena glinena pina u koralnoj, zlatnoj, tirkiznoj i ružičastoj boji; tri različita mekana krem/lavanda oblaka; zlatno-lavanda četvorokraka igla kompasa. Afrički tirkizni pin napravljen je prema referenci postojećih spriteova.
 
-`scripts/build-drzava-live-v3-frames.ps1` pravi 96 transparentnih PNG kadrova. `scripts/build-theme-live-apng.py` ih pakuje sa statičnom osnovom u `www/assets/theme-live-v3/drzava-live.png` (APNG, 97 kadrova, dvanaest sekundi po ciklusu). U aplikaciji se za Državu koristi statična osnova i ovaj live PNG, bez SVG/CSS animacije pozadine.
+`scripts/build-drzava-runtime-sprites.ps1` priprema 12 malih PNG fajlova za prikaz u aplikaciji: atlas sa svih 16 uglova aviona, pinove, oblake, iglu kompasa, raster pečat za liniju i detalje udara pina. Ukupno imaju oko 1,2 MB. `www/drzava-live-canvas.js` pomera te PNG detalje pomoću `requestAnimationFrame`, po istoj dvanaestosekundnoj putanji i istom rasporedu udara pinova. Dva susedna PNG pogleda aviona kratko se preklapaju tokom zaokreta, da promena ugla bude neprimetna. Statična osnova ostaje zaseban PNG. Animacija se pauzira kada ekran ili aplikacija nisu vidljivi; bez pokretnih PNG fajlova ostaje statična osnova. Nema SVG/CSS animacije pozadine.
+
+`scripts/build-drzava-live-v3-frames.ps1` pravi 96 transparentnih PNG kadrova. `scripts/build-theme-live-apng.py` ih pakuje sa statičnom osnovom u `www/assets/theme-live-v3/drzava-live.png` (APNG, 97 kadrova, dvanaest sekundi po ciklusu). APNG je rezervni prikaz ako platneni sloj nije dostupan.
 
 ```powershell
 ./scripts/split-drzava-v3-sprites.ps1
 ./scripts/build-drzava-live-v3-frames.ps1 -FrameCount 96
 python scripts/build-theme-live-apng.py --frame-root tmp/drzava-v3-frames --asset-root www/assets/theme-live-v3 --themes drzava --frames 96 --duration-ms 125 --base-duration-ms 1
+./scripts/build-drzava-runtime-sprites.ps1
 ```

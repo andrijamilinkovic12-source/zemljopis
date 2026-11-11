@@ -39,7 +39,7 @@
             window.DrzavaLiveCanvas?.hide();
             if (image.parentElement !== active) active.appendChild(image);
             const source = theme === 'drzava'
-                ? 'assets/theme-live-v3/drzava-live.png?v=8'
+                ? 'assets/theme-live-v3/drzava-live.png?v=9'
                 : `assets/theme-live-v2/${theme}-live.png`;
             if (image.getAttribute('src') !== source) {
                 image.hidden = true;

@@ -5,6 +5,7 @@
     const HEIGHT = 1672;
     const LOOP_MS = 12000;
     const ASSET_ROOT = 'assets/theme-live-v3/drzava-sprites/';
+    const SPRITE_VERSION = 2;
     const planeNames = Array.from({ length: 16 }, (_, index) => `plane-turn-${String(index).padStart(2, '0')}`);
     const names = [
         'plane-atlas', 'pin-coral', 'pin-gold', 'pin-africa', 'pin-rose',
@@ -54,7 +55,7 @@
                 decode.then(() => { images.set(name, image); resolve(); });
             };
             image.onerror = () => reject(new Error(`Failed to load ${name}.png`));
-            image.src = `${ASSET_ROOT}${name}.png?v=1`;
+            image.src = `${ASSET_ROOT}${name}.png?v=${SPRITE_VERSION}`;
         });
     }
 
@@ -162,17 +163,11 @@
         const viewPosition = heading / 22.5;
         const firstView = Math.floor(viewPosition);
         const fraction = viewPosition - firstView;
-        if (fraction <= 0.35) {
-            drawPlaneView(firstView, heading, planeX, planeY);
-        } else if (fraction >= 0.65) {
-            drawPlaneView((firstView + 1) % 16, heading, planeX, planeY);
-        } else {
-            const blend = (fraction - 0.35) / 0.30;
-            drawPlaneView(firstView, heading, planeX, planeY, 1 - blend);
-            drawPlaneView((firstView + 1) % 16, heading, planeX, planeY, blend);
-        }
+        const blend = fraction * fraction * (3 - 2 * fraction);
+        drawPlaneView(firstView, heading, planeX, planeY);
+        if (blend > 0) drawPlaneView((firstView + 1) % 16, heading, planeX, planeY, blend);
 
-        const needleAngle = 45 + 6 * Math.sin(theta) + 3 * Math.sin(2 * theta);
+        const needleAngle = 6 * Math.sin(theta) + 3 * Math.sin(2 * theta);
         sprite('compass-needle', 742, 1445, 180, 132, needleAngle);
     }
 

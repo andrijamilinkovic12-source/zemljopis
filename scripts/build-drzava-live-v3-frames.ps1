@@ -23,6 +23,23 @@ function Draw-Sprite($graphics, $sprite, [double]$x, [double]$y,
     } finally { $graphics.Restore($state) }
 }
 
+function Draw-SpriteAlpha($graphics, $sprite, [double]$x, [double]$y,
+                          [double]$width, [double]$height, [double]$rotation, [double]$alpha) {
+    if ($alpha -le 0) { return }
+    $state = $graphics.Save()
+    $attributes = [System.Drawing.Imaging.ImageAttributes]::new()
+    try {
+        $matrix = [System.Drawing.Imaging.ColorMatrix]::new()
+        $matrix.Matrix33 = [single]$alpha
+        $attributes.SetColorMatrix($matrix)
+        $graphics.TranslateTransform([single]$x, [single]$y)
+        $graphics.RotateTransform([single]$rotation)
+        $destination = [System.Drawing.Rectangle]::new([int](-$width / 2), [int](-$height / 2), [int]$width, [int]$height)
+        $graphics.DrawImage($sprite, $destination, 0, 0, $sprite.Width, $sprite.Height,
+            [System.Drawing.GraphicsUnit]::Pixel, $attributes)
+    } finally { $attributes.Dispose(); $graphics.Restore($state) }
+}
+
 function Draw-Oval($graphics, [double]$x, [double]$y, [double]$width, [double]$height,
                    [System.Drawing.Color]$color, [int]$alpha) {
     $brush = [System.Drawing.SolidBrush]::new(
@@ -148,14 +165,19 @@ try {
                 # Select the sixteen perspective PNG views from the path tangent.
                 $heading = [Math]::Atan2(-$velocityX, $velocityY) * 180 / [Math]::PI
                 if ($heading -lt 0) { $heading += 360 }
-                $viewIndex = [int][Math]::Floor(($heading + 11.25) / 22.5) % $planeViews.Count
-                $viewHeading = 22.5 * $viewIndex
-                $offset = $heading - $viewHeading
-                if ($offset -gt 180) { $offset -= 360 }
-                if ($offset -lt -180) { $offset += 360 }
-                Draw-Sprite $g $sprites[$planeViews[$viewIndex]] $planeX $planeY 138 96 (0.28 * $offset)
+                $viewPosition = $heading / 22.5
+                $firstView = [int][Math]::Floor($viewPosition)
+                $fraction = $viewPosition - $firstView
+                $blend = $fraction * $fraction * (3 - 2 * $fraction)
+                $firstOffset = $heading - 22.5 * $firstView
+                Draw-Sprite $g $sprites[$planeViews[$firstView]] $planeX $planeY 138 96 (0.28 * $firstOffset)
+                if ($blend -gt 0) {
+                    $nextView = ($firstView + 1) % $planeViews.Count
+                    $nextOffset = $heading - 22.5 * ($firstView + 1)
+                    Draw-SpriteAlpha $g $sprites[$planeViews[$nextView]] $planeX $planeY 138 96 (0.28 * $nextOffset) $blend
+                }
 
-                $needleAngle = 45 + 6 * [Math]::Sin($theta) + 3 * [Math]::Sin(2 * $theta)
+                $needleAngle = 6 * [Math]::Sin($theta) + 3 * [Math]::Sin(2 * $theta)
                 Draw-Sprite $g $sprites['compass-needle'] 742 1445 180 132 $needleAngle
             } finally { $g.Dispose() }
             $bitmap.Save((Join-Path $frameRoot ('frame-{0:D2}.png' -f $frame)),

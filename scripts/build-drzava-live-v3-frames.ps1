@@ -84,9 +84,8 @@ function Draw-Pin($graphics, $sprite, [double]$x, [double]$groundY,
 }
 
 $sprites = @{}
-foreach ($name in @('plane-front', 'plane-front-left', 'plane-left', 'plane-away-left',
-                    'plane-away', 'plane-away-right', 'plane-right', 'plane-front-right',
-                    'pin-coral', 'pin-gold', 'pin-africa', 'pin-rose',
+$planeViews = @(0..15 | ForEach-Object { 'plane-turn-{0:D2}' -f $_ })
+foreach ($name in @($planeViews) + @('pin-coral', 'pin-gold', 'pin-africa', 'pin-rose',
                     'cloud-left', 'cloud-middle', 'cloud-right', 'compass-needle')) {
     $sprites[$name] = [System.Drawing.Image]::FromFile((Join-Path $spriteRoot "$name.png"))
 }
@@ -110,8 +109,6 @@ try {
         [double[]]@(218, 1000, 88, 853, 83, 678, 153, 580)
     )
     $routeWindows = @(@(0, 18, 24), @(24, 42, 48), @(48, 66, 72), @(72, 90, 96))
-    $planeViews = @('plane-front', 'plane-front-left', 'plane-left', 'plane-away-left',
-                    'plane-away', 'plane-away-right', 'plane-right', 'plane-front-right')
     for ($frame = 0; $frame -lt $FrameCount; $frame++) {
         $theta = 2 * [Math]::PI * $frame / $FrameCount
         $bitmap = [System.Drawing.Bitmap]::new($width, $height, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
@@ -147,12 +144,12 @@ try {
                 $planeY = 514 + 205 * [Math]::Sin($theta)
                 $velocityX = -328 * [Math]::Sin($theta)
                 $velocityY = 205 * [Math]::Cos($theta)
-                # The plane faces down in the front sprite, then turns left, away and right.
-                # Select the eight perspective PNG views from the path tangent, not the ellipse position.
+                # The plane faces down in view 00, then turns left, away and right.
+                # Select the sixteen perspective PNG views from the path tangent.
                 $heading = [Math]::Atan2(-$velocityX, $velocityY) * 180 / [Math]::PI
                 if ($heading -lt 0) { $heading += 360 }
-                $viewIndex = [int][Math]::Floor(($heading + 22.5) / 45) % $planeViews.Count
-                $viewHeading = 45 * $viewIndex
+                $viewIndex = [int][Math]::Floor(($heading + 11.25) / 22.5) % $planeViews.Count
+                $viewHeading = 22.5 * $viewIndex
                 $offset = $heading - $viewHeading
                 if ($offset -gt 180) { $offset -= 360 }
                 if ($offset -lt -180) { $offset += 360 }

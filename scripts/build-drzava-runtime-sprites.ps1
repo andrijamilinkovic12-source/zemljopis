@@ -3,7 +3,7 @@ param([string]$ProjectRoot = (Split-Path -Parent $PSScriptRoot))
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 
-$sourceRoot = Join-Path $ProjectRoot 'background-concepts/drzava-live-v3-sprites'
+$sourceRoot = Join-Path $ProjectRoot 'background-concepts/drzava-clay-redesign/sprites'
 $outputRoot = Join-Path $ProjectRoot 'www/assets/theme-live-v3/drzava-sprites'
 New-Item -ItemType Directory -Path $outputRoot -Force | Out-Null
 
@@ -11,7 +11,7 @@ $sizes = @{
     'pin-coral' = @(188, 188); 'pin-gold' = @(188, 188)
     'pin-africa' = @(188, 188); 'pin-rose' = @(188, 188)
     'cloud-left' = @(570, 368); 'cloud-middle' = @(316, 248)
-    'cloud-right' = @(476, 340); 'compass-needle' = @(360, 264)
+    'cloud-right' = @(476, 340); 'compass-needle' = @(264, 264)
 }
 foreach ($name in $sizes.Keys) {
     $size = $sizes[$name]
@@ -29,22 +29,6 @@ foreach ($name in $sizes.Keys) {
         $bitmap.Save((Join-Path $outputRoot "$name.png"), [System.Drawing.Imaging.ImageFormat]::Png)
     } finally { $bitmap.Dispose(); $source.Dispose() }
 }
-
-$atlas = [System.Drawing.Bitmap]::new(1104, 736, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
-$graphics = [System.Drawing.Graphics]::FromImage($atlas)
-try {
-    $graphics.Clear([System.Drawing.Color]::Transparent)
-    $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
-    for ($index = 0; $index -lt 16; $index++) {
-        $name = 'plane-turn-{0:D2}.png' -f $index
-        $source = [System.Drawing.Image]::FromFile((Join-Path $sourceRoot $name))
-        try {
-            $graphics.DrawImage($source, ($index % 4) * 276,
-                [int][Math]::Floor($index / 4) * 184, 276, 184)
-        } finally { $source.Dispose() }
-    }
-    $atlas.Save((Join-Path $outputRoot 'plane-atlas.png'), [System.Drawing.Imaging.ImageFormat]::Png)
-} finally { $graphics.Dispose(); $atlas.Dispose() }
 
 # The route and pin effects are small PNG stamps, composited like the other moving details.
 $stamp = [System.Drawing.Bitmap]::new(20, 20, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)

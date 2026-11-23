@@ -107,7 +107,7 @@
     };
 
     const TEMATSKI_ASSETI = {
-        drzava: ['assets/theme-live-v3/drzava-base-v4.png'],
+        drzava: ['assets/theme-live-v3/drzava-base-v5.png'],
         okean: ['assets/theme-live-v2/okean.png'],
         grad: ['assets/theme-live-v2/grad.png'],
         planina: ['assets/theme-live-v2/planina.png'],

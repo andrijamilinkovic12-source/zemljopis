@@ -1,4 +1,8 @@
-# Država — 3D Soft Clay Mat live pozadina, nova osnova
+# Država — 3D Soft Clay Mat live pozadina
+
+Aktivni redizajn koristi `www/assets/theme-live-v3/drzava-base-v5.png`. ImageGen je prema kompoziciji prethodne mape napravio novi reljef sa tirkiznim Atlantikom i mesinganim kompasom. Avion koristi 128 PNG pogleda istog 3D modela u jednom atlasu. Svaki pogled ima sopstvenu projekciju krila, trupa i repa. Atlas se pravi skriptom `scripts/render-drzava-plane.py` uz NumPy i Pillow. Izvorne ilustracije pinova, oblaka i igle su u `background-concepts/drzava-clay-redesign/`. Za obnovu ostalih detalja pokrenuti `scripts/prepare-drzava-clay-sprites.py`, zatim postojeće skripte za pokretne slojeve i APNG.
+
+## Prethodna verzija i raspored kretanja
 
 Statična osnova u upotrebi: `www/assets/theme-live-v3/drzava-base-v4.png` (941 × 1672). Ovo je nova, jedinstvena imagegen PNG slika, napravljena prema prethodnom kadru, sa kompasom nacrtanim neposredno u prizoru.
 

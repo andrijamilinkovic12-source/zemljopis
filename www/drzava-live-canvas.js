@@ -5,8 +5,7 @@
     const HEIGHT = 1672;
     const LOOP_MS = 12000;
     const ASSET_ROOT = 'assets/theme-live-v3/drzava-sprites/';
-    const SPRITE_VERSION = 2;
-    const planeNames = Array.from({ length: 16 }, (_, index) => `plane-turn-${String(index).padStart(2, '0')}`);
+    const SPRITE_VERSION = 5;
     const names = [
         'plane-atlas', 'pin-coral', 'pin-gold', 'pin-africa', 'pin-rose',
         'cloud-left', 'cloud-middle', 'cloud-right', 'compass-needle',
@@ -70,19 +69,12 @@
     }
 
     function sprite(name, x, y, width, height, degrees = 0) {
-        const isPlane = name.startsWith('plane-turn-');
-        const image = images.get(isPlane ? 'plane-atlas' : name);
+        const image = images.get(name);
         if (!image) return;
         context.save();
         context.translate(x, y);
         if (degrees) context.rotate(degrees * Math.PI / 180);
-        if (isPlane) {
-            const index = Number(name.slice(-2));
-            context.drawImage(image, (index % 4) * 276, Math.floor(index / 4) * 184,
-                276, 184, -width / 2, -height / 2, width, height);
-        } else {
-            context.drawImage(image, -width / 2, -height / 2, width, height);
-        }
+        context.drawImage(image, -width / 2, -height / 2, width, height);
         context.restore();
     }
 
@@ -127,15 +119,6 @@
         }
     }
 
-    function drawPlaneView(index, heading, x, y, alpha = 1) {
-        let offset = heading - index * 22.5;
-        if (offset > 180) offset -= 360;
-        if (offset < -180) offset += 360;
-        context.globalAlpha = alpha;
-        sprite(planeNames[index], x, y, 138, 96, 0.28 * offset);
-        context.globalAlpha = 1;
-    }
-
     function render() {
         const phase = elapsed * 96 / LOOP_MS;
         const theta = 2 * Math.PI * phase / 96;
@@ -160,15 +143,22 @@
         const velocityX = -328 * Math.sin(theta);
         const velocityY = 205 * Math.cos(theta);
         const heading = (Math.atan2(-velocityX, velocityY) * 180 / Math.PI + 360) % 360;
-        const viewPosition = heading / 22.5;
-        const firstView = Math.floor(viewPosition);
-        const fraction = viewPosition - firstView;
-        const blend = fraction * fraction * (3 - 2 * fraction);
-        drawPlaneView(firstView, heading, planeX, planeY);
-        if (blend > 0) drawPlaneView((firstView + 1) % 16, heading, planeX, planeY, blend);
+        const step = 360 / 128;
+        const nearest = Math.round(heading / step);
+        const view = nearest % 128;
+        context.save();
+        context.translate(planeX, planeY);
+        context.rotate(.85 * (heading - nearest * step) * Math.PI / 180);
+        context.drawImage(images.get('plane-atlas'), (view % 8) * 160, Math.floor(view / 8) * 112,
+            160, 112, -69, -48, 138, 96);
+        context.restore();
 
         const needleAngle = 6 * Math.sin(theta) + 3 * Math.sin(2 * theta);
-        sprite('compass-needle', 742, 1445, 180, 132, needleAngle);
+        context.save();
+        // Intersection and directions of the two engraved axes in the base PNG.
+        context.transform(1, -.12, -.062, .88, 737, 1443);
+        sprite('compass-needle', 0, 0, 116, 116, needleAngle);
+        context.restore();
     }
 
     function tick(now) {

@@ -7,8 +7,11 @@ const frameQueue = new Map();
 let nextFrame = 0;
 let imageCount = 0;
 const context = {
-    save() {}, restore() {}, translate() {}, rotate() {}, setTransform() {}, clearRect() {},
-    drawImage(...args) { calls.push(args); },
+    save() {}, restore() {}, translate() {}, rotate() {}, transform() {}, setTransform() {}, clearRect() {},
+    drawImage(...args) {
+        if (args[0].url.includes('plane-atlas.png')) assert.equal(this.globalAlpha, 1);
+        calls.push(args);
+    },
     globalAlpha: 1
 };
 const canvas = {
@@ -58,8 +61,8 @@ for (let time = 198; time <= 12198; time += 50) {
 assert(calls.some(args => args.length === 9 && args[0].url.includes('plane-atlas.png')),
     'a plane view must be drawn from the PNG atlas');
 const usedViews = new Set(calls.filter(args => args.length === 9 && args[0].url.includes('plane-atlas.png'))
-    .map(args => Math.floor(args[2] / 184) * 4 + Math.floor(args[1] / 276)));
-assert.equal(usedViews.size, 16, 'the complete loop must use all sixteen airplane views');
+    .map(args => Math.floor(args[2] / 112) * 8 + Math.floor(args[1] / 160)));
+assert.equal(usedViews.size, 128, 'the loop must use every rendered airplane pose');
 assert(calls.some(args => args[0].url.includes('route-stamp.png')),
     'the connecting route must use its PNG stamp');
 

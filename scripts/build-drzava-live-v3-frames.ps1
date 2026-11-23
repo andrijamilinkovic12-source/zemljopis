@@ -8,7 +8,7 @@ if ($FrameCount -ne 96) { throw 'The pin and route timeline requires exactly 96 
 Add-Type -AssemblyName System.Drawing
 
 $assetRoot = Join-Path $ProjectRoot 'www/assets/theme-live-v3'
-$spriteRoot = Join-Path $ProjectRoot 'background-concepts/drzava-live-v3-sprites'
+$spriteRoot = Join-Path $ProjectRoot 'background-concepts/drzava-clay-redesign/sprites'
 $frameRoot = Join-Path $ProjectRoot 'tmp/drzava-v3-frames/drzava'
 New-Item -ItemType Directory -Path $frameRoot -Force | Out-Null
 
@@ -21,23 +21,6 @@ function Draw-Sprite($graphics, $sprite, [double]$x, [double]$y,
         $graphics.DrawImage($sprite, [single](-$width / 2), [single](-$height / 2),
             [single]$width, [single]$height)
     } finally { $graphics.Restore($state) }
-}
-
-function Draw-SpriteAlpha($graphics, $sprite, [double]$x, [double]$y,
-                          [double]$width, [double]$height, [double]$rotation, [double]$alpha) {
-    if ($alpha -le 0) { return }
-    $state = $graphics.Save()
-    $attributes = [System.Drawing.Imaging.ImageAttributes]::new()
-    try {
-        $matrix = [System.Drawing.Imaging.ColorMatrix]::new()
-        $matrix.Matrix33 = [single]$alpha
-        $attributes.SetColorMatrix($matrix)
-        $graphics.TranslateTransform([single]$x, [single]$y)
-        $graphics.RotateTransform([single]$rotation)
-        $destination = [System.Drawing.Rectangle]::new([int](-$width / 2), [int](-$height / 2), [int]$width, [int]$height)
-        $graphics.DrawImage($sprite, $destination, 0, 0, $sprite.Width, $sprite.Height,
-            [System.Drawing.GraphicsUnit]::Pixel, $attributes)
-    } finally { $attributes.Dispose(); $graphics.Restore($state) }
 }
 
 function Draw-Oval($graphics, [double]$x, [double]$y, [double]$width, [double]$height,
@@ -101,13 +84,14 @@ function Draw-Pin($graphics, $sprite, [double]$x, [double]$groundY,
 }
 
 $sprites = @{}
-$planeViews = @(0..15 | ForEach-Object { 'plane-turn-{0:D2}' -f $_ })
-foreach ($name in @($planeViews) + @('pin-coral', 'pin-gold', 'pin-africa', 'pin-rose',
+$sprites['plane-atlas'] = [System.Drawing.Image]::FromFile((Join-Path $assetRoot 'drzava-sprites/plane-atlas.png'))
+$dial = [System.Drawing.Drawing2D.Matrix]::new(1, -0.12, -0.062, 0.88, 737, 1443)
+foreach ($name in @('pin-coral', 'pin-gold', 'pin-africa', 'pin-rose',
                     'cloud-left', 'cloud-middle', 'cloud-right', 'compass-needle')) {
     $sprites[$name] = [System.Drawing.Image]::FromFile((Join-Path $spriteRoot "$name.png"))
 }
 
-$baseImage = [System.Drawing.Image]::FromFile((Join-Path $assetRoot 'drzava-base-v4.png'))
+$baseImage = [System.Drawing.Image]::FromFile((Join-Path $assetRoot 'drzava-base-v5.png'))
 try {
     $width = $baseImage.Width
     $height = $baseImage.Height
@@ -162,23 +146,20 @@ try {
                 $velocityX = -328 * [Math]::Sin($theta)
                 $velocityY = 205 * [Math]::Cos($theta)
                 # The plane faces down in view 00, then turns left, away and right.
-                # Select the sixteen perspective PNG views from the path tangent.
-                $heading = [Math]::Atan2(-$velocityX, $velocityY) * 180 / [Math]::PI
-                if ($heading -lt 0) { $heading += 360 }
-                $viewPosition = $heading / 22.5
-                $firstView = [int][Math]::Floor($viewPosition)
-                $fraction = $viewPosition - $firstView
-                $blend = $fraction * $fraction * (3 - 2 * $fraction)
-                $firstOffset = $heading - 22.5 * $firstView
-                Draw-Sprite $g $sprites[$planeViews[$firstView]] $planeX $planeY 138 96 (0.28 * $firstOffset)
-                if ($blend -gt 0) {
-                    $nextView = ($firstView + 1) % $planeViews.Count
-                    $nextOffset = $heading - 22.5 * ($firstView + 1)
-                    Draw-SpriteAlpha $g $sprites[$planeViews[$nextView]] $planeX $planeY 138 96 (0.28 * $nextOffset) $blend
-                }
+                $heading = ([Math]::Atan2(-$velocityX, $velocityY) * 180 / [Math]::PI + 360) % 360
+                $step = 360 / 128
+                $nearest = [int][Math]::Floor($heading / $step + 0.5)
+                $view = $nearest % 128
+                $state = $g.Save()
+                $g.TranslateTransform([single]$planeX, [single]$planeY)
+                $g.RotateTransform([single](0.85 * ($heading - $nearest * $step)))
+                $g.DrawImage($sprites['plane-atlas'], [System.Drawing.Rectangle]::new(-69,-48,138,96),
+                    [int](($view % 8) * 160), [int]([Math]::Floor($view / 8) * 112), 160, 112, [System.Drawing.GraphicsUnit]::Pixel)
+                $g.Restore($state)
 
                 $needleAngle = 6 * [Math]::Sin($theta) + 3 * [Math]::Sin(2 * $theta)
-                Draw-Sprite $g $sprites['compass-needle'] 742 1445 180 132 $needleAngle
+                $g.MultiplyTransform($dial)
+                Draw-Sprite $g $sprites['compass-needle'] 0 0 116 116 $needleAngle
             } finally { $g.Dispose() }
             $bitmap.Save((Join-Path $frameRoot ('frame-{0:D2}.png' -f $frame)),
                 [System.Drawing.Imaging.ImageFormat]::Png)
@@ -186,6 +167,7 @@ try {
     }
     Write-Output "Drzava v3: $FrameCount PNG motion frames at ${width}x${height}"
 } finally {
+    $dial.Dispose()
     $baseImage.Dispose()
     foreach ($sprite in $sprites.Values) { $sprite.Dispose() }
 }

@@ -5,9 +5,9 @@
     const HEIGHT = 1672;
     const LOOP_MS = 12000;
     const ASSET_ROOT = 'assets/theme-live-v3/drzava-sprites/';
-    const SPRITE_VERSION = 5;
+    const SPRITE_VERSION = 6;
     const names = [
-        'plane-atlas', 'pin-coral', 'pin-gold', 'pin-africa', 'pin-rose',
+        'plane-atlas', 'plane-rotor', 'pin-coral', 'pin-gold', 'pin-africa', 'pin-rose',
         'cloud-left', 'cloud-middle', 'cloud-right', 'compass-needle',
         'route-stamp', 'pin-shadow', 'pin-impact'
     ];
@@ -151,6 +151,15 @@
         context.rotate(.85 * (heading - nearest * step) * Math.PI / 180);
         context.drawImage(images.get('plane-atlas'), (view % 8) * 160, Math.floor(view / 8) * 112,
             160, 112, -69, -48, 138, 96);
+        // Project the hub in the baked pose, then apply the same scale and bank as the body.
+        const yaw = view * 2 * Math.PI / 128;
+        const elevation = 44 * Math.PI / 180;
+        const hubX = Math.round(-35.5 * 1.38 * Math.sin(yaw));
+        const hubY = Math.round(35.5 * (1.38 * Math.sin(elevation) * Math.cos(yaw) - .02 * Math.cos(elevation)));
+        const rotorPhase = Math.floor(elapsed * 36 / 1000) % 12;
+        const rotorCell = view * 12 + rotorPhase;
+        context.drawImage(images.get('plane-rotor'), (rotorCell % 32) * 40, Math.floor(rotorCell / 32) * 40,
+            40, 40, (hubX - 20) * 138/160, (hubY - 20) * 96/112, 40 * 138/160, 40 * 96/112);
         context.restore();
 
         const needleAngle = 6 * Math.sin(theta) + 3 * Math.sin(2 * theta);

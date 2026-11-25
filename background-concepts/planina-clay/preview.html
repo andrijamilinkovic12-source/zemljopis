@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="sr-Latn"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Planina · 3D Soft Clay Mat</title>
+<base href="../../www/">
+<style>
+html,body{margin:0;height:100%;background:#20354a}
+body{display:grid;place-items:center}
+main{height:min(100dvh,177.68vw);aspect-ratio:941/1672;background:center/100% 100% url(assets/planina-clay/poster.png)}
+canvas{display:block;width:100%;height:100%}canvas[hidden]{display:none}
+nav{position:fixed;bottom:.65rem;display:flex;justify-content:center;flex-wrap:wrap;gap:.4rem}
+button{font:600 14px system-ui;color:#fff;background:#273845;border:1px solid #849aa2;border-radius:1rem;padding:.45rem .8rem;cursor:pointer}
+</style>
+<main aria-label="Planinska dolina sa tri oblaka i glečerima na vrhovima"></main>
+<nav aria-label="Pregled otapanja"><button value="0">Od početka</button><button value="29">Levi vrh</button><button value="82">Srednji vrh</button><button value="139">Desni vrh</button></nav>
+<script src="planina-live-canvas.js?v=1"></script>
+<script>
+const scene=document.querySelector('main');
+const motion=matchMedia('(prefers-reduced-motion: reduce)');
+function sync(){
+    PlaninaLiveCanvas.hide();
+    if(!document.hidden) PlaninaLiveCanvas.show(scene,!motion.matches);
+}
+document.querySelector('nav').addEventListener('click',event=>{
+    if(event.target.tagName==='BUTTON') PlaninaLiveCanvas.seek(Number(event.target.value));
+});
+document.addEventListener('visibilitychange',sync);
+motion.addEventListener('change',sync);
+sync();
+</script></html>

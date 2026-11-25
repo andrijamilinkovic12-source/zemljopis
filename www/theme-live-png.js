@@ -12,6 +12,7 @@
     if (!screens.length) return;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const clayScenes = {grad: window.GradLiveCanvas, planina: window.PlaninaLiveCanvas, okean: window.RekaLiveCanvas};
     const image = document.createElement('img');
     image.className = 'theme-live-png';
     image.alt = '';
@@ -29,6 +30,18 @@
             window.DrzavaLiveCanvas?.prefetch?.();
         }
         const active = screens.find((screen) => screen.classList.contains('active'));
+        const useClayScene = active && !document.hidden && !reducedMotion.matches;
+        for (const [id, scene] of Object.entries(clayScenes)) {
+            if (!useClayScene || id !== theme) scene?.hide();
+        }
+        if (useClayScene && clayScenes[theme]) {
+            window.DrzavaLiveCanvas?.hide();
+            image.hidden = true;
+            image.removeAttribute('src');
+            image.remove();
+            clayScenes[theme].show(active);
+            return;
+        }
         if (supported && active && !document.hidden && !reducedMotion.matches) {
             if (theme === 'drzava' && !canvasFailed && window.DrzavaLiveCanvas?.show(active)) {
                 image.hidden = true;
@@ -39,7 +52,7 @@
             window.DrzavaLiveCanvas?.hide();
             if (image.parentElement !== active) active.appendChild(image);
             const source = theme === 'drzava'
-                ? 'assets/theme-live-v3/drzava-live.png?v=12'
+                ? 'assets/theme-live-v3/drzava-live.png?v=13'
                 : `assets/theme-live-v2/${theme}-live.png`;
             if (image.getAttribute('src') !== source) {
                 image.hidden = true;

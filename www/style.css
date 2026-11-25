@@ -20250,9 +20250,9 @@ body[data-pismo="cirilica"] .kviz-round-break.kviz-podpitanje-pauza .kviz-break-
 
 /* Seven clay scenes: still PNG fallback and matching animated PNG frames. */
 body[data-tema="drzava"] { --theme-bg-image: url('assets/theme-live-v3/drzava-base-v5.png'); }
-body[data-tema="okean"] { --theme-bg-image: url('assets/theme-live-v2/okean.png'); }
-body[data-tema="grad"] { --theme-bg-image: url('assets/theme-live-v2/grad.png'); }
-body[data-tema="planina"] { --theme-bg-image: url('assets/theme-live-v2/planina.png'); }
+body[data-tema="okean"] { --theme-bg-image: url('assets/reka-clay/poster.png?v=3'); }
+body[data-tema="grad"] { --theme-bg-image: url('assets/grad-clay/poster.png'); }
+body[data-tema="planina"] { --theme-bg-image: url('assets/planina-clay/poster.png'); }
 body[data-tema="biljka"] { --theme-bg-image: url('assets/theme-live-v2/biljka.png'); }
 body[data-tema="zivotinja"] { --theme-bg-image: url('assets/theme-live-v2/zivotinja.png'); }
 body[data-tema="predmet"] { --theme-bg-image: url('assets/theme-live-v2/predmet.png'); }

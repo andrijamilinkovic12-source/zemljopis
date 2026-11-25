@@ -85,6 +85,7 @@ function Draw-Pin($graphics, $sprite, [double]$x, [double]$groundY,
 
 $sprites = @{}
 $sprites['plane-atlas'] = [System.Drawing.Image]::FromFile((Join-Path $assetRoot 'drzava-sprites/plane-atlas.png'))
+$sprites['plane-rotor'] = [System.Drawing.Image]::FromFile((Join-Path $assetRoot 'drzava-sprites/plane-rotor.png'))
 $dial = [System.Drawing.Drawing2D.Matrix]::new(1, -0.12, -0.062, 0.88, 737, 1443)
 foreach ($name in @('pin-coral', 'pin-gold', 'pin-africa', 'pin-rose',
                     'cloud-left', 'cloud-middle', 'cloud-right', 'compass-needle')) {
@@ -155,6 +156,14 @@ try {
                 $g.RotateTransform([single](0.85 * ($heading - $nearest * $step)))
                 $g.DrawImage($sprites['plane-atlas'], [System.Drawing.Rectangle]::new(-69,-48,138,96),
                     [int](($view % 8) * 160), [int]([Math]::Floor($view / 8) * 112), 160, 112, [System.Drawing.GraphicsUnit]::Pixel)
+                $yaw = $view * 2 * [Math]::PI / 128
+                $elevation = 44 * [Math]::PI / 180
+                $hubX = [int][Math]::Floor(0.5 - 35.5 * 1.38 * [Math]::Sin($yaw))
+                $hubY = [int][Math]::Floor(0.5 + 35.5 * (1.38 * [Math]::Sin($elevation) * [Math]::Cos($yaw) - 0.02 * [Math]::Cos($elevation)))
+                $rotorCell = $view * 12 + ([int][Math]::Floor($frame * 36 / 8) % 12)
+                $g.ScaleTransform([single](138/160), [single](96/112))
+                $g.DrawImage($sprites['plane-rotor'], [System.Drawing.Rectangle]::new($hubX-20,$hubY-20,40,40),
+                    [int](($rotorCell % 32) * 40), [int]([Math]::Floor($rotorCell / 32) * 40), 40, 40, [System.Drawing.GraphicsUnit]::Pixel)
                 $g.Restore($state)
 
                 $needleAngle = 6 * [Math]::Sin($theta) + 3 * [Math]::Sin(2 * $theta)

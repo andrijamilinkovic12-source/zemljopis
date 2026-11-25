@@ -42,7 +42,7 @@ runInNewContext(readFileSync(new URL('../www/drzava-live-canvas.js', import.meta
 });
 
 assert.equal(await window.DrzavaLiveCanvas.prefetch(), true);
-assert.equal(imageCount, 12, 'one atlas and eleven smaller PNGs should load');
+assert.equal(imageCount, 13, 'the hull, rotor and eleven smaller PNGs should load');
 assert.equal(window.DrzavaLiveCanvas.show(screen), true);
 await Promise.resolve();
 assert.equal(canvas.hidden, false);
@@ -63,6 +63,10 @@ assert(calls.some(args => args.length === 9 && args[0].url.includes('plane-atlas
 const usedViews = new Set(calls.filter(args => args.length === 9 && args[0].url.includes('plane-atlas.png'))
     .map(args => Math.floor(args[2] / 112) * 8 + Math.floor(args[1] / 160)));
 assert.equal(usedViews.size, 128, 'the loop must use every rendered airplane pose');
+const rotorCells = calls.filter(args => args[0].url.includes('plane-rotor.png'))
+    .map(args => (args[2] / 40) * 32 + args[1] / 40);
+assert.equal(rotorCells.length, calls.filter(args => args[0].url.includes('plane-atlas.png')).length);
+assert.equal(new Set(rotorCells.map(cell => cell % 12)).size, 12, 'the blades must use every spin phase');
 assert(calls.some(args => args[0].url.includes('route-stamp.png')),
     'the connecting route must use its PNG stamp');
 

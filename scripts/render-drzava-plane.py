@@ -7,6 +7,8 @@ from PIL import Image
 
 TILE = (160, 112)
 POSES = 128
+ROTOR_PHASES = 12  # Three identical blades repeat after 120 degrees.
+ROTOR_TILE = 40
 CORAL = (232, 113, 93)
 CREAM = (246, 224, 184)
 GOLD = (233, 177, 82)
@@ -38,29 +40,39 @@ for side in (-1, 1):
     part((side*.84, -.03, -.075), (.91, .325, .093), CORAL, rotation(yaw=side*6, roll=-side*3))
     part((side*.33, -1.08, .10), (.50, .212, .065), CORAL, rotation(yaw=side*10))
 part((0, -1.04, .31), (.084, .30, .45), CREAM, rotation(pitch=20), "fin")
-for blade in range(3):
-    spin = rotation(roll=24 + blade*120)
-    hub = np.array([0, 1.38, .02])
-    part(hub + spin @ np.array([0, 0, .215]), (.083, .047, .24), GOLD, spin)
+hub = np.array([0, 1.38, .02])
 part(hub, (.135, .123, .135), GOLD)
 
 
-def render(index):
+def render(index, rotor_phase=None):
     w, h = TILE
-    yy, xx = np.mgrid[:2*h, :2*w]
-    x = (xx+.5-w) / 71
-    y = (yy+.5-h) / 71
     # Fixed elevated camera, with lighting anchored in the scene.
     elev = np.radians(44)
     az = rotation(yaw=-index*360/POSES)
     right = np.array([1, 0, 0]) @ az.T
     down = np.array([0, np.sin(elev), -np.cos(elev)]) @ az.T
     eye = np.array([0, np.cos(elev), np.sin(elev)]) @ az.T
+    geometry = parts.copy()
+    if rotor_phase is None:
+        patch_w, patch_h = w, h
+        left = top = 0
+    else:
+        # Use the same camera and depth test as the hull so rear views hide the blades.
+        patch_w = patch_h = ROTOR_TILE
+        left = int(np.floor(w/2 + 35.5*(hub @ right) + .5)) - patch_w//2
+        top = int(np.floor(h/2 + 35.5*(hub @ down) + .5)) - patch_h//2
+        for blade in range(3):
+            spin = rotation(roll=24 + blade*120 + rotor_phase*120/ROTOR_PHASES)
+            geometry.append((hub + spin @ np.array([0, 0, .215]),
+                             spin @ np.diag(1/np.array([.083, .047, .24])), GOLD, None))
+    yy, xx = np.mgrid[:2*patch_h, :2*patch_w]
+    x = (xx+2*left+.5-w) / 71
+    y = (yy+2*top+.5-h) / 71
     light = -.42*right - .65*down + .63*eye
     origin = x[..., None]*right + y[..., None]*down
     depth = np.full(x.shape, -np.inf)
     colors = np.zeros((*x.shape, 4), dtype=np.uint8)
-    for part_index, (center, inv_axes, base, material) in enumerate(parts):
+    for part_index, (center, inv_axes, base, material) in enumerate(geometry):
         local = (origin-center) @ inv_axes
         ray = eye @ inv_axes
         a = ray @ ray
@@ -71,6 +83,8 @@ def render(index):
         if not np.any(visible):
             continue
         depth[visible] = t[visible]
+        if rotor_phase is not None and part_index < len(parts):
+            continue
         surface = local[visible] + t[visible, None]*ray
         normal = surface @ inv_axes.T
         normal /= np.linalg.norm(normal, axis=1)[:, None]
@@ -85,7 +99,7 @@ def render(index):
         # Soft contact shadows anchor the wing roots, cockpit and propeller.
         hit = origin[visible] + t[visible, None]*eye + .008*normal
         shade = np.zeros(len(hit))
-        for other_index, (other_center, other_axes, _, _) in enumerate(parts):
+        for other_index, (other_center, other_axes, _, _) in enumerate(geometry):
             if other_index == part_index:
                 continue
             v = (hit - other_center) @ other_axes
@@ -100,12 +114,18 @@ def render(index):
         rgb = pigment*(.67+.35*diffuse[:, None])*(1-.18*shade[:, None]) + (sheen+grain)[:, None]
         colors[visible, :3] = np.clip(rgb, 0, 255)
         colors[visible, 3] = 255
-    return Image.fromarray(colors).resize(TILE, Image.Resampling.LANCZOS)
+    return Image.fromarray(colors).resize((patch_w, patch_h), Image.Resampling.LANCZOS)
 
 
 if __name__ == "__main__":
     root = Path(__file__).resolve().parents[1]
     atlas = Image.new("RGBA", (8*TILE[0], 16*TILE[1]))
+    rotor = Image.new("RGBA", (32*ROTOR_TILE, 48*ROTOR_TILE))
     for index in range(POSES):
         atlas.paste(render(index), ((index%8)*TILE[0], (index//8)*TILE[1]))
-    atlas.save(root / "www/assets/theme-live-v3/drzava-sprites/plane-atlas.png")
+        for phase in range(ROTOR_PHASES):
+            cell = index*ROTOR_PHASES + phase
+            rotor.paste(render(index, phase), ((cell%32)*ROTOR_TILE, (cell//32)*ROTOR_TILE))
+    dest = root / "www/assets/theme-live-v3/drzava-sprites"
+    atlas.save(dest / "plane-atlas.png")
+    rotor.save(dest / "plane-rotor.png")

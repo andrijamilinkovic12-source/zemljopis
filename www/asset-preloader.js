@@ -108,9 +108,9 @@
 
     const TEMATSKI_ASSETI = {
         drzava: ['assets/theme-live-v3/drzava-base-v5.png'],
-        okean: ['assets/theme-live-v2/okean.png'],
-        grad: ['assets/theme-live-v2/grad.png'],
-        planina: ['assets/theme-live-v2/planina.png'],
+        okean: ['assets/reka-clay/poster.png?v=3'],
+        grad: ['assets/grad-clay/poster.png'],
+        planina: ['assets/planina-clay/poster.png'],
         biljka: ['assets/theme-live-v2/biljka.png'],
         zivotinja: ['assets/theme-live-v2/zivotinja.png'],
         predmet: ['assets/theme-live-v2/predmet.png']
